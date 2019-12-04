@@ -9,6 +9,7 @@ namespace HttpReports
 {
     public interface IHttpReports
     {
+
         void Invoke(HttpContext context, TimeSpan ts, IConfiguration configuration); 
     }
 }
