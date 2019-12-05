@@ -5,3 +5,5 @@
 /.vs/HttpReports
 /HttpReports/bin
 /HttpReports/obj
+/HttpReports/Properties/PublishProfiles
+*.user
