@@ -2,6 +2,8 @@
 ### 简单介绍 
 HttpReports 是 .Net Core下的一个Web组件，适用于 WebAPI 项目和 API 网关项目，通过中间件的形式集成到您的项目中, 通过HttpReports，可以让开发人员快速的搭建出一个 API 性能分析的基础报表网站。
 
+ ![](https://raw.githubusercontent.com/SpringLeee/HttpReportsWeb/master/HttpReports.Web/wwwroot/Content/img/git/a3.png) 
+
 主要包含 HttpReports 中间件 和 HttpReports.Web 报表项目：  
 
 HttpReports： https://github.com/SpringLeee/HttpReports 
@@ -86,6 +88,10 @@ services.AddHttpReportsMiddlewire();
 app.UseHttpReportsMiddlewire();
 ```
 ConnectionStrings 配置的连接字符串和数据库类型要一致，全部完成了以后，我们就可以使用 Web 项目了。
-
-
  
+### 联系作者
+ 
+ 如果您在使用过程中遇到了什么问题或者有好的建议的话，可以添加我的微信，希望可以帮助到你
+ ![](https://raw.githubusercontent.com/SpringLeee/HttpReportsWeb/master/HttpReports.Web/wwwroot/Content/img/git/a9.jpg)
+ 
+  
