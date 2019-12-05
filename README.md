@@ -88,10 +88,18 @@ services.AddHttpReportsMiddlewire();
 app.UseHttpReportsMiddlewire();
 ```
 ConnectionStrings 配置的连接字符串和数据库类型要一致，全部完成了以后，我们就可以使用 Web 项目了。
+
+
+### 项目环境基本要求
+
+WebAPI或者网关项目支持 .Net Core 2.2，HttpReports.Web 的core版本为 2.2 
+
  
 ### 联系作者
  
- 如果您在使用过程中遇到了什么问题或者有好的建议的话，可以添加我的微信，希望可以帮助到你
+ 如果您在使用过程中遇到了什么问题或者有好的建议的话，可以添加我的微信，希望可以帮助到您
  ![](https://raw.githubusercontent.com/SpringLeee/HttpReportsWeb/master/HttpReports.Web/wwwroot/Content/img/git/a9.jpg)
  
-  
+ 
+
+ 
