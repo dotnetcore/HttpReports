@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Company>SpringLee</Company>
     <Authors>SpringLee</Authors>
     <Product />
@@ -13,7 +13,9 @@
 
 
 </Description>
-    <PackageProjectUrl>https://github.com/SpringLeee/HttpReports.git</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/SpringLeee/HttpReports/master/HttpReports/img.ico</PackageIconUrl>
+    <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
