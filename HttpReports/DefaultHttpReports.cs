@@ -7,6 +7,7 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,24 +25,38 @@ namespace HttpReports
 
         public void Invoke(HttpContext context, TimeSpan ts, IConfiguration config)
         {
+            if (string.IsNullOrEmpty(context.Request.Path))
+            {
+                return;
+            }
+
+            // 创建请求对象
+            RequestInfo request = new RequestInfo();
+
+            request.IP = context.Connection.RemoteIpAddress.ToString();
+
+            request.Milliseconds = Convert.ToInt32(ts.TotalMilliseconds);
+
+            request.StatusCode = context.Response.StatusCode;
+
+            request.Method = context.Request.Method;
+
+            request.Url = context.Request.Path;
+
+            request.CreateTime = DateTime.Now;
+
+            var path = context.Request.Path.Value ?? string.Empty;
+
+            if (!path.ToLower().Contains(_options.APiPoint))
+            {
+                return;
+            }
+
             Task.Run(() =>
-            { 
+            {
                 try
-                {
-                    if (string.IsNullOrEmpty(context.Request.Path))
-                    {
-                        return Task.CompletedTask;
-                    } 
-
-                    var path = context.Request.Path.Value.ToLower();
-
-                    if (!path.Contains(_options.APiPoint))
-                    {
-                        return Task.CompletedTask;
-                    }
-
-                    // 创建请求对象
-                    RequestInfo request = new RequestInfo();
+                { 
+                    path = path.ToLower();
 
                     request.Node = "Default";
 
@@ -58,20 +73,8 @@ namespace HttpReports
 
                     if (IsNumber(list.ToList().Last()))
                     {
-                        request.Route = request.Route.Substring(0,request.Route.Length - list.ToList().Last().Length - 1);
-                    } 
-
-                    request.IP = context.Connection.RemoteIpAddress.ToString();
-
-                    request.Milliseconds = Convert.ToInt32(ts.TotalMilliseconds);
-
-                    request.StatusCode = context.Response.StatusCode;
-
-                    request.Method = context.Request.Method;
-
-                    request.Url = context.Request.Path;
-
-                    request.CreateTime = DateTime.Now;
+                        request.Route = request.Route.Substring(0, request.Route.Length - list.ToList().Last().Length - 1);
+                    }
 
                     // 添加到数据库 
                     if (_options.DBType == DBType.SqlServer)
@@ -88,17 +91,13 @@ namespace HttpReports
                         {
                             con.Insert<RequestInfo>(request);
                         }
-                    }
-
+                    } 
                 }
                 catch (Exception ex)
-                {
-
-                }
-
-                return Task.CompletedTask;
-
-            });
+                { 
+                     
+                } 
+            });  
         }
 
         private bool IsNumber(string str)
@@ -109,9 +108,9 @@ namespace HttpReports
                 return true;
             }
             catch (Exception)
-            { 
+            {
                 return false;
-            }  
-        } 
+            }
+        }
     }
 }

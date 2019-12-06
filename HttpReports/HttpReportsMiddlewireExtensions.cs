@@ -15,9 +15,9 @@ namespace HttpReports
             {
                 services.AddOptions();
                 services.Configure(options); 
-            } 
+            }
 
-            return services.AddTransient<IHttpReports,DefaultHttpReports>().AddSingleton<HttpReportsMiddlewire>();
+            return services.AddTransient<IHttpReports, DefaultHttpReports>();
         }
 
         public static IServiceCollection AddHttpReportsMiddlewire<T>(this IServiceCollection services) where T : IHttpReports
