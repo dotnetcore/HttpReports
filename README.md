@@ -1,3 +1,4 @@
+
 #  HttpReports
 ### 简单介绍 
 HttpReports 是 .Net Core下的一个Web组件，适用于 WebAPI 项目和 API 网关项目，通过中间件的形式集成到您的项目中, 通过HttpReports，可以让开发人员快速的搭建出一个 API 性能分析的基础报表网站。
@@ -89,10 +90,45 @@ app.UseHttpReportsMiddlewire();
 ```
 ConnectionStrings 配置的连接字符串和数据库类型要一致，全部完成了以后，我们就可以使用 Web 项目了。
 
-
 ### 项目环境基本要求
 
-WebAPI或者网关项目支持 .Net Core 2.2，HttpReports.Web 的core版本为 2.2 
+WebAPI或者网关项目支持的.Net Core 版本 2.2, 3.0, 3.1;
+
+HttpReports.Web 的core版本为 2.2  
+
+### 性能事项
+
+HttpReports 中间件是异步操作，所以对api接口请求的时间可以忽略，但是由于实质使用的是数据库存储，所以要注意直接请求到数据库的压力。
+
+下面是用PostMan做的一个简单测试：
+
+WebAPI内的方法：
+
+```csharp
+        public string Sql1()
+        {
+            SqlConnection con = new SqlConnection(
+                "Max Pool Size = 512;server=.;uid=sa;pwd=123456;database=HyBasicData;");
+
+            var list1 =  con.Query(" select * from [HyBasicData].[dbo].[Customers] ");
+
+            var list2 = con.Query(" select * from [HyBasicData].[dbo].[Customers] ");
+
+            var list3 = con.Query(" select * from [HyBasicData].[dbo].[Customers] "); 
+
+            return list1.Count().ToString();
+        } 
+```
+PostMan分别对添加中间件和不添加中间件的 API请求 1000次，每300ms请求一次
+
+ 说明 | 请求次数  | 平均响应时间 
+-|-|-
+原生API|1000|32.535
+使用中间件|1000|32.899  
+
+### 总结
+
+HttpReports 的实现原理并不复杂，如果你想给你的 WebAPI项目，快速的添加一套分析系统 ，那么使用HttpReports 是一个不错的选择
 
  
 ### 联系作者
@@ -103,3 +139,8 @@ WebAPI或者网关项目支持 .Net Core 2.2，HttpReports.Web 的core版本为 2.2
  
 
  
+
+
+
+
+
