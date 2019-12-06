@@ -7,7 +7,7 @@
     <Authors>SpringLee</Authors>
     <Product />
     <Description>HttpReports 是一个快速搭建API分析平台的组件，通过中间件的形式使用；
-支持 .Net Core WebAPI项目，和搭配Ocelot使用的GateWay项目;
+支持 .Net Core WebAPI项目和网关项目；
 
 
 
