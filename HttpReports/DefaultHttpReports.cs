@@ -23,7 +23,7 @@ namespace HttpReports
             _options = options.Value;
         }
 
-        public void Invoke(HttpContext context, TimeSpan ts, IConfiguration config)
+        public void Invoke(HttpContext context, double Milliseconds, IConfiguration config)
         {
             if (string.IsNullOrEmpty(context.Request.Path))
             {
@@ -35,7 +35,7 @@ namespace HttpReports
 
             request.IP = context.Connection.RemoteIpAddress.ToString();
 
-            request.Milliseconds = Convert.ToInt32(ts.TotalMilliseconds);
+            request.Milliseconds = ToInt(Milliseconds);
 
             request.StatusCode = context.Response.StatusCode;
 
@@ -96,8 +96,54 @@ namespace HttpReports
                 catch (Exception ex)
                 { 
                      
-                } 
+                }  
+
             });  
+
+        } 
+
+
+        /// <summary>
+        /// 测试数据库
+        /// </summary>
+        /// <param name="config"></param>
+        public void Init(IConfiguration config)
+        {
+            try
+            { 
+                if (_options.DBType == DBType.SqlServer)
+                {
+                    using (SqlConnection con = new SqlConnection(config.GetConnectionString("HttpReports")))
+                    {
+                        con.Query(" Select count(1) From RequestInfo where 1=2 ");
+                    }
+                }
+
+                if (_options.DBType == DBType.MySql)
+                {
+                    using (MySqlConnection con = new MySqlConnection(config.GetConnectionString("HttpReports")))
+                    {
+                        con.Query(" Select count(1) From RequestInfo where 1=2 ");
+                    }
+                } 
+            }
+            catch (Exception ex)
+            { 
+                //数据库执行错误,请检查 
+                throw ex;
+            } 
+        }
+
+        private int ToInt(double dou)
+        {
+            try
+            {
+                return Convert.ToInt32(dou);
+            }
+            catch (Exception ex)
+            {
+                return 0; 
+            } 
         }
 
         private bool IsNumber(string str)

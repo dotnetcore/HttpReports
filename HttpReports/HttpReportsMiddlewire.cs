@@ -22,7 +22,10 @@ namespace HttpReports
         {
             this._next = next;
             this._httpReports = httpReports;
-            this._Configuration = configuration; 
+            this._Configuration = configuration;
+
+            _httpReports.Init(_Configuration); 
+
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -34,7 +37,7 @@ namespace HttpReports
 
             stopwatch.Stop(); 
             
-            _httpReports.Invoke(context, stopwatch.Elapsed, _Configuration); 
+            _httpReports.Invoke(context, stopwatch.Elapsed.TotalMilliseconds, _Configuration); 
         } 
     }
 }
