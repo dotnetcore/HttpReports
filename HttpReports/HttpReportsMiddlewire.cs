@@ -24,7 +24,7 @@ namespace HttpReports
             this._httpReports = httpReports;
             this._Configuration = configuration;
 
-            _httpReports.Init(_Configuration); 
+            this._httpReports.Init(configuration);
 
         }
 
@@ -40,4 +40,5 @@ namespace HttpReports
             _httpReports.Invoke(context, stopwatch.Elapsed.TotalMilliseconds, _Configuration); 
         } 
     }
+
 }

@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Dapper.Contrib.Extensions;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -18,9 +19,12 @@ namespace HttpReports
     {
         private HttpReportsOptions _options;
 
-        public DefaultHttpReports(IOptions<HttpReportsOptions> options)
-        {
+        private IHostingEnvironment _environment; 
+       
+        public DefaultHttpReports(IOptions<HttpReportsOptions> options,IHostingEnvironment environment)
+        { 
             _options = options.Value;
+            _environment = environment;
         }
 
         public void Invoke(HttpContext context, double Milliseconds, IConfiguration config)
@@ -41,98 +45,286 @@ namespace HttpReports
 
             request.Method = context.Request.Method;
 
-            request.Url = context.Request.Path;
+            request.Url = context.Request.Path;  
 
             request.CreateTime = DateTime.Now;
 
-            var path = context.Request.Path.Value ?? string.Empty;
+            var path = (context.Request.Path.Value ?? string.Empty).ToLower();
+             
 
-            if (!path.ToLower().Contains(_options.APiPoint))
-            {
-                return;
-            }
+            // 录入数据库
+            if (_options.WebType == WebType.API) SaveWhenUseAPI(request, path, config);
 
-            Task.Run(() =>
-            {
-                try
-                { 
-                    path = path.ToLower();
+            if (_options.WebType == WebType.MVC) SaveWhenUseMVC(request, path, config); 
 
-                    request.Node = "Default";
+        }
 
-                    var arr = path.Substring(1).Split("/");
-
-                    if (arr[1] == _options.APiPoint)
-                    {
-                        request.Node = arr[0];
-                    }
-
-                    var list = path.Split("/");
-
-                    request.Route = path.Substring(path.IndexOf(_options.APiPoint) + _options.APiPoint.Length);
-
-                    if (IsNumber(list.ToList().Last()))
-                    {
-                        request.Route = request.Route.Substring(0, request.Route.Length - list.ToList().Last().Length - 1);
-                    }
-
-                    // 添加到数据库 
-                    if (_options.DBType == DBType.SqlServer)
-                    {
-                        using (SqlConnection con = new SqlConnection(config.GetConnectionString("HttpReports")))
-                        {
-                            con.Insert<RequestInfo>(request);
-                        }
-                    }
-
-                    if (_options.DBType == DBType.MySql)
-                    {
-                        using (MySqlConnection con = new MySqlConnection(config.GetConnectionString("HttpReports")))
-                        {
-                            con.Insert<RequestInfo>(request);
-                        }
-                    } 
-                }
-                catch (Exception ex)
-                { 
-                     
-                }  
-
-            });  
-
-        } 
 
 
         /// <summary>
-        /// 测试数据库
+        /// 检查数据库连接是否可用
         /// </summary>
         /// <param name="config"></param>
         public void Init(IConfiguration config)
         {
             try
-            { 
-                if (_options.DBType == DBType.SqlServer)
+            {
+                string constr = config.GetConnectionString("HttpReports");
+
+                if (string.IsNullOrEmpty(constr))
                 {
-                    using (SqlConnection con = new SqlConnection(config.GetConnectionString("HttpReports")))
+                    if (_environment.IsDevelopment())
                     {
-                        con.Query(" Select count(1) From RequestInfo where 1=2 ");
-                    }
+                        throw new Exception("appsettings.json未找到HttpReports连接字符串");
+                    } 
+                }  
+
+                if (_options.DBType == DBType.SqlServer)
+                { 
+                    InitSqlServer(constr);
                 }
 
                 if (_options.DBType == DBType.MySql)
                 {
-                    using (MySqlConnection con = new MySqlConnection(config.GetConnectionString("HttpReports")))
-                    {
-                        con.Query(" Select count(1) From RequestInfo where 1=2 ");
-                    }
-                } 
+                    InitMySql(constr);
+
+                }
             }
             catch (Exception ex)
-            { 
-                //数据库执行错误,请检查 
-                throw ex;
-            } 
+            {
+                if (_environment.IsDevelopment())
+                {  
+                    throw ex; 
+                }                  
+            }
         }
+
+        private void InitSqlServer(string Constr)
+        {
+            using (SqlConnection con = new SqlConnection(Constr))
+            {
+                string TempConstr = Constr.Replace("httpreports", "master");
+
+                string DB_id = con.QueryFirstOrDefault<string>(" SELECT DB_ID('HttpReports') ");
+
+                if (string.IsNullOrEmpty(DB_id))
+                {
+                    int i = con.Execute(" Create Database HttpReports ");
+                }
+
+                int TableCount = con.QueryFirstOrDefault<int>(" Use HttpReports; Select Count(*) from sysobjects where id = object_id('HttpReports.dbo.RequestInfo') ");
+
+                if (TableCount == 0)
+                {
+                    con.Execute(@"  
+
+                        USE [HttpReports];
+                        SET ANSI_NULLS ON;
+                        SET QUOTED_IDENTIFIER ON;
+                        CREATE TABLE [dbo].[RequestInfo](
+	                        [Id] [int] IDENTITY(1,1) NOT NULL,
+	                        [Node] [nvarchar](50) NOT NULL,
+	                        [Route] [nvarchar](50) NOT NULL,
+	                        [Url] [nvarchar](200) NOT NULL,
+	                        [Method] [nvarchar](50) NOT NULL,
+	                        [Milliseconds] [int] NOT NULL,
+	                        [StatusCode] [int] NOT NULL,
+	                        [IP] [nvarchar](50) NOT NULL,
+	                        [CreateTime] [datetime] NOT NULL
+                        ) ON [PRIMARY];
+
+                    ");  
+                }
+
+            }
+        }
+
+        private void InitMySql(string Constr)
+        {
+            using (MySqlConnection con = new MySqlConnection(Constr))
+            {
+                string TempConstr = Constr.ToLower().Replace("httpreports", "sys");
+
+                MySqlConnection TempConn = new MySqlConnection(TempConstr);
+
+                var DbInfo = TempConn.QueryFirstOrDefault<string>("  show databases like 'httpreports'; ");
+
+                if (string.IsNullOrEmpty(DbInfo))
+                {
+                    TempConn.Execute(" create database HttpReports; ");
+                }
+
+                TempConn.Close();
+                TempConn.Dispose();
+
+                var TableInfo = con.QueryFirstOrDefault<int>("  Select count(1) from information_schema.tables where table_name ='requestinfo'; ");
+
+                if (TableInfo == 0)
+                {
+                    con.Execute(@"
+                        CREATE TABLE `requestinfo` (
+                          `Id` int(11) NOT NULL auto_increment,
+                          `Node` varchar(50) default NULL,
+                          `Route` varchar(50) default NULL,
+                          `Url` varchar(200) default NULL,
+                          `Method` varchar(50) default NULL,
+                          `Milliseconds` int(11) default NULL,
+                          `StatusCode` int(11) default NULL,
+                          `IP` varchar(50) default NULL,
+                          `CreateTime` datetime default NULL,
+                          PRIMARY KEY  (`Id`)
+                        ) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;  "); 
+
+                }
+            }
+        } 
+
+
+        /// <summary>
+        /// 使用API模式
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public Task SaveWhenUseAPI(RequestInfo request,string path, IConfiguration config)
+        { 
+            return Task.Run(() => {
+
+                if (!path.ToLower().Contains(_options.ApiPoint))
+                {
+                    return;
+                }
+
+                try
+                {
+                    request.Node = GetNode(path);
+                    request.Route = GetRouteForAPI(path); 
+
+                    SaveInDataBase(request,config); 
+                }
+                catch (Exception ex)
+                {
+                    if (_environment.IsDevelopment())
+                    {
+                        throw ex;  
+                    }   
+                }    
+
+            });   
+        }
+
+        /// <summary>
+        /// 使用API模式
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public Task SaveWhenUseMVC(RequestInfo request, string path, IConfiguration config)
+        {
+            return Task.Run(() => { 
+
+                try
+                {  
+                    request.Node = _options.Node.Substring(0, 1).ToUpper() + _options.Node.Substring(1).ToLower(); 
+
+                    request.Route = GetRouteForMVC(path);
+
+                    SaveInDataBase(request, config);
+                }
+                catch (Exception ex)
+                {
+                    if (_environment.IsDevelopment())
+                    {
+                        throw ex;
+                    }
+                }
+
+            });
+        } 
+
+
+        private void SaveInDataBase(RequestInfo request, IConfiguration config)
+        { 
+            //添加到数据库   
+            if (_options.DBType == DBType.SqlServer)
+            {
+                using (SqlConnection con = new SqlConnection(config.GetConnectionString("HttpReports")))
+                {
+                    con.Insert<RequestInfo>(request);
+                }
+            }
+
+            if (_options.DBType == DBType.MySql)
+            {
+                using (MySqlConnection con = new MySqlConnection(config.GetConnectionString("HttpReports")))
+                {
+                    con.Insert<RequestInfo>(request);
+                }
+            } 
+        }  
+
+
+        /// <summary>
+        /// 通过请求地址 获取服务节点 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="Default"></param>
+        /// <returns></returns>
+        private string GetNode(string path)
+        {
+            string Default = _options.Node;
+
+            var arr = path.Substring(1).Split("/"); 
+
+            if (arr.Length > 0 && arr[1] == _options.ApiPoint)
+            {
+                Default = arr[0];
+            } 
+
+            Default = Default.Substring(0, 1).ToUpper() + Default.Substring(1).ToLower(); 
+
+            return Default;   
+        }
+
+
+        /// <summary>
+        ///通过请求地址 获取路由
+        /// </summary>
+        /// <returns></returns>
+        private string GetRouteForAPI(string path)
+        {
+            string route = string.Empty;
+
+            var list = path.Split("/");
+
+            route = path.Substring(path.IndexOf(_options.ApiPoint) + _options.ApiPoint.Length);
+
+            if (IsNumber(list.ToList().Last()))
+            {
+                route = route.Substring(0, route.Length - list.ToList().Last().Length - 1);
+            }
+
+            return route; 
+        }
+
+
+        /// <summary>
+        ///通过请求地址 获取路由
+        /// </summary>
+        /// <returns></returns>
+        private string GetRouteForMVC(string path)
+        {
+            string route = path;
+
+            var list = path.Split("/"); 
+
+            if (IsNumber(list.ToList().Last()))
+            {
+                route = route.Substring(0, route.Length - list.ToList().Last().Length - 1);
+            }
+
+            return route;
+        }   
 
         private int ToInt(double dou)
         {

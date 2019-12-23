@@ -7,30 +7,27 @@ using System.Text;
 namespace HttpReports
 {
     public static class HttpReportsMiddlewireExtensions
-    {
-        
+    { 
         /// <summary>
         /// 添加HttpReports中间件
         /// </summary>
         /// <param name="services"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static IServiceCollection AddHttpReportsMiddlewire(this IServiceCollection services, Action<HttpReportsOptions> options = null)
+        public static IServiceCollection AddHttpReportsMiddlewire(this IServiceCollection services, WebType webType, DBType dbType,string Node = "Default")
         {
-            if (options != null)
+            Action<HttpReportsOptions> options = (op) =>
             {
-                services.AddOptions();
-                services.Configure(options); 
-            }
+                op.DBType = dbType;
+                op.WebType = webType;
+                op.Node = string.IsNullOrEmpty(Node) ? "Default":Node; 
+            };   
+
+            services.AddOptions();
+            services.Configure(options);  
 
             return services.AddTransient<IHttpReports, DefaultHttpReports>();
-        }
-
-        public static IServiceCollection AddHttpReportsMiddlewire<T>(this IServiceCollection services) where T : IHttpReports
-        {
-            return services.AddTransient(typeof(IHttpReports), typeof(T));
-        }
-         
+        }  
 
         /// <summary>
         /// 使用 HttpReports, 必须放在UseMvc之前
