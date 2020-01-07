@@ -1,149 +1,240 @@
-
+﻿
  
-####  ΢����ͳ�ƣ�������ͼ�������һ�廯��HttpReports�����.Net Core �е�ʹ��
+####  微服务统计，分析，图表，监控一体化的HttpReports项目在.Net Core 中的使用
 
 
 #  HttpReports
-### �򵥽���  
-HttpReports �� .Net Core �µ�һ��Web���, ������WebAPI��Ocelot����Ӧ�ã�MVC��Ŀ���ǳ��ʺ����΢����Ӧ��ʹ�ã�ͨ���м������ʽ���ɵ�������Ŀ�У������ÿ�����Ա���ٵĴ��һ�� ����ͳ�ƣ�������ͼ������� һ�廯�� Webվ�㡣
+### 简单介绍  
+HttpReports 是 .Net Core 下的一个Web组件, 适用于WebAPI，Ocelot网关应用，MVC项目，非常适合针对微服务应用使用，通过中间件的形式集成到您的项目中，可以让开发人员快速的搭建出一个 数据统计，分析，图表，监控 一体化的 Web站点。
 
- ![](https://images.cnblogs.com/cnblogs_com/myshowtime/1627540/o_a1.png) 
+ [](https://images.cnblogs.com/cnblogs_com/myshowtime/1627540/o_a1.png) 
  
- ![](https://images.cnblogs.com/cnblogs_com/myshowtime/1627540/o_a2.png) 
+[](https://images.cnblogs.com/cnblogs_com/myshowtime/1627540/o_a2.png) 
  
- ![](https://images.cnblogs.com/cnblogs_com/myshowtime/1627540/o_a3.png)   
+ [](https://images.cnblogs.com/cnblogs_com/myshowtime/1627540/o_a3.png)   
 
 
+#### 主要模块
 
+主要包含HttpReports 中间件 和 HttpReports.Web 的MVC项目;
 
-#### ��Ҫģ��
-
-��Ҫ����HttpReports �м�� �� HttpReports.Web ��MVC��Ŀ;
-
-HttpReports�� https://github.com/SpringLeee/HttpReports  
+HttpReports： https://github.com/SpringLeee/HttpReports  
   
-HttpReports.Web�� https://github.com/SpringLeee/HttpReportsWeb
+HttpReports.Web： https://github.com/SpringLeee/HttpReportsWeb
 
-### ���ʹ��
+在线预览： http://175.102.11.117:8801 账号 admin 密码admin
 
-##### 1.Nuget����HttpReports
+#### 支持项目类型  
 
-��װnuget�� **HttpReports** ����StartUp.cs �ļ�
+😂 单个WebAPI应用  
+😆 多个独立WebAPI应用   
+😊 Ocelot 网关应用 
+😛 单个MVC项目
+😃 多个MVC项目
 
-��ConfigureServices ���������ӣ� 
-```csharp
-services.AddHttpReportsMiddlewire();
-```
-�����MySql���ݿ⣬�����ӣ�
+
+### 如何使用
+
+##### 1.添加 HttpReports 中间件 
+
+Nuget 包安装 HttpReports, 打开Startup.cs, 修改 ConfigureServices(IServiceCollection services) 方法，添加以下代码，放在 services.AddMvc() 之前都可以。
+
+ 选择您的应用类型：
+ 
+😆 **单个WebAPI应用 或者 使用Ocelot网关的应用**
+ 
+ 修改 ConfigureServices 方法 ，
+ 
  ```csharp
- services.AddHttpReportsMiddlewire(options =>{ 
-    options.DBType = DBType.MySql; 
- });
+	 public void ConfigureServices(IServiceCollection services)
+	 { 
+		 // 添加HttpReports中间件
+		 services.AddHttpReportsMiddlewire(WebType.API, DBType.SqlServer);
+
+	     services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2); 
+	}
+```
+😆 ** 多个独立的WebAPI应用 **
+
+假设有一个 授权（Auth）API应用，和一个支付（Pay）API应用，并且没有使用网关，需要分别在两个项目的Startup.cs文件的 ConfigureServices 方法中分别添加以下代码:
+ 
+###### 授权API应用(Auth)
+ ```csharp
+services.AddHttpReportsMiddlewire(WebType.API, DBType.SqlServer,"Auth");
+```
+###### 支付Pay应用(Pay)
+ ```csharp
+services.AddHttpReportsMiddlewire(WebType.API, DBType.SqlServer,"Pay");  
 ```
 
-���뵽 Configure ���� ����Ҫ���� app.UseMVC() ���� app.UseOcelot().Wait() ��ǰ�棬Ҫ��Ȼ����Ч
+😆 **单个MVC应用** 
+
 ```csharp
-app.UseHttpReportsMiddlewire();
+	public void ConfigureServices(IServiceCollection services)
+	{ 
+		// 添加HttpReports中间件
+		services.AddHttpReportsMiddlewire(WebType.MVC, DBType.SqlServer);
+
+		services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2); 
+	}
 ```
-ConnectionStrings ���õ������ַ��������ݿ�����Ҫһ�£�ȫ��������Ժ����ǾͿ���ʹ�� Web ��Ŀ�ˡ�
 
- 
+😆 **多个MVC应用**
 
+假设有一个 电商（Mall）应用，和一个支付（Pay）应用，需要分别在两个项目的Startup.cs文件的 ConfigureServices 方法中分别添加以下代码:
 
-
-
-### ���ʹ��
-
-##### 1.���� HttpReports.Web
- ��github���� HttpReports.Web ��Ŀ����Ŀ��ַ��https://github.com/SpringLeee/HttpReportsWeb, Web��Ŀ��.Net Core MVC ��Ŀ��ʹ������ʵ�֡�
- 
- ![](https://raw.githubusercontent.com/SpringLeee/HttpReportsWeb/master/HttpReports.Web/wwwroot/Content/img/git/a1.png)
- 
- 
- 
- ������ɺ���VS�д򿪣�Ȼ��ԭNuGet���������ɺ����� appsettings.json 
-#### appsettings.json
+###### 电商MVC应用 （Mall）
+ ```csharp
+ services.AddHttpReportsMiddlewire(WebType.MVC, DBType.SqlServer,"Mall");
 ```
+###### 支付MVC应用 （Pay）
+ ```csharp
+ services.AddHttpReportsMiddlewire(WebType.MVC, DBType.SqlServer,"Pay");  
+```
+😆 **切换数据库**
+
+使用MySql数据库
+```csharp
+ services.AddHttpReportsMiddlewire(WebType.API, DBType.MySql);
+```
+使用SqlServer数据库
+```csharp
+ services.AddHttpReportsMiddlewire(WebType.API, DBType.SqlServer);
+``` 
+   
+##### 2.使用 HttpReports 中间件  
+
+修改 StartUp.cs 的 Configure 方法
+
+.Net Core 2.2
+
+```csharp
+	public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+	{    
+		//使用HttpReports 
+		app.UseHttpReportsMiddlewire();  
+
+		app.UseMvc();
+	}
+```
+必须要放在 UseMVC() 方法和其他中间件的前边，否则不生效。
+
+.Net Core 3.0 和以上版本
+
+```csharp
+	public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+	{ 
+		//使用HttpReports
+		app.UseHttpReportsMiddlewire();
+
+		app.UseRouting(); 
+
+		app.UseAuthorization(); 
+
+		app.UseEndpoints(endpoints =>
+		{
+			endpoints.MapControllers();
+		});
+	}
+```  
+必须要放在 UseEndpoints() 方法和其他中间件的前边，否则不生效。
+
+##### 3.  appsettings.json 配置连接字符串
+
+ 打开 appsetting.json, 添加数据库连接字符串, 需要手动创建数据库 HttpReports
+ 
+```csharp
+"ConnectionStrings": {
+    "HttpReports": "Max Pool Size = 512;server=.;uid=sa;pwd=123456;database=HttpReports;"
+  }
+```
+##### 4. 运行Web应用
+到这一步，已经配置完成了, 直接运行Web应用，如果中间有报错的话，可能是因为数据库的连接问题，请检查后再重试，如果没有报错的话，打开数据库 [HttpReports].[dbo].[RequestInfo],  如果能看到有数据记录，就说明 HttpReports 中间件的部分配置完成了，数据有了，下边开始配置 HttpReportsWeb 站点。
+
+------------ 
+
+#### HttpReports.Web部分
+
+github源码：https://github.com/SpringLeee/HttpReportsWeb 有需要的也可以下载源码后编译，默认的git分支是Core 2.2 版本，还有一个 core 3.0的分支；
+
+
+
+这里提供 core2.2 和 3.0 的发布版本下载：  
+
+Core 2.2 发布版本：   https://files.cnblogs.com/files/myshowtime/HttpReports2.2.zip 
+Core 3.0 发布版本：https://files.cnblogs.com/files/myshowtime/HttpReports3.0.zip
+
+这里以 .Net Core2.2 版本为例, 下载发布版本后，解压文件, 找到 appsettings.json文件，并修改
+
+```csharp
 {
   "ConnectionStrings": {
-    "HttpReports": "Max Pool Size = 512;server=.;uid=sa;pwd=123456;database=HttpReports;"
-  }, 
+    "HttpReports": "Max Pool Size = 512;server=.;uid=sa;pwd=123456;database=HttpReports;"   
+  },
   "HttpReportsConfig": {
-    "DBType": "SqlServer",
+    "DBType": "SqlServer", // MySql Or SqlServer
     "UserName": "admin",
     "Password": "123456"
   }
 }
-
-``` 
-��Ҫ������
-- HttpReports������һ�����õ������ַ�����
-- DBType�����ݿ����ͣ�֧��SqlServer��MySql;
-- UserName: Web��Ŀ�ĵ�¼����
-- Password: Web��Ŀ�ĵ�¼���룻
-
-��������ʹ�õ���SqlServer ���ݿ⣬��Ҫ������ConnectionStrings��Ȼ���ֶ��������ݿ� HttpReports��Web��Ŀ��������ݿ��Զ��������������ڵ�һ�����е�ʱ��MockһЩ���� ��������ֱ��F5������Ŀ�� û������Ļ�����ֱ��������¼ҳ�棬�����û������� admin 123456����¼��Ӧ�ÿ��Կ��������ҳ��
-
- ![](https://raw.githubusercontent.com/SpringLeee/HttpReportsWeb/master/HttpReports.Web/wwwroot/Content/img/git/a3.png) 
- 
-���ڿ��Կ�����Ŀ�� auth,payment��sms ��������ڵ㣬����ڵ�Ķ������£�
- 
-�����ַ | ����ڵ�  | ˵�� 
--|-|-
-https://www.abc.com/auth/api/user/login | auth  |
-https://www.abc.com/log/api/user/login | log  |
-https://www.abc.com/api/user/login | default  |  ���û��ǰ׺�Ļ�������default�ڵ�
-
-��������Ŀ�ǵ���WebAPI��Ŀ����ô����ڵ�ֻ��һ�� default����������Ŀ�� GateWay ������Ŀ����ôWeb��Ŀ�Ϳ��Զ�ȡ���������ڵ㣬���� auth ��֤��payment֧���ȡ�
-
-
-##### 2.��API��Ŀ��ʹ��
-
-����Ҫɾ�� Web ��Ŀ��Mock���ݣ������ݿ� HttpReports���򿪱� RequestInfo,������ݣ�ִ��Sql
 ```
-  Delete * From [HttpReports].[dbo].[RequestInfo]
-```
-###### �������ݿ������ַ���
-HttpReports ���õ���API��Ŀ��������Ŀ������ʹ�� Ocelot������ĿΪ��.
+ |  字段 | 说明  |
+| ------------ | ------------ |
+| HttpReports  | 数据库连接字符串，要和上边配置的中间件的数据库一致  |
+| DBType  | 数据库类型 SqlServer MySql , 注意没有空格  |
+| UserName  | Web站点后台登录名，可修改  |
+| Password  | Web站点后台登录密码，可修改  |
 
-���Ǵ�appsetting.json, �������ݿ������ַ�������Ҫ��Web��Ŀһ��
-
-![](https://raw.githubusercontent.com/SpringLeee/HttpReportsWeb/master/HttpReports.Web/wwwroot/Content/img/git/a6.png)
-
-###### Nuget����HttpReports
-
-��װnuget�� **HttpReports** ����StartUp
-
-��ConfigureServices ���������ӣ� 
-```csharp
-services.AddHttpReportsMiddlewire();
-```
-�����MySql���ݿ⣬�����ӣ�
+ 修改数据库类型和连接字符串, 然后打开命令行，启动程序，或者部署到站点也可以
  ```csharp
- services.AddHttpReportsMiddlewire(options =>{ 
-    options.DBType = DBType.MySql; 
- });
+ dotnet HttpReports.Web.dll
 ```
+跳到登录页，输入默认账号 admin 密码 123456，登录到系统，看一下主要的几个页面 
+ 
+#### 主页面
 
-���뵽 Configure ���� ����Ҫ���� app.UseMVC() ���� app.UseOcelot().Wait() ��ǰ�棬Ҫ��Ȼ����Ч
-```csharp
-app.UseHttpReportsMiddlewire();
-```
-ConnectionStrings ���õ������ַ��������ݿ�����Ҫһ�£�ȫ��������Ժ����ǾͿ���ʹ�� Web ��Ŀ�ˡ�
+主要是Web应用 请求次数, 请求时间, 请求错误，错误率TOP, 响应最快和响应最慢等， 按天，月，年进行趋势分析,  服务节点 点击可以选中和取消，并且可以切换亮色和暗色主题 
 
-### ��Ŀ��������Ҫ��
+![](https://images.cnblogs.com/cnblogs_com/myshowtime/1627540/o_a5.png)
 
-WebAPI����������Ŀ֧�ֵ�.Net Core �汾 2.2, 3.0, 3.1;
+#### 预警监控
 
-HttpReports.Web ��core�汾Ϊ 2.2  
+![](https://images.cnblogs.com/cnblogs_com/myshowtime/1627540/o_a6.png)
 
-### ��������
+HttpReports 监控预警主要针对以下几点：  
 
-HttpReports �м�����첽���������Զ�api�ӿ������ʱ����Ժ��ԣ���������ʵ��ʹ�õ������ݿ�洢������Ҫע��ֱ���������ݿ��ѹ����
+😃 响应超时 
+😃 请求错误
+😃 IP异常
+😃 请求量监控
+ 
+ **如何添加监控：**
+ 
+![](https://images.cnblogs.com/cnblogs_com/myshowtime/1627540/o_a7.png)
+ 
+这里演示添加一个监控，监控频率 选1小时，也就是1个小时 运行一次， 然后填入预警的收件邮箱,可填写多个邮箱, 服务节点 可以选中单个和多个节点，默认的话，下边 4个监控都是关闭状态，这里 我打开 响应超时 和 请求错误监控
 
-��������PostMan����һ���򵥲��ԣ�
+ ![](https://images.cnblogs.com/cnblogs_com/myshowtime/1627540/o_a8.png)
+ 
+ 
+ ![](https://images.cnblogs.com/cnblogs_com/myshowtime/1627540/o_a9.png) 
+ 
+ 保存任务，任务自动运行，如果数据达到预警值时,您就会收到HttpReports 发送给您的通知邮件  
+ 
 
-WebAPI�ڵķ�����
+### 项目环境基本要求
+
+WebAPI或者网关项目支持的.Net Core 版本 2.2, 3.0, 3.1;
+
+HttpReports.Web 的core版本为 2.2  
+
+### 性能事项
+
+HttpReports 中间件是异步操作，所以对api接口请求的时间可以忽略，但是由于实质使用的是数据库存储，所以要注意直接请求到数据库的压力。
+
+下面是用PostMan做的一个简单测试：
+
+WebAPI内的方法：
 
 ```csharp
         public string Sql1()
@@ -160,22 +251,23 @@ WebAPI�ڵķ�����
             return list1.Count().ToString();
         } 
 ```
-PostMan�ֱ�������м���Ͳ������м���� API���� 1000�Σ�ÿ300ms����һ��
+PostMan分别对添加中间件和不添加中间件的 API请求 1000次，每300ms请求一次
 
- ˵�� | �������  | ƽ����Ӧʱ�� 
+ 说明 | 请求次数  | 平均响应时间 
 -|-|-
-ԭ��API|1000|32.535
-ʹ���м��|1000|32.899  
+原生API|1000|32.535
+使用中间件|1000|32.899  
 
-### �ܽ�
+### 总结
 
-HttpReports ��ʵ��ԭ���������ӣ������������ WebAPI��Ŀ�����ٵ�����һ�׷���ϵͳ ����ôʹ��HttpReports ��һ��������ѡ��
+HttpReports 的实现原理并不复杂，如果你想给你的.Net Core 应用，快速的添加一套图表监控系统 ，那么使用HttpReports 是一个不错的选择，如果能帮助到您的话，还请希望给个Star， 感谢
 
+
+### 问题反馈
  
-### ��ϵ����
+ 如果您在使用过程中遇到了什么问题或者有好的建议的话，可以反馈到QQ群，也可以添加我的微信， 希望可以帮助到您
  
- �������ʹ�ù�����������ʲô��������кõĽ���Ļ������������ҵ�΢�ţ�ϣ�����԰�������
- ![](https://raw.githubusercontent.com/SpringLeee/HttpReportsWeb/master/HttpReports.Web/wwwroot/Content/img/git/a9.jpg)
+ ![](https://images.cnblogs.com/cnblogs_com/myshowtime/1627540/o_a13.png) 
  
  
 
