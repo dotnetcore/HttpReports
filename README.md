@@ -1,26 +1,63 @@
+
+ 
+####  Î¢·şÎñÍ³¼Æ£¬·ÖÎö£¬Í¼±í£¬¼à¿ØÒ»Ìå»¯µÄHttpReports×é¼şÔÚ.Net Core ÖĞµÄÊ¹ÓÃ
+
+
 #  HttpReports
-### ¼òµ¥½éÉÜ 
-HttpReports ÊÇ .Net CoreÏÂµÄÒ»¸öWeb×é¼ş£¬ÊÊÓÃÓÚ WebAPI ÏîÄ¿ºÍ API Íø¹ØÏîÄ¿£¬Í¨¹ıÖĞ¼ä¼şµÄĞÎÊ½¼¯³Éµ½ÄúµÄÏîÄ¿ÖĞ, Í¨¹ıHttpReports£¬¿ÉÒÔÈÃ¿ª·¢ÈËÔ±¿ìËÙµÄ´î½¨³öÒ»¸ö API ĞÔÄÜ·ÖÎöµÄ»ù´¡±¨±íÍøÕ¾¡£
+### ¼òµ¥½éÉÜ  
+HttpReports ÊÇ .Net Core ÏÂµÄÒ»¸öWeb×é¼ş, ÊÊÓÃÓÚWebAPI£¬OcelotÍø¹ØÓ¦ÓÃ£¬MVCÏîÄ¿£¬·Ç³£ÊÊºÏÕë¶ÔÎ¢·şÎñÓ¦ÓÃÊ¹ÓÃ£¬Í¨¹ıÖĞ¼ä¼şµÄĞÎÊ½¼¯³Éµ½ÄúµÄÏîÄ¿ÖĞ£¬¿ÉÒÔÈÃ¿ª·¢ÈËÔ±¿ìËÙµÄ´î½¨³öÒ»¸ö Êı¾İÍ³¼Æ£¬·ÖÎö£¬Í¼±í£¬¼à¿Ø Ò»Ìå»¯µÄ WebÕ¾µã¡£
 
- ![](https://images.cnblogs.com/cnblogs_com/myshowtime/1608752/o_a3.png)    
+ ![](https://images.cnblogs.com/cnblogs_com/myshowtime/1627540/o_a1.png) 
  
+ ![](https://images.cnblogs.com/cnblogs_com/myshowtime/1627540/o_a2.png) 
  
-  ![](https://images.cnblogs.com/cnblogs_com/myshowtime/1608752/o_191212102728a20.png)
-  
-  ![](https://images.cnblogs.com/cnblogs_com/myshowtime/1608752/o_191212102903a21.png)
+ ![](https://images.cnblogs.com/cnblogs_com/myshowtime/1627540/o_a3.png)   
 
-Ö÷Òª°üº¬ HttpReports ÖĞ¼ä¼ş ºÍ HttpReports.Web ±¨±íÏîÄ¿£º  
 
-HttpReports£º https://github.com/SpringLeee/HttpReports 
+
+
+#### Ö÷ÒªÄ£¿é
+
+Ö÷Òª°üº¬HttpReports ÖĞ¼ä¼ş ºÍ HttpReports.Web µÄMVCÏîÄ¿;
+
+HttpReports£º https://github.com/SpringLeee/HttpReports  
   
 HttpReports.Web£º https://github.com/SpringLeee/HttpReportsWeb
+
+### ÈçºÎÊ¹ÓÃ
+
+##### 1.NugetÒıÓÃHttpReports
+
+°²×°nuget°ü **HttpReports** £¬´ò¿ªStartUp.cs ÎÄ¼ş
+
+ÔÚConfigureServices ·½·¨ÏÂÌí¼Ó£º 
+```csharp
+services.AddHttpReportsMiddlewire();
+```
+Èç¹ûÊÇMySqlÊı¾İ¿â£¬ÔòÌí¼Ó£º
+ ```csharp
+ services.AddHttpReportsMiddlewire(options =>{ 
+    options.DBType = DBType.MySql; 
+ });
+```
+
+¼ÓÈëµ½ Configure ·½·¨ £¬ĞèÒª·ÅÔÚ app.UseMVC() »òÕß app.UseOcelot().Wait() µÄÇ°Ãæ£¬Òª²»È»²»ÉúĞ§
+```csharp
+app.UseHttpReportsMiddlewire();
+```
+ConnectionStrings ÅäÖÃµÄÁ¬½Ó×Ö·û´®ºÍÊı¾İ¿âÀàĞÍÒªÒ»ÖÂ£¬È«²¿Íê³ÉÁËÒÔºó£¬ÎÒÃÇ¾Í¿ÉÒÔÊ¹ÓÃ Web ÏîÄ¿ÁË¡£
+
+ 
+
+
+
 
 ### ÈçºÎÊ¹ÓÃ
 
 ##### 1.ÔËĞĞ HttpReports.Web
  ÔÚgithubÏÂÔØ HttpReports.Web ÏîÄ¿£¬ÏîÄ¿µØÖ·£ºhttps://github.com/SpringLeee/HttpReportsWeb, WebÏîÄ¿ÊÇ.Net Core MVC ÏîÄ¿£¬Ê¹ÓÃÈı²ãÊµÏÖ¡£
  
- ![](https://images.cnblogs.com/cnblogs_com/myshowtime/1608752/o_a1.png)
+ ![](https://raw.githubusercontent.com/SpringLeee/HttpReportsWeb/master/HttpReports.Web/wwwroot/Content/img/git/a1.png)
  
  
  
@@ -47,7 +84,7 @@ HttpReports.Web£º https://github.com/SpringLeee/HttpReportsWeb
 
 ¼ÙÉèÎÒÃÇÊ¹ÓÃµÄÊÇSqlServer Êı¾İ¿â£¬ĞèÒªÏÈÅäÖÃConnectionStrings£¬È»ºóÊÖ¶¯´´½¨Êı¾İ¿â HttpReports£¨WebÏîÄ¿»á¸ù¾İÊı¾İ¿â×Ô¶¯´´½¨±í£¬²¢ÇÒÔÚµÚÒ»´ÎÔËĞĞµÄÊ±ºòMockÒ»Ğ©Êı¾İ £©£¬ÎÒÃÇÖ±½ÓF5ÔËĞĞÏîÄ¿£¬ Ã»ÓĞÎÊÌâµÄ»°£¬»áÖ±½ÓÌøµ½µÇÂ¼Ò³Ãæ£¬ÊäÈëÓÃ»§ÃûÃÜÂë admin 123456£¬µÇÂ¼ºó£¬Ó¦¸Ã¿ÉÒÔ¿´µ½ÏÂÃæµÄÒ³Ãæ
 
- ![](https://images.cnblogs.com/cnblogs_com/myshowtime/1608752/o_a3.png) 
+ ![](https://raw.githubusercontent.com/SpringLeee/HttpReportsWeb/master/HttpReports.Web/wwwroot/Content/img/git/a3.png) 
  
 ÏÖÔÚ¿ÉÒÔ¿´µ½ÏîÄ¿ÓĞ auth,payment£¬sms Èı¸ö·şÎñ½Úµã£¬·şÎñ½ÚµãµÄ¶¨ÒåÈçÏÂ£º
  
@@ -71,7 +108,7 @@ HttpReports ÊÊÓÃµ¥¸öAPIÏîÄ¿ºÍÍø¹ØÏîÄ¿£¬ÕâÀïÊ¹ÓÃ OcelotÍø¹ØÏîÄ¿ÎªÀı.
 
 ÎÒÃÇ´ò¿ªappsetting.json, ÅäÖÃÊı¾İ¿âÁ¬½Ó×Ö·û´®£¬ĞèÒªºÍWebÏîÄ¿Ò»ÖÂ
 
-![](https://images.cnblogs.com/cnblogs_com/myshowtime/1608752/o_a6.png)
+![](https://raw.githubusercontent.com/SpringLeee/HttpReportsWeb/master/HttpReports.Web/wwwroot/Content/img/git/a6.png)
 
 ###### NugetÒıÓÃHttpReports
 
@@ -102,7 +139,7 @@ HttpReports.Web µÄcore°æ±¾Îª 2.2
 
 ### ĞÔÄÜÊÂÏî
 
-HttpReports·Ç³£¼ò½à£¬Nuget°ü´óĞ¡²»µ½20k£¬²¢ÇÒÖĞ¼ä¼şÊÇÒì²½²Ù×÷£¬ËùÒÔ¶Ôapi½Ó¿ÚÇëÇóµÄÊ±¼ä¿ÉÒÔºöÂÔ£¬µ«ÊÇÓÉÓÚÊµÖÊÊ¹ÓÃµÄÊÇÊı¾İ¿â´æ´¢£¬ËùÒÔÒª×¢ÒâÖ±½ÓÇëÇóµ½Êı¾İ¿âµÄÑ¹Á¦¡£
+HttpReports ÖĞ¼ä¼şÊÇÒì²½²Ù×÷£¬ËùÒÔ¶Ôapi½Ó¿ÚÇëÇóµÄÊ±¼ä¿ÉÒÔºöÂÔ£¬µ«ÊÇÓÉÓÚÊµÖÊÊ¹ÓÃµÄÊÇÊı¾İ¿â´æ´¢£¬ËùÒÔÒª×¢ÒâÖ±½ÓÇëÇóµ½Êı¾İ¿âµÄÑ¹Á¦¡£
 
 ÏÂÃæÊÇÓÃPostMan×öµÄÒ»¸ö¼òµ¥²âÊÔ£º
 
@@ -138,4 +175,13 @@ HttpReports µÄÊµÏÖÔ­Àí²¢²»¸´ÔÓ£¬Èç¹ûÄãÏë¸øÄãµÄ WebAPIÏîÄ¿£¬¿ìËÙµÄÌí¼ÓÒ»Ì×·ÖÎöÏµÍ
 ### ÁªÏµ×÷Õß
  
  Èç¹ûÄúÔÚÊ¹ÓÃ¹ı³ÌÖĞÓöµ½ÁËÊ²Ã´ÎÊÌâ»òÕßÓĞºÃµÄ½¨ÒéµÄ»°£¬¿ÉÒÔÌí¼ÓÎÒµÄÎ¢ĞÅ£¬Ï£Íû¿ÉÒÔ°ïÖúµ½Äú
- ![](https://images.cnblogs.com/cnblogs_com/myshowtime/1608752/o_a9.jpg)
+ ![](https://raw.githubusercontent.com/SpringLeee/HttpReportsWeb/master/HttpReports.Web/wwwroot/Content/img/git/a9.jpg)
+ 
+ 
+
+ 
+
+
+
+
+
