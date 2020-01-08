@@ -157,12 +157,12 @@ namespace HttpReports
                 //TempConn.Close();
                 //TempConn.Dispose();
 
-                var TableInfo = con.QueryFirstOrDefault<int>("  Select count(1) from information_schema.tables where table_name ='requestinfo'; ");
+                var TableInfo = con.QueryFirstOrDefault<int>("  Select count(1) from information_schema.tables where table_name ='RequestInfo' and table_schema = 'HttpReports'; ");
 
                 if (TableInfo == 0)
                 {
                     con.Execute(@"
-                        CREATE TABLE `requestinfo` (
+                        CREATE TABLE `RequestInfo` (
                           `Id` int(11) NOT NULL auto_increment,
                           `Node` varchar(50) default NULL,
                           `Route` varchar(50) default NULL,
