@@ -103,14 +103,14 @@ namespace HttpReports
         {
             using (SqlConnection con = new SqlConnection(Constr))
             {
-                string TempConstr = Constr.Replace("httpreports", "master");
+                //string TempConstr = Constr.Replace("httpreports", "master");
 
-                string DB_id = con.QueryFirstOrDefault<string>(" SELECT DB_ID('HttpReports') ");
+                //string DB_id = con.QueryFirstOrDefault<string>(" SELECT DB_ID('HttpReports') ");
 
-                if (string.IsNullOrEmpty(DB_id))
-                {
-                    int i = con.Execute(" Create Database HttpReports ");
-                }
+                //if (string.IsNullOrEmpty(DB_id))
+                //{
+                //    int i = con.Execute(" Create Database HttpReports ");
+                //}
 
                 int TableCount = con.QueryFirstOrDefault<int>(" Use HttpReports; Select Count(*) from sysobjects where id = object_id('HttpReports.dbo.RequestInfo') ");
 
@@ -143,19 +143,19 @@ namespace HttpReports
         {
             using (MySqlConnection con = new MySqlConnection(Constr))
             {
-                string TempConstr = Constr.ToLower().Replace("httpreports", "sys");
+                //string TempConstr = Constr.ToLower().Replace("httpreports", "sys");
 
-                MySqlConnection TempConn = new MySqlConnection(TempConstr);
+                //MySqlConnection TempConn = new MySqlConnection(TempConstr);
 
-                var DbInfo = TempConn.QueryFirstOrDefault<string>("  show databases like 'httpreports'; ");
+                //var DbInfo = TempConn.QueryFirstOrDefault<string>("  show databases like 'httpreports'; ");
 
-                if (string.IsNullOrEmpty(DbInfo))
-                {
-                    TempConn.Execute(" create database HttpReports; ");
-                }
+                //if (string.IsNullOrEmpty(DbInfo))
+                //{
+                //    TempConn.Execute(" create database HttpReports; ");
+                //}
 
-                TempConn.Close();
-                TempConn.Dispose();
+                //TempConn.Close();
+                //TempConn.Dispose();
 
                 var TableInfo = con.QueryFirstOrDefault<int>("  Select count(1) from information_schema.tables where table_name ='requestinfo'; ");
 
