@@ -274,7 +274,7 @@ namespace HttpReports
         {
             string Default = _options.Node;
 
-            var arr = path.Substring(1).Split("/"); 
+            var arr = path.Substring(1).Split('/'); 
 
             if (arr.Length > 0 && arr[1] == _options.ApiPoint)
             {
@@ -295,7 +295,7 @@ namespace HttpReports
         {
             string route = string.Empty;
 
-            var list = path.Split("/");
+            var list = path.Split('/');
 
             route = path.Substring(path.IndexOf(_options.ApiPoint) + _options.ApiPoint.Length);
 
@@ -316,7 +316,7 @@ namespace HttpReports
         {
             string route = path;
 
-            var list = path.Split("/"); 
+            var list = path.Split('/'); 
 
             if (IsNumber(list.ToList().Last()))
             {
