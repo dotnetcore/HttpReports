@@ -284,11 +284,15 @@ https://github.com/SpringLeee/HttpReports
 
 [MIT](https://github.com/SpringLeee/HttpReports/blob/master/LICENSE "MIT")
 
+### 维护和更新
+ 
+  [ToDoList](https://github.com/SpringLeee/HttpReports/blob/master/ToDoList.md "ToDoList")
+
 ### 交流反馈
  
- 如果您在项目中使用了HttpReports，欢迎添加QQ群, 有想法 有建议，有bug 都欢迎大家来沟通， 也可以添加我的微信，希望可以帮助到您
+如果您在项目中使用了HttpReports，或者感兴趣的可以加入QQ群，大家一起沟通，有更新也会第一时间通知，也可以添加我的微信，希望可以帮助到您
  
- ![](https://images.cnblogs.com/cnblogs_com/myshowtime/1627540/o_a15.png) 
+ ![](https://images.cnblogs.com/cnblogs_com/myshowtime/1627540/o_a15.png)
  
  
 
