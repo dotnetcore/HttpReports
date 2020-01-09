@@ -31,8 +31,16 @@ namespace HttpReports
         public async Task InvokeAsync(HttpContext context)
         {
             stopwatch = new Stopwatch();
-            stopwatch.Start();
+            stopwatch.Start(); 
 
+            await Execute(context);  
+
+            stopwatch.Stop(); 
+            _httpReports.Invoke(context, stopwatch.Elapsed.TotalMilliseconds, _Configuration); 
+        } 
+
+        private async Task Execute(HttpContext context)
+        {
             try
             {
                 await _next(context);
@@ -40,12 +48,8 @@ namespace HttpReports
             catch (Exception ex)
             {
                 context.Response.StatusCode = 500;
-            } 
+            }  
+        }  
 
-            stopwatch.Stop(); 
-            
-            _httpReports.Invoke(context, stopwatch.Elapsed.TotalMilliseconds, _Configuration); 
-        } 
-    }
-
+    } 
 }
