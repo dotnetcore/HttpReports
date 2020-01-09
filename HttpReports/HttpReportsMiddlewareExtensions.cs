@@ -6,7 +6,7 @@ using System.Text;
 
 namespace HttpReports
 {
-    public static class HttpReportsMiddlewireExtensions
+    public static class HttpReportsMiddlewareExtensions
     { 
         /// <summary>
         /// 添加HttpReports中间件
@@ -14,7 +14,7 @@ namespace HttpReports
         /// <param name="services"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static IServiceCollection AddHttpReportsMiddlewire(this IServiceCollection services, WebType webType, DBType dbType,string Node = "Default")
+        public static IServiceCollection AddHttpReportsMiddleware(this IServiceCollection services, WebType webType, DBType dbType,string Node = "Default")
         {
             Action<HttpReportsOptions> options = (op) =>
             {
@@ -34,9 +34,9 @@ namespace HttpReports
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseHttpReportsMiddlewire(this IApplicationBuilder app)
-        {
-            return app.UseMiddleware<HttpReportsMiddlewire>();
+        public static IApplicationBuilder UseHttpReportsMiddleware(this IApplicationBuilder app)
+        { 
+            return app.UseMiddleware<HttpReportsMiddleware>();
         }
     }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace HttpReports
 {
-    public class HttpReportsMiddlewire
+    public class HttpReportsMiddleware
     {
         private RequestDelegate _next;
 
@@ -18,7 +18,7 @@ namespace HttpReports
 
         private IConfiguration _Configuration;
 
-        public HttpReportsMiddlewire(RequestDelegate next, IHttpReports httpReports,IConfiguration configuration)
+        public HttpReportsMiddleware(RequestDelegate next, IHttpReports httpReports,IConfiguration configuration)
         {
             this._next = next;
             this._httpReports = httpReports;
