@@ -33,7 +33,14 @@ namespace HttpReports
             stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            await _next(context);
+            try
+            {
+                await _next(context);
+            }
+            catch (Exception ex)
+            {
+                context.Response.StatusCode = 500;
+            } 
 
             stopwatch.Stop(); 
             
