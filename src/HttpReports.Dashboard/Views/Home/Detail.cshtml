@@ -1,0 +1,142 @@
+﻿
+@{
+    ViewData["Title"] = "Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+     List<string> nodes = ViewBag.nodes; 
+}
+
+
+
+<style type="text/css">
+
+    .pagination {
+        float: right;
+        margin: 0;
+        margin-top: -18px;
+    }
+
+    .pull-left {
+        margin-top: 20px;
+        padding-left: 20px;
+    }
+
+    .pull-right {
+        margin-top: 20px;
+        padding-right: 20px;
+    }
+
+    tbody {
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="panel panel-default">
+
+    <div class="panel-body" style="padding-left:30px;padding-right:30px;padding-top:30px;min-height:720px;padding-bottom:30px">
+
+        <div class="row" style="padding-left:13px;padding-right:13px">
+
+            <div class="panel panel-default">
+                <div class="panel-body shadow-box" style="padding-bottom:20px">
+
+                    <div class="form-inline form">
+
+                        <div class="col-sm-12" style="margin-top:10px">
+
+                            <b> <b><i class="glyphicon glyphicon-signal"></i> 服务节点</b></b>
+
+                            <span class="glyphicon glyphicon-info-sign serviceTip" style="font-size:20px;top:0.2em;cursor:pointer"></span>
+
+
+
+                            @*<button type="button" onclick="select_all(this)" style="width:60px;margin-right:8px;margin-left:8px" class="btn btn-success btn-xs">全选</button>
+
+                        <button type="button" onclick="select_reverse(this)" style="width:60px;margin-right:8px;" class="btn btn-success btn-xs">反选</button>*@
+
+                        </div>
+
+
+                        <div class="col-sm-12 node-row" style="margin-top:8px;margin-bottom:8px;min-height:44px">
+
+                            @foreach (var item in nodes)
+                            {
+                                <button onclick="check_node(this)" style="width:120px;margin-left:20px;border-radius:4px;" class="btn btn-info service-button">@item</button>
+                            }
+
+                        </div>
+
+                    </div>
+
+                    <div class="form-inline form" style="margin-bottom:30px;">
+
+                        <div class="col-sm-3">
+                            <label class="form-label">开始时间</label>
+                            <input type="text" class="form-control laydate start">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <label class="form-label">结束时间</label>
+                            <input type="text" class="form-control laydate end">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <label class="form-label">请求地址</label>
+                            <input placeholder="支持模糊查询" type="text" class="form-control laydate url">
+                        </div>
+
+                        <div class="col-sm-3">
+                            <label class="form-label">IP地址</label>
+                            <input placeholder="" type="text" class="form-control laydate ipadress">
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-12 timeSelect" style="margin-top:20px">
+
+                        <button type="button" onclick="timeChange(this)" data-id="1" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">今天</button>
+
+                        <button type="button" onclick="timeChange(this)" data-id="2" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">昨天</button>
+
+                        <button type="button" onclick="timeChange(this)" data-id="3" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">本周</button>
+
+                        <button type="button" onclick="timeChange(this)" data-id="4" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">本月</button>
+
+                    </div>
+
+                    <div class="col-sm-12">
+
+                        <div class="col-sm-3" style="padding-left:0">
+
+                            <button style="min-width:120px;" onclick="QueryClick(this)" class="btn btn-info btn-search">查询</button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="panel panel-default">
+                <div class="panel-body shadow-box" style="padding-bottom:20px">
+
+
+                    <div class="col-sm-12" style="margin-top:24px;">
+
+                        <table id="TableData" class="table table-bordered" style="background-color:#FFF;width:100%;margin:0 auto; clear:both;border-top:2px solid #67c2ef;"></table>
+
+                    </div>
+
+                </div>
+            </div>
+           
+
+        </div>
+
+            </div>
+
+        </div>
+
+ 
+<script src="/Content/page/detail.js?ver=1.0.1"></script>

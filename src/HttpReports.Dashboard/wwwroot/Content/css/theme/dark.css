@@ -1,0 +1,238 @@
+﻿.sidebar {
+    background-color: #2d3035 !important;
+}
+
+.sidebar-footer {
+    background-color: #2d3035 !important;
+}
+
+.logo_title {
+    color:#ffffff;
+}
+
+.sidebar-menu .active a {
+    background: #434446 !important;
+    color: #FFF !important;
+}
+
+.sidebar ul.nav.nav-sidebar li.active {
+    background: #434446 !important;
+    color: #FFF !important;
+}
+
+.sidebar-menu .active i {
+    color: #FFF !important;
+}
+
+
+.content {
+    background-color: #22252a !important;
+}
+
+.container-fluid {
+    background-color: #2d3035 !important;
+}
+
+.main {
+    background-color: #22252a;
+}
+.panel-body {
+    background-color: #34363a !important;
+}
+.panel.panel-default {
+    border-top:none !important;
+}
+
+.panel .panel-body {
+     border:none !important;
+}
+.shadow-box {
+    color:#d0d0d0 !important;
+    background-color: #2d3035 !important;
+    box-shadow: 6px 6px 10px #22252a !important;
+}
+
+.navbar .navbar-nav li .dropdown-menu li a {
+    background-color: #434446 !important;
+    color:#FFF;
+}
+
+.navbar .navbar-nav li .dropdown-menu li i {
+    color: #FFF;
+}
+
+.navbar .navbar-nav li .dropdown-menu li {
+    border-bottom: none;
+}
+
+.navbar .navbar-nav li .dropdown-menu {
+    border: none !important;
+}
+
+.table-bordered {
+    background-color: #2d3035 !important;
+    color: #a0a0a0;
+}
+
+    .table-bordered td, th {
+        background-color: #2d3035 !important;
+        border: 1px solid #525151 !important;
+    }
+
+.page-list .btn-group button {
+    background-color: #434446 !important;
+    color: #d0d0d0;
+}
+
+.page-list .dropdown-menu {
+    background-color: #434446 !important;
+    
+}
+
+    .page-list .dropdown-menu a {
+        color: #d0d0d0 !important;
+    }
+
+.pagination-detail {
+    color: #d0d0d0 !important;
+}
+
+.pagination li a {
+    background-color: #434446 !important;
+    color: #d0d0d0;
+}
+
+    .pagination li a:hover {
+        color: #d0d0d0;
+    }
+
+
+
+.pagination .active a {
+    background-color: #4b92b5 !important;
+    color: #FFF;
+    border-color: #FFF !important;
+}
+
+.layui-laydate-content table thead th {
+    background-color: black !important;
+    border: none !important;
+    color: #FFF !important;
+}
+
+.layui-laydate-header {
+    background-color: black !important;
+    border: none !important;
+    color: #FFF !important;
+}
+
+.layui-laydate-content {
+    background-color: black !important;
+    border: none !important;
+}
+
+
+.layui-laydate-footer {
+    background-color: black !important;
+    border: none !important;
+}
+
+select {
+    background-color: #434446 !important;
+    color: #d0d0d0 !important;
+    border: none !important;
+}
+
+.laydate-year-list, .laydate-month-list {
+    background-color: black !important;
+}
+
+.breadcrumb {
+    background-color: #434446 !important;
+    color: #d0d0d0 !important;
+}
+
+.wizard-type1 ul.steps li.active a {
+    
+    color: #FFF !important;
+}
+
+.wizard-type1 ul.steps li a {
+    color: #d0d0d0 !important;
+}
+
+.tab-content {
+    color: #d0d0d0 !important;
+}
+
+.actions {
+    background-color: #34363a !important;
+    border:none !important;
+}
+
+.task_content {
+    color: #d0d0d0 !important;
+}
+
+.tab-pane {
+    border: 1px solid #c7c7c7 !important;
+}
+
+.goup-container {
+    background-color: #67c2ef !important;
+}
+
+
+.teal-bg {
+    background-color: #97d3c56b !important;
+}
+
+.blue-bg {
+    background-color: #57889c73 !important;
+}
+
+.purple-bg {
+    background-color: #af91e173 !important;
+}
+
+.orange-bg {
+    background-color: #f4b16287 !important;
+}
+
+.form-control {
+    background-color: #272727 !important;
+    color: #d0d0d0 !important;
+    border: 1px solid #636363 !important;
+}
+
+    .form-control:focus {
+        border: 1px solid #abc2dc !important; 
+    }
+
+
+input::-webkit-input-placeholder {
+    color: #848484 !important;
+}
+
+input::-moz-placeholder {  
+    color: #848484 !important;
+}
+
+input:-moz-placeholder {  
+    color: #848484 !important;
+}
+
+input:-ms-input-placeholder {  
+    color: #848484 !important;
+}
+
+.alert-info {
+    background-color: #393e4a !important;
+    color: #e0dbdb !important;
+}
+
+.index_time_range {
+    color:#ffffff !important;
+}
+
+ 
