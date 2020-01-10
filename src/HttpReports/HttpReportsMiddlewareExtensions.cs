@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 
 namespace HttpReports
 {
@@ -14,7 +15,7 @@ namespace HttpReports
         /// <param name="services"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static IServiceCollection AddHttpReportsMiddleware(this IServiceCollection services, WebType webType, DBType dbType,string Node = "Default")
+        public static IServiceCollection AddHttpReportsMiddleware(this IServiceCollection services, IConfiguration configuration, WebType webType, DBType dbType,string Node = "Default")
         {
             Action<HttpReportsOptions> options = (op) =>
             {
@@ -24,8 +25,8 @@ namespace HttpReports
             };   
 
             services.AddOptions();
-            services.Configure(options);  
-
+            services.Configure(options);
+            HttpReportsMiddleware.Configuration = configuration;
             return services.AddTransient<IHttpReports, DefaultHttpReports>();
         }  
 

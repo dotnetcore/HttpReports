@@ -16,15 +16,13 @@ namespace HttpReports
 
         private IHttpReports _httpReports;
 
-        private IConfiguration _Configuration;
+        public  static IConfiguration Configuration;
 
-        public HttpReportsMiddleware(RequestDelegate next, IHttpReports httpReports,IConfiguration configuration)
+        public HttpReportsMiddleware(RequestDelegate next, IHttpReports httpReports)
         {
             this._next = next;
             this._httpReports = httpReports;
-            this._Configuration = configuration;
-
-            this._httpReports.Init(configuration);
+            this._httpReports.Init(Configuration);
 
         }
 
@@ -36,7 +34,7 @@ namespace HttpReports
             await Execute(context);  
 
             stopwatch.Stop(); 
-            _httpReports.Invoke(context, stopwatch.Elapsed.TotalMilliseconds, _Configuration); 
+            _httpReports.Invoke(context, stopwatch.Elapsed.TotalMilliseconds, Configuration); 
         } 
 
         private async Task Execute(HttpContext context)
