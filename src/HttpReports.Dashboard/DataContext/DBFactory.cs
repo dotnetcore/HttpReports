@@ -11,17 +11,17 @@ using System.Threading.Tasks;
 namespace HttpReports.Dashboard.DataContext
 {
     public class DBFactory
-    {  
-        public IConfiguration _configuration; 
+    {
+        public IConfiguration _configuration;
 
         public DBFactory(IConfiguration configuration)
         {
-            _configuration = configuration; 
-        } 
+            _configuration = configuration;
+        }
         public SqlConnection GetSqlConnection()
         {
             return new SqlConnection(_configuration.GetConnectionString("HttpReports"));
-        } 
+        }
 
         public MySqlConnection GetMySqlConnection()
         {
@@ -29,42 +29,34 @@ namespace HttpReports.Dashboard.DataContext
         }
 
         public void InitDB()
-        { 
+        {
             string DBType = _configuration["HttpReportsConfig:DBType"];
 
             string Constr = _configuration.GetConnectionString("HttpReports");
 
-            if (string.IsNullOrEmpty(DBType) || string.IsNullOrEmpty(Constr) )
-            {  
-                throw new Exception("数据库类型配置错误!"); 
+            if (string.IsNullOrEmpty(DBType) || string.IsNullOrEmpty(Constr))
+            {
+                throw new Exception("数据库类型配置错误!");
             }
 
             try
-            { 
+            {
                 if (DBType.ToLower() == "sqlserver") InitSqlServer(Constr);
                 if (DBType.ToLower() == "mysql") InitMySql(Constr);
 
             }
             catch (Exception ex)
-            { 
+            {
                 throw new Exception("数据库初始化失败！错误信息:" + ex.Message);
-            } 
+            }
 
         }
 
         private void InitSqlServer(string Constr)
-        { 
+        {
             using (SqlConnection con = new SqlConnection(Constr))
             {
-                //string TempConstr = Constr.Replace("httpreports", "master");
-
-                //string DB_id = con.QueryFirstOrDefault<string>(" SELECT DB_ID('HttpReports') ");
-
-                //if (string.IsNullOrEmpty(DB_id))
-                //{
-                //    int i = con.Execute(" Create Database HttpReports ");
-                //}
-
+                CreateDataBaseSqlServer(Constr);
 
                 // 检查RequestInfo表
                 if (con.QueryFirstOrDefault<int>(" Select Count(*) from sysobjects where id = object_id('HttpReports.dbo.RequestInfo') ") == 0)
@@ -93,7 +85,7 @@ namespace HttpReports.Dashboard.DataContext
                     ");
 
                     //new MockData().MockSqlServer(Constr); 
-                } 
+                }
 
                 // 检查Job表
                 if (con.QueryFirstOrDefault<int>("Select Count(*) from sysobjects where id = object_id('HttpReports.dbo.Job')") == 0)
@@ -131,28 +123,16 @@ namespace HttpReports.Dashboard.DataContext
 
 
 
-                      ");   
-                }  
-            } 
+                      ");
+                }
+            }
         }
 
         private void InitMySql(string Constr)
-        {  
+        {
             using (MySqlConnection con = new MySqlConnection(Constr))
             {
-                //string TempConstr = Constr.ToLower().Replace("httpreports", "sys");
-
-                //MySqlConnection TempConn = new MySqlConnection(TempConstr);
-
-                //var DbInfo = TempConn.QueryFirstOrDefault<string>("  show databases like 'httpreports'; ");
-
-                //if (string.IsNullOrEmpty(DbInfo))
-                //{
-                //    TempConn.Execute(" create database HttpReports; ");
-                //}
-
-                //TempConn.Close();
-                //TempConn.Dispose(); 
+                CreateDataBaseMySql(Constr); 
 
                 if (con.QueryFirstOrDefault<int>("  Select count(1) from information_schema.tables where table_name ='RequestInfo' and table_schema = 'HttpReports'; ") == 0)
                 {
@@ -170,7 +150,7 @@ namespace HttpReports.Dashboard.DataContext
                           PRIMARY KEY  (`Id`)
                         ) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;  ");
 
-                   //new MockData().MockMySql(Constr);
+                    //new MockData().MockMySql(Constr);
 
                 }
 
@@ -201,11 +181,68 @@ namespace HttpReports.Dashboard.DataContext
                               PRIMARY KEY (`Id`)
                             ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci; 
 
-                     "); 
+                     ");
 
+                }
+
+            }
+        }
+
+        private void CreateDataBaseSqlServer(string Constr)
+        {
+            if (string.IsNullOrEmpty(Constr))
+            {
+                return; 
+            }
+
+            string newStr = string.Empty;
+
+            Constr.ToLower().Split(';').ToList().ForEach(x => {
+
+                if (!x.Contains("database"))
+                {
+                    newStr = newStr + x + ";";
                 } 
+            });
 
+            using (SqlConnection connection = new SqlConnection(newStr))
+            {
+                string DB_id = connection.QueryFirstOrDefault<string>(" SELECT DB_ID('HttpReports') ");
+
+                if (string.IsNullOrEmpty(DB_id))
+                {
+                    connection.Execute(" Create Database HttpReports; ");
+                } 
             }  
-        }  
+        } 
+ 
+        private void CreateDataBaseMySql(string Constr)
+        {
+            if (string.IsNullOrEmpty(Constr))
+            {
+                return;
+            }
+
+            string newStr = string.Empty;
+
+            Constr.ToLower().Split(';').ToList().ForEach(x => {
+
+                if (!x.Contains("database"))
+                {
+                    newStr = newStr + x + ";";
+                }  
+            }); 
+
+            using (MySqlConnection TempConn = new MySqlConnection(newStr))
+            {
+                var DbInfo = TempConn.QueryFirstOrDefault<string>(" show databases like 'HttpReports'; ");
+
+                if (string.IsNullOrEmpty(DbInfo))
+                {
+                    TempConn.Execute(" create database HttpReports; ");
+                }  
+            }  
+        } 
+
     }  
 }

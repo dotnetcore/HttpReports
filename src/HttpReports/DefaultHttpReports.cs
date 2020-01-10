@@ -103,14 +103,7 @@ namespace HttpReports
         {
             using (SqlConnection con = new SqlConnection(Constr))
             {
-                //string TempConstr = Constr.Replace("httpreports", "master");
-
-                //string DB_id = con.QueryFirstOrDefault<string>(" SELECT DB_ID('HttpReports') ");
-
-                //if (string.IsNullOrEmpty(DB_id))
-                //{
-                //    int i = con.Execute(" Create Database HttpReports ");
-                //}
+                CreateDataBaseSqlServer(Constr);
 
                 int TableCount = con.QueryFirstOrDefault<int>(" Use HttpReports; Select Count(*) from sysobjects where id = object_id('HttpReports.dbo.RequestInfo') ");
 
@@ -143,19 +136,7 @@ namespace HttpReports
         {
             using (MySqlConnection con = new MySqlConnection(Constr))
             {
-                //string TempConstr = Constr.ToLower().Replace("httpreports", "sys");
-
-                //MySqlConnection TempConn = new MySqlConnection(TempConstr);
-
-                //var DbInfo = TempConn.QueryFirstOrDefault<string>("  show databases like 'httpreports'; ");
-
-                //if (string.IsNullOrEmpty(DbInfo))
-                //{
-                //    TempConn.Execute(" create database HttpReports; ");
-                //}
-
-                //TempConn.Close();
-                //TempConn.Dispose();
+                CreateDataBaseMySql(Constr);
 
                 var TableInfo = con.QueryFirstOrDefault<int>("  Select count(1) from information_schema.tables where table_name ='RequestInfo' and table_schema = 'HttpReports'; ");
 
@@ -177,7 +158,64 @@ namespace HttpReports
 
                 }
             }
-        } 
+        }
+
+
+        private void CreateDataBaseSqlServer(string Constr)
+        {
+            if (string.IsNullOrEmpty(Constr))
+            {
+                return;
+            }
+
+            string newStr = string.Empty;
+
+            Constr.ToLower().Split(';').ToList().ForEach(x => {
+
+                if (!x.Contains("database"))
+                {
+                    newStr = newStr + x + ";";
+                }
+            });
+
+            using (SqlConnection connection = new SqlConnection(newStr))
+            {
+                string DB_id = connection.QueryFirstOrDefault<string>(" SELECT DB_ID('HttpReports') ");
+
+                if (string.IsNullOrEmpty(DB_id))
+                {
+                    connection.Execute(" Create Database HttpReports; ");
+                }
+            }
+        }
+
+        private void CreateDataBaseMySql(string Constr)
+        {
+            if (string.IsNullOrEmpty(Constr))
+            {
+                return;
+            }
+
+            string newStr = string.Empty;
+
+            Constr.ToLower().Split(';').ToList().ForEach(x => {
+
+                if (!x.Contains("database"))
+                {
+                    newStr = newStr + x + ";";
+                }
+            });
+
+            using (MySqlConnection TempConn = new MySqlConnection(newStr))
+            {
+                var DbInfo = TempConn.QueryFirstOrDefault<string>(" show databases like 'HttpReports'; ");
+
+                if (string.IsNullOrEmpty(DbInfo))
+                {
+                    TempConn.Execute(" create database HttpReports; ");
+                }
+            }
+        }
 
 
         /// <summary>
