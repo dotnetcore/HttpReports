@@ -1,8 +1,0 @@
-G:\Lee\HttpReports\src\HttpReports\bin\Release\netstandard2.0\HttpReports.deps.json
-G:\Lee\HttpReports\src\HttpReports\bin\Release\netstandard2.0\HttpReports.dll
-G:\Lee\HttpReports\src\HttpReports\bin\Release\netstandard2.0\HttpReports.pdb
-G:\Lee\HttpReports\src\HttpReports\obj\Release\netstandard2.0\HttpReports.csprojAssemblyReference.cache
-G:\Lee\HttpReports\src\HttpReports\obj\Release\netstandard2.0\HttpReports.AssemblyInfoInputs.cache
-G:\Lee\HttpReports\src\HttpReports\obj\Release\netstandard2.0\HttpReports.AssemblyInfo.cs
-G:\Lee\HttpReports\src\HttpReports\obj\Release\netstandard2.0\HttpReports.dll
-G:\Lee\HttpReports\src\HttpReports\obj\Release\netstandard2.0\HttpReports.pdb
