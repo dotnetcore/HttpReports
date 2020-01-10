@@ -1,26 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
-    <Version>1.0.9</Version>
-    <Company>SpringLee</Company>
-    <Authors>SpringLee</Authors>
-    <Product />
-    <Description>HttpReports 是.Net Core 下的Web组件，通过引用中间件的形式使用，使用HttpReports可以快速的搭建.Net Core 下的  统计，分析，图表，监控的站点。
-支持版本：.Net Core 2.2 或者以上版本；
-支持类型：WebAPI ，Gataway网关，MVC 项目；
-支持数据库类型：SqlServer, MySql;
-github: https://github.com/SpringLeee/HttpReports
-
-
-
-
-
-</Description>
-    <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
-    <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
-    <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>
-    <Copyright>https://github.com/SpringLeee/HttpReports/blob/master/LICENSE</Copyright>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,7 +9,7 @@ github: https://github.com/SpringLeee/HttpReports
     <PackageReference Include="Dapper.Contrib" Version="2.0.30" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.0" />
     <PackageReference Include="MySql.Data" Version="8.0.18" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.0" />
   </ItemGroup>
