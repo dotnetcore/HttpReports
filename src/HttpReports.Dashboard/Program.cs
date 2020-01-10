@@ -11,7 +11,7 @@ namespace HttpReports.Dashboard
             CreateHostBuilder(args).Build().Run();
         }
 
-#if NETCOREAPP2_1
+#if NETCOREAPP2_1 || NETCOREAPP2_2
 
         public static IWebHostBuilder CreateHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
