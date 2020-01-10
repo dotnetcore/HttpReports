@@ -1,9 +1,10 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace HttpReports
 {
@@ -15,27 +16,26 @@ namespace HttpReports
 
         private IHttpReports _httpReports;
 
-        private IConfiguration _Configuration;
+        public  static IConfiguration Configuration;
 
-        public HttpReportsMiddleware(RequestDelegate next, IHttpReports httpReports, IConfiguration configuration)
+        public HttpReportsMiddleware(RequestDelegate next, IHttpReports httpReports)
         {
             this._next = next;
             this._httpReports = httpReports;
-            this._Configuration = configuration;
+            this._httpReports.Init(Configuration);
 
-            this._httpReports.Init(configuration);
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
             stopwatch = new Stopwatch();
-            stopwatch.Start();
+            stopwatch.Start(); 
 
-            await Execute(context);
+            await Execute(context);  
 
-            stopwatch.Stop();
-            _httpReports.Invoke(context, stopwatch.Elapsed.TotalMilliseconds, _Configuration);
-        }
+            stopwatch.Stop(); 
+            _httpReports.Invoke(context, stopwatch.Elapsed.TotalMilliseconds, Configuration); 
+        } 
 
         private async Task Execute(HttpContext context)
         {
@@ -46,7 +46,8 @@ namespace HttpReports
             catch (Exception ex)
             {
                 context.Response.StatusCode = 500;
-            }
-        }
-    }
+            }  
+        }  
+
+    } 
 }

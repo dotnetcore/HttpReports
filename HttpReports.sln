@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.29411.108
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{BAF971BD-0546-4610-A9F6-6F6DC68E6FE7}"
+	ProjectSection(SolutionItems) = preProject
+		src\LICENSE = src\LICENSE
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports", "src\HttpReports\HttpReports.csproj", "{0A9D3AD0-3747-47CD-AD7C-4CB907E65C04}"
 EndProject
