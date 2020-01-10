@@ -1,6 +1,6 @@
-﻿@{ 
-    var user = ViewContext.HttpContext.Request.Cookies["login_info"];  
-} 
+﻿@{
+    var user = ViewContext.HttpContext.Request.Cookies["login_info"];
+}
 
 <!DOCTYPE html>
 <html lang="zh-cn">
@@ -26,18 +26,14 @@
     <link href="https://cdn.bootcss.com/tippy.js/3.4.1/tippy.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/tippy.js/3.4.1/tippy.all.js"></script>
 
-
     <script src="https://cdn.bootcss.com/bootstrap-table/1.14.2/bootstrap-table.js"></script>
     <script src="/Content/assets/js/bootstrap-table-zh-CN.js"></script>
-
-
 
     <script src="/Content/assets/js/bootstrap.min.js"></script>
 
     <script src="https://cdn.bootcss.com/echarts/4.3.0/echarts.min.js"></script>
     <script src="https://www.echartsjs.com/zh/asset/theme/macarons.js"></script>
     <script src="https://www.echartsjs.com/zh/asset/theme/dark.js"></script>
-
 
     <link href="https://cdn.bootcss.com/html5tooltipsjs/1.7.3/html5tooltips.min.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/html5tooltipsjs/1.7.3/html5tooltips.min.js"></script>
@@ -60,7 +56,6 @@
     <script src="/Content/page/main.js?ver=1.0.1"></script>
 
     <link rel="icon" href="/Content/assets/img/img.ico" type="image/x-icon" />
-
 </head>
 
 <body>
@@ -74,9 +69,6 @@
                 <li class="visible-md visible-lg"><a href="#" id="main-menu-toggle"><i class="fa fa-th-large"></i></a></li>
                 <li class="visible-xs visible-sm"><a href="#" id="sidebar-menu"><i class="fa fa-navicon"></i></a></li>
             </ul>
-
-
-
 
             <ul class="nav navbar-nav navbar-right">
 
@@ -92,15 +84,12 @@
                     </ul>
                 </li>
 
-
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img style="display:none" class="user-avatar" src="/Content/assets/img/avatar.jpg" alt="user-mail">@user</a>
                 </li>
                 <li><a href="/User/Logout"><i class="fa fa-power-off"></i></a></li>
             </ul>
-
         </div>
-
     </div>
     <!-- end: Header -->
 
@@ -126,37 +115,25 @@
                             <li data-title="HomePage1" class=""><a href="/Home/Detail"><i class="fa fa-bars"></i><span class="text">请求列表</span></a></li>
 
                             <li data-title="HomePage1" class=""><a href="/Home/Monitor"><i class="fa fa-rocket"></i><span class="text">预警监控</span></a></li>
-
                         </ul>
-
                     </div>
                 </div>
                 <div class="sidebar-footer">
-
-
                 </div>
-
             </div>
             <!-- end: Main Menu -->
             <!-- start: Content -->
             <div class="main" style="width:98%;margin:20px auto">
 
                 @RenderBody()
-
             </div>
             <!-- end: Content -->
             <br><br><br>
-
-
         </div><!--/container-->
-
     </div>
 
     <div class="clearfix"></div>
 
     <input type="hidden" id="meun" value="@(ViewData["menu"] == null ? "HomePage":ViewData["menu"] )" />
-
-   
-
 </body>
 </html>

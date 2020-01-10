@@ -1,9 +1,5 @@
 ﻿using Quartz;
 using Quartz.Impl;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace HttpReports.Dashboard.Job
 {
@@ -27,13 +23,12 @@ namespace HttpReports.Dashboard.Job
             var cron = new T().cron;
 
             if (CronExpression.IsValidExpression(cron))
-            {  
-                var job = JobBuilder.Create<T>().Build();   
+            {
+                var job = JobBuilder.Create<T>().Build();
 
-                var trigger = TriggerBuilder.Create().WithCronSchedule(cron).Build();  
+                var trigger = TriggerBuilder.Create().WithCronSchedule(cron).Build();
 
-                scheduler.ScheduleJob(job, trigger);  
-
+                scheduler.ScheduleJob(job, trigger);
             }
         }
 

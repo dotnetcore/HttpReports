@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace HttpReports.Dashboard.Implements
 {
@@ -15,12 +12,9 @@ namespace HttpReports.Dashboard.Implements
             }
             catch (Exception ex)
             {
-
                 return 0;
-                
-            }  
+            }
         }
-
 
         public static bool IsNumber(this string str)
         {
@@ -32,14 +26,11 @@ namespace HttpReports.Dashboard.Implements
             }
             catch (Exception ex)
             {
-                return false; 
+                return false;
             }
 
             return true;
-        
         }
-
-      
 
         public static double ToDouble(this string str)
         {
@@ -49,11 +40,9 @@ namespace HttpReports.Dashboard.Implements
             }
             catch (Exception)
             {
-                return 0; 
-            } 
-        
+                return 0;
+            }
         }
-
 
         public static bool IsEmpty(this string str)
         {
@@ -67,7 +56,7 @@ namespace HttpReports.Dashboard.Implements
                 return true;
             }
 
-            return false; 
+            return false;
         }
 
         public static DateTime ToDateTime(this string str)
@@ -75,12 +64,11 @@ namespace HttpReports.Dashboard.Implements
             try
             {
                 return Convert.ToDateTime(str);
-
             }
             catch (Exception)
             {
-                return DateTime.Now; 
-            } 
-        } 
+                return DateTime.Now;
+            }
+        }
     }
 }

@@ -1,12 +1,11 @@
-﻿using Dapper;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using MySql.Data.MySqlClient;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
+
+using Dapper;
+
+using Microsoft.Extensions.Configuration;
+
+using MySql.Data.MySqlClient;
 
 namespace HttpReports.Dashboard.DataContext
 {
@@ -18,6 +17,7 @@ namespace HttpReports.Dashboard.DataContext
         {
             _configuration = configuration;
         }
+
         public SqlConnection GetSqlConnection()
         {
             return new SqlConnection(_configuration.GetConnectionString("HttpReports"));
@@ -43,7 +43,6 @@ namespace HttpReports.Dashboard.DataContext
             {
                 if (DBType.ToLower() == "sqlserver") InitSqlServer(Constr);
                 if (DBType.ToLower() == "mysql") InitMySql(Constr);
-
             }
             catch (Exception ex)
             {
@@ -61,11 +60,11 @@ namespace HttpReports.Dashboard.DataContext
                 // 检查RequestInfo表
                 if (con.QueryFirstOrDefault<int>(" Select Count(*) from sysobjects where id = object_id('HttpReports.dbo.RequestInfo') ") == 0)
                 {
-                    con.Execute(@"  
+                    con.Execute(@"
 
                         USE [HttpReports];
-                        SET ANSI_NULLS ON; 
-                        SET QUOTED_IDENTIFIER ON; 
+                        SET ANSI_NULLS ON;
+                        SET QUOTED_IDENTIFIER ON;
                         CREATE TABLE [dbo].[RequestInfo](
 	                        [Id] [int] IDENTITY(1,1) NOT NULL,
 	                        [Node] [nvarchar](50) NOT NULL,
@@ -76,7 +75,7 @@ namespace HttpReports.Dashboard.DataContext
 	                        [StatusCode] [int] NOT NULL,
 	                        [IP] [nvarchar](50) NOT NULL,
 	                        [CreateTime] [datetime] NOT NULL,
-                         CONSTRAINT [PK_RequestInfo] PRIMARY KEY CLUSTERED 
+                         CONSTRAINT [PK_RequestInfo] PRIMARY KEY CLUSTERED
                         (
 	                        [Id] ASC
                         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -94,7 +93,7 @@ namespace HttpReports.Dashboard.DataContext
 
                             USE [HttpReports];
                             SET ANSI_NULLS ON;
-                            SET QUOTED_IDENTIFIER ON; 
+                            SET QUOTED_IDENTIFIER ON;
                             CREATE TABLE [dbo].[Job](
 	                            [Id] [int] IDENTITY(1,1) NOT NULL,
 	                            [Title] [nvarchar](50) NOT NULL,
@@ -115,7 +114,7 @@ namespace HttpReports.Dashboard.DataContext
 	                            [CreateTime] [datetime] NULL,
                                 [RequestStatus] [int] NOT NULL,
                                 [RequestCount] [int] NOT NULL,
-                             CONSTRAINT [PK_Job] PRIMARY KEY CLUSTERED 
+                             CONSTRAINT [PK_Job] PRIMARY KEY CLUSTERED
                             (
 	                            [Id] ASC
                             )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -151,7 +150,6 @@ namespace HttpReports.Dashboard.DataContext
                         ) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;  ");
 
                     //new MockData().MockMySql(Constr);
-
                 }
 
                 if (con.QueryFirstOrDefault<int>(" Select count(1) from information_schema.tables where table_name ='Job' and table_schema = 'HttpReports'; ") == 0)

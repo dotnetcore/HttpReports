@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+
 using HttpReports.Dashboard.Models;
 using HttpReports.Dashboard.Services;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace HttpReports.Dashboard.Controllers
@@ -52,7 +51,6 @@ namespace HttpReports.Dashboard.Controllers
                     Mobiles = item.Mobiles,
                     Status = item.Status,
                     Node = item.Servers
-
                 });
             }
 
@@ -62,7 +60,7 @@ namespace HttpReports.Dashboard.Controllers
         }
 
         public IActionResult AddMonitor(int Id = 0)
-        { 
+        {
             var nodes = _dataService.GetNodes();
 
             ViewBag.nodes = nodes;
@@ -71,7 +69,6 @@ namespace HttpReports.Dashboard.Controllers
 
             return View();
         }
-
 
         public IActionResult Detail()
         {
@@ -86,6 +83,5 @@ namespace HttpReports.Dashboard.Controllers
         {
             return View();
         }
-
     }
 }
