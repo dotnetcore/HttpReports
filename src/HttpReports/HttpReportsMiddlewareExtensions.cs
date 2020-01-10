@@ -8,12 +8,15 @@ using Microsoft.Extensions.Configuration;
 namespace HttpReports
 {
     public static class HttpReportsMiddlewareExtensions
-    { 
+    {
         /// <summary>
         /// 添加HttpReports中间件
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="options"></param>
+        /// <param name="services">The services.</param>
+        /// <param name="configuration">The configuration.</param>
+        /// <param name="webType">Type of the web.</param>
+        /// <param name="dbType">Type of the database.</param>
+        /// <param name="Node">The node.</param>
         /// <returns></returns>
         public static IServiceCollection AddHttpReportsMiddleware(this IServiceCollection services, IConfiguration configuration, WebType webType, DBType dbType,string Node = "Default")
         {
