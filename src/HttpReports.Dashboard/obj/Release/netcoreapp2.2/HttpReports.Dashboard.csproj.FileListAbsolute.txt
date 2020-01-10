@@ -9,7 +9,6 @@ G:\Lee\HttpReports\src\HttpReports.Dashboard\bin\Release\netcoreapp2.2\HttpRepor
 G:\Lee\HttpReports\src\HttpReports.Dashboard\bin\Release\netcoreapp2.2\HttpReports.Dashboard.pdb
 G:\Lee\HttpReports\src\HttpReports.Dashboard\bin\Release\netcoreapp2.2\HttpReports.Dashboard.Views.dll
 G:\Lee\HttpReports\src\HttpReports.Dashboard\bin\Release\netcoreapp2.2\HttpReports.Dashboard.Views.pdb
-G:\Lee\HttpReports\src\HttpReports.Dashboard\obj\Release\netcoreapp2.2\HttpReports.Dashboard.csprojAssemblyReference.cache
 G:\Lee\HttpReports\src\HttpReports.Dashboard\obj\Release\netcoreapp2.2\HttpReports.Dashboard.RazorAssemblyInfo.cache
 G:\Lee\HttpReports\src\HttpReports.Dashboard\obj\Release\netcoreapp2.2\HttpReports.Dashboard.RazorAssemblyInfo.cs
 G:\Lee\HttpReports\src\HttpReports.Dashboard\obj\Release\netcoreapp2.2\HttpReports.Dashboard.AssemblyInfoInputs.cache
