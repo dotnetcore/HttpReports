@@ -242,7 +242,7 @@ HttpReports 监控预警主要针对以下几点：
 
 ### 项目环境基本要求
 
-使用HttpReports中间件的.Net Core 版本 2.2, 3.0, 3.1;
+使用HttpReports中间件的.Net Core 版本 2.0 及以上版本
 
 HttpReports.Web 的core版本为 2.2 , 3.0 
 
