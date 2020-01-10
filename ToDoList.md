@@ -9,7 +9,7 @@
 - [ ] 考虑支持.Net Framework 版本
 - [ ] 数据库目前固定使用 HttpReports，修改为可灵活配置数据库
 - [ ] 支持Docker
-- [ ] 支持.Net Core2.1
+- [x] 支持.Net Core2.1 和 core 2.0
 - [ ] 支持 ES, 支持 Oracle
 
 #### 还在考虑中 
