@@ -1,21 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace HttpReports.Dashboard.Models
 {
-    
     public class JobRequest
-    { 
+    {
         public int Id { get; set; }
 
         [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string Title { get; set; }
 
         [DisplayFormat(ConvertEmptyStringToNull = false)]
-        public string CronLike { get; set; } 
+        public string CronLike { get; set; }
+
         public int Rate { get; set; }
 
         [DisplayFormat(ConvertEmptyStringToNull = false)]
@@ -36,7 +32,7 @@ namespace HttpReports.Dashboard.Models
         public string RtTime { get; set; }
 
         [DisplayFormat(ConvertEmptyStringToNull = false)]
-        public string RtRate { get; set; } 
+        public string RtRate { get; set; }
 
         public int HttpStatus { get; set; }
 
@@ -44,7 +40,7 @@ namespace HttpReports.Dashboard.Models
         public string HttpCodes { get; set; }
 
         [DisplayFormat(ConvertEmptyStringToNull = false)]
-        public string HttpRate { get; set; } 
+        public string HttpRate { get; set; }
 
         public int IPStatus { get; set; }
 
@@ -52,12 +48,11 @@ namespace HttpReports.Dashboard.Models
         public string IPWhiteList { get; set; }
 
         [DisplayFormat(ConvertEmptyStringToNull = false)]
-        public string IPRate { get; set; } 
+        public string IPRate { get; set; }
 
         public int RequestStatus { get; set; }
 
         [DisplayFormat(ConvertEmptyStringToNull = false)]
-        public string RequestCount { get; set; } 
-
+        public string RequestCount { get; set; }
     }
 }

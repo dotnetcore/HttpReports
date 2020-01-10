@@ -1,8 +1,6 @@
-﻿using Quartz;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+
+using Quartz;
 
 namespace HttpReports.Dashboard.Job
 {
@@ -16,5 +14,5 @@ namespace HttpReports.Dashboard.Job
         public abstract string cron { get; }
 
         public abstract Task Execute(IJobExecutionContext context);
-    } 
+    }
 }

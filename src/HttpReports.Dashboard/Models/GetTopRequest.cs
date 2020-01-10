@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace HttpReports.Dashboard.Models
+﻿namespace HttpReports.Dashboard.Models
 {
     public class GetTopRequest
     {
@@ -19,7 +14,6 @@ namespace HttpReports.Dashboard.Models
         /// 是否倒序
         /// </summary>
         public bool IsDesc { get; set; }
-
     }
 
     public class GetTopResponse
@@ -27,7 +21,5 @@ namespace HttpReports.Dashboard.Models
         public string Url { get; set; }
 
         public int Total { get; set; }
-
-    } 
-
+    }
 }

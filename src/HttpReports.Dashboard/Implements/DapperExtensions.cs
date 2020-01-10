@@ -1,19 +1,19 @@
-﻿using Dapper;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
+
+using Dapper;
 
 namespace HttpReports.Dashboard.Implements
-{ 
+{
     public static class DapperExtensions
     {
-
         #region 获取一条对象
+
         /// <summary>
         /// 执行sql并返回单个对象
         /// </summary>
@@ -49,7 +49,6 @@ namespace HttpReports.Dashboard.Implements
             return con.Query<T>(GetAntiXssSql(sql), whereParam).FirstOrDefault();
         }
 
-
         /// <summary>
         /// 执行sql并返回单个对象
         /// </summary>
@@ -65,7 +64,6 @@ namespace HttpReports.Dashboard.Implements
             return con.Query<T>(GetAntiXssSql(sql), param).FirstOrDefault();
         }
 
-
         /// <summary>
         /// 执行sql并返回单个对象
         /// </summary>
@@ -80,9 +78,11 @@ namespace HttpReports.Dashboard.Implements
                 throw new Exception("请使用参数查询");
             return con.Query<T>(GetAntiXssSql(sql), param).FirstOrDefault();
         }
-        #endregion
+
+        #endregion 获取一条对象
 
         #region insert方法
+
         /// <summary>
         /// insert 一个实体
         /// </summary>
@@ -105,10 +105,11 @@ namespace HttpReports.Dashboard.Implements
                 model = SetIdentify(model, fieldWithOutInsert, identify);
             return model;
         }
-        #endregion
 
+        #endregion insert方法
 
         #region 获取列表
+
         /// <summary>
         /// Dapper获取分页列表
         /// </summary>
@@ -145,9 +146,6 @@ namespace HttpReports.Dashboard.Implements
             return con.Query<T>(pagingSql, param).ToList();
         }
 
-
-
-
         /// <summary>
         /// 查询数据列表
         /// </summary>
@@ -164,7 +162,9 @@ namespace HttpReports.Dashboard.Implements
         public static List<T> GetList<T>(this SqlConnection con, object fieldParam, object where, object whereParam, object orderBy, int pagesize, int pageindex, out int totalCount)
         {
             var table_name = typeof(T).Name;
+
             #region 查询字段
+
             var fields = "*";
             StringBuilder sql = new StringBuilder();
             if (fieldParam != null)
@@ -181,8 +181,11 @@ namespace HttpReports.Dashboard.Implements
             }
 
             sql.Append($"select {fields} from [{table_name}]  ");
-            #endregion
+
+            #endregion 查询字段
+
             #region 查询条件
+
             if (where != null)
             {
                 sql.Append($" where {where.ToString()}");
@@ -195,8 +198,11 @@ namespace HttpReports.Dashboard.Implements
                 //    sql.Append($" {properties[i].Name}=@{properties[i].Name}");
                 //}
             }
-            #endregion
+
+            #endregion 查询条件
+
             #region 排序字段
+
             var order = "";
             if (orderBy != null)
             {
@@ -208,7 +214,6 @@ namespace HttpReports.Dashboard.Implements
                         order += ",";
                     order += $" {properties[i].Name} {((Utils.ObjToBool(properties[i].GetValue(orderBy), false)) ? "asc" : "desc")}";
                 }
-
             }
             else
             {
@@ -217,15 +222,14 @@ namespace HttpReports.Dashboard.Implements
                 order += $" {properties[0].Name}  asc";
             }
 
-            #endregion
+            #endregion 排序字段
+
             var safeSql = GetAntiXssSql(sql.ToString());
 
             totalCount = con.Query<int>(PagingHelper.CreateCountingSql(safeSql), whereParam).First();
             var pagingSql = PagingHelper.CreatePagingSql(totalCount, pagesize, pageindex, safeSql, order);
             return con.Query<T>(pagingSql, whereParam).ToList();
         }
-
-
 
         /// <summary>
         /// 查询数据列表
@@ -239,7 +243,9 @@ namespace HttpReports.Dashboard.Implements
         public static List<T> GetList<T>(this SqlConnection con, object fieldParam = null, object whereParam = null, object orderBy = null)
         {
             var table_name = typeof(T).Name;
+
             #region 查询字段
+
             var fields = "*";
             StringBuilder sql = new StringBuilder();
             if (fieldParam != null)
@@ -256,8 +262,11 @@ namespace HttpReports.Dashboard.Implements
             }
 
             sql.Append($"select {fields} from [{table_name}]  ");
-            #endregion
+
+            #endregion 查询字段
+
             #region 查询条件
+
             if (whereParam != null)
             {
                 sql.Append(" where ");
@@ -270,8 +279,11 @@ namespace HttpReports.Dashboard.Implements
                     sql.Append($" {properties[i].Name}=@{properties[i].Name}");
                 }
             }
-            #endregion
+
+            #endregion 查询条件
+
             #region 排序字段
+
             if (orderBy != null)
             {
                 sql.Append(" order by ");
@@ -284,13 +296,12 @@ namespace HttpReports.Dashboard.Implements
                     sql.Append($" {properties[i].Name} {((Utils.ObjToBool(properties[i].GetValue(orderBy), false)) ? "asc" : "desc")}");
                 }
             }
-            #endregion
+
+            #endregion 排序字段
+
             var safeSql = GetAntiXssSql(sql.ToString());
             return con.Query<T>(safeSql, whereParam).ToList();
-
         }
-
-
 
         /// <summary>
         /// Dapper获取列表
@@ -302,7 +313,6 @@ namespace HttpReports.Dashboard.Implements
         /// <returns></returns>
         public static List<T> GetListBySql<T>(this SqlConnection con, string sql, object param = null)
         {
-
             var safeSql = GetAntiXssSql(sql);
             return con.Query<T>(safeSql, param).ToList();
         }
@@ -321,8 +331,6 @@ namespace HttpReports.Dashboard.Implements
             var safeSql = GetAntiXssSql(sql);
             return con.Query<T>(safeSql, param).ToList();
         }
-
-
 
         /// <summary>
         /// 獲取匿名對象列表，請注意，使用此方法時，需要考慮字段順序，因為匿名對象沒有set方法，所有set操作需要走.ctor（構造函數），構造函數有順序敏感
@@ -345,7 +353,6 @@ namespace HttpReports.Dashboard.Implements
             return con.Query<T>(pagingSql, param).ToList();
         }
 
-
         /// <summary>
         /// 獲取匿名對象列表，請注意，使用此方法時，需要考慮字段順序，因為匿名對象沒有set方法，所有set操作需要走.ctor（構造函數），構造函數有順序敏感
         /// 獲取到的數據僅用於數據提供，無法修改，請注意！
@@ -366,9 +373,6 @@ namespace HttpReports.Dashboard.Implements
             return con.Query<T>(pagingSql).ToList();
         }
 
-
-
-
         /// <summary>
         /// 获取总数
         /// </summary>
@@ -387,15 +391,12 @@ namespace HttpReports.Dashboard.Implements
                     if (i > 0)
                         sql.Append(" and  ");
                     sql.Append($" {whereField[i].Name}=@{whereField[i].Name}");
-
                 }
             }
-
 
             int count = con.Query<int>(sql.ToString(), whereParam).First();
             return count;
         }
-
 
         /// <summary>
         /// 获取总数
@@ -419,9 +420,10 @@ namespace HttpReports.Dashboard.Implements
             return con.ExecuteScalar(sql, param);
         }
 
-        #endregion
+        #endregion 获取列表
 
         #region update方法
+
         /// <summary>
         /// update一个实体,实体是先查询出来的
         /// </summary>
@@ -444,7 +446,6 @@ namespace HttpReports.Dashboard.Implements
             catch
             { return false; }
         }
-
 
         /// <summary>
         /// 更新对象
@@ -476,7 +477,6 @@ namespace HttpReports.Dashboard.Implements
                         break;
                     }
                 }
-
             }
 
             sql.Append(" where ");
@@ -510,12 +510,9 @@ namespace HttpReports.Dashboard.Implements
             { return false; }
         }
 
-        #endregion
+        #endregion update方法
 
         #region 增删改 方法
-
-
-
 
         /// <summary>
         /// 删除对象
@@ -557,7 +554,8 @@ namespace HttpReports.Dashboard.Implements
             int num = con.Execute(filterSql, param);
             return num > 0;
         }
-        #endregion
+
+        #endregion 增删改 方法
 
         /// <summary>
         /// 执行有参数有返回值存储过程
@@ -570,9 +568,7 @@ namespace HttpReports.Dashboard.Implements
             con.Execute(SPName, dp, null, null, CommandType.StoredProcedure);
             string roleName = dp.Get<string>("@result");
             return roleName;
-
         }
-
 
         #region 事务处理
 
@@ -591,27 +587,22 @@ namespace HttpReports.Dashboard.Implements
             SqlTransaction tran = con.BeginTransaction();
             try
             {
-
                 for (int i = 0; i < sql.Count; i++)
                 {
                     num = con.Execute(sql[i], null, tran);
                 }
                 tran.Commit();
                 result = true;
-
             }
             catch (Exception)
             {
                 tran.Rollback();
-
             }
             finally
             {
                 tran.Dispose();
                 if (wasClosed) con.Close();
             }
-
-
 
             return result;
         }
@@ -631,19 +622,16 @@ namespace HttpReports.Dashboard.Implements
             SqlTransaction tran = con.BeginTransaction();
             try
             {
-
                 for (int i = 0; i < sql.Count; i++)
                 {
                     num = con.Execute(sql[i], param[i], tran);
                 }
                 tran.Commit();
                 result = true;
-
             }
             catch (Exception)
             {
                 tran.Rollback();
-
             }
             finally
             {
@@ -651,13 +639,13 @@ namespace HttpReports.Dashboard.Implements
                 if (wasClosed) con.Close();
             }
 
-
-
             return result;
         }
-        #endregion
+
+        #endregion 事务处理
 
         #region 内部方法
+
         /// <summary>
         /// 设置主键
         /// </summary>
@@ -700,7 +688,6 @@ namespace HttpReports.Dashboard.Implements
         /// <returns>安全的entity对象</returns>
         public static object ReturnSecurityObject(object model)
         {
-
             Type t = model.GetType();//获取类型
             foreach (PropertyInfo mi in t.GetProperties())//遍历该类型下所有属性（非字段，字段需要另一方法，好在EF都是属性
             {
@@ -714,6 +701,7 @@ namespace HttpReports.Dashboard.Implements
             }
             return model;//返回安全对象
         }
+
         /// <summary>
         /// 获取更新sql
         /// </summary>
@@ -813,7 +801,8 @@ namespace HttpReports.Dashboard.Implements
             var sx = GetSafeText(inputString);//进行字符串过滤
             return System.Web.HttpUtility.HtmlDecode(sx);
         }
-        #endregion
+
+        #endregion 内部方法
 
         /// <summary>
         /// 过滤标记
@@ -830,9 +819,6 @@ namespace HttpReports.Dashboard.Implements
             {
                 return Htmlstring.Trim();
             }
-
         }
-
-
     }
 }

@@ -49,7 +49,7 @@ namespace HttpReports.Dashboard
             app.UseCookiePolicy();
 
 #if NETCOREAPP2_1
-            
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

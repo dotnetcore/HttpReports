@@ -1,17 +1,16 @@
-﻿using Dapper;
-using MySql.Data.MySqlClient;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
+
+using Dapper;
+
+using MySql.Data.MySqlClient;
 
 namespace HttpReports.Dashboard.DataContext
 {
     public class MockData
     {
         public void MockSqlServer(string Constr)
-        { 
+        {
             using (SqlConnection con = new SqlConnection(Constr))
             {
                 for (int i = 0; i < 100; i++)
@@ -118,7 +117,6 @@ namespace HttpReports.Dashboard.DataContext
                 {
                     con.Execute($"Insert Into RequestInfo Values ('Auth','/user/pc','/api/user/pc','GET',{new Random().Next(1, 999)},'200','192.168.1.1','{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}')");
                 }
-                 
 
                 for (int i = 0; i < 30; i++)
                 {
@@ -159,9 +157,8 @@ namespace HttpReports.Dashboard.DataContext
                 {
                     con.Execute($"Insert Into RequestInfo Values ('Log','/user/ddmmm','/api/user/ddmmm','GET',{new Random().Next(1, 999)},'500','192.168.1.1','{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}')");
                 }
-
             }
-        } 
+        }
 
         public void MockMySql(string Constr)
         {
@@ -277,7 +274,6 @@ namespace HttpReports.Dashboard.DataContext
                     con.Execute($"Insert Into RequestInfo  (Node,Route,Url,Method,Milliseconds,StatusCode,IP,CreateTime)  Values ('Auth','/user/pc','/api/user/pc','GET',{new Random().Next(1, 999)},'200','192.168.1.1','{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}')");
                 }
 
-
                 for (int i = 0; i < 30; i++)
                 {
                     con.Execute($"Insert Into RequestInfo  (Node,Route,Url,Method,Milliseconds,StatusCode,IP,CreateTime)  Values ('Auth','/user/k23','/api/user/k23','GET',{new Random().Next(1, 999)},'200','192.168.1.1','{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}')");
@@ -317,13 +313,7 @@ namespace HttpReports.Dashboard.DataContext
                 {
                     con.Execute($"Insert Into RequestInfo  (Node,Route,Url,Method,Milliseconds,StatusCode,IP,CreateTime)  Values ('Log','/user/ddmmm','/api/user/ddmmm','GET',{new Random().Next(1, 999)},'500','192.168.1.1','{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}')");
                 }
-
-
-
-
-
             }
         }
-
     }
 }

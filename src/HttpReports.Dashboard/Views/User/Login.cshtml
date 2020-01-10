@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     Layout = null;
 }
 
@@ -18,8 +17,7 @@
     <link rel="stylesheet" href="/Content/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/Content/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="/Content/css/form-elements.css">
-    <link rel="stylesheet" href="/Content/css/style.css?ver=1.0.1"> 
- 
+    <link rel="stylesheet" href="/Content/css/style.css?ver=1.0.1">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -39,7 +37,6 @@
     <script src="~/Content/alert/alert.js?ver=1.0.1"></script>
 
     <script src="~/Content/common/basic.js?ver=1.0.1"></script>
-
 </head>
 
 <body>
@@ -52,21 +49,19 @@
                 <div class="row">
                     <div class="col-sm-8 col-sm-offset-2 text">
                         <h1 style="margin-top:70px;font-weight:bolder">HttpReports</h1>
-                         
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-sm-6 col-sm-offset-3 form-box">
                         <div class="form-top">
                             <div class="form-top-left">
-                                <h3>登录到系统</h3> 
+                                <h3>登录到系统</h3>
                             </div>
                             <div class="form-top-right">
                                 <i class="fa fa-key"></i>
                             </div>
                         </div>
                         <div class="form-bottom">
-
 
                             <div class="form-group">
                                 <label class="sr-only" for="form-username">Username</label>
@@ -77,7 +72,6 @@
                                 <input type="password" name="form-password" placeholder="密码" class="form-password form-control" id="form-password">
                             </div>
                             <button type="submit" style="width:100%" class="btn btn-submit">登 陆</button>
-
                         </div>
                     </div>
                 </div>
@@ -99,20 +93,15 @@
                 </div>
             </div>
         </div>
-
     </div>
-     
 
     <!-- Javascript -->
-
 
     <script src="/Content/bootstrap/js/bootstrap.min.js"></script>
     <script src="/Content/js/jquery.backstretch.min.js"></script>
     <script src="/Content/js/scripts.js"></script>
 
-
     <script type="text/javascript">
-
 
         function Login() {
 
@@ -127,13 +116,12 @@
 
                     if (result.code == 1) { location.href = "/Home/Index" }
                     else { Show(result.msg); }
-                } 
-            });  
+                }
+            });
 
         }
 
         $(document).keydown(function (e) {
-
 
             if (e.keyCode == 13) {
 
@@ -148,10 +136,6 @@
             });
 
         })
-
-
     </script>
-
 </body>
-
 </html>
