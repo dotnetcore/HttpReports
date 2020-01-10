@@ -141,7 +141,7 @@ services.AddHttpReportsMiddleware(WebType.API, DBType.SqlServer,"Pay");
 
 ##### 3.  appsettings.json 配置连接字符串
 
- 打开 appsetting.json, 添加数据库连接字符串,  **需要手动创建数据库 HttpReports**
+ 打开 appsetting.json, 添加数据库连接字符串,  **这个地方第一次程序会自动创建数据库和表, 当然也可以手动创建数据库**
  
 ```csharp
 "ConnectionStrings": {
