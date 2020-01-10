@@ -1,0 +1,165 @@
+.col-sm-4 ,.col-sm-3 {
+    margin-top: 20px;
+}
+
+.fixed-table-pagination {
+    padding-top: 16px;
+    padding-bottom: 10px; 
+    margin: 0 auto;
+}
+
+#TableData td{
+    line-height: 24px;
+}
+#TableData th {
+    line-height: 24px;
+}
+
+.pagination {
+    margin: 0;
+}
+
+.form-control {
+    min-width: 196px;
+}
+.form-label {
+    min-width: 60px;
+}
+.required {  
+    font-size:14px;
+    color:red;
+     font-style:normal;
+}
+.alert-btn-box p {
+    margin:0 !important;
+}
+
+.alert-content {
+    padding-top:20px;padding-bottom:10px;
+}
+
+/* Common styles for all types */
+.bs-callout {
+    background-color: #FFF;
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid #eee;
+    border-left-width: 5px;
+    border-radius: 3px;
+}
+
+    .bs-callout h4 {
+        margin-top: 0;
+        margin-bottom: 5px;
+    }
+
+    .bs-callout p:last-child {
+        margin-bottom: 0;
+    }
+
+    .bs-callout code {
+        border-radius: 3px;
+    }
+
+    /* Tighten up space between multiple callouts */
+    .bs-callout + .bs-callout {
+        margin-top: -5px;
+    }
+
+/* Variations */
+.bs-callout-danger {
+
+
+
+    border-left-color: #ce4844;
+}
+
+    .bs-callout-danger h4 {
+        color: #ce4844;
+    }
+
+.bs-callout-warning {
+    border-left-color: #aa6708;
+}
+
+    .bs-callout-warning h4 {
+        color: #aa6708;
+    }
+
+.bs-callout-info {
+    border-left-color: #1b809e;
+}
+
+    .bs-callout-info h4 {
+        color: #1b809e;
+    }
+
+
+
+.shadow-box {
+    cursor: pointer;
+    box-shadow: 6px 6px 10px #ccc;
+}
+
+    .shadow-box:hover {
+        cursor: pointer;
+        box-shadow:6px 6px 12px #b3c4e6;
+    }
+
+
+
+
+
+.smallstat .value {
+    text-align: center;
+    font-size: 26px;
+}
+
+.smallstat {
+    border-radius: 8px;
+    box-shadow: 2px 2px 4px #ccc;
+}
+
+    .smallstat h4 {
+        text-align: center;
+        font-size: 16px;
+        margin-top: 20px;
+        letter-spacing: 0.05rem;
+    }
+
+
+.node-row .btn {
+    margin-top: 10px;
+    margin-left: 0px !important;
+    margin-right: 20px !important;
+}
+
+
+.fixed-table-pagination .dropdown-menu a {
+    display: block; 
+    padding-left:4px;
+}
+
+.fixed-table-pagination .dropdown-menu {
+    min-width: 54px;
+}
+
+.tipbox {
+    padding:6px;  
+    text-align:left;
+}
+
+
+.service-button:focus {
+
+    outline:0 !important;
+}
+
+.badgeIcon {
+    position: absolute;
+    top: 10px;
+    right: 10px; 
+    font-size:20px;
+    cursor: pointer;
+}
+

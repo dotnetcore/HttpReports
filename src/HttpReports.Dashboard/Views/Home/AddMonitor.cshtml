@@ -1,0 +1,348 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    List<string> nodes = ViewBag.nodes;
+}
+
+
+<style type="text/css">
+
+    @@media screen and (min-width:1170px) {
+
+        .title, .desc, .email, .mobiles {
+            width: 75% !important;
+        }
+    }
+
+    .tab-pane {
+        margin-top: 12px;
+        padding: 20px 15px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+    }
+</style>
+
+
+<div class="panel panel-default">
+
+    <div class="panel-body  task_content" style="padding-left:30px;padding-right:30px;padding-top:30px;min-height:720px;padding-bottom:30px">
+
+        <ol class="breadcrumb">
+            <li><a href="/Home/Monitor">预警监控</a></li>
+            <li><span href="#">任务编辑</span></li>
+        </ol>
+
+        <h3 style="margin-bottom:20px;">编辑任务</h3>
+
+        <div class="row">
+
+            <div class="panel panel-default">
+                <div class="panel-body" style="padding:20px 35px">
+
+                    <div class="row form-inline form">
+
+                        <div class="row" style="margin-left:0;margin-right:0;margin-top:15px">
+
+                            <div class="col-lg-9">
+                                <label style="width:80px" class="form-label">任务标题</label>
+                                <input type="text" class="form-control title" placeholder="请简单输入任务标题">
+                            </div>
+
+                        </div>
+
+                        <div class="row" style="margin-left:0;margin-right:0;margin-top:15px;">
+
+                            <div class="col-lg-9">
+                                <label style="width:80px" class="form-label">监控频率</label>
+                                <select class="form-control rate">
+                                    <option value="1">1分钟</option>
+                                    <option value="3">3分钟</option>
+                                    <option value="5">5分钟</option>
+                                    <option value="10">10分钟</option>
+                                    <option value="30">30分钟</option>
+                                    <option value="60">1小时</option>
+                                    <option value="120">2小时</option>
+                                    <option value="240">4小时</option>
+                                    <option value="360">6小时</option>
+                                    <option value="480">8小时</option>
+                                    <option value="720">12小时</option>
+                                    <option value="1440">1天</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div class="row" style="margin-left:0;margin-right:0;margin-top:15px">
+
+                            <div class="col-lg-9">
+                                <label style="width:80px" class="form-label">邮箱列表</label>
+                                <input type="text" class="form-control email" placeholder="告警接收邮箱，支持多邮箱 aa.com,bb.com,cc.com">
+                            </div>
+
+                        </div>
+
+                        <div class="row" style="margin-left:0;margin-right:0;margin-top:15px;display:none">
+
+                            <div class="col-lg-9">
+                                <label style="width:80px" class="form-label">手机号列表</label>
+                                <input type="text" value="" class="form-control mobiles" placeholder="告警接收手机号，支持多手机号 10086,10010...">
+                            </div>
+
+                        </div>
+
+
+                        <div class="row" style="margin-left:0;margin-right:0;margin-top:15px;">
+
+                            <div class="col-lg-9">
+                                <label style="width:80px" class="form-label">任务状态</label>
+                                <select class="form-control status">
+                                    <option value="1">开启</option>
+                                    <option value="0">关闭</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div class="row" style="margin-left:0;margin-right:0;margin-top:15px;">
+
+                            <div class="col-lg-9 node-row">
+                                <label style="width:80px" class="form-label">服务节点</label>
+
+                                @foreach (var item in nodes)
+                                {
+                                    <button onclick="check_node(this)" style="width:120px;margin-right:10px;border-radius:4px;" class="btn btn-info service-button">@item</button>
+                                }
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="clearfix">
+                    </div>
+
+
+                    <div id="wizard1" class="wizard-type1" style="margin-top:20px;">
+
+                        <div>
+
+                            <ul class="steps nav nav-pills">
+                                <li class="active"><a href="#tab11" data-toggle="tab"><span class="badge badge-info"><i class="fa fa-star"></i></span> 响应超时监控</a></li>
+                                <li><a href="#tab12" data-toggle="tab"><span class="badge badge-info"><i class="fa fa-credit-card"></i></span> 请求错误监控</a></li>
+                                <li><a href="#tab13" data-toggle="tab"><span class="badge badge-info"><i class="fa fa-building"></i></span> IP异常监控 </a></li>
+                                <li><a href="#tab14" data-toggle="tab"><span class="badge badge-info"><i class="fa fa-rocket"></i></span>请求量监控</a></li>
+                            </ul>
+
+
+                        </div>
+
+                        <div class="tab-content">
+
+                            <div id="tab11" class="tab-pane active">
+
+                                <div class="row form-inline form">
+
+                                    <div class="col-sm-12">
+
+                                        <div class="col-lg-3">
+
+                                            <label class="form-label">任务状态</label>
+                                            <select class="form-control RtStatus">
+                                                <option value="1">开启</option>
+                                                <option value="0" selected>关闭</option>
+                                            </select>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-sm-12" style="margin-top:20px">
+
+                                        <div class="col-sm-3">
+                                            <label class="form-label">超时时间 ms</label>
+                                            <input type="text" class="form-control RtTime" placeholder="多个用逗号隔开">
+                                        </div>
+
+                                        <div class="col-sm-3" style="padding:0">
+                                            <label class="form-label">超时率</label>
+                                            <input type="text" class="form-control RtRate" placeholder="格式 0.01% 15% ... ">
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-sm-12" style="margin-top:20px;">
+
+                                        <div style="margin-left:12px;margin-right:12px;margin-bottom:0" class="alert alert-info" role="alert">
+
+                                            <p><b>响应超时监控</b>：主要针对一段时间内接口调用超时率过高；</p>
+
+                                            <p>1.设定接口超时时间(毫秒)；  2.设置接口超时百分比，支持 两位小数点，5%,0.03%,30%等,超时率达到或大于设定值时会触发预警；</p>
+
+                                        </div> 
+                                      
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="tab-pane" id="tab12">
+
+                                <div class="row form-inline form">
+
+                                    <div class="col-sm-12">
+
+                                        <div class="col-lg-3">
+                                            <label class="form-label">任务状态</label>
+                                            <select class="form-control HttpStatus">
+                                                <option value="1">开启</option>
+                                                <option value="0" selected>关闭</option>
+                                            </select>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-sm-12" style="margin-top:20px">
+
+                                        <div class="col-sm-3">
+                                            <label class="form-label">HTTP状态码</label>
+                                            <input type="text" class="form-control HttpCodes" placeholder="多个用逗号隔开">
+                                        </div>
+
+                                        <div class="col-sm-3">
+                                            <label class="form-label">命中率</label>
+                                            <input type="text" class="form-control HttpRate" placeholder="格式 0.01% 15% ... ">
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-sm-12" style="margin-top:20px;">
+
+                                        <div style="margin-left:12px;margin-right:12px;margin-bottom:0" class="alert alert-info" role="alert">
+
+                                            <p><b>请求错误监控</b>：主要针对一段时间内接口调用错误率过高；</p>
+
+                                            <p>1.设定Http状态码,500,503,404,多个状态码用英文逗号隔开； 2.设置命中率,支持 两位小数点，5%,0.03%,30%等，命中率达到或大于设定值时会触发预警；</p>
+
+                                        </div>
+
+                                    </div>
+
+                                    </div>
+
+                            </div>
+
+                            <div class="tab-pane" id="tab13">
+
+                                <div class="row form-inline form">
+
+                                    <div class="col-sm-12">
+
+                                        <div class="col-lg-3">
+                                            <label class="form-label">任务状态</label>
+                                            <select class="form-control IPStatus">
+                                                <option value="1">开启</option>
+                                                <option value="0" selected>关闭</option>
+                                            </select>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-sm-12" style="margin-top:20px">
+
+                                        <div class="col-sm-3">
+                                            <label class="form-label">IP白名单</label>
+                                            <input type="text" class="form-control IPWhiteList" placeholder="多个用逗号隔开">
+                                        </div>
+
+                                        <div class="col-sm-3">
+                                            <label class="form-label">IP重复率</label>
+                                            <input type="text" class="form-control IPRate" placeholder="格式 0.01% 15% ... ">
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-sm-12" style="margin-top:20px;">
+
+                                        <div style="margin-left:12px;margin-right:12px;margin-bottom:0" class="alert alert-info" role="alert">
+
+                                            <p><b>IP异常监控</b>：主要针对一段时间内大量固定IP请求，类似机器人请求;</p>
+
+                                            <p> 1.设置IP白名单(可不填),多个IP地址中间用英文逗号分开；  2.设置重复率，支持 两位小数点，5%,0.03%,30%等,当IP重复率达到或大于设定值时,触发预警； </p>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+                            <div class="tab-pane" id="tab14">
+
+                                <div class="row form-inline form">
+
+                                    <div class="col-sm-12">
+
+                                        <div class="col-lg-3">
+                                            <label class="form-label">任务状态</label>
+                                            <select class="form-control RequestStatus">
+                                                <option value="1">开启</option>
+                                                <option value="0" selected>关闭</option>
+                                            </select>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-sm-12" style="margin-top:20px">
+
+                                        <div class="col-sm-3">
+                                            <label class="form-label">最大请求数量</label>
+                                            <input type="text" class="form-control RequestCount">
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-sm-12" style="margin-top:20px;">
+
+                                        <div style="margin-left:12px;margin-right:12px;margin-bottom:0" class="alert alert-info" role="alert">
+
+                                            <p><b>请求量监控</b>：主要针对一段时间内接口大量请求；</p>
+
+                                            <p> 1.设置单位时间内接口最大请求量,当请求量达到或者大于设定时触发预警 </p>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+                        <input type="hidden" class="id" value="@ViewBag.Id" />
+
+                        <div class="actions" style="margin-top:15px;margin-bottom:8px;">
+                            <button onclick="Save()" type="button" class="btn btn-info button-previous" style="width:80px"> 保 存 </button>
+
+                            <a href="/Home/Monitor" type="button" class="btn btn-info button-previous" style="width:120px;margin-left:20px"> 返回上一页 </a>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="~/Content/page/addmonitor.js?ver=1.0.1"></script>
