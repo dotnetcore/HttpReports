@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
-using Dapper;
-using HttpReports.Dashboard.Services;
+﻿using HttpReports.Dashboard.Services;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HttpReports.Dashboard.Controllers
 {
-
     [AllowAnonymous]
     public class TestController : Controller
     {
@@ -51,7 +45,7 @@ namespace HttpReports.Dashboard.Controllers
         {
             System.Threading.Thread.Sleep(4000);
 
-            return Json(new { code = 1 }); 
+            return Json(new { code = 1 });
         }
 
         public IActionResult A5()
@@ -66,7 +60,7 @@ namespace HttpReports.Dashboard.Controllers
             System.Threading.Thread.Sleep(6000);
 
             return Json(new { code = 1 });
-        } 
+        }
 
         public IActionResult A7()
         {
@@ -87,13 +81,13 @@ namespace HttpReports.Dashboard.Controllers
             System.Threading.Thread.Sleep(9000);
 
             return Json(new { code = 1 });
-        } 
-        
+        }
+
         public IActionResult A10()
         {
             System.Threading.Thread.Sleep(10000);
 
             return Json(new { code = 1 });
-        } 
+        }
     }
 }

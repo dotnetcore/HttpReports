@@ -1,24 +1,22 @@
-﻿using HttpReports.Dashboard.DataContext;
-using HttpReports.Dashboard.Implements;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
+
+using HttpReports.Dashboard.DataContext;
+using HttpReports.Dashboard.Implements;
 
 namespace HttpReports.Dashboard.DataAccessors
 {
-    public  class BaseAccessor
+    public class BaseAccessor
     {
         private SqlConnection connection;
 
         public BaseAccessor(DBFactory factory)
         {
             connection = factory.GetSqlConnection();
-        } 
+        }
 
         public T Get<T>(object where)
-        { 
+        {
             return connection.GetModel<T>(where);
         }
 
@@ -36,7 +34,6 @@ namespace HttpReports.Dashboard.DataAccessors
         {
             return connection.GetCount<T>(where);
         }
-
 
         public bool Update<T>(T model) where T : class, new()
         {
@@ -65,7 +62,6 @@ namespace HttpReports.Dashboard.DataAccessors
         {
             return connection.GetList<T>(fieldParam, where, whereParam, orderBy, pagesize, pageindex, out totalCount);
         }
-
 
         /// <summary>
         /// Dapper获取分页列表

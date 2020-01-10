@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace HttpReports.Dashboard.Models
+﻿namespace HttpReports.Dashboard.Models
 {
     public class Result
     {
@@ -25,12 +20,10 @@ namespace HttpReports.Dashboard.Models
         /// </summary>
         public int code { get; set; } = 1;
 
-
         /// <summary>
         /// 错误消息
         /// </summary>
         public string msg { get; set; }
-
 
         /// <summary>
         /// Json 数据

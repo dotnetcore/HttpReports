@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace HttpReports.Dashboard.Models
+﻿namespace HttpReports.Dashboard.Models
 {
     public class GetRequestListRequest
     {
@@ -17,10 +12,8 @@ namespace HttpReports.Dashboard.Models
 
         public string Node { get; set; }
 
-
         public int pageNumber { get; set; }
 
         public int pageSize { get; set; }
-
     }
 }

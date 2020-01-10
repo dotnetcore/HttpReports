@@ -1,12 +1,9 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Detail";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-     List<string> nodes = ViewBag.nodes; 
+    List<string> nodes = ViewBag.nodes;
 }
-
-
 
 <style type="text/css">
 
@@ -48,14 +45,10 @@
 
                             <span class="glyphicon glyphicon-info-sign serviceTip" style="font-size:20px;top:0.2em;cursor:pointer"></span>
 
-
-
                             @*<button type="button" onclick="select_all(this)" style="width:60px;margin-right:8px;margin-left:8px" class="btn btn-success btn-xs">全选</button>
 
-                        <button type="button" onclick="select_reverse(this)" style="width:60px;margin-right:8px;" class="btn btn-success btn-xs">反选</button>*@
-
+                                <button type="button" onclick="select_reverse(this)" style="width:60px;margin-right:8px;" class="btn btn-success btn-xs">反选</button>*@
                         </div>
-
 
                         <div class="col-sm-12 node-row" style="margin-top:8px;margin-bottom:8px;min-height:44px">
 
@@ -63,9 +56,7 @@
                             {
                                 <button onclick="check_node(this)" style="width:120px;margin-left:20px;border-radius:4px;" class="btn btn-info service-button">@item</button>
                             }
-
                         </div>
-
                     </div>
 
                     <div class="form-inline form" style="margin-bottom:30px;">
@@ -89,7 +80,6 @@
                             <label class="form-label">IP地址</label>
                             <input placeholder="" type="text" class="form-control laydate ipadress">
                         </div>
-
                     </div>
 
                     <div class="col-sm-12 timeSelect" style="margin-top:20px">
@@ -101,7 +91,6 @@
                         <button type="button" onclick="timeChange(this)" data-id="3" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">本周</button>
 
                         <button type="button" onclick="timeChange(this)" data-id="4" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">本月</button>
-
                     </div>
 
                     <div class="col-sm-12">
@@ -109,34 +98,22 @@
                         <div class="col-sm-3" style="padding-left:0">
 
                             <button style="min-width:120px;" onclick="QueryClick(this)" class="btn btn-info btn-search">查询</button>
-
                         </div>
-
                     </div>
-
                 </div>
             </div>
-
 
             <div class="panel panel-default">
                 <div class="panel-body shadow-box" style="padding-bottom:20px">
 
-
                     <div class="col-sm-12" style="margin-top:24px;">
 
                         <table id="TableData" class="table table-bordered" style="background-color:#FFF;width:100%;margin:0 auto; clear:both;border-top:2px solid #67c2ef;"></table>
-
                     </div>
-
                 </div>
             </div>
-           
-
         </div>
+    </div>
+</div>
 
-            </div>
-
-        </div>
-
- 
 <script src="/Content/page/detail.js?ver=1.0.1"></script>

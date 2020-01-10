@@ -1,8 +1,6 @@
-﻿using HttpReports.Dashboard.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+
+using HttpReports.Dashboard.Models;
 
 namespace HttpReports.Dashboard.DataAccessors
 {
@@ -30,7 +28,7 @@ namespace HttpReports.Dashboard.DataAccessors
 
         List<GetTopResponse> GetCode500Response(GetTopRequest request);
 
-        List<EchartPineDataModel> GetTOPART(GetTopRequest request); 
+        List<EchartPineDataModel> GetTOPART(GetTopRequest request);
 
         List<RequestInfo> GetRequestList(GetRequestListRequest request, out int totalCount);
 
@@ -46,14 +44,12 @@ namespace HttpReports.Dashboard.DataAccessors
 
         Models.Job GetJob(int Id);
 
+        CheckModel CheckRt(Models.Job job, int minute);
 
-        CheckModel CheckRt(Models.Job job,int minute);
+        CheckModel CheckHttp(Models.Job job, int minute);
 
-        CheckModel CheckHttp(Models.Job job,int minute);
+        CheckModel CheckIP(Models.Job job, int minute);
 
-        CheckModel CheckIP(Models.Job job,int minute);
-
-        CheckModel CheckRequestCount(Models.Job job,int minute); 
-
+        CheckModel CheckRequestCount(Models.Job job, int minute);
     }
 }

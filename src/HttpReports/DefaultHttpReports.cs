@@ -1,17 +1,17 @@
-﻿using Dapper;
+﻿using System;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Threading.Tasks;
+
+using Dapper;
 using Dapper.Contrib.Extensions;
+
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+
 using MySql.Data.MySqlClient;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HttpReports
 {
@@ -19,10 +19,10 @@ namespace HttpReports
     {
         private HttpReportsOptions _options;
 
-        private IHostingEnvironment _environment; 
-       
-        public DefaultHttpReports(IOptions<HttpReportsOptions> options,IHostingEnvironment environment)
-        { 
+        private IHostingEnvironment _environment;
+
+        public DefaultHttpReports(IOptions<HttpReportsOptions> options, IHostingEnvironment environment)
+        {
             _options = options.Value;
             _environment = environment;
         }
@@ -45,21 +45,17 @@ namespace HttpReports
 
             request.Method = context.Request.Method;
 
-            request.Url = context.Request.Path;  
+            request.Url = context.Request.Path;
 
             request.CreateTime = DateTime.Now;
 
             var path = (context.Request.Path.Value ?? string.Empty).ToLower();
-             
 
             // 录入数据库
             if (_options.WebType == WebType.API) SaveWhenUseAPI(request, path, config);
 
-            if (_options.WebType == WebType.MVC) SaveWhenUseMVC(request, path, config); 
-
+            if (_options.WebType == WebType.MVC) SaveWhenUseMVC(request, path, config);
         }
-
-
 
         /// <summary>
         /// 检查数据库连接是否可用
@@ -76,26 +72,25 @@ namespace HttpReports
                     if (_environment.IsDevelopment())
                     {
                         throw new Exception("appsettings.json未找到HttpReports连接字符串");
-                    } 
-                }  
+                    }
+                }
 
                 if (_options.DBType == DBType.SqlServer)
-                { 
+                {
                     InitSqlServer(constr);
                 }
 
                 if (_options.DBType == DBType.MySql)
                 {
                     InitMySql(constr);
-
                 }
             }
             catch (Exception ex)
             {
                 if (_environment.IsDevelopment())
-                {  
-                    throw ex; 
-                }                  
+                {
+                    throw ex;
+                }
             }
         }
 
@@ -109,7 +104,7 @@ namespace HttpReports
 
                 if (TableCount == 0)
                 {
-                    con.Execute(@"  
+                    con.Execute(@"
 
                         USE [HttpReports];
                         SET ANSI_NULLS ON;
@@ -126,9 +121,8 @@ namespace HttpReports
 	                        [CreateTime] [datetime] NOT NULL
                         ) ON [PRIMARY];
 
-                    ");  
+                    ");
                 }
-
             }
         }
 
@@ -154,8 +148,7 @@ namespace HttpReports
                           `IP` varchar(50) default NULL,
                           `CreateTime` datetime default NULL,
                           PRIMARY KEY  (`Id`)
-                        ) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;  "); 
-
+                        ) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;  ");
                 }
             }
         }
@@ -224,10 +217,10 @@ namespace HttpReports
         /// <param name="request"></param>
         /// <param name="path"></param>
         /// <returns></returns>
-        public Task SaveWhenUseAPI(RequestInfo request,string path, IConfiguration config)
-        { 
-            return Task.Run(() => {
-
+        public Task SaveWhenUseAPI(RequestInfo request, string path, IConfiguration config)
+        {
+            return Task.Run(() =>
+            {
                 if (!path.ToLower().Contains(_options.ApiPoint))
                 {
                     return;
@@ -236,19 +229,18 @@ namespace HttpReports
                 try
                 {
                     request.Node = GetNode(path);
-                    request.Route = GetRouteForAPI(path); 
+                    request.Route = GetRouteForAPI(path);
 
-                    SaveInDataBase(request,config); 
+                    SaveInDataBase(request, config);
                 }
                 catch (Exception ex)
                 {
                     if (_environment.IsDevelopment())
                     {
-                        throw ex;  
-                    }   
-                }    
-
-            });   
+                        throw ex;
+                    }
+                }
+            });
         }
 
         /// <summary>
@@ -259,11 +251,11 @@ namespace HttpReports
         /// <returns></returns>
         public Task SaveWhenUseMVC(RequestInfo request, string path, IConfiguration config)
         {
-            return Task.Run(() => { 
-
+            return Task.Run(() =>
+            {
                 try
-                {  
-                    request.Node = _options.Node.Substring(0, 1).ToUpper() + _options.Node.Substring(1).ToLower(); 
+                {
+                    request.Node = _options.Node.Substring(0, 1).ToUpper() + _options.Node.Substring(1).ToLower();
 
                     request.Route = GetRouteForMVC(path);
 
@@ -276,14 +268,12 @@ namespace HttpReports
                         throw ex;
                     }
                 }
-
             });
-        } 
-
+        }
 
         private void SaveInDataBase(RequestInfo request, IConfiguration config)
-        { 
-            //添加到数据库   
+        {
+            //添加到数据库
             if (_options.DBType == DBType.SqlServer)
             {
                 using (SqlConnection con = new SqlConnection(config.GetConnectionString("HttpReports")))
@@ -298,12 +288,11 @@ namespace HttpReports
                 {
                     con.Insert<RequestInfo>(request);
                 }
-            } 
-        }  
-
+            }
+        }
 
         /// <summary>
-        /// 通过请求地址 获取服务节点 
+        /// 通过请求地址 获取服务节点
         /// </summary>
         /// <param name="path"></param>
         /// <param name="Default"></param>
@@ -312,18 +301,17 @@ namespace HttpReports
         {
             string Default = _options.Node;
 
-            var arr = path.Substring(1).Split('/'); 
+            var arr = path.Substring(1).Split('/');
 
             if (arr.Length > 0 && arr[1] == _options.ApiPoint)
             {
                 Default = arr[0];
-            } 
+            }
 
-            Default = Default.Substring(0, 1).ToUpper() + Default.Substring(1).ToLower(); 
+            Default = Default.Substring(0, 1).ToUpper() + Default.Substring(1).ToLower();
 
-            return Default;   
+            return Default;
         }
-
 
         /// <summary>
         ///通过请求地址 获取路由
@@ -342,9 +330,8 @@ namespace HttpReports
                 route = route.Substring(0, route.Length - list.ToList().Last().Length - 1);
             }
 
-            return route; 
+            return route;
         }
-
 
         /// <summary>
         ///通过请求地址 获取路由
@@ -354,7 +341,7 @@ namespace HttpReports
         {
             string route = path;
 
-            var list = path.Split('/'); 
+            var list = path.Split('/');
 
             if (IsNumber(list.ToList().Last()))
             {
@@ -362,7 +349,7 @@ namespace HttpReports
             }
 
             return route;
-        }   
+        }
 
         private int ToInt(double dou)
         {
@@ -372,8 +359,8 @@ namespace HttpReports
             }
             catch (Exception ex)
             {
-                return 0; 
-            } 
+                return 0;
+            }
         }
 
         private bool IsNumber(string str)

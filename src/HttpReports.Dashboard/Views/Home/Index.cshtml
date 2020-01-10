@@ -1,14 +1,11 @@
-﻿
-@{
+﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     List<string> nodes = ViewBag.nodes;
-} 
- 
+}
 
+<div class="panel panel-default">
 
-<div class="panel panel-default"> 
-    
     <div class="panel-body" style="padding-left:30px;padding-right:30px;padding-top:30px;min-height:720px">
 
         <div class="row" style="padding-left:13px;padding-right:13px">
@@ -18,7 +15,7 @@
 
                     <div class="form-inline form">
 
-                        <div class="col-sm-12" style="margin-top:10px">  
+                        <div class="col-sm-12" style="margin-top:10px">
 
                             <b><i class="glyphicon glyphicon-signal"></i> 服务节点</b>
 
@@ -26,8 +23,7 @@
 
                             @*<button type="button" onclick="select_all(this)" style="width:60px;margin-right:8px;margin-left:8px" class="btn btn-success btn-xs">全选</button>
 
-        <button type="button" onclick="select_reverse(this)" style="width:60px;margin-right:8px;" class="btn btn-success btn-xs">反选</button>*@
-
+                                <button type="button" onclick="select_reverse(this)" style="width:60px;margin-right:8px;" class="btn btn-success btn-xs">反选</button>*@
                         </div>
 
                         <div class="col-sm-12 node-row" style="margin-top:8px;margin-bottom:8px;min-height:44px">
@@ -35,12 +31,9 @@
                             @foreach (var item in nodes)
                             {
                                 <button onclick="check_node(this)" style="width:120px;margin-left:20px;border-radius:4px;" class="btn btn-info service-button">@item</button>
-                            } 
-
+                            }
                         </div>
-
                     </div>
-
 
                     <div class="form-inline form" style="margin-bottom:30px;">
 
@@ -53,7 +46,6 @@
                             <label class="form-label">结束时间</label>
                             <input type="text" class="form-control laydate end">
                         </div>
-
                     </div>
 
                     <div class="col-sm-12 timeSelect" style="margin-top:20px">
@@ -65,31 +57,25 @@
                         <button type="button" onclick="timeChange(this)" data-id="3" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">本周</button>
 
                         <button type="button" onclick="timeChange(this)" data-id="4" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">本月</button>
-
-                    </div> 
+                    </div>
 
                     <div class="col-sm-12" style="">
 
                         <div class="col-sm-3" style="padding-left:0">
 
                             <button style="min-width:120px;" onclick="QueryClick(this)" class="btn btn-info btn-search">查询</button>
-
                         </div>
-
                     </div>
-
                 </div>
             </div>
-
         </div>
 
-        <div class="row" style="margin-top:30px;padding-left:13px;padding-right:13px"> 
+        <div class="row" style="margin-top:30px;padding-left:13px;padding-right:13px">
 
             <div class="board-row panel panel-default panel-body shadow-box">
 
                 <p class="index_time_range" style="padding-left:20px;color:#3c763d">
                     时间：<b></b>
-
                 </p>
 
                 <div class="col-lg-2 col-sm-6 col-xs-6 col-xxs-12">
@@ -100,28 +86,24 @@
 
                         <b><span class="value">0</span></b>
                         <h4>请求次数</h4>
-
                     </div>
                 </div>
 
                 <div class="col-lg-2 col-sm-6 col-xs-6 col-xxs-12">
                     <div class="smallstat blue-bg">
 
-                        <b class="glyphicon glyphicon-info-sign badgeIcon" data-placement="auto" data-toggle="tooltip"  title="处理时间是接口处理的时间，不能看做处理时间"></b>
+                        <b class="glyphicon glyphicon-info-sign badgeIcon" data-placement="auto" data-toggle="tooltip" title="处理时间是接口处理的时间，不能看做处理时间"></b>
 
                         <b><span class="value">0</span></b>
                         <h4>平均处理时间 (ms)</h4>
-
                     </div>
                 </div>
-
 
                 <div class="col-lg-2 col-sm-6 col-xs-6 col-xxs-12">
                     <div class="smallstat purple-bg">
 
                         <b><span class="value">0</span></b>
                         <h4>404</h4>
-
                     </div>
                 </div>
 
@@ -130,7 +112,6 @@
 
                         <b><span class="value">0</span></b>
                         <h4>500</h4>
-
                     </div>
                 </div>
 
@@ -147,10 +128,8 @@
                         <h4>接口总数 (已请求)</h4>
                     </div>
                 </div>
-
-            </div> 
-
-        </div> 
+            </div>
+        </div>
 
         <div class="row" style="margin-top:40px;">
 
@@ -161,7 +140,6 @@
                         <div id="StatusCodePie" style="height:320px;width:99%"></div>
                     </div>
                 </div>
-
             </div>
 
             <div class="col-md-6">
@@ -171,10 +149,8 @@
                         <div id="ResponseTimePie" style="height:320px;width:99%"></div>
                     </div>
                 </div>
-
             </div>
-
-        </div> 
+        </div>
 
         <div class="row">
 
@@ -193,19 +169,15 @@
                                     <option value="15">15</option>
                                     <option value="20">20</option>
                                 </select>
-
                             </div>
-
                         </div>
 
                         <div class="col-sm-12">
 
                             <div id="MostRequestChart" style="min-height:420px; width:99%"></div>
-
                         </div>
                     </div>
                 </div>
-
             </div>
 
             <div class="col-md-6">
@@ -214,23 +186,15 @@
                     <div class="panel-body shadow-box">
 
                         <div class="col-sm-12" style="padding-left:32px;min-height:34px">
-
-
-
                         </div>
-
 
                         <div class="col-sm-12">
 
                             <div id="Code500RequestChart" style="min-height:420px; width:99%"></div>
-
                         </div>
-
                     </div>
                 </div>
-
             </div>
-
         </div>
 
         <div class="row">
@@ -243,11 +207,9 @@
                         <div class="col-sm-12">
 
                             <div id="FastARTChart" style="min-height:420px; width:99%"></div>
-
                         </div>
                     </div>
                 </div>
-
             </div>
 
             <div class="col-md-6">
@@ -258,21 +220,12 @@
                         <div class="col-sm-12">
 
                             <div id="SlowARTChart" style="min-height:420px; width:99%"></div>
-
                         </div>
-
                     </div>
                 </div>
-
             </div>
-
-        </div>  
-
+        </div>
     </div>
-
 </div>
 
-
- 
-<script src="/Content/page/index.js?ver=1.0.1"></script> 
- 
+<script src="/Content/page/index.js?ver=1.0.1"></script>

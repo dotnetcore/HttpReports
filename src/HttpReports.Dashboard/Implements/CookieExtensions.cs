@@ -1,14 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System;
+
+using Microsoft.AspNetCore.Http;
 
 namespace HttpReports.Dashboard.Implements
 {
     public static class CookieExtensions
     {
-        public static void SetCookie(this HttpContext context, string key, string value,double minutes)
+        public static void SetCookie(this HttpContext context, string key, string value, double minutes)
         {
             context.Response.Cookies.Append(key, value, new CookieOptions
             {

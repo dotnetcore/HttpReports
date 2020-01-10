@@ -1,29 +1,28 @@
-﻿using Dapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Linq;
+
+using Dapper;
 using Dapper.Contrib.Extensions;
+
 using HttpReports.Dashboard.DataContext;
 using HttpReports.Dashboard.Implements;
 using HttpReports.Dashboard.Models;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace HttpReports.Dashboard.DataAccessors
 {
-    public class DataAccessorSqlServer :BaseAccessor,IDataAccessor
+    public class DataAccessorSqlServer : BaseAccessor, IDataAccessor
     {
         private SqlConnection conn;
 
-        public DataAccessorSqlServer(DBFactory factory):base(factory)
+        public DataAccessorSqlServer(DBFactory factory) : base(factory)
         {
             conn = factory.GetSqlConnection();
         }
 
-
         public string BuildSqlWhere(GetIndexDataRequest request)
-        { 
+        {
             string where = " where 1=1 ";
 
             request.Start = request.Start.IsEmpty() ? DateTime.Now.ToString("yyyy-MM-dd") : request.Start;
@@ -47,13 +46,11 @@ namespace HttpReports.Dashboard.DataAccessors
             }
 
             return where;
-
         }
-        
 
         public List<EchartPineDataModel> GetStatusCode(GetIndexDataRequest request)
         {
-            string where = BuildSqlWhere(request); 
+            string where = BuildSqlWhere(request);
 
             string sql = $@"
 
@@ -79,19 +76,18 @@ namespace HttpReports.Dashboard.DataAccessors
                     Union
                     Select '503' Name,COUNT(1) Value From  RequestInfo {where} AND StatusCode = 503
 
-               "; 
+               ";
 
-            return conn.Query<EchartPineDataModel>(sql).ToList(); 
+            return conn.Query<EchartPineDataModel>(sql).ToList();
         }
 
-
         public List<EchartPineDataModel> GetResponseTimePie(GetIndexDataRequest request)
-        { 
+        {
             string where = BuildSqlWhere(request);
 
-            string sql = $@"  
+            string sql = $@"
 
-                    Select Name,Value from ( 
+                    Select Name,Value from (
 
                       Select 1 ID, '1-100' Name, Count(1) Value   From     RequestInfo {where} AND Milliseconds > 0 AND Milliseconds <= 100
                       union
@@ -103,11 +99,11 @@ namespace HttpReports.Dashboard.DataAccessors
                       union
                       Select 5 Id,'3000-5000' Name, Count(1) Value From  RequestInfo {where} AND Milliseconds > 3000 AND Milliseconds <= 5000
                       union
-                      Select 6 Id,'5000以上' Name, Count(1) Value From   RequestInfo {where} AND Milliseconds > 5000 
+                      Select 6 Id,'5000以上' Name, Count(1) Value From   RequestInfo {where} AND Milliseconds > 5000
 
                   ) T Order By ID";
 
-            return conn.Query<EchartPineDataModel>(sql).ToList() ; 
+            return conn.Query<EchartPineDataModel>(sql).ToList();
         }
 
         public List<EchartPineDataModel> GetDayRequestTimes(GetIndexDataRequest request)
@@ -125,8 +121,7 @@ namespace HttpReports.Dashboard.DataAccessors
                 where = where + $" AND Node IN ({nodes})";
             }
 
-            where = where + $" AND CreateTime >= '{request.Day}' AND CreateTime < '{End}'  ";  
-
+            where = where + $" AND CreateTime >= '{request.Day}' AND CreateTime < '{End}'  ";
 
             string sql = $" Select DATENAME(HOUR, CreateTime) Name ,COUNT(1) Value From RequestInfo {where} Group by  DATENAME(HOUR, CreateTime)  ";
 
@@ -148,7 +143,7 @@ namespace HttpReports.Dashboard.DataAccessors
                 where = where + $" AND Node IN ({nodes})";
             }
 
-            where = where + $" AND CreateTime >= '{request.Day}' AND CreateTime < '{End}'  "; 
+            where = where + $" AND CreateTime >= '{request.Day}' AND CreateTime < '{End}'  ";
 
             string sql = $" Select DATENAME(HOUR, CreateTime) Name ,AVG(Milliseconds) Value From RequestInfo {where} Group by  DATENAME(HOUR, CreateTime)   ";
 
@@ -157,8 +152,8 @@ namespace HttpReports.Dashboard.DataAccessors
 
         public List<EchartPineDataModel> GetLatelyDayData(GetIndexDataRequest request)
         {
-            string where = " where 1=1 "; 
-           
+            string where = " where 1=1 ";
+
             if (!request.Node.IsEmpty())
             {
                 string nodes = string.Join(",", request.Node.Split(",").ToList().Select(x => "'" + x + "'"));
@@ -170,8 +165,7 @@ namespace HttpReports.Dashboard.DataAccessors
 
             string sql = $" Select CONVERT(varchar(100),CreateTime, 23) Name,Count(1) Value From RequestInfo {where} Group by CONVERT(varchar(100),CreateTime, 23)   ";
 
-            return conn.Query<EchartPineDataModel>(sql).ToList(); 
-
+            return conn.Query<EchartPineDataModel>(sql).ToList();
         }
 
         public List<EchartPineDataModel> GetMonthDataByYear(GetIndexDataRequest request)
@@ -189,21 +183,19 @@ namespace HttpReports.Dashboard.DataAccessors
 
             string sql = $" Select CONVERT(varchar(7),CreateTime, 120) Name,Count(1) Value From RequestInfo {where} Group by CONVERT(varchar(7),CreateTime, 120) ";
 
-            return conn.Query<EchartPineDataModel>(sql).ToList(); 
-
-        } 
-
+            return conn.Query<EchartPineDataModel>(sql).ToList();
+        }
 
         public List<string> GetNodes()
-        { 
-            return conn.Query<string>(" Select Distinct Node  FROM RequestInfo ").ToList(); 
+        {
+            return conn.Query<string>(" Select Distinct Node  FROM RequestInfo ").ToList();
         }
 
         public GetIndexDataResponse GetIndexData(GetIndexDataRequest request)
         {
             string where = BuildSqlWhere(request);
 
-           string sql = $@"
+            string sql = $@"
 
               Select  AVG(Milliseconds) ART From RequestInfo {where} ;
               Select  COUNT(1) Total From RequestInfo {where} ;
@@ -221,24 +213,24 @@ namespace HttpReports.Dashboard.DataAccessors
                 response.Total = result.ReadFirstOrDefault<string>();
                 response.Code404 = result.ReadFirstOrDefault<string>();
                 response.Code500 = result.ReadFirstOrDefault<string>();
-                response.APICount = result.ReadFirst<int>(); 
-                response.ErrorPercent = response.Total.ToInt() == 0 ? "0.00%" :(Convert.ToDouble(response.Code500) / Convert.ToDouble(response.Total)).ToString("0.00%"); 
+                response.APICount = result.ReadFirst<int>();
+                response.ErrorPercent = response.Total.ToInt() == 0 ? "0.00%" : (Convert.ToDouble(response.Code500) / Convert.ToDouble(response.Total)).ToString("0.00%");
             }
 
-            return response; 
-        } 
+            return response;
+        }
 
         public List<GetTopResponse> GetTopRequest(GetTopRequest request)
         {
             string where = BuildTopWhere(request);
 
-            string sql = $" Select TOP {request.TOP}  Url,COUNT(1) as Total From RequestInfo {where} Group By Url order by Total {(request.IsDesc?"Desc":"Asc")} ";
+            string sql = $" Select TOP {request.TOP}  Url,COUNT(1) as Total From RequestInfo {where} Group By Url order by Total {(request.IsDesc ? "Desc" : "Asc")} ";
 
-            return conn.Query<GetTopResponse>(sql).ToList(); 
+            return conn.Query<GetTopResponse>(sql).ToList();
         }
 
         public string BuildTopWhere(GetTopRequest request)
-        { 
+        {
             string where = " where 1=1 ";
 
             if (!request.Node.IsEmpty())
@@ -258,8 +250,8 @@ namespace HttpReports.Dashboard.DataAccessors
                 where = where + $" AND CreateTime < '{request.End}' ";
             }
 
-            return where; 
-        } 
+            return where;
+        }
 
         public List<GetTopResponse> GetCode500Response(GetTopRequest request)
         {
@@ -267,9 +259,8 @@ namespace HttpReports.Dashboard.DataAccessors
 
             string sql = $" Select TOP {request.TOP}  Url,COUNT(1) as Total From RequestInfo {where} AND StatusCode = 500 Group By Url order by Total {(request.IsDesc ? "Desc" : "Asc")} ";
 
-            return conn.Query<GetTopResponse>(sql).ToList(); 
+            return conn.Query<GetTopResponse>(sql).ToList();
         }
-
 
         /// <summary>
         /// 获取接口平均处理时间
@@ -278,12 +269,11 @@ namespace HttpReports.Dashboard.DataAccessors
         /// <returns></returns>
         public List<EchartPineDataModel> GetTOPART(GetTopRequest request)
         {
-            string where = BuildTopWhere(request); 
+            string where = BuildTopWhere(request);
 
-            string sql = $" Select TOP {request.TOP}   Url Name ,Avg(Milliseconds) Value From RequestInfo {where} Group By Url order by Value {(request.IsDesc ? "Desc" : "Asc")} ";  
+            string sql = $" Select TOP {request.TOP}   Url Name ,Avg(Milliseconds) Value From RequestInfo {where} Group By Url order by Value {(request.IsDesc ? "Desc" : "Asc")} ";
 
             return conn.Query<EchartPineDataModel>(sql).ToList();
-
         }
 
         public List<RequestInfo> GetRequestList(GetRequestListRequest request, out int totalCount)
@@ -314,12 +304,12 @@ namespace HttpReports.Dashboard.DataAccessors
 
             if (!request.Url.IsEmpty())
             {
-                where = where + $" AND  Url like '%{request.Url}%' "; 
-            } 
+                where = where + $" AND  Url like '%{request.Url}%' ";
+            }
 
             string sql = "Select * From RequestInfo " + where;
 
-            return conn.GetListBySql<RequestInfo>(sql, "id desc", request.pageSize, request.pageNumber, out totalCount, request); 
+            return conn.GetListBySql<RequestInfo>(sql, "id desc", request.pageSize, request.pageNumber, out totalCount, request);
         }
 
         public void AddJob(Models.Job job)
@@ -330,9 +320,9 @@ namespace HttpReports.Dashboard.DataAccessors
         public List<Models.Job> GetJobs()
         {
             using (var con = new SqlConnection(conn.ConnectionString))
-            { 
-                return con.GetAll<Models.Job>().ToList(); 
-            }  
+            {
+                return con.GetAll<Models.Job>().ToList();
+            }
         }
 
         public CheckModel CheckRt(Models.Job job, int minute)
@@ -341,10 +331,10 @@ namespace HttpReports.Dashboard.DataAccessors
             {
                 string where = " where 1=1 ";
 
-                where = BuildWhereByTime(where, minute); 
+                where = BuildWhereByTime(where, minute);
                 where = BuildWhereByNode(where, job.Servers);
 
-                string Time = DateTime.Now.AddMinutes(-minute).ToString("yyyy-MM-dd HH:mm:ss") + "-" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"); 
+                string Time = DateTime.Now.AddMinutes(-minute).ToString("yyyy-MM-dd HH:mm:ss") + "-" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
                 int now = con.QueryFirstOrDefault<int>($" Select Count(1) From RequestInfo {where} AND Milliseconds >= {job.RtTime} ");
 
@@ -369,8 +359,8 @@ namespace HttpReports.Dashboard.DataAccessors
                         Value = Math.Round(percent, 4).ToString(),
                         Time = Time
                     };
-                } 
-            } 
+                }
+            }
         }
 
         public CheckModel CheckHttp(Models.Job job, int minute)
@@ -379,7 +369,7 @@ namespace HttpReports.Dashboard.DataAccessors
             {
                 string where = " where 1=1 ";
 
-                where = BuildWhereByTime(where, minute); 
+                where = BuildWhereByTime(where, minute);
                 where = BuildWhereByNode(where, job.Servers);
 
                 string Time = DateTime.Now.AddMinutes(-minute).ToString("yyyy-MM-dd HH:mm:ss") + "-" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -408,8 +398,7 @@ namespace HttpReports.Dashboard.DataAccessors
                         Time = Time
                     };
                 }
-
-            }  
+            }
         }
 
         public CheckModel CheckIP(Models.Job job, int minute)
@@ -418,7 +407,7 @@ namespace HttpReports.Dashboard.DataAccessors
             {
                 string where = " where 1=1 ";
 
-                where = BuildWhereByTime(where, minute); 
+                where = BuildWhereByTime(where, minute);
                 where = BuildWhereByNode(where, job.Servers);
 
                 string Time = DateTime.Now.AddMinutes(-minute).ToString("yyyy-MM-dd HH:mm:ss") + "-" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -443,12 +432,12 @@ namespace HttpReports.Dashboard.DataAccessors
                     return new CheckModel()
                     {
                         Ok = false,
-                        Value = Math.Round(percent,4).ToString(),
+                        Value = Math.Round(percent, 4).ToString(),
                         Time = Time
                     };
-                }  
-            } 
-        }  
+                }
+            }
+        }
 
         public CheckModel CheckRequestCount(Models.Job job, int minute)
         {
@@ -456,7 +445,7 @@ namespace HttpReports.Dashboard.DataAccessors
             {
                 string where = " where 1=1 ";
 
-                where = BuildWhereByTime(where, minute); 
+                where = BuildWhereByTime(where, minute);
                 where = BuildWhereByNode(where, job.Servers);
                 string Time = DateTime.Now.AddMinutes(-minute).ToString("yyyy-MM-dd HH:mm:ss") + "-" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
@@ -474,12 +463,11 @@ namespace HttpReports.Dashboard.DataAccessors
                         Value = now.ToString(),
                         Time = Time
                     };
-
-                } 
-            } 
+                }
+            }
         }
 
-        private string BuildWhereByTime(string where,int minute)
+        private string BuildWhereByTime(string where, int minute)
         {
             var start = DateTime.Now.AddMinutes(-minute).ToString("yyyy-MM-dd HH:mm:ss");
             var end = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -489,7 +477,7 @@ namespace HttpReports.Dashboard.DataAccessors
             return where;
         }
 
-        private string BuildWhereByNode(string where,string node)
+        private string BuildWhereByNode(string where, string node)
         {
             if (node.IsEmpty())
             {
@@ -501,8 +489,7 @@ namespace HttpReports.Dashboard.DataAccessors
             where = where + $" AND Node IN ({nodes})";
 
             return where;
-
-        } 
+        }
 
         private string BuildWhereByHttpCode(string codes)
         {
@@ -511,11 +498,11 @@ namespace HttpReports.Dashboard.DataAccessors
                 return string.Empty;
             }
 
-            string code = string.Join(",", codes.Split(",").ToList().Select(x =>x));
+            string code = string.Join(",", codes.Split(",").ToList().Select(x => x));
 
-            string where =  $" AND StatusCode In ({code})  ";
+            string where = $" AND StatusCode In ({code})  ";
 
-            return where;  
+            return where;
         }
 
         private string BuildWhereByIP(string iplist)
@@ -527,9 +514,9 @@ namespace HttpReports.Dashboard.DataAccessors
 
             string ip = string.Join(",", iplist.Split(",").ToList().Select(x => "'" + x + "'"));
 
-            string where =  $" AND IP Not IN ({ip})";
+            string where = $" AND IP Not IN ({ip})";
 
-            return where;  
+            return where;
         }
 
         public Models.Job GetJob(int Id)
@@ -546,6 +533,5 @@ namespace HttpReports.Dashboard.DataAccessors
         {
             conn.Delete<Models.Job>(job);
         }
-
     }
 }

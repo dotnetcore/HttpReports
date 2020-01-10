@@ -1,18 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Linq;
+
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace HttpReports.Dashboard.Filters
 {
-    public class GlobalAuthorizeFilter: IAuthorizationFilter
+    public class GlobalAuthorizeFilter : IAuthorizationFilter
     {
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            // 判断是否跳过授权过滤器 
+            // 判断是否跳过授权过滤器
             if (context.Filters.Any(x => x is IAllowAnonymousFilter))
             {
                 return;
@@ -24,7 +22,7 @@ namespace HttpReports.Dashboard.Filters
             {
                 context.Result = new RedirectResult("/User/Login");
                 return;
-            } 
+            }
         }
     }
 }

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace HttpReports.Dashboard.Implements
+﻿namespace HttpReports.Dashboard.Implements
 {
     public class Utils
-    { 
+    {
         public static bool ObjToBool(object expression, bool defValue = false)
         {
             if (expression != null)
@@ -17,6 +12,5 @@ namespace HttpReports.Dashboard.Implements
             }
             return defValue;
         }
-
     }
 }
