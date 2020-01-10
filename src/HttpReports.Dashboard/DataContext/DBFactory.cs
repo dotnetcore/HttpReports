@@ -48,20 +48,14 @@ namespace HttpReports.Dashboard.DataContext
             {
                 throw new Exception("数据库初始化失败！错误信息:" + ex.Message);
             }
+
         }
 
         private void InitSqlServer(string Constr)
         {
             using (SqlConnection con = new SqlConnection(Constr))
             {
-                //string TempConstr = Constr.Replace("httpreports", "master");
-
-                //string DB_id = con.QueryFirstOrDefault<string>(" SELECT DB_ID('HttpReports') ");
-
-                //if (string.IsNullOrEmpty(DB_id))
-                //{
-                //    int i = con.Execute(" Create Database HttpReports ");
-                //}
+                CreateDataBaseSqlServer(Constr);
 
                 // 检查RequestInfo表
                 if (con.QueryFirstOrDefault<int>(" Select Count(*) from sysobjects where id = object_id('HttpReports.dbo.RequestInfo') ") == 0)
@@ -89,7 +83,7 @@ namespace HttpReports.Dashboard.DataContext
 
                     ");
 
-                    //new MockData().MockSqlServer(Constr);
+                    //new MockData().MockSqlServer(Constr); 
                 }
 
                 // 检查Job表
@@ -126,6 +120,8 @@ namespace HttpReports.Dashboard.DataContext
                             )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
                             ) ON [PRIMARY]
 
+
+
                       ");
                 }
             }
@@ -135,19 +131,7 @@ namespace HttpReports.Dashboard.DataContext
         {
             using (MySqlConnection con = new MySqlConnection(Constr))
             {
-                //string TempConstr = Constr.ToLower().Replace("httpreports", "sys");
-
-                //MySqlConnection TempConn = new MySqlConnection(TempConstr);
-
-                //var DbInfo = TempConn.QueryFirstOrDefault<string>("  show databases like 'httpreports'; ");
-
-                //if (string.IsNullOrEmpty(DbInfo))
-                //{
-                //    TempConn.Execute(" create database HttpReports; ");
-                //}
-
-                //TempConn.Close();
-                //TempConn.Dispose();
+                CreateDataBaseMySql(Constr); 
 
                 if (con.QueryFirstOrDefault<int>("  Select count(1) from information_schema.tables where table_name ='RequestInfo' and table_schema = 'HttpReports'; ") == 0)
                 {
@@ -193,11 +177,70 @@ namespace HttpReports.Dashboard.DataContext
                               `RequestStatus` int(2) DEFAULT NULL,
                               `RequestCount` int(11) DEFAULT NULL,
                               PRIMARY KEY (`Id`)
-                            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+                            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci; 
 
                      ");
+
                 }
+
             }
         }
-    }
+
+        private void CreateDataBaseSqlServer(string Constr)
+        {
+            if (string.IsNullOrEmpty(Constr))
+            {
+                return; 
+            }
+
+            string newStr = string.Empty;
+
+            Constr.ToLower().Split(';').ToList().ForEach(x => {
+
+                if (!x.Contains("database"))
+                {
+                    newStr = newStr + x + ";";
+                } 
+            });
+
+            using (SqlConnection connection = new SqlConnection(newStr))
+            {
+                string DB_id = connection.QueryFirstOrDefault<string>(" SELECT DB_ID('HttpReports') ");
+
+                if (string.IsNullOrEmpty(DB_id))
+                {
+                    connection.Execute(" Create Database HttpReports; ");
+                } 
+            }  
+        } 
+ 
+        private void CreateDataBaseMySql(string Constr)
+        {
+            if (string.IsNullOrEmpty(Constr))
+            {
+                return;
+            }
+
+            string newStr = string.Empty;
+
+            Constr.ToLower().Split(';').ToList().ForEach(x => {
+
+                if (!x.Contains("database"))
+                {
+                    newStr = newStr + x + ";";
+                }  
+            }); 
+
+            using (MySqlConnection TempConn = new MySqlConnection(newStr))
+            {
+                var DbInfo = TempConn.QueryFirstOrDefault<string>(" show databases like 'HttpReports'; ");
+
+                if (string.IsNullOrEmpty(DbInfo))
+                {
+                    TempConn.Execute(" create database HttpReports; ");
+                }  
+            }  
+        } 
+
+    }  
 }
