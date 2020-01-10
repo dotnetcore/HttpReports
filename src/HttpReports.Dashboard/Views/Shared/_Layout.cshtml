@@ -1,0 +1,162 @@
+﻿@{ 
+    var user = ViewContext.HttpContext.Request.Cookies["login_info"];  
+} 
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HttpReports</title>
+
+    <link href="/Content/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/Content/assets/css/font-awesome.min.css" rel="stylesheet">
+    <link href="~/Content/assets/css/jquery.mmenu.css" rel="stylesheet" />
+    <link id="theme" href="/Content/assets/css/style.min.css?ver=1.0.1" rel="stylesheet">
+    <link href="/Content/assets/css/add-ons.min.css?ver=1.0.1" rel="stylesheet">
+
+    <link class="theme" id="theme_light" href="/Content/css/theme/light.css?ver=1.0.1" rel="stylesheet" />
+    <link class="theme" id="theme_dark" href="/Content/css/theme/dark.css?ver=1.0.1" rel="stylesheet" />
+
+    <script src="/Content/assets/js/jquery-2.1.1.min.js"></script>
+    <script src="/Content/assets/js/jquery.mmenu.min.js"></script>
+    <script src="/Content/assets/js/core.min.js?ver=1.0.1"></script>
+
+    <link href="https://cdn.bootcss.com/tippy.js/3.4.1/tippy.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/tippy.js/3.4.1/tippy.all.js"></script>
+
+
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.14.2/bootstrap-table.js"></script>
+    <script src="/Content/assets/js/bootstrap-table-zh-CN.js"></script>
+
+
+
+    <script src="/Content/assets/js/bootstrap.min.js"></script>
+
+    <script src="https://cdn.bootcss.com/echarts/4.3.0/echarts.min.js"></script>
+    <script src="https://www.echartsjs.com/zh/asset/theme/macarons.js"></script>
+    <script src="https://www.echartsjs.com/zh/asset/theme/dark.js"></script>
+
+
+    <link href="https://cdn.bootcss.com/html5tooltipsjs/1.7.3/html5tooltips.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/html5tooltipsjs/1.7.3/html5tooltips.min.js"></script>
+
+    <link href="~/Content/busyload/app.css?ver=1.0.1" rel="stylesheet" />
+    <script src="~/Content/busyload/app.js?ver=1.0.1"></script>
+
+    <!-- CSS 引入 -->
+    <script src="~/Content/laydate/laydate.js"></script>
+
+    <script src="~/Content/assets/js/jquery.goup.js"></script>
+
+    <link href="~/Content/alert/alert.css?ver=1.0.1" rel="stylesheet" />
+
+    <script src="~/Content/alert/alert.js?ver=1.0.1"></script>
+
+    <script src="~/Content/common/basic.js?ver=1.0.1"></script>
+
+    <link href="~/Content/common/basic.css?ver=1.0.1" rel="stylesheet" />
+    <script src="/Content/page/main.js?ver=1.0.1"></script>
+
+    <link rel="icon" href="/Content/assets/img/img.ico" type="image/x-icon" />
+
+</head>
+
+<body>
+
+    <!-- start: Header -->
+    <div class="navbar" role="navigation">
+
+        <div class="container-fluid">
+
+            <ul class="nav navbar-nav navbar-actions navbar-left">
+                <li class="visible-md visible-lg"><a href="#" id="main-menu-toggle"><i class="fa fa-th-large"></i></a></li>
+                <li class="visible-xs visible-sm"><a href="#" id="sidebar-menu"><i class="fa fa-navicon"></i></a></li>
+            </ul>
+
+
+
+
+            <ul class="nav navbar-nav navbar-right">
+
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-dashboard"></i></a>
+                    <ul class="dropdown-menu update-menu" role="menu">
+                        <li>
+                            <a data-key="light" onclick="ChangeTheme(this)"><i class="fa fa-sun-o"></i> 亮色模式 </a>
+                        </li>
+                        <li>
+                            <a data-key="dark" onclick="ChangeTheme(this)"><i class="fa fa-moon-o"></i> 暗色模式 </a>
+                        </li>
+                    </ul>
+                </li>
+
+
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img style="display:none" class="user-avatar" src="/Content/assets/img/avatar.jpg" alt="user-mail">@user</a>
+                </li>
+                <li><a href="/User/Logout"><i class="fa fa-power-off"></i></a></li>
+            </ul>
+
+        </div>
+
+    </div>
+    <!-- end: Header -->
+
+    <div class="container-fluid content">
+
+        <div class="row">
+
+            <!-- start: Main Menu -->
+            <div class="sidebar">
+
+                <div class="sidebar-collapse">
+                    <div class="sidebar-header t-center">
+                        <span class="logo_title" style="line-height: 44px; margin-left: 48px;  font-size: 18px;text-align:center;float:left;font-weight:bold;">HttpReports</span>
+                    </div>
+                    <div class="sidebar-menu">
+
+                        <ul class="nav nav-sidebar">
+
+                            <li data-title="HomePage1" class="meun1"><a href="/Home/Index"><i class="fa fa-laptop"></i><span class="text">基础数据</span></a></li>
+
+                            <li data-title="HomePage1" class="meun1"><a href="/Home/Trend"><i class="fa fa-bar-chart-o"></i><span class="text">趋势数据</span></a></li>
+
+                            <li data-title="HomePage1" class=""><a href="/Home/Detail"><i class="fa fa-bars"></i><span class="text">请求列表</span></a></li>
+
+                            <li data-title="HomePage1" class=""><a href="/Home/Monitor"><i class="fa fa-rocket"></i><span class="text">预警监控</span></a></li>
+
+                        </ul>
+
+                    </div>
+                </div>
+                <div class="sidebar-footer">
+
+
+                </div>
+
+            </div>
+            <!-- end: Main Menu -->
+            <!-- start: Content -->
+            <div class="main" style="width:98%;margin:20px auto">
+
+                @RenderBody()
+
+            </div>
+            <!-- end: Content -->
+            <br><br><br>
+
+
+        </div><!--/container-->
+
+    </div>
+
+    <div class="clearfix"></div>
+
+    <input type="hidden" id="meun" value="@(ViewData["menu"] == null ? "HomePage":ViewData["menu"] )" />
+
+   
+
+</body>
+</html>

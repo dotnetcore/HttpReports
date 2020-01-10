@@ -1,0 +1,169 @@
+﻿
+@{
+    ViewData["Title"] = "Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+     List<string> nodes = ViewBag.nodes; 
+}
+
+<div class="panel panel-default">
+
+    <div class="panel-body" style="padding-left:30px;padding-right:30px;padding-top:30px;min-height:720px">
+
+        <div class="row" style="padding-left:13px;padding-right:13px">
+
+            <div class="panel panel-default">
+                <div class="panel-body shadow-box" style="padding-bottom:20px">
+
+                    <div class="form-inline form">
+
+                        <div class="col-sm-12" style="margin-top:10px">
+
+                            <b><i class="glyphicon glyphicon-signal"></i> 服务节点</b>
+
+                            <span class="glyphicon glyphicon-info-sign serviceTip" style="font-size:20px;top:0.2em;cursor:pointer"></span>
+
+                            @*<button type="button" onclick="select_all(this)" style="width:60px;margin-right:8px;margin-left:8px" class="btn btn-success btn-xs">全选</button>
+
+                            <button type="button" onclick="select_reverse(this)" style="width:60px;margin-right:8px;" class="btn btn-success btn-xs">反选</button>*@
+
+                        </div>
+
+                        <div class="col-sm-12 node-row" style="margin-top:8px;margin-bottom:8px;min-height:44px">
+
+                            @foreach (var item in nodes)
+                            {
+                                <button onclick="check_node(this)" style="width:120px;margin-left:20px;border-radius:4px;" class="btn btn-info service-button">@item</button>
+                            }
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-12" style="">
+
+                        <div class="col-sm-3" style="padding-left:0">
+
+                            <button style="min-width:120px;" onclick="QueryClick(this)" class="btn btn-info  btn-search">查询</button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-md-12">
+
+                <div class="panel panel-default">
+                    <div class="panel-body shadow-box" style="padding-top:20px;padding-bottom:14px">
+
+                        <div class="col-sm-12" style="margin-bottom:12px;">
+
+                            <div class="form-inline form">
+
+
+                                <label class="form-label">按天查询</label>
+                                <input type="text" style="max-width:120px;min-width:120px" class="form-control laydate day" value="@(DateTime.Now.ToString("yyyy-MM-dd"))">
+
+                                <button style="min-width:120px;margin-left:6px;" onclick="GetDayChart()" class="btn btn-info btn-search">查询</button>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-sm-12">
+                            <div id="DayStateTimesBar" style="height:300px"></div>
+                        </div>
+
+                        <div class="col-sm-12" style="margin-top:12px">
+                            <div id="DayStateAvgBar" style="height:300px"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div> 
+
+
+        <div class="row">
+
+            <div class="col-md-12">
+
+                <div class="panel panel-default">
+                    <div class="panel-body shadow-box">
+
+                        <div class="col-sm-12" style="margin-bottom:12px;padding-top:20px;">
+
+                            <div class="form-inline form">
+
+
+                                <label class="form-label">按月查询</label>
+                                <input type="text" style="max-width:120px;min-width:120px" class="form-control laydate month" value="@(DateTime.Now.ToString("yyyy-MM"))">
+
+                                <button style="min-width:120px;margin-left:6px;" onclick="GetLatelyChart()" class="btn btn-info btn-search">查询</button>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-sm-12">
+
+                            <div id="LatelyDayChart" style="height:360px"></div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-md-12">
+
+                <div class="panel panel-default">
+                    <div class="panel-body shadow-box">
+
+                        <div class="col-sm-12" style="margin-bottom:12px;padding-top:20px;">
+
+                            <div class="form-inline form">
+
+
+                                <label class="form-label">按年查询</label>
+                                <input type="text" style="max-width:120px;min-width:120px" class="form-control laydate year" value="@(DateTime.Now.ToString("yyyy"))">
+
+                                <button style="min-width:120px;margin-left:6px;" onclick="GetLatelyMonthChart()" class="btn btn-info btn-search">查询</button>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-sm-12">
+
+                            <div id="LatelyMonthChart" style="height:360px"></div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+ 
+<script src="/Content/page/trend.js?ver=1.0.1"></script>

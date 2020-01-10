@@ -1,0 +1,31 @@
+﻿.sidebar  {
+    background-color: #ffffff !important;
+}
+.sidebar-footer {
+    background-color:#ffffff !important;
+}
+.logo_title {
+    color: #3788db;
+}
+
+.sidebar-menu .active a{
+    background: #3788db !important;
+    color: #FFF !important;
+}
+.sidebar ul.nav.nav-sidebar li.active {
+    background: #3788db !important;
+    color: #FFF !important;
+}
+
+.sidebar-menu .active i {
+    color: #FFF !important;
+} 
+ 
+.nav-sidebar i {
+    color: #495057 !important;
+}
+
+.sidebar a {
+    color: #495057 !important;
+}
+ 
