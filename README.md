@@ -15,13 +15,14 @@ HttpReports 是 .Net Core 下的一个Web项目, 适用于WebAPI，Ocelot网关�
 
 #### 主要模块
 
-主要包含HttpReports 中间件 和 HttpReports.Web 的MVC项目;
+**考虑到项目统一管理，已经在把 HttpReports.Web 重命名为 HttpReports.Dashborad, 并且合并到HttpReports项目** 
 
-HttpReports： https://github.com/SpringLeee/HttpReports  
-  
-HttpReports.Web： https://github.com/SpringLeee/HttpReportsWeb
+主要包含HttpReports 中间件 和 HttpReports.Dashboard 的MVC项目; 
 
-在线预览： http://175.102.11.117:8801 账号 admin 密码 123456
+项目地址：https://github.com/SpringLeee/HttpReports    
+
+在线预览： http://175.102.11.117:8801 账号 admin 密码 123456  
+
 
 #### 支持项目类型  
 
@@ -152,11 +153,10 @@ services.AddHttpReportsMiddleware(WebType.API, DBType.SqlServer,"Pay");
 
 ------------ 
 
-#### HttpReports.Web部分
+#### HttpReports.Dashboard 部分
 
-github源码：https://github.com/SpringLeee/HttpReportsWeb 
-有需要的也可以下载源码后编译，默认的git分支是Core 2.2 版本，还有一个 core 3.0的分支；
-
+github源码：https://github.com/SpringLeee/HttpReports
+ 
 这里提供 core2.2 和 3.0 的发布版本下载：  
 
 Core 2.2 发布版本：   https://files.cnblogs.com/files/myshowtime/HttpReports2.2.zip 
@@ -292,11 +292,7 @@ https://github.com/SpringLeee/HttpReports
  
 如果您在项目中使用了HttpReports，或者感兴趣的可以加入QQ群，大家一起沟通，有更新也会第一时间通知，也可以添加我的微信，希望可以帮助到您
  
- ![](https://images.cnblogs.com/cnblogs_com/myshowtime/1627540/o_a15.png)
- 
- 
-
- 
+ ![](https://images.cnblogs.com/cnblogs_com/myshowtime/1627540/o_a15.png) 
 
 
 
