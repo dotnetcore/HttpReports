@@ -5,7 +5,7 @@ using Dapper.Contrib.Extensions;
 namespace HttpReports
 {
     [Table("RequestInfo")]
-    public class RequestInfo
+    public class RequestInfo : IRequestInfo
     {
         /// <summary>
         /// Id
