@@ -1,9 +1,9 @@
-﻿using System.Linq;
+﻿using System;
 using System.Threading.Tasks;
 
 using Dapper;
-
-using MySql.Data.MySqlClient;
+using Dapper.Contrib.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace HttpReports.Storage.MySql
 {
@@ -11,20 +11,21 @@ namespace HttpReports.Storage.MySql
     {
         public MySqlConnectionFactory ConnectionFactory { get; }
 
-        public MySqlStorage(MySqlConnectionFactory connectionFactory)
+        public ILogger<MySqlStorage> Logger { get; }
+
+        public MySqlStorage(MySqlConnectionFactory connectionFactory, ILogger<MySqlStorage> logger)
         {
             ConnectionFactory = connectionFactory;
+            Logger = logger;
         }
 
-        public Task InitAsync()
+        public async Task InitAsync()
         {
             using (var con = ConnectionFactory.GetConnection())
             {
-                //CreateDataBaseMySql(ConnectionFactory.Options.ConnectionString);
-
                 if (con.QueryFirstOrDefault<int>("  Select count(1) from information_schema.tables where table_name ='RequestInfo' and table_schema = 'HttpReports'; ") == 0)
                 {
-                    con.Execute(@"
+                    await con.ExecuteAsync(@"
                         CREATE TABLE `RequestInfo` (
                           `Id` int(11) NOT NULL auto_increment,
                           `Node` varchar(50) default NULL,
@@ -36,12 +37,12 @@ namespace HttpReports.Storage.MySql
                           `IP` varchar(50) default NULL,
                           `CreateTime` datetime default NULL,
                           PRIMARY KEY  (`Id`)
-                        ) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;  ");
+                        ) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;  ").ConfigureAwait(false);
                 }
 
                 if (con.QueryFirstOrDefault<int>(" Select count(1) from information_schema.tables where table_name ='Job' and table_schema = 'HttpReports'; ") == 0)
                 {
-                    con.Execute(@"
+                    await con.ExecuteAsync(@"
 
                             CREATE TABLE `Job` (
                               `Id` int(11) NOT NULL AUTO_INCREMENT,
@@ -66,38 +67,25 @@ namespace HttpReports.Storage.MySql
                               PRIMARY KEY (`Id`)
                             ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-                     ");
+                     ").ConfigureAwait(false);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
-        private void CreateDataBaseMySql(string Constr)
+        public async Task AddRequestInfoAsync(IRequestInfo request)
         {
-            if (string.IsNullOrEmpty(Constr))
+            //TODO 实现批量存储
+            try
             {
-                return;
+                using (var connection = ConnectionFactory.GetConnection())
+                {
+                    await connection.InsertAsync(request as RequestInfo).ConfigureAwait(false);
+                    //await connection.ExecuteAsync("insert into RequestInfo(Node,Route,Url,Method,Milliseconds,StatusCode,IP,CreateTime) values(@Node,@Route,@Url,@Method,@Milliseconds,@StatusCode,@IP,@CreateTime)", request).ConfigureAwait(false);
+                }
             }
-
-            string newStr = string.Empty;
-
-            Constr.ToLower().Split(';').ToList().ForEach(x =>
+            catch (Exception ex)
             {
-                if (!x.Contains("database"))
-                {
-                    newStr = newStr + x + ";";
-                }
-            });
-
-            using (var TempConn = new MySqlConnection(newStr))
-            {
-                var DbInfo = TempConn.QueryFirstOrDefault<string>(" show databases like 'HttpReports'; ");
-
-                if (string.IsNullOrEmpty(DbInfo))
-                {
-                    TempConn.Execute(" create database HttpReports; ");
-                }
+                Logger.LogError(ex, "请求数据保存失败");
             }
         }
     }

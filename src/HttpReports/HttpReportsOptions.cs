@@ -1,6 +1,10 @@
-﻿namespace HttpReports
+﻿using System;
+
+using Microsoft.Extensions.Options;
+
+namespace HttpReports
 {
-    public class HttpReportsOptions
+    public class HttpReportsOptions : IOptions<HttpReportsOptions>
     {
         /// <summary>
         /// 默认为 api
@@ -12,23 +16,17 @@
         /// </summary>
         public string Node { get; set; }
 
-        /// <summary>
-        ///  数据库类型 默认SqlServer,可选SqlServer,MySql
-        /// </summary>
-        public DBType DBType { get; set; }
-
-        /// <summary>
-        ///  Web类型
-        /// </summary>
-        public WebType WebType { get; set; }
+        public HttpReportsOptions Value => this;
     }
 
+    [Obsolete("有新的替代方案", true)]
     public enum DBType
     {
         SqlServer,
         MySql
     }
 
+    [Obsolete("有新的替代方案", true)]
     public enum WebType
     {
         API,

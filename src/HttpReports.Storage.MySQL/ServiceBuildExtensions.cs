@@ -11,6 +11,8 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.Configure<MySqlStorageOptions>(builder.Configuration.GetSection("Storage"));
             builder.Services.AddTransient<IHttpReportsStorage, MySqlStorage>();
             builder.Services.AddSingleton<MySqlConnectionFactory>();
+            builder.Services.AddSingleton<IModelCreator, RequestInfoCreator>();
+
             return builder;
         }
     }

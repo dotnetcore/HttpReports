@@ -18,27 +18,19 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="dbType">Type of the database.</param>
         /// <param name="Node">The node.</param>
         /// <returns></returns>
-        [Obsolete]
+        [Obsolete("有新的替代方案", true)]
         public static IServiceCollection AddHttpReportsMiddleware(this IServiceCollection services, IConfiguration configuration, WebType webType, DBType dbType, string Node = "Default")
         {
-            Action<HttpReportsOptions> options = (op) =>
-            {
-                op.DBType = dbType;
-                op.WebType = webType;
-                op.Node = string.IsNullOrEmpty(Node) ? "Default" : Node;
-            };
-
-            services.AddOptions();
-            services.Configure(options);
-            HttpReportsMiddleware.Configuration = configuration;
-            return services.AddTransient<IHttpReports, DefaultHttpReports>();
+            return services;
         }
 
         public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddOptions();
             services.Configure<HttpReportsOptions>(configuration);
+            services.AddSingleton<IModelCreator, DefaultModelCreator>();
             services.AddSingleton<IHttpInvokeProcesser, DefaultHttpInvokeProcesser>();
+
             return new HttpReportsBuilder(services, configuration);
         }
 
@@ -64,14 +56,15 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
+        /// <summary>
         /// 使用 HttpReports, 必须放在UseMvc之前
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        [Obsolete]
+        [Obsolete("有新的替代方案", true)]
         public static IApplicationBuilder UseHttpReportsMiddleware(this IApplicationBuilder app)
         {
-            return app.UseMiddleware<HttpReportsMiddleware>();
+            return app;
         }
 
         /// <summary>
@@ -81,7 +74,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IApplicationBuilder UseHttpReports(this IApplicationBuilder app)
         {
-            var storage = app.ApplicationServices.GetRequiredService<IHttpReportsStorage>();
+            var storage = app.ApplicationServices.GetRequiredService<IHttpReportsStorage>() ?? throw new ArgumentNullException("未正确配置存储方式");
             storage?.InitAsync().Wait();
 
             return app.UseMiddleware<DefaultHttpReportsMiddleware>();

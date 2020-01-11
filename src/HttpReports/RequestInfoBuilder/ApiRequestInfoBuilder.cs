@@ -6,10 +6,10 @@ namespace HttpReports
 {
     internal class ApiRequestInfoBuilder : BaseRequestInfoBuilder
     {
-        public ApiRequestInfoBuilder(IOptions<HttpReportsOptions> options) : base(options)
+        public ApiRequestInfoBuilder(IModelCreator modelCreator, IOptions<HttpReportsOptions> options) : base(modelCreator, options)
         { }
 
-        protected override RequestInfo Build(RequestInfo request, string path)
+        protected override IRequestInfo Build(IRequestInfo request, string path)
         {
             request.Node = GetNode(path);
             request.Route = GetRouteForAPI(path);

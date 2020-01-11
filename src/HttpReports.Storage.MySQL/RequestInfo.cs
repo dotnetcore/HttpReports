@@ -1,8 +1,11 @@
 ﻿using System;
 
-namespace HttpReports
+using Dapper.Contrib.Extensions;
+
+namespace HttpReports.Storage.MySql
 {
-    public class RequestInfo : IRequestInfo
+    [Table("RequestInfo")]
+    internal class RequestInfo : IRequestInfo
     {
         /// <summary>
         /// Id

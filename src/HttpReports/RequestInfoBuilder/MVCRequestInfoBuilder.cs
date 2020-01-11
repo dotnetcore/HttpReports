@@ -6,10 +6,10 @@ namespace HttpReports
 {
     internal class MVCRequestInfoBuilder : BaseRequestInfoBuilder
     {
-        public MVCRequestInfoBuilder(IOptions<HttpReportsOptions> options) : base(options)
+        public MVCRequestInfoBuilder(IModelCreator modelCreator, IOptions<HttpReportsOptions> options) : base(modelCreator, options)
         { }
 
-        protected override RequestInfo Build(RequestInfo request, string path)
+        protected override IRequestInfo Build(IRequestInfo request, string path)
         {
             request.Node = Options.Node.Substring(0, 1).ToUpper() + Options.Node.Substring(1).ToLower();
             request.Route = GetRouteForMVC(path);

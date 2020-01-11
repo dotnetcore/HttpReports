@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace HttpReports
 {
@@ -15,6 +12,13 @@ namespace HttpReports
         /// </summary>
         /// <returns></returns>
         Task InitAsync();
+
+        /// <summary>
+        /// 添加一条请求记录
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        Task AddRequestInfoAsync(IRequestInfo request);
 
         //TODO 定义所有数据存取接口
     }

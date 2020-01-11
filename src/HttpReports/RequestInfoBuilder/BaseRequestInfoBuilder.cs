@@ -9,29 +9,29 @@ namespace HttpReports
     internal abstract class BaseRequestInfoBuilder : IRequestInfoBuilder
     {
         protected HttpReportsOptions Options { get; }
+        protected IModelCreator ModelCreator { get; }
 
-        public BaseRequestInfoBuilder(IOptions<HttpReportsOptions> options)
+        public BaseRequestInfoBuilder(IModelCreator modelCreator, IOptions<HttpReportsOptions> options)
         {
             Options = options.Value;
+            ModelCreator = modelCreator;
         }
 
         //TODO 此函数是否只需要传path？
-        protected abstract RequestInfo Build(RequestInfo request, string path);
+        protected abstract IRequestInfo Build(IRequestInfo request, string path);
 
         public IRequestInfo Build(HttpContext context, Stopwatch stopwatch)
         {
             var path = (context.Request.Path.Value ?? string.Empty).ToLowerInvariant();
 
             // 创建请求信息
-            RequestInfo request = new RequestInfo
-            {
-                IP = context.Connection.RemoteIpAddress.ToString(),
-                StatusCode = context.Response.StatusCode,
-                Method = context.Request.Method,
-                Url = context.Request.Path,
-                Milliseconds = ToInt32(stopwatch.ElapsedMilliseconds),
-                CreateTime = DateTime.Now
-            };
+            var request = ModelCreator.NewRequestInfo();
+            request.IP = context.Connection.RemoteIpAddress.ToString();
+            request.StatusCode = context.Response.StatusCode;
+            request.Method = context.Request.Method;
+            request.Url = context.Request.Path;
+            request.Milliseconds = ToInt32(stopwatch.ElapsedMilliseconds);
+            request.CreateTime = DateTime.Now;
 
             return Build(request, path);
         }
@@ -57,7 +57,7 @@ namespace HttpReports
 
             var arr = path.Substring(1).Split('/');
 
-            if (arr.Length > 0 && arr[1] == Options.ApiPoint)
+            if (arr.Length > 1 && arr[1] == Options.ApiPoint)
             {
                 Default = arr[0];
             }

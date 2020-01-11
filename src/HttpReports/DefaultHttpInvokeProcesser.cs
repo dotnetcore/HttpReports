@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
+﻿using System.Diagnostics;
+
 using Microsoft.AspNetCore.Http;
 
 namespace HttpReports
@@ -20,7 +18,8 @@ namespace HttpReports
         public void Process(HttpContext context, Stopwatch stopwatch)
         {
             var requestInfo = RequestInfoBuilder.Build(context, stopwatch);
-            //TODO 保存请求信息
+
+            Storage.AddRequestInfoAsync(requestInfo).ConfigureAwait(false);
         }
     }
 }
