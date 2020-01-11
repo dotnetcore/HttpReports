@@ -34,11 +34,14 @@ namespace Microsoft.Extensions.DependencyInjection
             return services.AddTransient<IHttpReports, DefaultHttpReports>();
         }
 
-        public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services, IConfiguration configuration)
-        {
+        public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services)
+        { 
+            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports"); 
+
             services.AddOptions();
             services.Configure<HttpReportsOptions>(configuration);
             services.AddSingleton<IHttpInvokeProcesser, DefaultHttpInvokeProcesser>();
+
             return new HttpReportsBuilder(services, configuration);
         }
 

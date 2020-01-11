@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace HttpReports
 {
@@ -11,10 +12,13 @@ namespace HttpReports
         public IHttpReportsStorage Storage { get; }
         public IRequestInfoBuilder RequestInfoBuilder { get; }
 
-        public DefaultHttpInvokeProcesser(IHttpReportsStorage storage, IRequestInfoBuilder requestInfoBuilder)
+        public IConfiguration Configuration;
+
+        public DefaultHttpInvokeProcesser(IHttpReportsStorage storage, IRequestInfoBuilder requestInfoBuilder, IConfiguration configuration)
         {
             Storage = storage;
             RequestInfoBuilder = requestInfoBuilder;
+            Configuration = configuration;
         }
 
         public void Process(HttpContext context, Stopwatch stopwatch)
