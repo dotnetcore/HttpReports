@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace HttpReports
 {
+    [Obsolete]
     public class HttpReportsMiddleware
     {
         private RequestDelegate _next;
@@ -16,7 +17,7 @@ namespace HttpReports
 
         private IHttpReports _httpReports;
 
-        public  static IConfiguration Configuration;
+        public static IConfiguration Configuration;
 
         public HttpReportsMiddleware(RequestDelegate next, IHttpReports httpReports)
         {
@@ -29,13 +30,13 @@ namespace HttpReports
         public async Task InvokeAsync(HttpContext context)
         {
             stopwatch = new Stopwatch();
-            stopwatch.Start(); 
+            stopwatch.Start();
 
-            await Execute(context);  
+            await Execute(context);
 
-            stopwatch.Stop(); 
-            _httpReports.Invoke(context, stopwatch.Elapsed.TotalMilliseconds, Configuration); 
-        } 
+            stopwatch.Stop();
+            _httpReports.Invoke(context, stopwatch.Elapsed.TotalMilliseconds, Configuration);
+        }
 
         private async Task Execute(HttpContext context)
         {
@@ -46,8 +47,8 @@ namespace HttpReports
             catch (Exception ex)
             {
                 context.Response.StatusCode = 500;
-            }  
-        }  
+            }
+        }
 
-    } 
+    }
 }

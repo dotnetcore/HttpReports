@@ -15,6 +15,7 @@ using MySql.Data.MySqlClient;
 
 namespace HttpReports
 {
+    [Obsolete]
     public class DefaultHttpReports : IHttpReports
     {
         private HttpReportsOptions _options;
@@ -163,7 +164,8 @@ namespace HttpReports
 
             string newStr = string.Empty;
 
-            Constr.ToLower().Split(';').ToList().ForEach(x => {
+            Constr.ToLower().Split(';').ToList().ForEach(x =>
+            {
 
                 if (!x.Contains("database"))
                 {
@@ -191,7 +193,8 @@ namespace HttpReports
 
             string newStr = string.Empty;
 
-            Constr.ToLower().Split(';').ToList().ForEach(x => {
+            Constr.ToLower().Split(';').ToList().ForEach(x =>
+            {
 
                 if (!x.Contains("database"))
                 {
