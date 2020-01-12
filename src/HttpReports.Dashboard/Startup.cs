@@ -23,9 +23,14 @@ namespace HttpReports.Dashboard
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            //TODO 完成后调整为动态设置存储类型
             services.AddHttpReports().UseMySqlStorage();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
+            services.AddMvc()
+#if NETCOREAPP3_0 || NETCOREAPP3_1
+                .AddNewtonsoftJson()
+#endif
+                .SetCompatibilityVersion(CompatibilityVersion.Latest);
         }
 
         public void Configure(IApplicationBuilder app)

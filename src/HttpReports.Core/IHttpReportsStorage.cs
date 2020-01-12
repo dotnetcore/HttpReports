@@ -1,4 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+
+using HttpReports.Models;
+using HttpReports.Storage.FilterOptions;
 
 namespace HttpReports
 {
@@ -19,6 +23,46 @@ namespace HttpReports
         /// <param name="request"></param>
         /// <returns></returns>
         Task AddRequestInfoAsync(IRequestInfo request);
+
+        /// <summary>
+        /// 获取所有节点信息
+        /// </summary>
+        /// <returns></returns>
+        Task<List<NodeInfo>> GetNodesAsync();
+
+        /// <summary>
+        /// 获取Url请求统计
+        /// </summary>
+        /// <returns></returns>
+        Task<List<UrlRequestCount>> GetUrlRequestStatisticsAsync(RequestInfoFilterOption filterOption);
+
+        /// <summary>
+        /// 获取Url的平均响应时间统计
+        /// </summary>
+        /// <param name="filterOption"></param>
+        /// <returns></returns>
+        Task<List<RequestAvgResponeTime>> GetRequestAvgResponeTimeStatisticsAsync(RequestInfoFilterOption filterOption);
+
+        /// <summary>
+        /// 获取http状态码数量统计
+        /// </summary>
+        /// <param name="filterOption"></param>
+        /// <returns></returns>
+        Task<List<StatusCodeCount>> GetStatusCodeStatisticsAsync(RequestInfoFilterOption filterOption);
+
+        /// <summary>
+        /// 获取Url的响应时间分组统计
+        /// </summary>
+        /// <param name="filterOption"></param>
+        /// <returns></returns>
+        Task<List<ResponeTimeGroup>> GetGroupedResponeTimeStatisticsAsync(GroupResponeTimeFilterOption filterOption);
+
+        /// <summary>
+        /// 获取首页数据
+        /// </summary>
+        /// <param name="filterOption"></param>
+        /// <returns></returns>
+        Task<IndexPageData> GetIndexPageDataAsync(IndexPageDataFilterOption filterOption);
 
         //TODO 定义所有数据存取接口
     }

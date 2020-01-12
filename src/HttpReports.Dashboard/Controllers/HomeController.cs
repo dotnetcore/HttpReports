@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-
-using HttpReports.Dashboard.Models;
-using HttpReports.Dashboard.Services;
+﻿using System.Linq;
+using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,59 +7,34 @@ namespace HttpReports.Dashboard.Controllers
 {
     public class HomeController : Controller
     {
-        private DataService _dataService;
+        private readonly IHttpReportsStorage _storage;
 
-        public HomeController(DataService dataService)
+        public HomeController(IHttpReportsStorage storage)
         {
-            _dataService = dataService;
+            _storage = storage;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var nodes = _dataService.GetNodes();
+            var nodes = (await _storage.GetNodesAsync()).Select(m => m.Name).ToList();
 
             ViewBag.nodes = nodes;
 
             return View();
         }
 
-        public IActionResult Trend()
+        public async Task<IActionResult> Trend()
         {
-            var nodes = _dataService.GetNodes();
+            var nodes = (await _storage.GetNodesAsync()).Select(m => m.Name).ToList();
 
             ViewBag.nodes = nodes;
 
             return View();
         }
 
-        public IActionResult Monitor()
+        public async Task<IActionResult> AddMonitor(int Id = 0)
         {
-            var jobs = _dataService.GetJobs();
-
-            List<JobRequest> list = new List<JobRequest>();
-
-            foreach (var item in jobs)
-            {
-                list.Add(new JobRequest
-                {
-                    Id = item.Id,
-                    Title = item.Title,
-                    CronLike = _dataService.ParseJobCronString(item.CronLike),
-                    Email = item.Emails,
-                    Mobiles = item.Mobiles,
-                    Status = item.Status,
-                    Node = item.Servers
-                });
-            }
-
-            ViewBag.list = list;
-
-            return View();
-        }
-
-        public IActionResult AddMonitor(int Id = 0)
-        {
-            var nodes = _dataService.GetNodes();
+            var nodes = (await _storage.GetNodesAsync()).Select(m => m.Name).ToList();
 
             ViewBag.nodes = nodes;
 
@@ -70,9 +43,9 @@ namespace HttpReports.Dashboard.Controllers
             return View();
         }
 
-        public IActionResult Detail()
+        public async Task<IActionResult> Detail()
         {
-            var nodes = _dataService.GetNodes();
+            var nodes = (await _storage.GetNodesAsync()).Select(m => m.Name).ToList();
 
             ViewBag.nodes = nodes;
 

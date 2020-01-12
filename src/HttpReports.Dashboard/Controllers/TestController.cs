@@ -1,6 +1,4 @@
-﻿using HttpReports.Dashboard.Services;
-
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HttpReports.Dashboard.Controllers
@@ -8,13 +6,6 @@ namespace HttpReports.Dashboard.Controllers
     [AllowAnonymous]
     public class TestController : Controller
     {
-        private DataService _dataService;
-
-        public TestController(DataService dataService)
-        {
-            _dataService = dataService;
-        }
-
         public IActionResult Index()
         {
             return View();

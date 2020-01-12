@@ -1,7 +1,7 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    var list = ViewBag.list as List<HttpReports.Dashboard.Models.JobRequest>;
+    //var list = ViewBag.list as List<HttpReports.Dashboard.Models.JobRequest>;
 }
 
 <style type="text/css">
@@ -42,7 +42,7 @@
                         </thead>
                         <tbody>
 
-                            @foreach (var item in list)
+                            @*@foreach (var item in list)
                             {
                                 <tr>
                                     <td>@item.Title</td>
@@ -78,7 +78,7 @@
                                     </td>
                                 </tr>
 
-                            }
+                            }*@
                         </tbody>
                     </table>
                 </div>
