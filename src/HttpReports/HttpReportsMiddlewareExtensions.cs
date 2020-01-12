@@ -24,6 +24,24 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
+        /// <summary>
+        /// 添加HttpReports
+        /// <para/>自动使用配置文件中的HttpReports节点
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services)
+        {
+            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");
+            services.AddHttpReports(configuration);
+        }
+
+        /// <summary>
+        /// 添加HttpReports
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configuration">HttpReports的配置节点</param>
+        /// <returns></returns>
         public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddOptions();

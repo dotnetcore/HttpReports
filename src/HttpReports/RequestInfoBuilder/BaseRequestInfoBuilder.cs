@@ -55,7 +55,7 @@ namespace HttpReports
         {
             string Default = Options.Node;
 
-            var arr = path.Substring(1).Split('/');
+            var arr = path.Substring(1).Split('/');   
 
             if (arr.Length > 1 && arr[1] == Options.ApiPoint)
             {
