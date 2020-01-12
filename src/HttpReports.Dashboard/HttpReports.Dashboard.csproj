@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
@@ -29,5 +29,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
+    <ProjectReference Include="..\HttpReports.Storage.MySQL\HttpReports.Storage.MySql.csproj" />
   </ItemGroup>
 </Project>
