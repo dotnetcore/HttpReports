@@ -33,7 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services)
         {
             IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");
-            services.AddHttpReports(configuration);
+            return services.AddHttpReports(configuration);
         }
 
         /// <summary>
