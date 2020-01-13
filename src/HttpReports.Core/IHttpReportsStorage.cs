@@ -64,6 +64,27 @@ namespace HttpReports
         /// <returns></returns>
         Task<IndexPageData> GetIndexPageDataAsync(IndexPageDataFilterOption filterOption);
 
+        /// <summary>
+        /// 搜索请求信息
+        /// </summary>
+        /// <param name="filterOption"></param>
+        /// <returns></returns>
+        Task<RequestInfoSearchResult> SearchRequestInfoAsync(RequestInfoSearchFilterOption filterOption);
+
+        /// <summary>
+        /// 获取请求次数统计
+        /// </summary>
+        /// <param name="filterOption"></param>
+        /// <returns></returns>
+        Task<RequestTimesStatisticsResult> GetRequestTimesStatisticsAsync(TimeSpanStatisticsFilterOption filterOption);
+
+        /// <summary>
+        /// 获取响应时间统计
+        /// </summary>
+        /// <param name="filterOption"></param>
+        /// <returns></returns>
+        Task<ResponseTimeStatisticsResult> GetResponseTimeStatisticsAsync(TimeSpanStatisticsFilterOption filterOption);
+
         //TODO 定义所有数据存取接口
     }
 }

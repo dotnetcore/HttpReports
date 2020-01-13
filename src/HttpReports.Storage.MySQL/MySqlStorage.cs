@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -94,7 +95,7 @@ namespace HttpReports.Storage.MySql
         {
             string sql = $"Select Url,COUNT(1) as Total From RequestInfo {BuildSqlFilter(filterOption)} Group By Url order by Total {BuildSqlControl(filterOption)};";
 
-            Logger.LogTrace($"{nameof(GetUrlRequestStatisticsAsync)} SQL: {sql}");
+            TraceLogSql(sql);
 
             List<UrlRequestCount> result = null;
             await LoggingSqlOperation(async connection =>
@@ -129,7 +130,7 @@ namespace HttpReports.Storage.MySql
         {
             string sql = $"Select Url,Avg(Milliseconds) Time FROM RequestInfo {BuildSqlFilter(filterOption)} Group By Url order by Time {BuildSqlControl(filterOption)}";
 
-            Logger.LogTrace($"{nameof(GetRequestAvgResponeTimeStatisticsAsync)} SQL: {sql}");
+            TraceLogSql(sql);
 
             List<RequestAvgResponeTime> result = null;
             await LoggingSqlOperation(async connection =>
@@ -146,7 +147,7 @@ namespace HttpReports.Storage.MySql
 
             var sql = string.Join(" Union ", filterOption.StatusCodes.Select(m => $"Select '{m}' Code,COUNT(1) Total From RequestInfo {where} AND StatusCode = {m}"));
 
-            Logger.LogTrace($"{nameof(GetStatusCodeStatisticsAsync)} SQL: {sql}");
+            TraceLogSql(sql);
 
             List<StatusCodeCount> result = null;
             await LoggingSqlOperation(async connection =>
@@ -181,7 +182,7 @@ namespace HttpReports.Storage.MySql
 
             var sql = sqlBuilder.Remove(sqlBuilder.Length - 6, 6).Append(")T Order By ID").ToString();
 
-            Logger.LogTrace($"{nameof(GetGroupedResponeTimeStatisticsAsync)} SQL: {sql}");
+            TraceLogSql(sql);
 
             List<ResponeTimeGroup> result = null;
             await LoggingSqlOperation(async connection =>
@@ -201,14 +202,13 @@ namespace HttpReports.Storage.MySql
         {
             string where = BuildSqlFilter(filterOption);
 
-            string sql = $@"
-              Select AVG(Milliseconds) ART From RequestInfo {where};
-              Select COUNT(1) Total From RequestInfo {where};
-              Select COUNT(1) Code404 From RequestInfo {where} AND StatusCode = 404;
-              Select COUNT(1) Code500 From RequestInfo {where} AND StatusCode = 500;
-              Select Count(1) From ( Select Distinct Url From RequestInfo ) A;";
+            string sql = $@"Select COUNT(1) Total From RequestInfo {where};
+Select COUNT(1) Code404 From RequestInfo {where} AND StatusCode = 404;
+Select COUNT(1) Code500 From RequestInfo {where} AND StatusCode = 500;
+Select Count(1) From ( Select Distinct Url From RequestInfo ) A;
+Select AVG(Milliseconds) ART From RequestInfo {where};";
 
-            Logger.LogTrace($"{nameof(GetIndexPageDataAsync)} SQL: {sql}");
+            TraceLogSql(sql);
 
             IndexPageData result = new IndexPageData();
 
@@ -216,21 +216,179 @@ namespace HttpReports.Storage.MySql
             {
                 using (var resultReader = await connection.QueryMultipleAsync(sql).ConfigureAwait(false))
                 {
-                    result.AvgResponseTime = resultReader.ReadFirstOrDefault<double>();
                     result.Total = resultReader.ReadFirstOrDefault<int>();
                     result.NotFound = resultReader.ReadFirstOrDefault<int>();
                     result.ServerError = resultReader.ReadFirstOrDefault<int>();
                     result.APICount = resultReader.ReadFirst<int>();
                     result.ErrorPercent = result.Total == 0 ? 0 : Convert.ToDouble(result.ServerError) / Convert.ToDouble(result.Total);
+                    result.AvgResponseTime = double.TryParse(resultReader.ReadFirstOrDefault<string>(), out var avg) ? avg : 0;
                 }
             }, "获取首页数据异常").ConfigureAwait(false);
 
             return result;
         }
 
+        /// <summary>
+        /// 获取请求信息
+        /// </summary>
+        /// <param name="filterOption"></param>
+        /// <returns></returns>
+        public async Task<RequestInfoSearchResult> SearchRequestInfoAsync(RequestInfoSearchFilterOption filterOption)
+        {
+            var whereBuilder = new StringBuilder(BuildSqlFilter(filterOption), 512);
+
+            var sqlBuilder = new StringBuilder("Select * From RequestInfo ", 512);
+
+            if (whereBuilder.Length == 0)
+            {
+                whereBuilder.Append("Where 1=1 ");
+            }
+
+            if (filterOption.IPs?.Length > 0)
+            {
+                whereBuilder.Append($" AND IP = '{string.Join(",", filterOption.IPs.Select(m => $"'{m}'"))}' ");
+            }
+
+            if (filterOption.Urls?.Length > 0)
+            {
+                if (filterOption.Urls.Length > 1)
+                {
+                    throw new ArgumentOutOfRangeException($"{nameof(MySqlStorage)}暂时只支持单条Url查询");
+                }
+                whereBuilder.Append($" AND  Url like '%{filterOption.Urls[0]}%' ");
+            }
+
+            var where = whereBuilder.ToString();
+
+            sqlBuilder.Append(where);
+            sqlBuilder.Append(BuildSqlControl(filterOption));
+
+            var sql = sqlBuilder.ToString();
+
+            TraceLogSql(sql);
+
+            var countSql = "Select count(1) From RequestInfo " + where;
+            TraceLogSql(countSql);
+
+            var result = new RequestInfoSearchResult()
+            {
+                SearchOption = filterOption,
+            };
+
+            await LoggingSqlOperation(async connection =>
+            {
+                result.AllItemCount = connection.QueryFirstOrDefault<int>(countSql);
+
+                result.List.AddRange((await connection.QueryAsync<RequestInfo>(sql).ConfigureAwait(false)).ToArray());
+            }, "查询请求信息列表异常").ConfigureAwait(false);
+
+            return result;
+        }
+
+        /// <summary>
+        /// 获取请求次数统计
+        /// </summary>
+        /// <param name="filterOption"></param>
+        /// <returns></returns>
+        public async Task<RequestTimesStatisticsResult> GetRequestTimesStatisticsAsync(TimeSpanStatisticsFilterOption filterOption)
+        {
+            var where = BuildSqlFilter(filterOption);
+
+            var dateFormat = GetDateFormat(filterOption);
+
+            string sql = $"Select {dateFormat} KeyField,COUNT(1) ValueField From RequestInfo {where} Group by KeyField;";
+
+            TraceLogSql(sql);
+
+            var result = new RequestTimesStatisticsResult()
+            {
+                Type = filterOption.Type,
+            };
+
+            await LoggingSqlOperation(async connection =>
+            {
+                result.Items = new Dictionary<string, int>();
+                (await connection.QueryAsync<KVClass<string, int>>(sql).ConfigureAwait(false)).ToList().ForEach(m =>
+                {
+                    result.Items.Add(m.KeyField, m.ValueField);
+                });
+            }, "获取请求次数统计异常").ConfigureAwait(false);
+
+            return result;
+        }
+
+        /// <summary>
+        /// 获取响应时间统计
+        /// </summary>
+        /// <param name="filterOption"></param>
+        /// <returns></returns>
+        public async Task<ResponseTimeStatisticsResult> GetResponseTimeStatisticsAsync(TimeSpanStatisticsFilterOption filterOption)
+        {
+            var where = BuildSqlFilter(filterOption);
+
+            var dateFormat = GetDateFormat(filterOption);
+
+            string sql = $"Select {dateFormat} KeyField,AVG(Milliseconds) ValueField From RequestInfo {where} Group by KeyField;";
+
+            TraceLogSql(sql);
+
+            var result = new ResponseTimeStatisticsResult()
+            {
+                Type = filterOption.Type,
+            };
+
+            await LoggingSqlOperation(async connection =>
+            {
+                result.Items = new Dictionary<string, int>();
+                (await connection.QueryAsync<KVClass<string, int>>(sql).ConfigureAwait(false)).ToList().ForEach(m =>
+                {
+                    result.Items.Add(m.KeyField, m.ValueField);
+                });
+            }, "获取响应时间统计异常").ConfigureAwait(false);
+
+            return result;
+        }
+
         #region Base
 
-        protected async Task LoggingSqlOperation(Func<IDbConnection, Task> func, string message = null)
+        private static string GetDateFormat(TimeSpanStatisticsFilterOption filterOption)
+        {
+            string dateFormat;
+            switch (filterOption.Type)
+            {
+                case TimeUnit.Hour:
+                    dateFormat = "Hour(CreateTime)";
+                    break;
+
+                case TimeUnit.Month:
+                    dateFormat = "DATE_FORMAT(CreateTime,'%Y-%m')";
+                    break;
+
+                case TimeUnit.Year:
+                    dateFormat = "DATE_FORMAT(CreateTime,'%Y')";
+                    break;
+
+                case TimeUnit.Day:
+                default:
+                    dateFormat = "DATE_FORMAT(CreateTime,'%Y-%m-%d')";
+                    break;
+            }
+
+            return dateFormat;
+        }
+
+        private class KVClass<TKey, TValue>
+        {
+            public TKey KeyField { get; set; }
+            public TValue ValueField { get; set; }
+        }
+
+        protected void TraceLogSql(string sql, [CallerMemberName]string method = null)
+        {
+            Logger.LogTrace($"Class: {nameof(MySqlStorage)} Method: {method} SQL: {sql}");
+        }
+
+        protected async Task LoggingSqlOperation(Func<IDbConnection, Task> func, string message = null, [CallerMemberName]string method = null)
         {
             try
             {
@@ -241,7 +399,7 @@ namespace HttpReports.Storage.MySql
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, message ?? "数据库操作异常");
+                Logger.LogError(ex, $"Method: {method} Message: {message ?? "数据库操作异常"}");
             }
         }
 

@@ -1,6 +1,6 @@
-﻿using System;
+﻿using System.Diagnostics;
 
-namespace HttpReports.Dashboard.Implements
+namespace System
 {
     public static class StringExtensions
     {
@@ -70,5 +70,11 @@ namespace HttpReports.Dashboard.Implements
                 return DateTime.Now;
             }
         }
+
+        [DebuggerStepThrough]
+        public static DateTime ToDateTimeOrNow(this string value) => DateTime.TryParse(value, out var time) ? time : DateTime.Now;
+
+        [DebuggerStepThrough]
+        public static DateTime ToDateTimeOrDefault(this string value, Func<DateTime> func) => DateTime.TryParse(value, out var time) ? time : func();
     }
 }
