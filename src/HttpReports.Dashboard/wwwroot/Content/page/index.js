@@ -177,12 +177,13 @@ function InitChart() {
             axisTick: { show: false },
             xisLine: { show: false },
             axisLabel: {
+                show: false,
                 textStyle: {
                     fontSize: 12,
                     align: "right",
                     fontWeight: "bolder"
                 }
-            },
+            }
         },
         series: [
             {
@@ -190,7 +191,20 @@ function InitChart() {
                 type: 'bar',
                 barWidth: 12,
                 itemStyle: {
-                    color: "#87CEFA"
+                    color: httpreports.index_chart_backgroundbar
+                },
+                label: {
+                    normal: {
+                        color: httpreports.index_chart_color,
+                        show: true,
+                        position: [10, '-0px'],
+                        textStyle: {
+                            fontSize:12
+                        },
+                        formatter: function (a, b) {
+                            return a.name 
+                        }
+                    }
                 },
                 data: []
             }
@@ -234,6 +248,7 @@ function InitChart() {
             xisLine: { show: false },
 
             axisLabel: {
+                show: false,
                 textStyle: {
                     fontSize: 12,
                     align: "right",
@@ -247,7 +262,20 @@ function InitChart() {
                 type: 'bar',
                 barWidth: 12,
                 itemStyle: {
-                    color: "#F08080"
+                    color: httpreports.index_chart_backgroundbar
+                },
+                label: {
+                    normal: {
+                        color: httpreports.index_chart_color,
+                        show: true,
+                        position: [10, '-0px'],
+                        textStyle: {
+                            fontSize: 12
+                        },
+                        formatter: function (a, b) {
+                            return a.name
+                        }
+                    }
                 },
                 data: []
             }
@@ -292,6 +320,7 @@ function InitChart() {
             xisLine: { show: false },
 
             axisLabel: {
+                show: false,
                 textStyle: {
                     fontSize: 12,
                     align: "right",
@@ -304,8 +333,21 @@ function InitChart() {
                 name: '平均处理时间',
                 type: 'bar',
                 barWidth: 12,
+                label: {
+                    normal: {
+                        color: httpreports.index_chart_color,
+                        show: true,
+                        position: [10, '-0px'],
+                        textStyle: {
+                            fontSize: 12
+                        },
+                        formatter: function (a, b) {
+                            return a.name
+                        }
+                    }
+                },
                 itemStyle: {
-
+                    color: httpreports.index_chart_backgroundbar
                 },
                 data: []
             }
@@ -348,6 +390,7 @@ function InitChart() {
             xisLine: { show: false },
 
             axisLabel: {
+                show: false,
                 textStyle: {
                     fontSize: 12,
                     align: "right",
@@ -361,7 +404,20 @@ function InitChart() {
                 type: 'bar',
                 barWidth: 12,
                 itemStyle: {
-                    color: "#af91e1"
+                    color: httpreports.index_chart_backgroundbar
+                },
+                label: {
+                    normal: {
+                        color: httpreports.index_chart_color,
+                        show: true,
+                        position: [10, '-0px'],
+                        textStyle: {
+                            fontSize: 12
+                        },
+                        formatter: function (a, b) {
+                            return a.name
+                        }
+                    }
                 },
                 data: []
             }

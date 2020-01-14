@@ -1,7 +1,6 @@
-﻿using System;
-
+﻿using System; 
 using HttpReports;
-
+using HttpReports.Dashboard.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 
@@ -33,6 +32,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddOptions();
             services.Configure<HttpReportsOptions>(configuration);
             services.AddSingleton<IModelCreator, DefaultModelCreator>();
+          
 
             return new HttpReportsBuilder(services, configuration);
         }
