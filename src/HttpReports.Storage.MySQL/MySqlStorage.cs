@@ -31,7 +31,7 @@ namespace HttpReports.Storage.MySql
         {
             using (var con = ConnectionFactory.GetConnection())
             {
-                if (con.QueryFirstOrDefault<int>("  Select count(1) from information_schema.tables where table_name ='RequestInfo' and table_schema = 'HttpReports'; ") == 0)
+                if (con.QueryFirstOrDefault<int>($"  Select count(1) from information_schema.tables where table_name ='RequestInfo' and table_schema = '{ConnectionFactory.DataBase}'; ") == 0)
                 {
                     await con.ExecuteAsync(@"
                         CREATE TABLE `RequestInfo` (
@@ -48,7 +48,7 @@ namespace HttpReports.Storage.MySql
                         ) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;  ").ConfigureAwait(false);
                 }
 
-                if (con.QueryFirstOrDefault<int>(" Select count(1) from information_schema.tables where table_name ='Job' and table_schema = 'HttpReports'; ") == 0)
+                if (con.QueryFirstOrDefault<int>($" Select count(1) from information_schema.tables where table_name ='Job' and table_schema = '{ConnectionFactory.DataBase}'; ") == 0)
                 {
                     await con.ExecuteAsync(@"
 

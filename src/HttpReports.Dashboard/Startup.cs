@@ -40,7 +40,7 @@ namespace HttpReports.Dashboard
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
-#if NETCOREAPP2_1
+#if NETCOREAPP2_1 || NETCOREAPP2_2
 
             app.UseMvc(routes =>
             {
