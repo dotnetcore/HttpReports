@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using HttpReports.Dashboard.DTO;
-using HttpReports.Dashboard.Implements;
 using HttpReports.Dashboard.Models;
 using HttpReports.Storage.FilterOptions;
 
@@ -25,8 +24,8 @@ namespace HttpReports.Dashboard.Controllers
 
         public async Task<IActionResult> GetIndexChartA(GetIndexDataRequest request)
         {
-            var startTime = string.IsNullOrWhiteSpace(request.Start) ? DateTime.Now.Date : DateTime.Parse(request.Start);
-            var endTime = string.IsNullOrWhiteSpace(request.End) ? DateTime.Now.Date.AddDays(1) : DateTime.Parse(request.End);
+            var startTime = request.Start.ToDateTimeOrNow().Date;
+            var endTime = request.End.ToDateTimeOrNow().Date.AddDays(1);
 
             var nodes = request.Node.Split(',');
 
@@ -91,121 +90,112 @@ namespace HttpReports.Dashboard.Controllers
             return Json(new HttpResultEntity(1, "ok", new { StatusCode, ResponseTime, topRequest, topError500, Art }));
         }
 
-        //public IActionResult GetStatusCodePie(GetIndexDataRequest request)
-        //{
-        //    var data = _storage.GetStatusCode(request);
+        public async Task<IActionResult> GetDayStateBar(GetIndexDataRequest request)
+        {
+            var startTime = request.Day.ToDateTimeOrNow().Date;
+            var endTime = startTime.AddDays(1);
+            var nodes = request.Node?.Split(',');
 
-        //    return Json(new Result(1, "ok", data));
-        //}
+            // 每小时请求次数
+            var requestTimesStatistics = await _storage.GetRequestTimesStatisticsAsync(new TimeSpanStatisticsFilterOption()
+            {
+                StartTime = startTime,
+                EndTime = endTime,
+                Nodes = nodes,
+                Type = TimeUnit.Hour,
+            }).ConfigureAwait(false);
 
-        //public IActionResult GetResponseTimePie(GetIndexDataRequest request)
-        //{
-        //    var data = _storage.GetResponseTimePie(request);
+            //每小时平均处理时间
+            var responseTimeStatistics = await _storage.GetResponseTimeStatisticsAsync(new TimeSpanStatisticsFilterOption()
+            {
+                StartTime = startTime,
+                EndTime = endTime,
+                Nodes = nodes,
+                Type = TimeUnit.Hour,
+            }).ConfigureAwait(false);
 
-        //    return Json(new Result(1, "ok", data));
-        //}
+            List<int> timesList = new List<int>();
+            List<int> avgList = new List<int>();
 
-        //public IActionResult GetDayStateBar(GetIndexDataRequest request)
-        //{
-        //    List<int> timesList = new List<int>();
+            foreach (var item in Hours)
+            {
+                // 每小时请求次数
+                var times = requestTimesStatistics.Items.TryGetValue(item.ToString(), out var tTimes) ? tTimes : 0;
+                //每小时平均处理时间
+                var avg = responseTimeStatistics.Items.TryGetValue(item.ToString(), out var tAvg) ? tAvg : 0;
 
-        //    List<int> avgList = new List<int>();
+                timesList.Add(times);
+                avgList.Add(avg);
+            }
 
-        //    // 每小时请求次数
-        //    List<EchartPineDataModel> times = _storage.GetDayRequestTimes(request);
+            return Json(new HttpResultEntity(1, "ok", new { timesList, avgList, Hours }));
+        }
 
-        //    //每小时平均处理时间
-        //    List<EchartPineDataModel> avg = _storage.GetDayResponseTime(request);
+        public async Task<IActionResult> GetLatelyDayChart(GetIndexDataRequest request)
+        {
+            var startTime = $"{request.Month}-01".ToDateTimeOrDefault(() => new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1));
+            var endTime = startTime.AddMonths(1);
+            var nodes = request.Node?.Split(',');
 
-        //    foreach (var item in Hours)
-        //    {
-        //        // 每小时请求次数
-        //        var timeModel = times.Where(x => x.Name == item.ToString()).FirstOrDefault();
-        //        timesList.Add(timeModel == null ? 0 : timeModel.Value);
+            var responseTimeStatistics = await _storage.GetRequestTimesStatisticsAsync(new TimeSpanStatisticsFilterOption()
+            {
+                StartTime = startTime,
+                EndTime = endTime,
+                Nodes = nodes,
+                Type = TimeUnit.Day,
+            }).ConfigureAwait(false);
 
-        //        //每小时平均处理时间
-        //        var avgModel = avg.Where(x => x.Name == item.ToString()).FirstOrDefault();
-        //        avgList.Add(avgModel == null ? 0 : avgModel.Value);
-        //    }
+            List<string> time = new List<string>();
+            List<int> value = new List<int>();
 
-        //    return Json(new Result(1, "ok", new { timesList, avgList, Hours }));
-        //}
+            string Range = $"{startTime.ToString("yyyy-MM-dd")}-{endTime.AddDays(-1).ToString("yyyy-MM-dd")}";
 
-        //public IActionResult GetLatelyDayChart(GetIndexDataRequest request)
-        //{
-        //    if (request.Month.IsEmpty())
-        //    {
-        //        request.Month = DateTime.Now.ToString("yyyy-MM");
-        //    }
+            var monthDayCount = (endTime - startTime).Days;
+            for (int i = 0; i < monthDayCount; i++)
+            {
+                var day = $"{request.Month}-{i + 1}";
 
-        //    request.Start = request.Month + "-01";
-        //    request.End = (request.Month + "-01").ToDateTime().AddMonths(1).ToString("yyyy-MM-dd");
+                var times = responseTimeStatistics.Items.TryGetValue(day, out var tTimes) ? tTimes : 0;
 
-        //    var list = _storage.GetLatelyDayData(request);
+                time.Add(string.Format("{0:00}", i + 1));
+                value.Add(times);
+            }
 
-        //    List<string> time = new List<string>();
-        //    List<int> value = new List<int>();
+            return Json(new HttpResultEntity(1, "ok", new { time, value, Range }));
+        }
 
-        //    string Range = request.Start.ToDateTime().ToString("yyyy-MM-dd") + " - " + request.End.ToDateTime().AddDays(-1).ToString("yyyy-MM-dd");
+        public async Task<IActionResult> GetMonthDataByYear(GetIndexDataRequest request)
+        {
+            var startTime = $"{request.Year}-01-01".ToDateTimeOrDefault(() => new DateTime(DateTime.Now.Year, 1, 1));
+            var endTime = startTime.AddYears(1);
+            var nodes = request.Node?.Split(',');
 
-        //    for (int i = 0; i < (request.End.ToDateTime() - request.Start.ToDateTime()).Days; i++)
-        //    {
-        //        DateTime k = request.Start.ToDateTime().AddDays(i);
+            var responseTimeStatistics = await _storage.GetRequestTimesStatisticsAsync(new TimeSpanStatisticsFilterOption()
+            {
+                StartTime = startTime,
+                EndTime = endTime,
+                Nodes = nodes,
+                Type = TimeUnit.Month,
+            }).ConfigureAwait(false);
 
-        //        var j = list.Where(x => x.Name == k.ToString("yyyy-MM-dd")).FirstOrDefault();
+            List<string> time = new List<string>();
+            List<int> value = new List<int>();
 
-        //        if (j != null)
-        //        {
-        //            time.Add(k.ToString("dd"));
-        //            value.Add(j.Value);
-        //        }
-        //        else
-        //        {
-        //            time.Add(k.ToString("dd"));
-        //            value.Add(0);
-        //        }
-        //    }
+            string Range = $"{request.Year}-01-{request.Year}-12";
 
-        //    return Json(new Result(1, "ok", new { time, value, Range }));
-        //}
+            for (int i = 0; i < 12; i++)
+            {
+                var month = string.Format("{0:00}", i + 1);
+                var key = $"{request.Year}-{month}";
 
-        //public IActionResult GetMonthDataByYear(GetIndexDataRequest request)
-        //{
-        //    if (request.Year.IsEmpty())
-        //    {
-        //        request.Year = DateTime.Now.ToString("yyyy");
-        //    }
+                var times = responseTimeStatistics.Items.TryGetValue(key, out var tTimes) ? tTimes : 0;
 
-        //    request.Start = request.Year + "-01-01";
-        //    request.End = ((request.Year.ToInt() + 1) + "-01-01").ToDateTime().ToString("yyyy-MM-dd");
+                time.Add(month);
+                value.Add(times);
+            }
 
-        //    string Range = request.Start.ToDateTime().ToString("yyyy-MM") + " - " + request.End.ToDateTime().AddDays(-1).ToString("yyyy-MM");
-
-        //    var list = _storage.GetMonthDataByYear(request);
-
-        //    List<string> time = new List<string>();
-        //    List<int> value = new List<int>();
-
-        //    for (int i = 0; i < 12; i++)
-        //    {
-        //        DateTime k = request.Start.ToDateTime().AddMonths(i);
-
-        //        var j = list.Where(x => x.Name == k.ToString("yyyy-MM")).FirstOrDefault();
-
-        //        if (j != null)
-        //        {
-        //            time.Add(k.ToString("yyyy-MM"));
-        //            value.Add(j.Value);
-        //        }
-        //        else
-        //        {
-        //            time.Add(k.ToString("yyyy-MM"));
-        //            value.Add(0);
-        //        }
-        //    }
-
-        //    return Json(new Result(1, "ok", new { time, value, Range }));
-        //}
+            return Json(new HttpResultEntity(1, "ok", new { time, value, Range }));
+        }
 
         public IActionResult GetTimeRange(int Tag)
         {
@@ -311,17 +301,11 @@ namespace HttpReports.Dashboard.Controllers
             return Json(result);
         }
 
-        //public IActionResult GetNodes()
-        //{
-        //    var nodes = _storage.GetNodes();
-
-        //    return Json(new Result(1, "ok", nodes));
-        //}
-
         public async Task<IActionResult> GetIndexData(GetIndexDataRequest request)
         {
-            var start = DateTime.TryParse(request.Start, out var _start) ? _start : DateTime.Now.Date;
-            var end = DateTime.TryParse(request.End, out var _end) ? _end : DateTime.Now.Date.AddDays(1);
+            var start = request.Start.ToDateTimeOrNow().Date;
+            var end = request.End.ToDateTimeOrNow().Date.AddDays(1);
+
             var result = await _storage.GetIndexPageDataAsync(new IndexPageDataFilterOption()
             {
                 Nodes = request.Node.Split(','),
@@ -340,89 +324,20 @@ namespace HttpReports.Dashboard.Controllers
             }));
         }
 
-        //public IActionResult GetTopRequest(GetTopRequest request)
-        //{
-        //    request.Start = request.Start.IsEmpty() ? DateTime.Now.ToString("yyyy-MM-dd") : request.Start;
-        //    request.End = request.End.IsEmpty() ? DateTime.Now.AddDays(1).ToString("yyyy-MM-dd") : request.End;
+        public async Task<IActionResult> GetRequestList(GetRequestListRequest request)
+        {
+            var result = await _storage.SearchRequestInfoAsync(new RequestInfoSearchFilterOption()
+            {
+                Nodes = request.Node?.Split(','),
+                IPs = request.IP?.Split(','),
+                Urls = request.Url?.Split(','),
+                StartTime = request.Start.ToDateTimeOrNow().Date,
+                EndTime = request.End.ToDateTimeOrNow().Date.AddDays(1),
+                Page = request.pageNumber,
+                PageSize = request.pageSize,
+            }).ConfigureAwait(false);
 
-        //    var most = _storage.GetTopRequest(new Models.GetTopRequest
-        //    {
-        //        Node = request.Node,
-        //        Start = request.Start,
-        //        End = request.End,
-        //        IsDesc = true,
-        //        TOP = request.TOP
-        //    });
-
-        //    var least = _storage.GetTopRequest(new Models.GetTopRequest
-        //    {
-        //        Node = request.Node,
-        //        Start = request.Start,
-        //        End = request.End,
-        //        IsDesc = false,
-        //        TOP = request.TOP
-        //    });
-
-        //    return Json(new Result(1, "ok", new { most, least }));
-        //}
-
-        //public IActionResult GetTopCode500(GetTopRequest request)
-        //{
-        //    request.Start = request.Start.IsEmpty() ? DateTime.Now.ToString("yyyy-MM-dd") : request.Start;
-        //    request.End = request.End.IsEmpty() ? DateTime.Now.AddDays(1).ToString("yyyy-MM-dd") : request.End;
-
-        //    var data = _storage.GetCode500Response(new Models.GetTopRequest
-        //    {
-        //        Node = request.Node,
-        //        Start = request.Start,
-        //        End = request.End,
-        //        IsDesc = true,
-        //        TOP = request.TOP
-        //    });
-
-        //    return Json(new Result(1, "ok", data));
-        //}
-
-        //public IActionResult GetTOPART(GetTopRequest request)
-        //{
-        //    request.Start = request.Start.IsEmpty() ? DateTime.Now.ToString("yyyy-MM-dd") : request.Start;
-        //    request.End = request.End.IsEmpty() ? DateTime.Now.AddDays(1).ToString("yyyy-MM-dd") : request.End;
-
-        //    var fast = _storage.GetTOPART(new Models.GetTopRequest
-        //    {
-        //        Node = request.Node,
-        //        Start = request.Start,
-        //        End = request.End,
-        //        IsDesc = false,
-        //        TOP = request.TOP
-        //    });
-
-        //    var slow = _storage.GetTOPART(new Models.GetTopRequest
-        //    {
-        //        Node = request.Node,
-        //        Start = request.Start,
-        //        End = request.End,
-        //        IsDesc = true,
-        //        TOP = request.TOP
-        //    });
-
-        //    return Json(new Result(1, "ok", new { fast, slow }));
-        //}
-
-        //public IActionResult GetRequestList(GetRequestListRequest request)
-        //{
-        //    int totalCount = 0;
-
-        //    if (request.Start.IsEmpty() && request.End.IsEmpty())
-        //    {
-        //        request.Start = DateTime.Now.ToString("yyyy-MM-dd");
-
-        //        request.End = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd");
-        //    }
-
-        //    var list = _storage.GetRequestList(request, out totalCount);
-
-        //    return Json(new { total = totalCount, rows = list });
-        //}
+            return Json(new { total = result.AllItemCount, rows = result.List });
+        }
     }
 }
