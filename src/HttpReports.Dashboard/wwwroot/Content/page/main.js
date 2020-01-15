@@ -1,8 +1,7 @@
 ﻿
-
-
 var httpreports = {};  
 httpreports.chart_theme = "macarons";
+httpreports.theme = "light";
 
 initTheme(); 
 
@@ -73,15 +72,14 @@ function check_node(item) {
 }
 
 
-function ChangeTheme(item) {
+function ChangeTheme(item) { 
 
     var key = $(item).attr("data-key");
 
     localStorage.setItem("httpreports.theme", key);  
 
-    if ($(".theme").attr("href").indexOf(key) < 0) { 
-        $(".theme").attr("href", "/Content/css/theme/" + key + ".css");
-    }  
+
+    location.reload(); 
 
 } 
 
@@ -92,15 +90,30 @@ function initTheme() {
     if (current == null || current == "" || current == undefined) {
        
         $("#theme_dark").remove();
-        httpreports.theme = "light";
-    }
-    else {
 
+        httpreports.theme = "light"; 
+    }
+    else { 
+
+        httpreports.theme = current;
+ 
         httpreports.chart_theme = current == "light" ? "macarons" : "dark";
 
         if (current == "light") { $("#theme_dark").remove(); } 
         if (current == "dark") { $("#theme_light").remove(); }  
 
-    }  
-}
+    }    
+
+    if (httpreports.theme == "light") {
+
+        httpreports.index_chart_color = "#333333";
+        httpreports.index_chart_backgroundbar = "#99CCFF";
+    }
+    else {  
+        httpreports.index_chart_color = "#FFFFFF";  
+        httpreports.index_chart_backgroundbar = "#336699";
+
+    }   
+
+} 
 

@@ -16,6 +16,13 @@ namespace System
             }
         }
 
+
+        public static int ToInt(this double dou)
+        {
+            return Convert.ToInt32(dou); 
+        }
+
+
         public static bool IsNumber(this string str)
         {
             double i = 0;

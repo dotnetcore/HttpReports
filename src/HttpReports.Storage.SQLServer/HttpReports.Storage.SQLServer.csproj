@@ -6,6 +6,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
+    <PackageReference Include="Dapper" Version="2.0.30" />
+    <PackageReference Include="Dapper.Contrib" Version="2.0.30" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.0" />
   </ItemGroup>
 

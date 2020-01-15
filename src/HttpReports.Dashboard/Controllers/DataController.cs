@@ -315,7 +315,7 @@ namespace HttpReports.Dashboard.Controllers
 
             return Json(new HttpResultEntity(1, "ok", new
             {
-                ART = result.AvgResponseTime,
+                ART = result.AvgResponseTime.ToInt(),
                 Total = result.Total,
                 Code404 = result.NotFound,
                 Code500 = result.ServerError,
