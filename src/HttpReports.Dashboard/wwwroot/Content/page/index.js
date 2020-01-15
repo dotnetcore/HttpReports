@@ -1,6 +1,17 @@
 ﻿  
 GoTop();  
 
+function changeChartHeight() {
+
+    if (global.top == 10) { $("#MostRequestChart,#Code500RequestChart,#FastARTChart,#SlowARTChart").css("height", "420px"); } 
+
+    if (global.top == 15) { $("#MostRequestChart,#Code500RequestChart,#FastARTChart,#SlowARTChart").css("height", "520px"); } 
+
+    if (global.top == 20) { $("#MostRequestChart,#Code500RequestChart,#FastARTChart,#SlowARTChart").css("height", "680px"); }  
+
+} 
+  
+
 function InitPage() {
 
     laydate.render({ elem: '.start', theme: '#67c2ef' });
@@ -15,6 +26,8 @@ InitPage();
 var global = {};
 
 global.top = localStorage.getItem("TopCount") == null ? 10 : localStorage.getItem("TopCount");
+
+changeChartHeight();
 
 InitChart();
 
@@ -189,7 +202,7 @@ function InitChart() {
             {
                 name: '请求次数',
                 type: 'bar',
-                barWidth: 12,
+                barWidth: 20,
                 itemStyle: {
                     color: httpreports.index_chart_backgroundbar
                 },
@@ -197,7 +210,7 @@ function InitChart() {
                     normal: {
                         color: httpreports.index_chart_color,
                         show: true,
-                        position: [10, '-0px'],
+                        position: [10, '4px'],
                         textStyle: {
                             fontSize:12
                         },
@@ -260,15 +273,15 @@ function InitChart() {
             {
                 name: '请求次数',
                 type: 'bar',
-                barWidth: 12,
+                barWidth:20,
                 itemStyle: {
                     color: httpreports.index_chart_backgroundbar
                 },
                 label: {
                     normal: {
                         color: httpreports.index_chart_color,
-                        show: true,
-                        position: [10, '-0px'],
+                        show: true, 
+                        position: [10, '4px'],
                         textStyle: {
                             fontSize: 12
                         },
@@ -332,12 +345,12 @@ function InitChart() {
             {
                 name: '平均处理时间',
                 type: 'bar',
-                barWidth: 12,
+                barWidth:20,
                 label: {
                     normal: {
                         color: httpreports.index_chart_color,
                         show: true,
-                        position: [10, '-0px'],
+                        position: [10, '4px'],
                         textStyle: {
                             fontSize: 12
                         },
@@ -402,7 +415,7 @@ function InitChart() {
             {
                 name: '平均处理时间',
                 type: 'bar',
-                barWidth: 12,
+                barWidth:20,
                 itemStyle: {
                     color: httpreports.index_chart_backgroundbar
                 },
@@ -410,7 +423,7 @@ function InitChart() {
                     normal: {
                         color: httpreports.index_chart_color,
                         show: true,
-                        position: [10, '-0px'],
+                        position: [10, '4px'],
                         textStyle: {
                             fontSize: 12
                         },
