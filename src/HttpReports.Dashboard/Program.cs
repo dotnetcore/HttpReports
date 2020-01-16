@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 namespace HttpReports.Dashboard
@@ -8,7 +9,9 @@ namespace HttpReports.Dashboard
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            CreateHostBuilder(args).ConfigureAppConfiguration(builder => builder.AddEnvironmentVariables("HR_"))
+                                   .Build()
+                                   .Run();
         }
 
 #if NETCOREAPP2_1

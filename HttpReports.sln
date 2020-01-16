@@ -16,11 +16,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Core", "src\Htt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Storage.MySql", "src\HttpReports.Storage.MySQL\HttpReports.Storage.MySql.csproj", "{BDB01E7D-754B-4797-9575-B6480A84DB28}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpReports.Storage.SQLServer", "src\HttpReports.Storage.SQLServer\HttpReports.Storage.SQLServer.csproj", "{9A3F67F6-E526-4264-9FAE-CD37BCF4FB3C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Storage.SQLServer", "src\HttpReports.Storage.SQLServer\HttpReports.Storage.SQLServer.csproj", "{9A3F67F6-E526-4264-9FAE-CD37BCF4FB3C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "example", "example", "{CDCA953E-391F-422A-85A0-2057B8F2ED96}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiServer", "example\WebApiServer\WebApiServer.csproj", "{F1787614-D88F-4F00-9CE4-08493CF990C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiServer", "example\WebApiServer\WebApiServer.csproj", "{F1787614-D88F-4F00-9CE4-08493CF990C1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{92F075FE-55AD-4A3F-A210-7B019A2DA690}"
+	ProjectSection(SolutionItems) = preProject
+		Dockerfile = Dockerfile
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
