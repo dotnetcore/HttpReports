@@ -153,9 +153,14 @@ namespace HttpReports.Dashboard.Controllers
             var monthDayCount = (endTime - startTime).Days;
             for (int i = 0; i < monthDayCount; i++)
             {
-                var day = $"{request.Month}-{i + 1}";
+                var day = $"{i + 1}";
 
-                var times = responseTimeStatistics.Items.TryGetValue(day, out var tTimes) ? tTimes : 0;
+                var times = 0;
+
+                if (responseTimeStatistics.Items.ContainsKey(day))
+                {
+                    times = responseTimeStatistics.Items[day];
+                } 
 
                 time.Add(string.Format("{0:00}", i + 1));
                 value.Add(times);
@@ -186,9 +191,13 @@ namespace HttpReports.Dashboard.Controllers
             for (int i = 0; i < 12; i++)
             {
                 var month = string.Format("{0:00}", i + 1);
-                var key = $"{request.Year}-{month}";
 
-                var times = responseTimeStatistics.Items.TryGetValue(key, out var tTimes) ? tTimes : 0;
+                var times = 0;
+
+                if (responseTimeStatistics.Items.ContainsKey(month))
+                {
+                    times = responseTimeStatistics.Items[month];
+                }  
 
                 time.Add(month);
                 value.Add(times);

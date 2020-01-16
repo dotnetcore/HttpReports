@@ -11,93 +11,78 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks; 
 
-namespace HttpReports.Storage.SQLServer
+namespace HttpReports.Storage.Oracle
 {  
-    internal class SQLServerStorage : IHttpReportsStorage
+    internal class OracleStorage : IHttpReportsStorage
     {
-        public SQLServerConnectionFactory ConnectionFactory { get; }
+        public OracleConnectionFactory ConnectionFactory { get; }
 
-        public ILogger<SQLServerStorage> Logger { get; }
+        public ILogger<OracleStorage> Logger { get; }
 
-        public SQLServerStorage(SQLServerConnectionFactory connectionFactory, ILogger<SQLServerStorage> logger)
+        public OracleStorage(OracleConnectionFactory connectionFactory, ILogger<OracleStorage> logger)
         {
             ConnectionFactory = connectionFactory;
             Logger = logger;
         }
 
         public async Task InitAsync()
-        {
+        {  
             using (var con = ConnectionFactory.GetConnection())
             {
                 // 检查RequestInfo并创建
-                if (con.QueryFirstOrDefault<int>($" Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.RequestInfo') ") == 0)
-                {
-                   await con.ExecuteAsync(@"  
-                        SET ANSI_NULLS ON; 
-                        SET QUOTED_IDENTIFIER ON; 
-                        CREATE TABLE [dbo].[RequestInfo](
-	                        [Id] [int] IDENTITY(1,1) NOT NULL,
-	                        [Node] [nvarchar](50) NOT NULL,
-	                        [Route] [nvarchar](50) NOT NULL,
-	                        [Url] [nvarchar](200) NOT NULL,
-	                        [Method] [nvarchar](50) NOT NULL,
-	                        [Milliseconds] [int] NOT NULL,
-	                        [StatusCode] [int] NOT NULL,
-	                        [IP] [nvarchar](50) NOT NULL,
-	                        [CreateTime] [datetime] NOT NULL,
-                         CONSTRAINT [PK_RequestInfo] PRIMARY KEY CLUSTERED 
+                if (con.QueryFirstOrDefault<int>($" Select count(*) from user_tables where table_name = upper('RequestInfo') ") == 0)
+                {  
+                    await con.ExecuteAsync(@"   
+
+                        create table RequestInfo
                         (
-	                        [Id] ASC
-                        )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-                        ) ON [PRIMARY]
-                    ").ConfigureAwait(false); 
+	                        id NUMBER(15) primary key,
+	                        Node varchar2(50),
+	                        Route varchar2(50),
+	                        Url varchar2(200),
+	                        Method varchar2(50),
+	                        Milliseconds NUMBER(15),
+	                        StatusCode NUMBER(15),
+	                        IP varchar2(50),
+	                        CreateTime date
+                        )
+
+                     ").ConfigureAwait(false); 
+
+                    await LoggingSqlOperation(async connection =>
+                    {
+                        await connection.ExecuteAsync(@"   
+
+                        create sequence request_seq_id
+                        increment by 1              
+                        start with 1                
+                        nomaxvalue                      
+                        nocycle                         
+                        nocache
+
+                     ").ConfigureAwait(false); 
+
+                    }, "").ConfigureAwait(false);    
+
                 }
-
-                // 检查Job并创建
-                if (con.QueryFirstOrDefault<int>($"Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.Job')") == 0)
-                {
-                   await con.ExecuteAsync(@" 
-                            SET ANSI_NULLS ON;
-                            SET QUOTED_IDENTIFIER ON; 
-                            CREATE TABLE [dbo].[Job](
-	                            [Id] [int] IDENTITY(1,1) NOT NULL,
-	                            [Title] [nvarchar](50) NOT NULL,
-	                            [CronLike] [nvarchar](50) NOT NULL,
-	                            [Emails] [nvarchar](500) NOT NULL,
-                                [Mobiles] [nvarchar](500) NOT NULL,
-	                            [Status] [int] NOT NULL,
-	                            [Servers] [nvarchar](500) NOT NULL,
-	                            [RtStatus] [int] NOT NULL,
-	                            [RtTime] [int] NOT NULL,
-	                            [RtRate] [decimal](18, 4) NOT NULL,
-	                            [HttpStatus] [int] NOT NULL,
-	                            [HttpCodes] [nvarchar](500) NOT NULL,
-	                            [HttpRate] [decimal](18, 4) NOT NULL,
-	                            [IPStatus] [int] NOT NULL,
-	                            [IPWhiteList] [nvarchar](500) NOT NULL,
-	                            [IPRate] [decimal](18, 4) NOT NULL,
-	                            [CreateTime] [datetime] NULL,
-                                [RequestStatus] [int] NOT NULL,
-                                [RequestCount] [int] NOT NULL,
-                             CONSTRAINT [PK_Job] PRIMARY KEY CLUSTERED 
-                            (
-	                            [Id] ASC
-                            )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-                            ) ON [PRIMARY]
-                      ").ConfigureAwait(false);
-                } 
-
-            }
+            }  
+         
         }
 
         public async Task AddRequestInfoAsync(IRequestInfo request)
         {
             //TODO 实现批量存储
             await LoggingSqlOperation(async connection =>
-            {  
-                await connection.InsertAsync(request as RequestInfo).ConfigureAwait(false); 
-            }, "请求数据保存失败").ConfigureAwait(false); 
+            {
+                //await connection.InsertAsync(request as RequestInfo).ConfigureAwait(false);
 
+                string sql = $@"Insert Into RequestInfo Values (request_seq_id.nextval,'
+                    {request.Node}','{request.Route}','{request.Url}','{request.Method}',{request.Milliseconds},{request.StatusCode},'{request.IP}', 
+                 to_date('{request.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss'))"; 
+
+                await connection.ExecuteAsync(sql).ConfigureAwait(false); 
+
+            }, "请求数据保存失败").ConfigureAwait(false);
         }
 
         /// <summary>
@@ -109,7 +94,7 @@ namespace HttpReports.Storage.SQLServer
             string[] nodeNames = null;
             await LoggingSqlOperation(async connection =>
             {
-                nodeNames = (await connection.QueryAsync<string>("Select Distinct Node FROM RequestInfo;").ConfigureAwait(false)).ToArray();
+                nodeNames = (await connection.QueryAsync<string>("Select Distinct Node FROM RequestInfo").ConfigureAwait(false)).ToArray();
             }, "获取所有节点信息失败").ConfigureAwait(false);
 
             return nodeNames?.Select(m => new NodeInfo { Name = m }).ToList();
@@ -123,7 +108,9 @@ namespace HttpReports.Storage.SQLServer
         /// <returns></returns>
         public async Task<List<RequestAvgResponeTime>> GetRequestAvgResponeTimeStatisticsAsync(RequestInfoFilterOption filterOption)
         {
-            string sql = $"Select TOP {filterOption.Take} Url,Avg(Milliseconds) Time FROM RequestInfo {BuildSqlFilter(filterOption)} Group By Url order by Time {BuildSqlControl(filterOption)}";
+            string sql = $"Select  Url,Round(Avg(Milliseconds),2) Time FROM RequestInfo {BuildSqlFilter(filterOption)} Group By Url order by Time {BuildSqlControl(filterOption)}";
+
+            sql = BuildTopSql(sql,filterOption.Take);
 
             TraceLogSql(sql);
 
@@ -192,7 +179,9 @@ namespace HttpReports.Storage.SQLServer
 
         public async Task<List<UrlRequestCount>> GetUrlRequestStatisticsAsync(RequestInfoFilterOption filterOption)
         {
-            string sql = $"Select TOP {filterOption.Take} Url,COUNT(1) as Total From RequestInfo {BuildSqlFilter(filterOption)} Group By Url order by Total {BuildSqlControl(filterOption)};";
+            string sql = $@"Select Url,COUNT(1)  Total From RequestInfo {BuildSqlFilter(filterOption)} Group By Url order by Total {BuildSqlControl(filterOption)}";
+
+            sql = BuildTopSql(sql,filterOption.Take);
 
             TraceLogSql(sql);
 
@@ -203,7 +192,13 @@ namespace HttpReports.Storage.SQLServer
             }).ConfigureAwait(false);
 
             return result;
-        }
+        } 
+
+         
+        protected string BuildTopSql(string sql,int Count)
+        {
+            return " Select * FRom ( " + sql + " ) Where RowNum <= 10  ";  
+        } 
 
 
         /// <summary>
@@ -240,27 +235,28 @@ namespace HttpReports.Storage.SQLServer
         {
             string where = BuildSqlFilter(filterOption);
 
-            string sql = $@"Select COUNT(1) Total From RequestInfo {where};
-                Select COUNT(1) Code404 From RequestInfo {where} AND StatusCode = 404;
-                Select COUNT(1) Code500 From RequestInfo {where} AND StatusCode = 500;
-                Select Count(1) From ( Select Distinct Url From RequestInfo ) A;
-                Select AVG(Milliseconds) ART From RequestInfo {where};";
+            string sql = $@"
+                Select 'Total'    KeyField, COUNT(1) ValueField From RequestInfo {where} Union
+                Select 'Code404'  KeyField, COUNT(1) ValueField From RequestInfo {where} AND StatusCode = 404 Union
+                Select 'Code500'  KeyField, COUNT(1) ValueField From RequestInfo {where} AND StatusCode = 500 Union
+                Select 'APICount' KeyField, Count(1) ValueField  From ( Select Distinct Url From RequestInfo ) A Union
+                Select 'ART'      KeyField, Round(AVG(Milliseconds),2) ValueField From RequestInfo {where} ";
 
             TraceLogSql(sql);
 
-            IndexPageData result = new IndexPageData();
+            IndexPageData result = new IndexPageData(); 
 
             await LoggingSqlOperation(async connection =>
             {
-                using (var resultReader = await connection.QueryMultipleAsync(sql).ConfigureAwait(false))
-                {
-                    result.Total = resultReader.ReadFirstOrDefault<int>();
-                    result.NotFound = resultReader.ReadFirstOrDefault<int>();
-                    result.ServerError = resultReader.ReadFirstOrDefault<int>();
-                    result.APICount = resultReader.ReadFirst<int>();
-                    result.ErrorPercent = result.Total == 0 ? 0 : Convert.ToDouble(result.ServerError) / Convert.ToDouble(result.Total);
-                    result.AvgResponseTime = double.TryParse(resultReader.ReadFirstOrDefault<string>(), out var avg) ? avg : 0;
-                }
+                var data = await connection.QueryAsync<KVClass<string,string>>(sql).ConfigureAwait(false);
+
+                result.Total = data.Where(x => x.KeyField == "Total").FirstOrDefault().ValueField.ToInt();
+                result.NotFound = data.Where(x => x.KeyField == "Code404").FirstOrDefault().ValueField.ToInt();
+                result.ServerError = data.Where(x => x.KeyField == "Code500").FirstOrDefault().ValueField.ToInt();
+                result.APICount = data.Where(x => x.KeyField == "APICount").FirstOrDefault().ValueField.ToInt();
+                result.ErrorPercent = result.Total == 0 ? 0 : Convert.ToDouble(result.ServerError) / Convert.ToDouble(result.Total);
+                result.AvgResponseTime = data.Where(x => x.KeyField == "ART").FirstOrDefault().ValueField.ToDouble(); 
+               
             }, "获取首页数据异常").ConfigureAwait(false);
 
             return result;
@@ -284,7 +280,7 @@ namespace HttpReports.Storage.SQLServer
 
         protected void TraceLogSql(string sql, [CallerMemberName]string method = null)
         {
-            Logger.LogTrace($"Class: {nameof(SQLServerStorage)} Method: {method} SQL: {sql}");
+            Logger.LogTrace($"Class: {nameof(OracleStorage)} Method: {method} SQL: {sql}");
         }
 
         /// <summary>
@@ -317,11 +313,11 @@ namespace HttpReports.Storage.SQLServer
             {
                 if (timeSpanFilterOption.StartTime.HasValue)
                 {
-                    CheckSqlWhere(builder).Append($"CreateTime >= '{timeSpanFilterOption.StartTime.Value.ToString(timeSpanFilterOption.StartTimeFormat)}' ");
+                    CheckSqlWhere(builder).Append($"CreateTime >= to_date('{timeSpanFilterOption.StartTime.Value.ToString(timeSpanFilterOption.StartTimeFormat)}','YYYY-MM-DD') ");
                 }
                 if (timeSpanFilterOption.EndTime.HasValue)
                 {
-                    CheckSqlWhere(builder).Append($"CreateTime < '{timeSpanFilterOption.EndTime.Value.ToString(timeSpanFilterOption.EndTimeFormat)}' ");
+                    CheckSqlWhere(builder).Append($"CreateTime < to_date('{timeSpanFilterOption.EndTime.Value.ToString(timeSpanFilterOption.EndTimeFormat)}','YYYY-MM-DD') ");
                 }
             }
 
@@ -347,56 +343,56 @@ namespace HttpReports.Storage.SQLServer
         /// </summary>
         /// <param name="filterOption"></param>
         /// <returns></returns>
-        public async Task<RequestInfoSearchResult> SearchRequestInfoAsync(RequestInfoSearchFilterOption filterOption)
-        {
-            var whereBuilder = new StringBuilder(BuildSqlFilter(filterOption), 512);
+        //public async Task<RequestInfoSearchResult> SearchRequestInfoAsync(RequestInfoSearchFilterOption filterOption)
+        //{
+        //    var whereBuilder = new StringBuilder(BuildSqlFilter(filterOption), 512);
 
-            var sqlBuilder = new StringBuilder("Select * From RequestInfo ", 512);
+        //    var sqlBuilder = new StringBuilder("Select * From RequestInfo ", 512);
 
-            if (whereBuilder.Length == 0)
-            {
-                whereBuilder.Append("Where 1=1 ");
-            }
+        //    if (whereBuilder.Length == 0)
+        //    {
+        //        whereBuilder.Append("Where 1=1 ");
+        //    }
 
-            if (filterOption.IPs?.Length > 0)
-            {
-                whereBuilder.Append($" AND IP = '{string.Join(",", filterOption.IPs.Select(m => $"'{m}'"))}' ");
-            }
+        //    if (filterOption.IPs?.Length > 0)
+        //    {
+        //        whereBuilder.Append($" AND IP = '{string.Join(",", filterOption.IPs.Select(m => $"'{m}'"))}' ");
+        //    }
 
-            if (filterOption.Urls?.Length > 0)
-            {
-                if (filterOption.Urls.Length > 1)
-                {
-                    throw new ArgumentOutOfRangeException($"{nameof(SQLServerStorage)}暂时只支持单条Url查询");
-                }
-                whereBuilder.Append($" AND  Url like '%{filterOption.Urls[0]}%' ");
-            }
+        //    if (filterOption.Urls?.Length > 0)
+        //    {
+        //        if (filterOption.Urls.Length > 1)
+        //        {
+        //            throw new ArgumentOutOfRangeException($"{nameof(SQLServer)}暂时只支持单条Url查询");
+        //        }
+        //        whereBuilder.Append($" AND  Url like '%{filterOption.Urls[0]}%' ");
+        //    }
 
-            var where = whereBuilder.ToString();
+        //    var where = whereBuilder.ToString();
 
-            sqlBuilder.Append(where);
+        //    sqlBuilder.Append(where);
 
-            var sql = sqlBuilder.ToString();
+        //    var sql = sqlBuilder.ToString();
 
-            TraceLogSql(sql);
+        //    TraceLogSql(sql);
 
-            var countSql = "Select count(1) From RequestInfo " + where;
-            TraceLogSql(countSql);
+        //    var countSql = "Select count(1) From RequestInfo " + where;
+        //    TraceLogSql(countSql);
 
-            var result = new RequestInfoSearchResult()
-            {
-                SearchOption = filterOption,
-            };
+        //    var result = new RequestInfoSearchResult()
+        //    {
+        //        SearchOption = filterOption,
+        //    };
 
-            await LoggingSqlOperation(async connection =>
-            { 
-                result.AllItemCount = connection.QueryFirstOrDefault<int>(countSql);
+        //    await LoggingSqlOperation(async connection =>
+        //    { 
+        //        result.AllItemCount = connection.QueryFirstOrDefault<int>(countSql);
 
-                result.List.AddRange((await connection.GetListBySqlAsync<RequestInfo>(sql,"Id desc",filterOption.PageSize,filterOption.Take,result.AllItemCount).ConfigureAwait(false)).ToArray());
-            }, "查询请求信息列表异常").ConfigureAwait(false);
+        //        result.List.AddRange((await connection.GetListBySqlAsync<RequestInfo>(sql,"Id desc",filterOption.PageSize,filterOption.Take,result.AllItemCount).ConfigureAwait(false)).ToArray());
+        //    }, "查询请求信息列表异常").ConfigureAwait(false);
 
-            return result;
-        }
+        //    return result;
+        //}
 
         /// <summary>
         /// 获取请求次数统计
@@ -409,7 +405,7 @@ namespace HttpReports.Storage.SQLServer
 
             var dateFormat = GetDateFormat(filterOption);
 
-            string sql = $"Select {dateFormat} KeyField,COUNT(1) ValueField From RequestInfo {where} Group by {dateFormat};";
+            string sql = $"Select {dateFormat} KeyField,COUNT(1) ValueField From RequestInfo {where} Group by {dateFormat} ";
 
             TraceLogSql(sql);
 
@@ -441,7 +437,7 @@ namespace HttpReports.Storage.SQLServer
 
             var dateFormat = GetDateFormat(filterOption);
 
-            string sql = $"Select {dateFormat} KeyField,AVG(Milliseconds) ValueField From RequestInfo {where} Group by {dateFormat};";
+            string sql = $"Select {dateFormat} KeyField,Round(AVG(Milliseconds),2) ValueField From RequestInfo {where} Group by {dateFormat}";
 
             TraceLogSql(sql);
 
@@ -469,17 +465,22 @@ namespace HttpReports.Storage.SQLServer
             public TValue ValueField { get; set; }
         }
 
+        public static string GetListSql(string sql,string order,int page,int size)
+        {
+            return $@" Select * from ( select ROWNUM as num,PageA.* from ( {sql} Order By {order}  ) PageA where rownum <= {page*size} ) where num >= {(page-1) * size} ";
+        } 
+
         private static string GetDateFormat(TimeSpanStatisticsFilterOption filterOption)
         {
             string dateFormat;
             switch (filterOption.Type)
             {
                 case TimeUnit.Hour:
-                    dateFormat = "DATENAME(HOUR, CreateTime)";
+                    dateFormat = "to_char(CreateTime,'hh24')";
                     break;
 
                 case TimeUnit.Month:
-                    dateFormat = "CONVERT(varchar(7),CreateTime, 120)";
+                    dateFormat = "to_char(sysdate,'mm')";
                     break;
 
                 case TimeUnit.Year:
@@ -488,12 +489,69 @@ namespace HttpReports.Storage.SQLServer
 
                 case TimeUnit.Day:
                 default:
-                    dateFormat = "CONVERT(varchar(100),CreateTime, 23)";
+                    dateFormat = "to_char(CreateTime,'dd')";
                     break;
             }
 
             return dateFormat;
         }
 
+        /// <summary>
+        /// 获取请求信息
+        /// </summary>
+        /// <param name="filterOption"></param>
+        /// <returns></returns>
+        public async Task<RequestInfoSearchResult> SearchRequestInfoAsync(RequestInfoSearchFilterOption filterOption)
+        {
+            var whereBuilder = new StringBuilder(BuildSqlFilter(filterOption), 512);
+
+            var sqlBuilder = new StringBuilder("Select * From RequestInfo ", 512);
+
+            if (whereBuilder.Length == 0)
+            {
+                whereBuilder.Append("Where 1=1 ");
+            }
+
+            if (filterOption.IPs?.Length > 0)
+            {
+                whereBuilder.Append($" AND IP = '{string.Join(",", filterOption.IPs.Select(m => $"'{m}'"))}' ");
+            }
+
+            if (filterOption.Urls?.Length > 0)
+            {
+                if (filterOption.Urls.Length > 1)
+                {
+                    throw new ArgumentOutOfRangeException($"{nameof(OracleStorage)}暂时只支持单条Url查询");
+                }
+                whereBuilder.Append($" AND  Url like '%{filterOption.Urls[0]}%' ");
+            }
+
+            var where = whereBuilder.ToString();
+
+            sqlBuilder.Append(where);
+
+            var sql = sqlBuilder.ToString();
+
+            TraceLogSql(sql);
+
+            var countSql = "Select count(1) From RequestInfo " + where;
+            TraceLogSql(countSql);
+
+            var result = new RequestInfoSearchResult()
+            {
+                SearchOption = filterOption,
+            };
+
+            await LoggingSqlOperation(async connection =>
+            {
+                result.AllItemCount = connection.QueryFirstOrDefault<int>(countSql); 
+
+                var listSql = GetListSql(sql, "Id Desc",filterOption.Page,filterOption.PageSize);
+
+                result.List.AddRange((await connection.QueryAsync<RequestInfo>(listSql).ConfigureAwait(false)).ToArray());
+            }, "查询请求信息列表异常").ConfigureAwait(false);
+
+            return result;
+        }
     }
 }

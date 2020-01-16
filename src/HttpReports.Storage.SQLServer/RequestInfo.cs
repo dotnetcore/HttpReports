@@ -1,10 +1,11 @@
 ﻿using System;
 
-namespace HttpReports
-{
+using Dapper.Contrib.Extensions;
 
-    
-    public class RequestInfo : IRequestInfo
+namespace HttpReports.Storage.SQLServer
+{
+    [Table("RequestInfo")]
+    internal class RequestInfo : IRequestInfo
     {
         /// <summary>
         /// Id

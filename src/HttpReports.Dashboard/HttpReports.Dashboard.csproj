@@ -32,6 +32,7 @@
   <ItemGroup>
     <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
     <ProjectReference Include="..\HttpReports.Storage.MySQL\HttpReports.Storage.MySql.csproj" />
+    <ProjectReference Include="..\HttpReports.Storage.Oracle\HttpReports.Storage.Oracle.csproj" />
     <ProjectReference Include="..\HttpReports.Storage.SQLServer\HttpReports.Storage.SQLServer.csproj" />
   </ItemGroup>
 </Project>
