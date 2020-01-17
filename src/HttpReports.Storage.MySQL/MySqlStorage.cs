@@ -10,9 +10,14 @@ using Dapper;
 using Dapper.Contrib.Extensions;
 
 using HttpReports.Models;
+using HttpReports.Monitor;
 using HttpReports.Storage.FilterOptions;
 
 using Microsoft.Extensions.Logging;
+
+using MySql.Data.MySqlClient;
+
+using Newtonsoft.Json;
 
 namespace HttpReports.Storage.MySql
 {
@@ -28,58 +33,87 @@ namespace HttpReports.Storage.MySql
             Logger = logger;
         }
 
+        #region Init
+
         public async Task InitAsync()
         {
-            using (var con = ConnectionFactory.GetConnection())
+            using (var connection = ConnectionFactory.GetConnection())
             {
-                if (con.QueryFirstOrDefault<int>($"  Select count(1) from information_schema.tables where table_name ='RequestInfo' and table_schema = '{ConnectionFactory.DataBase}'; ") == 0)
+                try
                 {
-                    await con.ExecuteAsync(@"
-                        CREATE TABLE `RequestInfo` (
-                          `Id` int(11) NOT NULL auto_increment,
-                          `Node` varchar(50) default NULL,
-                          `Route` varchar(50) default NULL,
-                          `Url` varchar(200) default NULL,
-                          `Method` varchar(50) default NULL,
-                          `Milliseconds` int(11) default NULL,
-                          `StatusCode` int(11) default NULL,
-                          `IP` varchar(50) default NULL,
-                          `CreateTime` datetime default NULL,
-                          PRIMARY KEY  (`Id`)
-                        ) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;  ").ConfigureAwait(false);
+                    connection.Open();
+                }
+                catch (MySqlException ex)
+                {
+                    if (ex.Message.ToUpperInvariant().Contains("UNKNOWN DATABASE"))
+                    {
+                        await CreateDatabaseAsync().ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
 
-                if (con.QueryFirstOrDefault<int>($" Select count(1) from information_schema.tables where table_name ='Job' and table_schema = '{ConnectionFactory.DataBase}'; ") == 0)
+                await connection.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS `RequestInfo` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `Node` varchar(50) DEFAULT NULL,
+  `Route` varchar(50) DEFAULT NULL,
+  `Url` varchar(255) DEFAULT NULL,
+  `Method` varchar(16) DEFAULT NULL,
+  `Milliseconds` int(11) DEFAULT NULL,
+  `StatusCode` int(11) DEFAULT NULL,
+  `IP` varchar(50) DEFAULT NULL,
+  `CreateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`Id`),
+  KEY `idx_node` (`Node`) USING HASH,
+  KEY `idx_status_code` (`StatusCode`) USING HASH
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;").ConfigureAwait(false);
+
+                await connection.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS `MonitorRule` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+  `Title` varchar(255) NOT NULL COMMENT '标题',
+  `Description` varchar(512) NOT NULL COMMENT '描述',
+  PRIMARY KEY (`Id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='监控规则';").ConfigureAwait(false);
+
+                await connection.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS `Monitor` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+  `RuleId` int(11) NOT NULL COMMENT '所属规则ID',
+  `Type` int(11) NOT NULL COMMENT '监控类型',
+  `Description` varchar(512) DEFAULT NULL COMMENT '描述',
+  `CronExpression` varchar(64) NOT NULL COMMENT 'Cron表达式',
+  `Payload` varchar(10240) NOT NULL COMMENT '具体内容',
+  PRIMARY KEY (`Id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='监控定义';").ConfigureAwait(false);
+
+                await connection.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS `MonitorRuleApplied` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+  `RuleId` int(11) NOT NULL COMMENT '规则ID',
+  `Node` varchar(50) NOT NULL COMMENT '应用的节点',
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `idx_ruleid_node` (`RuleId`,`Node`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='规则应用表';").ConfigureAwait(false);
+            }
+        }
+
+        private async Task CreateDatabaseAsync()
+        {
+            using (var ccon = ConnectionFactory.GetConnectionWithoutDefaultDatabase())
+            {
+                var num = await ccon.ExecuteAsync($"CREATE DATABASE IF NOT EXISTS `{ConnectionFactory.DataBase}` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;").ConfigureAwait(false);
+                if (num == 1)
                 {
-                    await con.ExecuteAsync(@"
-
-                            CREATE TABLE `Job` (
-                              `Id` int(11) NOT NULL AUTO_INCREMENT,
-                              `Title` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-                              `CronLike` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-                              `Emails` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL,
-                              `Mobiles` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL,
-                              `Status` int(2) DEFAULT NULL,
-                              `Servers` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL,
-                              `RtStatus` int(2) DEFAULT NULL,
-                              `RtTime` int(11) DEFAULT NULL,
-                              `RtRate` double DEFAULT NULL,
-                              `HttpStatus` int(11) DEFAULT NULL,
-                              `HttpCodes` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL,
-                              `HttpRate` double DEFAULT NULL,
-                              `IPStatus` int(11) DEFAULT NULL,
-                              `IPWhiteList` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL,
-                              `IPRate` double DEFAULT NULL,
-                              `CreateTime` datetime DEFAULT NULL,
-                              `RequestStatus` int(2) DEFAULT NULL,
-                              `RequestCount` int(11) DEFAULT NULL,
-                              PRIMARY KEY (`Id`)
-                            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-                     ").ConfigureAwait(false);
+                    Logger.LogWarning($"自动创建了数据库: {ConnectionFactory.DataBase}");
+                }
+                else
+                {
+                    throw new HttpReportsInitException($"自动创建数据库 {ConnectionFactory.DataBase} 异常");
                 }
             }
         }
+
+        #endregion Init
 
         public async Task AddRequestInfoAsync(IRequestInfo request)
         {
@@ -97,29 +131,15 @@ namespace HttpReports.Storage.MySql
 
             TraceLogSql(sql);
 
-            List<UrlRequestCount> result = null;
-            await LoggingSqlOperation(async connection =>
-            {
-                result = (await connection.QueryAsync<UrlRequestCount>(sql).ConfigureAwait(false)).ToList();
-            }).ConfigureAwait(false);
-
-            return result;
+            return await LoggingSqlOperation(async connection => (await connection.QueryAsync<UrlRequestCount>(sql).ConfigureAwait(false)).ToList()).ConfigureAwait(false);
         }
 
         /// <summary>
         /// 获取所有节点信息
         /// </summary>
         /// <returns></returns>
-        public async Task<List<NodeInfo>> GetNodesAsync()
-        {
-            string[] nodeNames = null;
-            await LoggingSqlOperation(async connection =>
-            {
-                nodeNames = (await connection.QueryAsync<string>("Select Distinct Node FROM RequestInfo;").ConfigureAwait(false)).ToArray();
-            }, "获取所有节点信息失败").ConfigureAwait(false);
-
-            return nodeNames?.Select(m => new NodeInfo { Name = m }).ToList();
-        }
+        public async Task<List<NodeInfo>> GetNodesAsync() =>
+             await LoggingSqlOperation(async connection => (await connection.QueryAsync<string>("Select Distinct Node FROM RequestInfo;").ConfigureAwait(false)).Select(m => new NodeInfo { Name = m }).ToList(), "获取所有节点信息失败").ConfigureAwait(false);
 
         /// <summary>
         /// 获取Url的平均请求处理时间统计
@@ -132,13 +152,7 @@ namespace HttpReports.Storage.MySql
 
             TraceLogSql(sql);
 
-            List<RequestAvgResponeTime> result = null;
-            await LoggingSqlOperation(async connection =>
-            {
-                result = (await connection.QueryAsync<RequestAvgResponeTime>(sql).ConfigureAwait(false)).ToList();
-            }, "获取Url的平均请求处理时间统计异常").ConfigureAwait(false);
-
-            return result;
+            return await LoggingSqlOperation(async connection => (await connection.QueryAsync<RequestAvgResponeTime>(sql).ConfigureAwait(false)).ToList(), "获取Url的平均请求处理时间统计异常").ConfigureAwait(false);
         }
 
         public async Task<List<StatusCodeCount>> GetStatusCodeStatisticsAsync(RequestInfoFilterOption filterOption)
@@ -149,13 +163,7 @@ namespace HttpReports.Storage.MySql
 
             TraceLogSql(sql);
 
-            List<StatusCodeCount> result = null;
-            await LoggingSqlOperation(async connection =>
-            {
-                result = (await connection.QueryAsync<StatusCodeCount>(sql).ConfigureAwait(false)).ToList();
-            }, "获取http状态码数量统计异常").ConfigureAwait(false);
-
-            return result;
+            return await LoggingSqlOperation(async connection => (await connection.QueryAsync<StatusCodeCount>(sql).ConfigureAwait(false)).ToList(), "获取http状态码数量统计异常").ConfigureAwait(false);
         }
 
         public async Task<List<ResponeTimeGroup>> GetGroupedResponeTimeStatisticsAsync(GroupResponeTimeFilterOption filterOption)
@@ -184,13 +192,7 @@ namespace HttpReports.Storage.MySql
 
             TraceLogSql(sql);
 
-            List<ResponeTimeGroup> result = null;
-            await LoggingSqlOperation(async connection =>
-            {
-                result = (await connection.QueryAsync<ResponeTimeGroup>(sql).ConfigureAwait(false)).ToList();
-            }, "获取http状态码分组统计异常").ConfigureAwait(false);
-
-            return result;
+            return await LoggingSqlOperation(async connection => (await connection.QueryAsync<ResponeTimeGroup>(sql).ConfigureAwait(false)).ToList(), "获取http状态码分组统计异常").ConfigureAwait(false);
         }
 
         /// <summary>
@@ -349,6 +351,281 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
             return result;
         }
 
+        #region Monitor
+
+        #region Base
+
+        private static async Task UpdateMonitorRuleAppliedAsync(IDbConnection connection, int ruleId, IList<string> nodes)
+        {
+            var sql = $"DELETE FROM `MonitorRuleApplied` WHERE `RuleId` = {ruleId};";
+            await connection.ExecuteAsync(sql).ConfigureAwait(false);
+
+            if (nodes?.Count > 0)
+            {
+                sql = $"INSERT INTO `MonitorRuleApplied`(`RuleId`, `Node`) VALUES {string.Join(",", nodes.Where(m => !string.IsNullOrWhiteSpace(m)).Select(m => $"({ruleId},'{m}')"))};";
+
+                if (await connection.ExecuteAsync(sql).ConfigureAwait(false) <= 0)
+                {
+                    throw new StorageException("更新 MonitorRuleApplied 表失败");
+                }
+            }
+        }
+
+        private static async Task InsertMonitorAsync(IDbConnection connection, int ruleId, IList<IMonitor> monitors)
+        {
+            if (monitors?.Count > 0)
+            {
+                var sql = $"INSERT INTO `Monitor`(`RuleId`, `Type`, `Description`, `CronExpression`, `Payload`) VALUES {string.Join(",", monitors.Select(m => $"({ruleId}, {(int)m.Type}, '{m.Description}', '{m.CronExpression}', '{JsonConvert.SerializeObject(m)}')"))};";
+
+                if (await connection.ExecuteAsync(sql).ConfigureAwait(false) <= 0)
+                {
+                    throw new StorageException("插入 Monitor 表失败");
+                }
+            }
+        }
+
+        private static IMonitor DeserializeMonitor(MonitorType type, string json)
+        {
+            IMonitor monitor = null;
+            switch (type)
+            {
+                case MonitorType.ResponseTimeOut:
+                    monitor = JsonConvert.DeserializeObject<ResponseTimeOutMonitor>(json);
+                    break;
+
+                case MonitorType.ErrorResponse:
+                    monitor = JsonConvert.DeserializeObject<ErrorResponseMonitor>(json);
+                    break;
+
+                case MonitorType.ToManyRequestWithAddress:
+                    monitor = JsonConvert.DeserializeObject<RequestTimesMonitor>(json);
+                    break;
+
+                case MonitorType.ToManyRequestBySingleRemoteAddress:
+                    monitor = JsonConvert.DeserializeObject<RemoteAddressRequestTimesMonitor>(json);
+                    break;
+            }
+
+            if (monitor == null)
+            {
+                throw new HttpReportsException($"未知的监控类型：{type} json: {json}");
+            }
+            return monitor;
+        }
+
+        internal class MonitorRuleApplied
+        {
+            public int RuleId { get; set; }
+            public string Node { get; set; }
+        }
+
+        internal class UnTypedMonitor
+        {
+            public int Id { get; set; }
+            public int RuleId { get; set; }
+            public MonitorType Type { get; set; }
+            public string Payload { get; set; }
+        }
+
+        #endregion Base
+
+        public async Task<bool> AddMonitorRuleAsync(IMonitorRule rule)
+        {
+            await LoggingSqlOperationWithTransaction(async connection =>
+            {
+                var sql = $"INSERT INTO `MonitorRule`(`Title`, `Description`) VALUES ('{rule.Title}', '{rule.Description}')";
+                if (await connection.ExecuteAsync(sql).ConfigureAwait(false) <= 0)
+                {
+                    throw new StorageException("插入 MonitorRule 表失败");
+                }
+
+                var id = (await connection.QueryAsync<int>("SELECT LAST_INSERT_ID();").ConfigureAwait(false)).FirstOrDefault();
+                if (id <= 0)
+                {
+                    throw new StorageException("插入 MonitorRule 表失败");
+                }
+
+                rule.Id = id;
+
+                await UpdateMonitorRuleAppliedAsync(connection, rule.Id, rule.Nodes).ConfigureAwait(false);
+
+                await InsertMonitorAsync(connection, rule.Id, rule.Monitors).ConfigureAwait(false);
+            }, "插入新的监控规则失败").ConfigureAwait(false);
+            return true;
+        }
+
+        public async Task<bool> UpdateMonitorRuleAsync(IMonitorRule rule)
+        {
+            if (rule.Id <= 0)
+            {
+                return false;
+            }
+
+            await LoggingSqlOperationWithTransaction(async connection =>
+            {
+                var sql = $"UPDATE `MonitorRule` SET `Title`='{rule.Title}', `Description`='{rule.Description}' WHERE `Id` = {rule.Id}";
+                if (await connection.ExecuteAsync(sql).ConfigureAwait(false) <= 0)
+                {
+                    throw new StorageException("更新 MonitorRule 表失败");
+                }
+
+                await UpdateMonitorRuleAppliedAsync(connection, rule.Id, rule.Nodes).ConfigureAwait(false);
+
+                if (rule.Monitors?.Count > 0)
+                {
+                    var idsString = string.Join(",", rule.Monitors.Select(m => m.Id));
+                    await connection.ExecuteAsync($"DELETE FROM `Monitor` WHERE `RuleId` = {rule.Id} AND Id NOT IN ({idsString});").ConfigureAwait(false);
+
+                    var existIds = await connection.QueryAsync<int>($"SELECT Id FROM `Monitor` WHERE Id IN ({idsString})").ConfigureAwait(false);
+
+                    foreach (var id in existIds)
+                    {
+                        var monitor = rule.Monitors.Where(m => m.Id == id).First();
+                        await connection.ExecuteAsync($"UPDATE `Monitor` SET `Description`='{monitor.Description}',`CronExpression`='{monitor.CronExpression}',`Payload`='{JsonConvert.SerializeObject(monitor)}' WHERE `Id` = {id}").ConfigureAwait(false);
+                    }
+
+                    var newMonitors = rule.Monitors.Where(m => m.Id <= 0).ToArray();
+                    await InsertMonitorAsync(connection, rule.Id, newMonitors).ConfigureAwait(false);
+                }
+                else
+                {
+                    sql = $"DELETE FROM `Monitor` WHERE `RuleId` = {rule.Id};";
+                    await connection.ExecuteAsync(sql).ConfigureAwait(false);
+                }
+            }, "更新监控规则失败").ConfigureAwait(false);
+            return true;
+        }
+
+        public async Task<bool> DeleteMonitorRuleAsync(int ruleId)
+        {
+            await LoggingSqlOperationWithTransaction(async connection =>
+            {
+                var sqls = new string[] {
+                    $"DELETE FROM `MonitorRule` WHERE `Id` = {ruleId}",
+                    $"DELETE FROM `MonitorRuleApplied` WHERE `RuleId` = {ruleId}",
+                    $"DELETE FROM `Monitor` WHERE `RuleId` = {ruleId}",
+                };
+
+                foreach (var sql in sqls)
+                {
+                    await connection.ExecuteAsync(sql).ConfigureAwait(false);
+                }
+            }, "删除监控规则失败").ConfigureAwait(false);
+            return true;
+        }
+
+        public async Task<IMonitorRule> GetMonitorRuleAsync(int ruleId)
+        {
+            return await LoggingSqlOperation(async connection =>
+            {
+                var rule = (await connection.QueryAsync<MonitorRule>($"SELECT `Id`,`Title`,`Description` FROM `MonitorRule` WHERE `Id`={ruleId};").ConfigureAwait(false)).FirstOrDefault();
+                if (rule != null)
+                {
+                    var allNodeMaps = await connection.QueryAsync<MonitorRuleApplied>($"SELECT `RuleId`,`Node` FROM `MonitorRuleApplied` WHERE `RuleId` = {rule.Id};").ConfigureAwait(false);
+                    var allMonitors = await connection.QueryAsync<UnTypedMonitor>($"SELECT `Id`,`RuleId`,`Type`,`Payload` FROM `Monitor` WHERE `RuleId` = {rule.Id};").ConfigureAwait(false);
+
+                    allNodeMaps.Where(m => m.RuleId == rule.Id).Select(m => m.Node).ToList().ForEach(m => rule.Nodes.Add(m));
+                    allMonitors.Where(m => m.RuleId == rule.Id).Select(m =>
+                    {
+                        IMonitor monitor = DeserializeMonitor(m.Type, m.Payload);
+                        monitor.Id = m.Id;
+                        monitor.RuleId = rule.Id;
+                        return monitor;
+                    }).ToList().ForEach(m =>
+                    {
+                        rule.Monitors.Add(m);
+                    });
+                }
+                return rule;
+            }, $"获取监控规则 [{ruleId}] 失败").ConfigureAwait(false);
+        }
+
+        public async Task<List<IMonitorRule>> GetAllMonitorRulesAsync()
+        {
+            var result = new List<IMonitorRule>();
+
+            await LoggingSqlOperation(async connection =>
+            {
+                var rules = (await connection.QueryAsync<MonitorRule>("SELECT `Id`,`Title`,`Description` FROM `MonitorRule`;").ConfigureAwait(false)).ToList();
+                if (rules.Count > 0)
+                {
+                    var ruleIds = string.Join(",", rules.Select(m => m.Id));
+                    var allNodeMaps = await connection.QueryAsync<MonitorRuleApplied>($"SELECT `RuleId`,`Node` FROM `MonitorRuleApplied` WHERE `RuleId` IN ({ruleIds});").ConfigureAwait(false);
+                    var allMonitors = await connection.QueryAsync<UnTypedMonitor>($"SELECT `Id`,`RuleId`,`Type`,`Payload` FROM `Monitor` WHERE `RuleId` IN ({ruleIds});").ConfigureAwait(false);
+
+                    rules.ForEach(rule =>
+                    {
+                        allNodeMaps.Where(m => m.RuleId == rule.Id).Select(m => m.Node).ToList().ForEach(m => rule.Nodes.Add(m));
+                        allMonitors.Where(m => m.RuleId == rule.Id).Select(m =>
+                        {
+                            IMonitor monitor = DeserializeMonitor(m.Type, m.Payload);
+                            monitor.Id = m.Id;
+                            monitor.RuleId = rule.Id;
+                            return monitor;
+                        }).ToList().ForEach(m =>
+                        {
+                            rule.Monitors.Add(m);
+                        });
+
+                        result.Add(rule);
+                    });
+                }
+            }, "获取所有监控规则失败").ConfigureAwait(false);
+
+            return result;
+        }
+
+        #region Query
+
+        public async Task<int> GetRequestCountAsync(RequestCountFilterOption filterOption)
+        {
+            var sql = $"SELECT COUNT(1) FROM `RequestInfo` {BuildSqlFilter(filterOption)}";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql).ConfigureAwait(false));
+        }
+
+        /// <summary>
+        /// 获取白名单外的获取请求总次数
+        /// </summary>
+        /// <param name="filterOption"></param>
+        /// <returns></returns>
+        public async Task<(int Max, int All)> GetRequestCountWithWhiteListAsync(RequestCountWithListFilterOption filterOption)
+        {
+            var ipFilter = $"({string.Join(",", filterOption.List.Select(m => $"'{m}'"))})";
+            if (filterOption.InList)
+            {
+                ipFilter = "IP IN " + ipFilter;
+            }
+            else
+            {
+                ipFilter = "IP NOT IN " + ipFilter;
+            }
+
+            var sql = $"SELECT COUNT(1) TOTAL FROM `RequestInfo` {BuildSqlFilter(filterOption)} AND {ipFilter} GROUP BY `IP` ORDER BY TOTAL DESC LIMIT 1";
+            TraceLogSql(sql);
+            var max = await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql).ConfigureAwait(false));
+            sql = $"SELECT COUNT(1) TOTAL FROM `RequestInfo` {BuildSqlFilter(filterOption)} AND {ipFilter}";
+            TraceLogSql(sql);
+            var all = await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql).ConfigureAwait(false));
+            return (max, all);
+        }
+
+        public async Task<int> GetTimeoutResponeCountAsync(RequestCountFilterOption filterOption, int timeoutThreshold)
+        {
+            var where = BuildSqlFilter(filterOption);
+            var sql = $"SELECT COUNT(1) FROM `RequestInfo` {(string.IsNullOrWhiteSpace(where) ? "WHERE" : where)} AND Milliseconds >= {timeoutThreshold}";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql).ConfigureAwait(false));
+        }
+
+        #endregion Query
+
+        #endregion Monitor
+
         #region Base
 
         private static string GetDateFormat(TimeSpanStatisticsFilterOption filterOption)
@@ -400,6 +677,82 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Method: {method} Message: {message ?? "数据库操作异常"}");
+            }
+        }
+
+        protected async Task<T> LoggingSqlOperation<T>(Func<IDbConnection, Task<T>> func, string message = null, [CallerMemberName]string method = null)
+        {
+            try
+            {
+                using (var connection = ConnectionFactory.GetConnection())
+                {
+                    return await func(connection).ConfigureAwait(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Method: {method} Message: {message ?? "数据库操作异常"}");
+                throw;
+            }
+        }
+
+        protected async Task LoggingSqlOperationWithTransaction(Func<IDbConnection, Task> func, string message = null, [CallerMemberName]string method = null)
+        {
+            using (var connection = ConnectionFactory.GetConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    var succeed = true;
+                    try
+                    {
+                        await func(connection).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        succeed = false;
+                        transaction.Rollback();
+                        Logger.LogError(ex, $"Method: {method} Message: {message ?? "数据库操作异常"}");
+                        throw;
+                    }
+                    finally
+                    {
+                        if (succeed)
+                        {
+                            transaction.Commit();
+                        }
+                    }
+                }
+            }
+        }
+
+        protected async Task<T> LoggingSqlOperationWithTransaction<T>(Func<IDbConnection, Task<T>> func, string message = null, [CallerMemberName]string method = null)
+        {
+            using (var connection = ConnectionFactory.GetConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    var succeed = true;
+                    try
+                    {
+                        return await func(connection).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        succeed = false;
+                        transaction.Rollback();
+                        Logger.LogError(ex, $"Method: {method} Message: {message ?? "数据库操作异常"}");
+                        throw;
+                    }
+                    finally
+                    {
+                        if (succeed)
+                        {
+                            transaction.Commit();
+                        }
+                    }
+                }
             }
         }
 

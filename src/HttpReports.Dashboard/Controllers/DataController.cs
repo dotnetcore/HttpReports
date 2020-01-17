@@ -78,14 +78,14 @@ namespace HttpReports.Dashboard.Controllers
                 StartTime = startTime,
                 EndTime = endTime,
                 StatusCodes = new[] { 200, 301, 302, 303, 400, 401, 403, 404, 500, 502, 503 },
-            }).ConfigureAwait(false)).Select(m => new EchartPineDataModel(m.Code.ToString(), m.Total)).ToArray();
+            }).ConfigureAwait(false)).Where(m => m.Total > 0).Select(m => new EchartPineDataModel(m.Code.ToString(), m.Total)).ToArray();
 
             var ResponseTime = (await _storage.GetGroupedResponeTimeStatisticsAsync(new GroupResponeTimeFilterOption()
             {
                 Nodes = nodes,
                 StartTime = startTime,
                 EndTime = endTime,
-            }).ConfigureAwait(false)).Select(m => new EchartPineDataModel(m.Name, m.Total)).ToArray();
+            }).ConfigureAwait(false)).Where(m => m.Total > 0).Select(m => new EchartPineDataModel(m.Name, m.Total)).ToArray();
 
             return Json(new HttpResultEntity(1, "ok", new { StatusCode, ResponseTime, topRequest, topError500, Art }));
         }
@@ -153,7 +153,7 @@ namespace HttpReports.Dashboard.Controllers
             var monthDayCount = (endTime - startTime).Days;
             for (int i = 0; i < monthDayCount; i++)
             {
-                var day = $"{request.Month}-{i + 1}";
+                var day = $"{request.Month}-{(i + 1).ToString("D2")}";
 
                 var times = responseTimeStatistics.Items.TryGetValue(day, out var tTimes) ? tTimes : 0;
 

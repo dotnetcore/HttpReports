@@ -1,7 +1,7 @@
 ﻿namespace HttpReports.Storage.MySql
 {
-    internal class ModelCreator : IModelCreator
+    internal class ModelCreator : DefaultModelCreator
     {
-        public IRequestInfo NewRequestInfo() => new RequestInfo();
+        public override IRequestInfo CreateRequestInfo() => new RequestInfo();
     }
 }

@@ -27,6 +27,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{92F075FE
 		Dockerfile = Dockerfile
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{62236260-3E05-4E03-BF44-8061691CB8EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpReports.Test", "test\HttpReports.Test\HttpReports.Test.csproj", "{096B19D3-7F8A-47B2-B8DF-84ACA3D210A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +61,10 @@ Global
 		{F1787614-D88F-4F00-9CE4-08493CF990C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1787614-D88F-4F00-9CE4-08493CF990C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1787614-D88F-4F00-9CE4-08493CF990C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{096B19D3-7F8A-47B2-B8DF-84ACA3D210A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{096B19D3-7F8A-47B2-B8DF-84ACA3D210A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{096B19D3-7F8A-47B2-B8DF-84ACA3D210A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{096B19D3-7F8A-47B2-B8DF-84ACA3D210A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -68,6 +76,7 @@ Global
 		{BDB01E7D-754B-4797-9575-B6480A84DB28} = {BAF971BD-0546-4610-A9F6-6F6DC68E6FE7}
 		{9A3F67F6-E526-4264-9FAE-CD37BCF4FB3C} = {BAF971BD-0546-4610-A9F6-6F6DC68E6FE7}
 		{F1787614-D88F-4F00-9CE4-08493CF990C1} = {CDCA953E-391F-422A-85A0-2057B8F2ED96}
+		{096B19D3-7F8A-47B2-B8DF-84ACA3D210A3} = {62236260-3E05-4E03-BF44-8061691CB8EE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CF5EB1E6-E330-45DC-80A3-9A2CE692DDE5}

@@ -25,7 +25,7 @@ namespace HttpReports
             var path = (context.Request.Path.Value ?? string.Empty).ToLowerInvariant();
 
             // 创建请求信息
-            var request = ModelCreator.NewRequestInfo();
+            var request = ModelCreator.CreateRequestInfo();
             request.IP = context.Connection.RemoteIpAddress.ToString();
             request.StatusCode = context.Response.StatusCode;
             request.Method = context.Request.Method;

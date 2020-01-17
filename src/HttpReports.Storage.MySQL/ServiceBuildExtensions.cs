@@ -1,6 +1,8 @@
-﻿using HttpReports;
+﻿using System.Runtime.CompilerServices;
+using HttpReports;
 using HttpReports.Storage.MySql;
 
+[assembly:InternalsVisibleTo("HttpReports.Test")]
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceBuildExtensions
