@@ -31,5 +31,9 @@ namespace HttpReports.Monitor
         /// 规则的所有监控
         /// </summary>
         public IList<IMonitor> Monitors { get; set; } = new List<IMonitor>();
+
+        public IList<string> NotificationEmails { get; set; } = new List<string>();
+
+        public IList<string> NotificationPhoneNumbers { get; set; } = new List<string>();
     }
 }

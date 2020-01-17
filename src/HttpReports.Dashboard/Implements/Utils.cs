@@ -1,6 +1,8 @@
-﻿namespace HttpReports.Dashboard.Implements
+﻿using System;
+
+namespace HttpReports.Dashboard.Implements
 {
-    public class Utils
+    public static class Utils
     {
         public static bool ObjToBool(object expression, bool defValue = false)
         {
@@ -12,5 +14,12 @@
             }
             return defValue;
         }
+
+        /// <summary>
+        /// yyyy-MM-dd HH:mm:ss
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        public static string ToStandardTime(this DateTime time) => time.ToString("yyyy-MM-dd HH:mm:ss");
     }
 }

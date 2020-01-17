@@ -42,21 +42,34 @@ namespace HttpReports.Test
                 {
                     new ResponseTimeOutMonitor()
                     {
-                        TimeoutThreshold = 1000 + i * 100,
+                        TimeoutThreshold = 400 + i * 100,
                         WarningPercentage = 10,
                         Description = "ResponseTimeOutMonitor" + i,
-                        CronExpression = "CronExpression" + i
+                        CronExpression = "0 0/1 * * * ?"
                     },
                     new RemoteAddressRequestTimesMonitor()
                     {
                         WhileList = new string[] { "127.0.0.1", "192.168.0.120" },
                         WarningPercentage = 10,
                         Description = "RemoteAddressRequestTimesMonitor" + i,
-                        CronExpression = "CronExpression" + i
+                        CronExpression = "0 0/1 * * * ?"
+                    },
+                    new RequestTimesMonitor()
+                    {
+                        WarningThreshold = 200,
+                        Description = "RequestTimesMonitor",
+                        CronExpression = "0 0/1 * * * ?"
+                    },
+                    new ErrorResponseMonitor()
+                    {
+                        StatusCodes = new int[]{ 404, 500 },
+                        WarningPercentage = 8,
+                        Description = "ErrorResponseMonitor",
+                        CronExpression = "0 0/1 * * * ?"
                     }
                 };
 
-                var nodes = new string[] { "Node1", "Node2", "Node" };
+                var nodes = new string[] { "Test1", "Test2", "Test3" };
 
                 var addRule = new MonitorRule()
                 {
@@ -64,6 +77,8 @@ namespace HttpReports.Test
                     Description = "测试规则描述" + i,
                     Nodes = nodes,
                     Monitors = monitors,
+                    NotificationEmails = new string[] { "test@test.com", "test2@test.com" },
+                    NotificationPhoneNumbers = new string[] { "13880000000", "13880000001" }
                 };
 
                 await Storage.AddMonitorRuleAsync(addRule);
@@ -76,7 +91,7 @@ namespace HttpReports.Test
             var tasks = allRule.Select(async m =>
             {
                 Assert.AreEqual(3, m.Nodes.Count);
-                Assert.AreEqual(2, m.Monitors.Count);
+                Assert.AreEqual(4, m.Monitors.Count);
 
                 var rule = await Storage.GetMonitorRuleAsync(m.Id);
 
@@ -94,10 +109,10 @@ namespace HttpReports.Test
 
                 var newMonitor = new ResponseTimeOutMonitor()
                 {
-                    TimeoutThreshold = 1000,
+                    TimeoutThreshold = 400,
                     WarningPercentage = 21,
                     Description = "ResponseTimeOutMonitor",
-                    CronExpression = "CronExpression"
+                    CronExpression = "0 0/1 * * * ?"
                 };
 
                 //新增监控

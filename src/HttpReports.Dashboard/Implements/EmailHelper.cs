@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using System.Net.Http.Headers;
 
 using Newtonsoft.Json;
@@ -7,6 +8,14 @@ namespace HttpReports.Dashboard.Implements
 {
     public static class EmailHelper
     {
+        public static void Send(IEnumerable<string> tos, string title, string content)
+        {
+            foreach (var to in tos)
+            {
+                Send(to, title, content);
+            }
+        }
+
         public static void Send(string to, string title, string content)
         {
             using (HttpClient httpClient = new HttpClient())

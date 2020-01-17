@@ -31,5 +31,15 @@ namespace HttpReports.Monitor
         /// 规则的所有监控
         /// </summary>
         IList<IMonitor> Monitors { get; set; }
+
+        /// <summary>
+        /// 通知的邮箱列表
+        /// </summary>
+        IList<string> NotificationEmails { get; set; }
+
+        /// <summary>
+        /// 通知的电话列表
+        /// </summary>
+        IList<string> NotificationPhoneNumbers { get; set; }
     }
 }

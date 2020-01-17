@@ -67,13 +67,16 @@ namespace HttpReports.Storage.MySql
   `CreateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`Id`),
   KEY `idx_node` (`Node`) USING HASH,
-  KEY `idx_status_code` (`StatusCode`) USING HASH
+  KEY `idx_status_code` (`StatusCode`) USING HASH,
+  KEY `idx_create_time` (`CreateTime`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;").ConfigureAwait(false);
 
                 await connection.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS `MonitorRule` (
   `Id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `Title` varchar(255) NOT NULL COMMENT '标题',
   `Description` varchar(512) NOT NULL COMMENT '描述',
+  `NotificationEmails` varchar(4096) DEFAULT NULL COMMENT '通知的邮箱列表',
+  `NotificationPhoneNumbers` varchar(2048) DEFAULT NULL COMMENT '通知的电话列表',
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='监控规则';").ConfigureAwait(false);
 
@@ -427,13 +430,35 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
             public string Payload { get; set; }
         }
 
+        internal class TempMonitorRule
+        {
+            /// <summary>
+            /// 唯一ID
+            /// </summary>
+            public int Id { get; set; }
+
+            /// <summary>
+            /// 规则标题
+            /// </summary>
+            public string Title { get; set; }
+
+            /// <summary>
+            /// 规则描述
+            /// </summary>
+            public string Description { get; set; }
+
+            public string NotificationEmails { get; set; }
+
+            public string NotificationPhoneNumbers { get; set; }
+        }
+
         #endregion Base
 
         public async Task<bool> AddMonitorRuleAsync(IMonitorRule rule)
         {
             await LoggingSqlOperationWithTransaction(async connection =>
             {
-                var sql = $"INSERT INTO `MonitorRule`(`Title`, `Description`) VALUES ('{rule.Title}', '{rule.Description}')";
+                var sql = $"INSERT INTO `MonitorRule`(`Title`, `Description`, `NotificationEmails`, `NotificationPhoneNumbers`) VALUES ('{rule.Title}', '{rule.Description}', '{string.Join(",", rule.NotificationEmails)}', '{string.Join(",", rule.NotificationPhoneNumbers)}')";
                 if (await connection.ExecuteAsync(sql).ConfigureAwait(false) <= 0)
                 {
                     throw new StorageException("插入 MonitorRule 表失败");
@@ -463,7 +488,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             await LoggingSqlOperationWithTransaction(async connection =>
             {
-                var sql = $"UPDATE `MonitorRule` SET `Title`='{rule.Title}', `Description`='{rule.Description}' WHERE `Id` = {rule.Id}";
+                var sql = $"UPDATE `MonitorRule` SET `Title`='{rule.Title}', `Description`='{rule.Description}', `NotificationEmails`='{string.Join(",", rule.NotificationEmails)}', `NotificationPhoneNumbers`='{string.Join(",", rule.NotificationPhoneNumbers)}' WHERE `Id` = {rule.Id}";
                 if (await connection.ExecuteAsync(sql).ConfigureAwait(false) <= 0)
                 {
                     throw new StorageException("更新 MonitorRule 表失败");
@@ -518,7 +543,8 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
         {
             return await LoggingSqlOperation(async connection =>
             {
-                var rule = (await connection.QueryAsync<MonitorRule>($"SELECT `Id`,`Title`,`Description` FROM `MonitorRule` WHERE `Id`={ruleId};").ConfigureAwait(false)).FirstOrDefault();
+                MonitorRule rule = await QueryMonitorRuleAsync(connection).ConfigureAwait(false);
+
                 if (rule != null)
                 {
                     var allNodeMaps = await connection.QueryAsync<MonitorRuleApplied>($"SELECT `RuleId`,`Node` FROM `MonitorRuleApplied` WHERE `RuleId` = {rule.Id};").ConfigureAwait(false);
@@ -538,6 +564,19 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
                 }
                 return rule;
             }, $"获取监控规则 [{ruleId}] 失败").ConfigureAwait(false);
+
+            async Task<MonitorRule> QueryMonitorRuleAsync(IDbConnection connection)
+            {
+                var tmp = (await connection.QueryAsync<TempMonitorRule>($"SELECT `Id`,`Title`,`Description`,`NotificationEmails`,`NotificationPhoneNumbers` FROM `MonitorRule` WHERE `Id`={ruleId};").ConfigureAwait(false)).FirstOrDefault(); ;
+                return new MonitorRule()
+                {
+                    Description = tmp.Description,
+                    Id = tmp.Id,
+                    Title = tmp.Title,
+                    NotificationEmails = string.IsNullOrWhiteSpace(tmp.NotificationEmails) ? new List<string>() : new List<string>(tmp.NotificationEmails.Split(',')),
+                    NotificationPhoneNumbers = string.IsNullOrWhiteSpace(tmp.NotificationPhoneNumbers) ? new List<string>() : new List<string>(tmp.NotificationEmails.Split(',')),
+                };
+            }
         }
 
         public async Task<List<IMonitorRule>> GetAllMonitorRulesAsync()
@@ -546,7 +585,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             await LoggingSqlOperation(async connection =>
             {
-                var rules = (await connection.QueryAsync<MonitorRule>("SELECT `Id`,`Title`,`Description` FROM `MonitorRule`;").ConfigureAwait(false)).ToList();
+                var rules = await QueryMonitorRulesAsync(connection).ConfigureAwait(false);
                 if (rules.Count > 0)
                 {
                     var ruleIds = string.Join(",", rules.Select(m => m.Id));
@@ -573,6 +612,22 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
             }, "获取所有监控规则失败").ConfigureAwait(false);
 
             return result;
+
+            async Task<List<MonitorRule>> QueryMonitorRulesAsync(IDbConnection connection)
+            {
+                var tmps = (await connection.QueryAsync<TempMonitorRule>("SELECT `Id`,`Title`,`Description`,`NotificationEmails`,`NotificationPhoneNumbers` FROM `MonitorRule`;").ConfigureAwait(false)).ToList();
+                return tmps.Select(tmp =>
+                {
+                    return new MonitorRule()
+                    {
+                        Description = tmp.Description,
+                        Id = tmp.Id,
+                        Title = tmp.Title,
+                        NotificationEmails = string.IsNullOrWhiteSpace(tmp.NotificationEmails) ? new List<string>() : new List<string>(tmp.NotificationEmails.Split(',')),
+                        NotificationPhoneNumbers = string.IsNullOrWhiteSpace(tmp.NotificationPhoneNumbers) ? new List<string>() : new List<string>(tmp.NotificationEmails.Split(',')),
+                    };
+                }).ToList();
+            }
         }
 
         #region Query
