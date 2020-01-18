@@ -11,6 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.Configure<SQLServerStorageOptions>(builder.Configuration.GetSection("Storage"));
             builder.Services.AddTransient<IHttpReportsStorage, SQLServerStorage>();
             builder.Services.AddSingleton<SQLServerConnectionFactory>();
+            builder.Services.AddSingleton<IModelCreator, ModelCreator>();
             return builder;
         }
     }

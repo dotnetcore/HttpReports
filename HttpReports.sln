@@ -29,7 +29,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{92F075FE
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{62236260-3E05-4E03-BF44-8061691CB8EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpReports.Test", "test\HttpReports.Test\HttpReports.Test.csproj", "{096B19D3-7F8A-47B2-B8DF-84ACA3D210A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Storage.Oracle", "src\HttpReports.Storage.Oracle\HttpReports.Storage.Oracle.csproj", "{FA6B6E37-5276-4DF7-9526-07399894F181}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Test", "test\HttpReports.Test\HttpReports.Test.csproj", "{096B19D3-7F8A-47B2-B8DF-84ACA3D210A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,6 +63,10 @@ Global
 		{F1787614-D88F-4F00-9CE4-08493CF990C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1787614-D88F-4F00-9CE4-08493CF990C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1787614-D88F-4F00-9CE4-08493CF990C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA6B6E37-5276-4DF7-9526-07399894F181}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA6B6E37-5276-4DF7-9526-07399894F181}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA6B6E37-5276-4DF7-9526-07399894F181}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA6B6E37-5276-4DF7-9526-07399894F181}.Release|Any CPU.Build.0 = Release|Any CPU
 		{096B19D3-7F8A-47B2-B8DF-84ACA3D210A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{096B19D3-7F8A-47B2-B8DF-84ACA3D210A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{096B19D3-7F8A-47B2-B8DF-84ACA3D210A3}.Release|Any CPU.ActiveCfg = Release|Any CPU

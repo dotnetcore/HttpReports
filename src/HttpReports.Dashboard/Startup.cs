@@ -24,7 +24,7 @@ namespace HttpReports.Dashboard
             });
 
             //TODO 完成后调整为动态设置存储类型
-            services.AddHttpReports().UseMySqlStorage();
+            services.AddHttpReports().UseSQLServerStorage();
 
             services.AddMvc()
 #if NETCOREAPP3_0 || NETCOREAPP3_1
