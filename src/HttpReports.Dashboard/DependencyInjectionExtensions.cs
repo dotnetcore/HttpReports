@@ -1,6 +1,7 @@
 ﻿using System;
 
 using HttpReports;
+using HttpReports.Dashboard;
 using HttpReports.Dashboard.Services;
 using HttpReports.Dashboard.Services.Quartz;
 
@@ -27,6 +28,35 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
+        /// 根据配置自动设置Storage
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        internal static IHttpReportsBuilder UseStorageAutomatically(this IHttpReportsBuilder builder)
+        {
+            var type = builder.Configuration.GetSection("StorageType").Value.ToUpperInvariant();
+
+            switch (type)
+            {
+                case "MYSQL":
+                    builder.UseMySqlStorage();
+                    break;
+
+                case "ORACLE":
+                    builder.UseOracleStorage();
+                    break;
+
+                case "SQLSERVER":
+                    builder.UseSQLServerStorage();
+                    break;
+
+                default:
+                    throw new ArgumentException($"存储类型没有正确配置: {type}");
+            }
+            return builder;
+        }
+
+        /// <summary>
         /// 添加HttpReports
         /// </summary>
         /// <param name="services"></param>
@@ -36,7 +66,11 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddOptions();
             services.Configure<HttpReportsOptions>(configuration);
+            services.Configure<MailOptions>(configuration.GetSection("Mail"));
+
             services.AddSingleton<IModelCreator, DefaultModelCreator>();
+
+            services.AddSingleton<IAlarmService, AlarmService>();
 
             services.AddQuartz();
 

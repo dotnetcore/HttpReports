@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using HttpReports.Dashboard.Implements;
+using HttpReports.Dashboard.Models;
 using HttpReports.Monitor;
 using HttpReports.Storage.FilterOptions;
 
@@ -35,16 +36,19 @@ namespace HttpReports.Dashboard.Services.Quartz
 
         public IHttpReportsStorage Storage { get; }
 
+        public IAlarmService AlarmService { get; }
+
         public ILogger<MonitorExecuteJob> Logger { get; }
 
         private TimeSpan _timeSpan;
 
         private string[] _nodes = null;
 
-        public MonitorExecuteJob(IHttpReportsStorage storage, ILogger<MonitorExecuteJob> logger)
+        public MonitorExecuteJob(IHttpReportsStorage storage, IAlarmService alarmService, ILogger<MonitorExecuteJob> logger)
         {
-            Storage = storage;
-            Logger = logger;
+            Storage = storage ?? throw new ArgumentNullException(nameof(storage));
+            AlarmService = alarmService ?? throw new ArgumentNullException(nameof(alarmService));
+            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task Execute(IJobExecutionContext context)
@@ -57,22 +61,23 @@ namespace HttpReports.Dashboard.Services.Quartz
 
             _timeSpan = (cron.GetNextValidTimeAfter(DateTimeOffset.UnixEpoch).Value - DateTimeOffset.UnixEpoch);
 
+            AlarmOption alarmOption = null;
             switch (monitor.Type)
             {
                 case MonitorType.ResponseTimeOut:
-                    await ExecuteMonitor(rule, monitor as IResponseTimeOutMonitor);
+                    alarmOption = await ExecuteMonitor(rule, monitor as IResponseTimeOutMonitor);
                     break;
 
                 case MonitorType.ErrorResponse:
-                    await ExecuteMonitor(rule, monitor as IErrorResponseMonitor);
+                    alarmOption = await ExecuteMonitor(rule, monitor as IErrorResponseMonitor);
                     break;
 
                 case MonitorType.ToManyRequestWithAddress:
-                    await ExecuteMonitor(rule, monitor as IRequestTimesMonitor);
+                    alarmOption = await ExecuteMonitor(rule, monitor as IRequestTimesMonitor);
                     break;
 
                 case MonitorType.ToManyRequestBySingleRemoteAddress:
-                    await ExecuteMonitor(rule, monitor as IRemoteAddressRequestTimesMonitor);
+                    alarmOption = await ExecuteMonitor(rule, monitor as IRemoteAddressRequestTimesMonitor);
                     break;
 
                 case MonitorType.UnDefine:
@@ -80,9 +85,16 @@ namespace HttpReports.Dashboard.Services.Quartz
                     Logger.LogError($"不支持的监控 {context.JobDetail.Key} 类型: {monitor.Type}");
                     break;
             }
+
+            if (alarmOption != null)
+            {
+                alarmOption.Emails = rule.NotificationEmails;
+                alarmOption.Phones = rule.NotificationPhoneNumbers;
+                await AlarmService.AlarmAsync(alarmOption);
+            }
         }
 
-        protected async Task ExecuteMonitor(IMonitorRule rule, IResponseTimeOutMonitor monitor)
+        protected async Task<AlarmOption> ExecuteMonitor(IMonitorRule rule, IResponseTimeOutMonitor monitor)
         {
             var (now, start, end) = GetNowTimes();
 
@@ -102,14 +114,17 @@ namespace HttpReports.Dashboard.Services.Quartz
 
             if (count == 0)
             {
-                return;
+                return null;
             }
 
             var percent = timeoutCount * 100.0 / count;
 
             if (percent > monitor.WarningPercentage)
             {
-                EmailHelper.Send(rule.NotificationEmails, "预警触发通知", $@"
+                return new AlarmOption()
+                {
+                    IsHtml = true,
+                    Content = $@"
 
                           <br>
                           <b>【响应超时】触发预警 </b>
@@ -122,13 +137,13 @@ namespace HttpReports.Dashboard.Services.Quartz
 
                           <p>监控频率：{_timeSpan.TotalMinutes.ToString("F2")} 分钟</p>
 
-                          <p>时间段：{start.ToStandardTime()}-{end.ToStandardTime()} </p>
-
-                    ");
+                          <p>时间段：{start.ToStandardTime()}-{end.ToStandardTime()} </p>"
+                };
             }
+            return null;
         }
 
-        protected async Task ExecuteMonitor(IMonitorRule rule, IRequestTimesMonitor monitor)
+        protected async Task<AlarmOption> ExecuteMonitor(IMonitorRule rule, IRequestTimesMonitor monitor)
         {
             var (now, start, end) = GetNowTimes();
             var count = await Storage.GetRequestCountAsync(new RequestCountFilterOption()
@@ -140,7 +155,10 @@ namespace HttpReports.Dashboard.Services.Quartz
 
             if (count > monitor.WarningThreshold)
             {
-                EmailHelper.Send(rule.NotificationEmails, "预警触发通知", $@"
+                return new AlarmOption()
+                {
+                    IsHtml = true,
+                    Content = $@"
 
                           <br>
                           <b>【请求量监控】触发预警 </b>
@@ -153,13 +171,13 @@ namespace HttpReports.Dashboard.Services.Quartz
 
                           <p>监控频率：{_timeSpan.TotalMinutes.ToString("F2")} 分钟</p>
 
-                          <p>时间段：{start.ToStandardTime()}-{end.ToStandardTime()} </p>
-
-                    ");
+                          <p>时间段：{start.ToStandardTime()}-{end.ToStandardTime()} </p>"
+                };
             }
+            return null;
         }
 
-        protected async Task ExecuteMonitor(IMonitorRule rule, IRemoteAddressRequestTimesMonitor monitor)
+        protected async Task<AlarmOption> ExecuteMonitor(IMonitorRule rule, IRemoteAddressRequestTimesMonitor monitor)
         {
             var (now, start, end) = GetNowTimes();
 
@@ -174,13 +192,16 @@ namespace HttpReports.Dashboard.Services.Quartz
 
             if (count == 0)
             {
-                return;
+                return null;
             }
             var percent = max * 100.0 / count;
 
             if (percent > monitor.WarningPercentage)
             {
-                EmailHelper.Send(rule.NotificationEmails, "预警触发通知", $@"
+                return new AlarmOption()
+                {
+                    IsHtml = true,
+                    Content = $@"
 
                           <br>
                           <b>【IP异常】触发预警 </b>
@@ -195,13 +216,13 @@ namespace HttpReports.Dashboard.Services.Quartz
 
                           <p>IP白名单：{string.Join(", ", monitor.WhileList)}</p>
 
-                          <p>时间段：{start.ToStandardTime()}-{end.ToStandardTime()} </p>
-
-                    ");
+                          <p>时间段：{start.ToStandardTime()}-{end.ToStandardTime()} </p>"
+                };
             }
+            return null;
         }
 
-        protected async Task ExecuteMonitor(IMonitorRule rule, IErrorResponseMonitor monitor)
+        protected async Task<AlarmOption> ExecuteMonitor(IMonitorRule rule, IErrorResponseMonitor monitor)
         {
             var (now, start, end) = GetNowTimes();
 
@@ -222,13 +243,16 @@ namespace HttpReports.Dashboard.Services.Quartz
 
             if (count == 0)
             {
-                return;
+                return null;
             }
             var percent = errorCount * 100.0 / count;
 
             if (percent > monitor.WarningPercentage)
             {
-                EmailHelper.Send(rule.NotificationEmails, "预警触发通知", $@"
+                return new AlarmOption()
+                {
+                    IsHtml = true,
+                    Content = $@"
 
                           <br>
                           <b>【请求错误】触发预警 </b>
@@ -243,10 +267,10 @@ namespace HttpReports.Dashboard.Services.Quartz
 
                           <p>设定Http状态码：{string.Join(", ", monitor.StatusCodes)}</p>
 
-                          <p>时间段：{start.ToStandardTime()}-{end.ToStandardTime()} </p>
-
-                    ");
+                          <p>时间段：{start.ToStandardTime()}-{end.ToStandardTime()} </p>"
+                };
             }
+            return null;
         }
 
         /// <summary>
