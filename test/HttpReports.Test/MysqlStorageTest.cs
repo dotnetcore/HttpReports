@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 
 using HttpReports.Storage.MySql;
@@ -23,10 +24,12 @@ namespace HttpReports.Test
             services.Configure<MySqlStorageOptions>(o =>
             {
                 o.ConnectionString = "Data Source=127.0.0.1;Initial Catalog=HttpReports;User ID=test;Password=test;charset=utf8;SslMode=none;";
+                o.EnableDefer = true;
+                o.DeferTime = TimeSpan.FromSeconds(5);
+                o.DeferThreshold = 500;
             });
             services.AddTransient<MySqlStorage>();
             services.AddSingleton<MySqlConnectionFactory>();
-            services.AddSingleton<IModelCreator, ModelCreator>();
 
             _storage = services.BuildServiceProvider().GetRequiredService<MySqlStorage>();
             await _storage.InitAsync();
