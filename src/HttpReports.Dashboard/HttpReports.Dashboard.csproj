@@ -3,11 +3,13 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <UserSecretsId>38d1b15a-6fcd-4666-9a30-659abe6244ae</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Quartz" Version="3.0.7" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="MailKit" Version="2.4.1" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">

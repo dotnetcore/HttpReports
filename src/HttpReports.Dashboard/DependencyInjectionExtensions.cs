@@ -1,6 +1,7 @@
 ﻿using System;
 
 using HttpReports;
+using HttpReports.Dashboard;
 using HttpReports.Dashboard.Services;
 using HttpReports.Dashboard.Services.Quartz;
 
@@ -36,7 +37,11 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddOptions();
             services.Configure<HttpReportsOptions>(configuration);
+            services.Configure<MailOptions>(configuration.GetSection("Mail"));
+
             services.AddSingleton<IModelCreator, DefaultModelCreator>();
+
+            services.AddSingleton<IAlarmService, AlarmService>();
 
             services.AddQuartz();
 
