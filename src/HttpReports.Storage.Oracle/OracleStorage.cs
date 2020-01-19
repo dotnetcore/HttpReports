@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Dapper.Contrib.Extensions;
 using HttpReports.Models;
+using HttpReports.Monitor;
 using HttpReports.Storage.FilterOptions;
 using Microsoft.Extensions.Logging;
 using System;
@@ -9,7 +10,7 @@ using System.Data;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading.Tasks; 
+using System.Threading.Tasks;
 
 namespace HttpReports.Storage.Oracle
 {  
@@ -552,6 +553,46 @@ namespace HttpReports.Storage.Oracle
             }, "查询请求信息列表异常").ConfigureAwait(false);
 
             return result;
+        }
+
+        public Task<bool> AddMonitorRuleAsync(IMonitorRule rule)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> UpdateMonitorRuleAsync(IMonitorRule rule)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> DeleteMonitorRuleAsync(int ruleId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IMonitorRule> GetMonitorRuleAsync(int ruleId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<IMonitorRule>> GetAllMonitorRulesAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> GetRequestCountAsync(RequestCountFilterOption filterOption)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<(int Max, int All)> GetRequestCountWithWhiteListAsync(RequestCountWithListFilterOption filterOption)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> GetTimeoutResponeCountAsync(RequestCountFilterOption filterOption, int timeoutThreshold)
+        {
+            throw new NotImplementedException();
         }
     }
 }

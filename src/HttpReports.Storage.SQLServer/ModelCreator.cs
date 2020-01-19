@@ -1,7 +1,24 @@
-﻿namespace HttpReports.Storage.SQLServer
+﻿using HttpReports.Monitor;
+
+namespace HttpReports.Storage.SQLServer
 {
     internal class ModelCreator : IModelCreator
     {
+        public IMonitor CreateMonitor(MonitorType type)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IMonitorRule CreateMonitorRule()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IRequestInfo CreateRequestInfo()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public IRequestInfo NewRequestInfo() => new RequestInfo();
     }
 }

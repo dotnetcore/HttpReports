@@ -43,6 +43,13 @@ namespace HttpReports.Dashboard.Controllers
             return View();
         }
 
+
+        public async Task<IActionResult> Monitor()
+        {
+            return View();
+        }
+
+
         public async Task<IActionResult> Detail()
         {
             var nodes = (await _storage.GetNodesAsync()).Select(m => m.Name).ToList();
