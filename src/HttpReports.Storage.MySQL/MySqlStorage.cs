@@ -4,16 +4,17 @@ using System.Data;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Dapper;
-using Dapper.Contrib.Extensions;
 
 using HttpReports.Models;
 using HttpReports.Monitor;
 using HttpReports.Storage.FilterOptions;
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 using MySql.Data.MySqlClient;
 
@@ -23,14 +24,23 @@ namespace HttpReports.Storage.MySql
 {
     internal class MySqlStorage : IHttpReportsStorage
     {
+        public MySqlStorageOptions Options { get; }
+
         public MySqlConnectionFactory ConnectionFactory { get; }
 
         public ILogger<MySqlStorage> Logger { get; }
 
-        public MySqlStorage(MySqlConnectionFactory connectionFactory, ILogger<MySqlStorage> logger)
+        private AsyncCallbackDeferFlushCollection<IRequestInfo> _deferFlushCollection = null;
+
+        public MySqlStorage(IOptions<MySqlStorageOptions> options, MySqlConnectionFactory connectionFactory, ILogger<MySqlStorage> logger)
         {
+            Options = options.Value;
             ConnectionFactory = connectionFactory;
             Logger = logger;
+            if (Options.EnableDefer)
+            {
+                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<IRequestInfo>(AddRequestInfoAsync, Options.DeferThreshold, Options.DeferTime);
+            }
         }
 
         #region Init
@@ -64,7 +74,7 @@ namespace HttpReports.Storage.MySql
   `Milliseconds` int(11) DEFAULT NULL,
   `StatusCode` int(11) DEFAULT NULL,
   `IP` varchar(50) DEFAULT NULL,
-  `CreateTime` datetime DEFAULT NULL,
+  `CreateTime` datetime(3) DEFAULT NULL,
   PRIMARY KEY (`Id`),
   KEY `idx_node` (`Node`) USING HASH,
   KEY `idx_status_code` (`StatusCode`) USING HASH,
@@ -118,14 +128,27 @@ namespace HttpReports.Storage.MySql
 
         #endregion Init
 
-        public async Task AddRequestInfoAsync(IRequestInfo request)
+        private async Task AddRequestInfoAsync(IEnumerable<IRequestInfo> requests, CancellationToken token)
         {
-            //TODO 实现批量存储
             await LoggingSqlOperation(async connection =>
             {
-                await connection.InsertAsync(request as RequestInfo).ConfigureAwait(false);
-                //await connection.ExecuteAsync("insert into RequestInfo(Node,Route,Url,Method,Milliseconds,StatusCode,IP,CreateTime) values(@Node,@Route,@Url,@Method,@Milliseconds,@StatusCode,@IP,@CreateTime)", request).ConfigureAwait(false);
-            }, "请求数据保存失败").ConfigureAwait(false);
+                await connection.ExecuteAsync("INSERT INTO `RequestInfo`(`Node`, `Route`, `Url`, `Method`, `Milliseconds`, `StatusCode`, `IP`, `CreateTime`) VALUES (@Node, @Route, @Url, @Method, @Milliseconds, @StatusCode, @IP, @CreateTime)", requests).ConfigureAwait(false);
+            }, "请求数据批量保存失败").ConfigureAwait(false);
+        }
+
+        public async Task AddRequestInfoAsync(IRequestInfo request)
+        {
+            if (Options.EnableDefer)
+            {
+                _deferFlushCollection.Add(request);
+            }
+            else
+            {
+                await LoggingSqlOperation(async connection =>
+                {
+                    await connection.ExecuteAsync("INSERT INTO `RequestInfo`(`Node`, `Route`, `Url`, `Method`, `Milliseconds`, `StatusCode`, `IP`, `CreateTime`) VALUES (@Node, @Route, @Url, @Method, @Milliseconds, @StatusCode, @IP, @CreateTime)", request).ConfigureAwait(false);
+                }, "请求数据保存失败").ConfigureAwait(false);
+            }
         }
 
         public async Task<List<UrlRequestCount>> GetUrlRequestStatisticsAsync(RequestInfoFilterOption filterOption)
@@ -251,7 +274,14 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             if (filterOption.IPs?.Length > 0)
             {
-                whereBuilder.Append($" AND IP = '{string.Join(",", filterOption.IPs.Select(m => $"'{m}'"))}' ");
+                if (filterOption.IPs.Length == 1)
+                {
+                    whereBuilder.Append($" AND IP = '{filterOption.IPs.First()}' ");
+                }
+                else
+                {
+                    whereBuilder.Append($" AND IP IN ({string.Join(",", filterOption.IPs.Select(m => $"'{m}'"))}) ");
+                }
             }
 
             if (filterOption.Urls?.Length > 0)

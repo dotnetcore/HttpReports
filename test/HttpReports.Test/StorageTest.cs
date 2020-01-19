@@ -8,8 +8,6 @@ using HttpReports.Storage.FilterOptions;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using MySqlRequestInfo = HttpReports.Storage.MySql.RequestInfo;
-
 namespace HttpReports.Test
 {
     [TestClass]
@@ -174,7 +172,7 @@ namespace HttpReports.Test
                                         4 => "api/test4",
                                         _ => "api/test",
                                     };
-                                    await Storage.AddRequestInfoAsync(new MySqlRequestInfo()
+                                    await Storage.AddRequestInfoAsync(new RequestInfo()
                                     {
                                         CreateTime = createTime,
                                         IP = ip,
@@ -191,6 +189,8 @@ namespace HttpReports.Test
                     }
                 }
             }
+
+            await Task.Delay(20_000);
         }
 
         [TestMethod]
