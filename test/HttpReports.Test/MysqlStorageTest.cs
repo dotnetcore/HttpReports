@@ -25,7 +25,7 @@ namespace HttpReports.Test
             {
                 o.ConnectionString = "Data Source=127.0.0.1;Initial Catalog=HttpReports;User ID=test;Password=test;charset=utf8;SslMode=none;";
                 o.EnableDefer = true;
-                o.DeferTime = TimeSpan.FromSeconds(5);
+                o.DeferTime = TimeSpan.FromSeconds(1);
                 o.DeferThreshold = 500;
             });
             services.AddTransient<MySqlStorage>();

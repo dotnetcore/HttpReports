@@ -190,7 +190,7 @@ namespace HttpReports.Test
                 }
             }
 
-            await Task.Delay(20_000);
+            await Task.Delay(1_500);
         }
 
         [TestMethod]

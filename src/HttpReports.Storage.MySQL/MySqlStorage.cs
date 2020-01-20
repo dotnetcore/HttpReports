@@ -30,7 +30,7 @@ namespace HttpReports.Storage.MySql
 
         public ILogger<MySqlStorage> Logger { get; }
 
-        private AsyncCallbackDeferFlushCollection<IRequestInfo> _deferFlushCollection = null;
+        private readonly AsyncCallbackDeferFlushCollection<IRequestInfo> _deferFlushCollection = null;
 
         public MySqlStorage(IOptions<MySqlStorageOptions> options, MySqlConnectionFactory connectionFactory, ILogger<MySqlStorage> logger)
         {
@@ -132,7 +132,9 @@ namespace HttpReports.Storage.MySql
         {
             await LoggingSqlOperation(async connection =>
             {
-                await connection.ExecuteAsync("INSERT INTO `RequestInfo`(`Node`, `Route`, `Url`, `Method`, `Milliseconds`, `StatusCode`, `IP`, `CreateTime`) VALUES (@Node, @Route, @Url, @Method, @Milliseconds, @StatusCode, @IP, @CreateTime)", requests).ConfigureAwait(false);
+                var values = string.Join(",", requests.Select(m => $"('{MySqlHelper.EscapeString(m.Node)}','{MySqlHelper.EscapeString(m.Route)}','{MySqlHelper.EscapeString(m.Url)}','{MySqlHelper.EscapeString(m.Method)}',{m.Milliseconds},{m.StatusCode},'{MySqlHelper.EscapeString(m.IP)}','{m.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}')"));
+
+                await connection.ExecuteAsync($"INSERT INTO `RequestInfo`(`Node`, `Route`, `Url`, `Method`, `Milliseconds`, `StatusCode`, `IP`, `CreateTime`) VALUES {values}").ConfigureAwait(false);
             }, "请求数据批量保存失败").ConfigureAwait(false);
         }
 
@@ -388,29 +390,29 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
         #region Base
 
-        private static async Task UpdateMonitorRuleAppliedAsync(IDbConnection connection, int ruleId, IList<string> nodes)
+        private static async Task UpdateMonitorRuleAppliedAsync(IDbConnection connection, IDbTransaction transaction, int ruleId, IList<string> nodes)
         {
             var sql = $"DELETE FROM `MonitorRuleApplied` WHERE `RuleId` = {ruleId};";
-            await connection.ExecuteAsync(sql).ConfigureAwait(false);
+            await connection.ExecuteAsync(sql, transaction: transaction).ConfigureAwait(false);
 
             if (nodes?.Count > 0)
             {
-                sql = $"INSERT INTO `MonitorRuleApplied`(`RuleId`, `Node`) VALUES {string.Join(",", nodes.Where(m => !string.IsNullOrWhiteSpace(m)).Select(m => $"({ruleId},'{m}')"))};";
+                sql = $"INSERT INTO `MonitorRuleApplied`(`RuleId`, `Node`) VALUES {string.Join(",", nodes.Where(m => !string.IsNullOrWhiteSpace(m)).Select(m => $"({ruleId},'{MySqlHelper.EscapeString(m)}')"))};";
 
-                if (await connection.ExecuteAsync(sql).ConfigureAwait(false) <= 0)
+                if (await connection.ExecuteAsync(sql, transaction: transaction).ConfigureAwait(false) <= 0)
                 {
                     throw new StorageException("更新 MonitorRuleApplied 表失败");
                 }
             }
         }
 
-        private static async Task InsertMonitorAsync(IDbConnection connection, int ruleId, IList<IMonitor> monitors)
+        private static async Task InsertMonitorAsync(IDbConnection connection, IDbTransaction transaction, int ruleId, IList<IMonitor> monitors)
         {
             if (monitors?.Count > 0)
             {
-                var sql = $"INSERT INTO `Monitor`(`RuleId`, `Type`, `Description`, `CronExpression`, `Payload`) VALUES {string.Join(",", monitors.Select(m => $"({ruleId}, {(int)m.Type}, '{m.Description}', '{m.CronExpression}', '{JsonConvert.SerializeObject(m)}')"))};";
+                var sql = $"INSERT INTO `Monitor`(`RuleId`, `Type`, `Description`, `CronExpression`, `Payload`) VALUES {string.Join(",", monitors.Select(m => $"({ruleId}, {(int)m.Type}, '{MySqlHelper.EscapeString(m.Description)}', '{MySqlHelper.EscapeString(m.CronExpression)}', '{MySqlHelper.EscapeString(JsonConvert.SerializeObject(m))}')"))};";
 
-                if (await connection.ExecuteAsync(sql).ConfigureAwait(false) <= 0)
+                if (await connection.ExecuteAsync(sql, transaction: transaction).ConfigureAwait(false) <= 0)
                 {
                     throw new StorageException("插入 Monitor 表失败");
                 }
@@ -486,15 +488,15 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
         public async Task<bool> AddMonitorRuleAsync(IMonitorRule rule)
         {
-            await LoggingSqlOperationWithTransaction(async connection =>
+            await LoggingSqlOperationWithTransaction(async (connection, transaction) =>
             {
-                var sql = $"INSERT INTO `MonitorRule`(`Title`, `Description`, `NotificationEmails`, `NotificationPhoneNumbers`) VALUES ('{rule.Title}', '{rule.Description}', '{string.Join(",", rule.NotificationEmails)}', '{string.Join(",", rule.NotificationPhoneNumbers)}')";
-                if (await connection.ExecuteAsync(sql).ConfigureAwait(false) <= 0)
+                var sql = $"INSERT INTO `MonitorRule`(`Title`, `Description`, `NotificationEmails`, `NotificationPhoneNumbers`) VALUES ('{MySqlHelper.EscapeString(rule.Title)}', '{MySqlHelper.EscapeString(rule.Description)}', '{MySqlHelper.EscapeString(string.Join(",", rule.NotificationEmails))}', '{MySqlHelper.EscapeString(string.Join(",", rule.NotificationPhoneNumbers))}')";
+                if (await connection.ExecuteAsync(sql, transaction: transaction).ConfigureAwait(false) <= 0)
                 {
                     throw new StorageException("插入 MonitorRule 表失败");
                 }
 
-                var id = (await connection.QueryAsync<int>("SELECT LAST_INSERT_ID();").ConfigureAwait(false)).FirstOrDefault();
+                var id = (await connection.QueryAsync<int>("SELECT LAST_INSERT_ID();", transaction: transaction).ConfigureAwait(false)).FirstOrDefault();
                 if (id <= 0)
                 {
                     throw new StorageException("插入 MonitorRule 表失败");
@@ -502,9 +504,9 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
                 rule.Id = id;
 
-                await UpdateMonitorRuleAppliedAsync(connection, rule.Id, rule.Nodes).ConfigureAwait(false);
+                await UpdateMonitorRuleAppliedAsync(connection, transaction, rule.Id, rule.Nodes).ConfigureAwait(false);
 
-                await InsertMonitorAsync(connection, rule.Id, rule.Monitors).ConfigureAwait(false);
+                await InsertMonitorAsync(connection, transaction, rule.Id, rule.Monitors).ConfigureAwait(false);
             }, "插入新的监控规则失败").ConfigureAwait(false);
             return true;
         }
@@ -516,36 +518,36 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
                 return false;
             }
 
-            await LoggingSqlOperationWithTransaction(async connection =>
+            await LoggingSqlOperationWithTransaction(async (connection, transaction) =>
             {
-                var sql = $"UPDATE `MonitorRule` SET `Title`='{rule.Title}', `Description`='{rule.Description}', `NotificationEmails`='{string.Join(",", rule.NotificationEmails)}', `NotificationPhoneNumbers`='{string.Join(",", rule.NotificationPhoneNumbers)}' WHERE `Id` = {rule.Id}";
-                if (await connection.ExecuteAsync(sql).ConfigureAwait(false) <= 0)
+                var sql = $"UPDATE `MonitorRule` SET `Title`='{MySqlHelper.EscapeString(rule.Title)}', `Description`='{MySqlHelper.EscapeString(rule.Description)}', `NotificationEmails`='{MySqlHelper.EscapeString(string.Join(",", rule.NotificationEmails))}', `NotificationPhoneNumbers`='{MySqlHelper.EscapeString(string.Join(",", rule.NotificationPhoneNumbers))}' WHERE `Id` = {rule.Id}";
+                if (await connection.ExecuteAsync(sql, transaction: transaction).ConfigureAwait(false) <= 0)
                 {
                     throw new StorageException("更新 MonitorRule 表失败");
                 }
 
-                await UpdateMonitorRuleAppliedAsync(connection, rule.Id, rule.Nodes).ConfigureAwait(false);
+                await UpdateMonitorRuleAppliedAsync(connection, transaction: transaction, rule.Id, rule.Nodes).ConfigureAwait(false);
 
                 if (rule.Monitors?.Count > 0)
                 {
                     var idsString = string.Join(",", rule.Monitors.Select(m => m.Id));
-                    await connection.ExecuteAsync($"DELETE FROM `Monitor` WHERE `RuleId` = {rule.Id} AND Id NOT IN ({idsString});").ConfigureAwait(false);
+                    await connection.ExecuteAsync($"DELETE FROM `Monitor` WHERE `RuleId` = {rule.Id} AND Id NOT IN ({idsString});", transaction: transaction).ConfigureAwait(false);
 
-                    var existIds = await connection.QueryAsync<int>($"SELECT Id FROM `Monitor` WHERE Id IN ({idsString})").ConfigureAwait(false);
+                    var existIds = await connection.QueryAsync<int>($"SELECT Id FROM `Monitor` WHERE Id IN ({idsString})", transaction: transaction).ConfigureAwait(false);
 
                     foreach (var id in existIds)
                     {
                         var monitor = rule.Monitors.Where(m => m.Id == id).First();
-                        await connection.ExecuteAsync($"UPDATE `Monitor` SET `Description`='{monitor.Description}',`CronExpression`='{monitor.CronExpression}',`Payload`='{JsonConvert.SerializeObject(monitor)}' WHERE `Id` = {id}").ConfigureAwait(false);
+                        await connection.ExecuteAsync($"UPDATE `Monitor` SET `Description`='{MySqlHelper.EscapeString(monitor.Description)}',`CronExpression`='{MySqlHelper.EscapeString(monitor.CronExpression)}',`Payload`='{MySqlHelper.EscapeString(JsonConvert.SerializeObject(monitor))}' WHERE `Id` = {id}", transaction: transaction).ConfigureAwait(false);
                     }
 
                     var newMonitors = rule.Monitors.Where(m => m.Id <= 0).ToArray();
-                    await InsertMonitorAsync(connection, rule.Id, newMonitors).ConfigureAwait(false);
+                    await InsertMonitorAsync(connection, transaction: transaction, rule.Id, newMonitors).ConfigureAwait(false);
                 }
                 else
                 {
                     sql = $"DELETE FROM `Monitor` WHERE `RuleId` = {rule.Id};";
-                    await connection.ExecuteAsync(sql).ConfigureAwait(false);
+                    await connection.ExecuteAsync(sql, transaction: transaction).ConfigureAwait(false);
                 }
             }, "更新监控规则失败").ConfigureAwait(false);
             return true;
@@ -553,7 +555,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
         public async Task<bool> DeleteMonitorRuleAsync(int ruleId)
         {
-            await LoggingSqlOperationWithTransaction(async connection =>
+            await LoggingSqlOperationWithTransaction(async (connection, transaction) =>
             {
                 var sqls = new string[] {
                     $"DELETE FROM `MonitorRule` WHERE `Id` = {ruleId}",
@@ -563,7 +565,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
                 foreach (var sql in sqls)
                 {
-                    await connection.ExecuteAsync(sql).ConfigureAwait(false);
+                    await connection.ExecuteAsync(sql, transaction: transaction).ConfigureAwait(false);
                 }
             }, "删除监控规则失败").ConfigureAwait(false);
             return true;
@@ -678,7 +680,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
         /// <returns></returns>
         public async Task<(int Max, int All)> GetRequestCountWithWhiteListAsync(RequestCountWithListFilterOption filterOption)
         {
-            var ipFilter = $"({string.Join(",", filterOption.List.Select(m => $"'{m}'"))})";
+            var ipFilter = $"({string.Join(",", filterOption.List.Select(m => $"'{MySqlHelper.EscapeString(m)}'"))})";
             if (filterOption.InList)
             {
                 ipFilter = "IP IN " + ipFilter;
@@ -781,7 +783,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
             }
         }
 
-        protected async Task LoggingSqlOperationWithTransaction(Func<IDbConnection, Task> func, string message = null, [CallerMemberName]string method = null)
+        protected async Task LoggingSqlOperationWithTransaction(Func<IDbConnection, IDbTransaction, Task> func, string message = null, [CallerMemberName]string method = null)
         {
             using (var connection = ConnectionFactory.GetConnection())
             {
@@ -791,7 +793,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
                     var succeed = true;
                     try
                     {
-                        await func(connection).ConfigureAwait(false);
+                        await func(connection, transaction).ConfigureAwait(false);
                     }
                     catch (Exception ex)
                     {
@@ -811,7 +813,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
             }
         }
 
-        protected async Task<T> LoggingSqlOperationWithTransaction<T>(Func<IDbConnection, Task<T>> func, string message = null, [CallerMemberName]string method = null)
+        protected async Task<T> LoggingSqlOperationWithTransaction<T>(Func<IDbConnection, IDbTransaction, Task<T>> func, string message = null, [CallerMemberName]string method = null)
         {
             using (var connection = ConnectionFactory.GetConnection())
             {
@@ -821,7 +823,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
                     var succeed = true;
                     try
                     {
-                        return await func(connection).ConfigureAwait(false);
+                        return await func(connection, transaction).ConfigureAwait(false);
                     }
                     catch (Exception ex)
                     {
@@ -852,7 +854,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             if (filterOption is INodeFilterOption nodeFilterOption && nodeFilterOption.Nodes?.Length > 0)
             {
-                CheckSqlWhere(builder).Append($"Node in ({string.Join(",", nodeFilterOption.Nodes.Select(m => $"'{m}'"))}) ");
+                CheckSqlWhere(builder).Append($"Node in ({string.Join(",", nodeFilterOption.Nodes.Select(m => $"'{MySqlHelper.EscapeString(m)}'"))}) ");
             }
 
             if (!withOutStatusCode && filterOption is IStatusCodeFilterOption statusCodeFilterOption && statusCodeFilterOption.StatusCodes?.Length > 0)
