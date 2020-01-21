@@ -235,4 +235,21 @@ input:-ms-input-placeholder {
     color:#ffffff !important;
 }
 
+.modal-content {
+    background-color: #454b50 !important;
+    color: #FFF !important;
+    border: 2px solid #FFF !important;
+}
+
+    .modal-content .close {
+        color:#FFF !important;
+        opacity:1 !important;
+    }
+
+
+.alert-container-black .alert-content {
+    color: #FFF !important;
+    background-color: #597e84 !important;
+}
+
  

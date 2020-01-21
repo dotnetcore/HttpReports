@@ -43,9 +43,30 @@ namespace HttpReports.Dashboard.Controllers
             return View();
         }
 
+        public async Task<IActionResult> MonitorRule()
+        {
+            var rules = await _storage.GetAllMonitorRulesAsync();
+            ViewBag.rules = rules;
+
+            return View();
+        }
+
+        public async Task<IActionResult> EditMonitorRule(int Id = 0)
+        {
+            ViewBag.Id = Id;
+
+            return View();
+        }
+
 
         public async Task<IActionResult> Monitor()
         {
+            var nodes = (await _storage.GetNodesAsync()).Select(m => m.Name).ToList(); 
+            ViewBag.nodes = nodes;
+
+            var rules = await _storage.GetAllMonitorRulesAsync();
+            ViewBag.rules = rules;
+
             return View();
         }
 
@@ -58,6 +79,9 @@ namespace HttpReports.Dashboard.Controllers
 
             return View();
         }
+
+         
+
 
         public IActionResult Test()
         {

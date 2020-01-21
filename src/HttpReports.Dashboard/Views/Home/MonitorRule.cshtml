@@ -1,0 +1,89 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var rules = ViewBag.rules as List<HttpReports.Monitor.IMonitorRule>;
+}
+
+<style type="text/css">
+
+    .table td, th {
+        text-align: center;
+        line-height: 24px !important;
+    }
+
+</style>
+
+<div class="panel panel-default">
+
+    <div class="panel-body" style="padding-left:30px;padding-right:30px;padding-top:30px;padding-bottom:30px">
+
+
+        <ol class="breadcrumb">
+            <li><span>监控规则</span></li>
+            <li><span>规则列表</span></li>
+        </ol>
+
+
+        <div class="row">
+
+            <div class="panel panel-default">
+                <div class="panel-body" style="padding-bottom:20px;padding-left:14px;padding-right:14px">
+
+                    <div class="col-sm-12" style="margin-bottom:30px;padding:0">
+
+                        <div class="col-sm-3" style="padding-left:0">
+
+                            <a style="min-width:120px;" href="/Home/EditMonitorRule" class="btn btn-info btn-search"><i class="glyphicon glyphicon-plus-sign"></i> 新建规则</a>
+
+                        </div>
+                    </div>
+
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>规则名称</th>
+                                <th>规则描述</th>
+                                <th>通知邮箱</th>
+                                <th width="276">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach (var item in rules)
+                            {
+                                <tr>
+                                    <td>@item.Title</td>
+                                    <td>@item.Description</td>
+                                    <td>@(string.Join(',', item.NotificationEmails))</td>
+                                    <td>
+                                        <a href="/Home/EditMonitorRule/@item.Id" style="margin:4px" type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-edit"></span> 修改</a>
+
+                                        <button style="margin:4px" type="button" onclick="delMonitorRule(@item.Id)" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove-sign"></span> 删除</button>
+
+                                    </td>
+                                </tr>
+
+                            }
+
+                        </tbody>
+                    </table>
+
+
+                    <div class="col-sm-12" style="margin-bottom:30px;padding:0">
+
+                        <div class="col-sm-3" style="padding-left:0">
+
+                            <a style="min-width:120px;" href="/Home/Monitor" class="btn btn-primary btn-search"> 返回上一页</a>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
+
+
+<script src="/Content/page/monitor_rule.js?ver=1.0.2"></script>
+

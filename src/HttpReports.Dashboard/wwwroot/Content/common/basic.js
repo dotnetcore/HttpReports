@@ -19,7 +19,7 @@ window.alert = function (msg, callback = () => { }) {
 
     setTimeout(function () {
         callback();
-    }, 2000);  
+    }, 1500);  
    
 }  
  

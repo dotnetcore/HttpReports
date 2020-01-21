@@ -165,8 +165,8 @@ namespace HttpReports.Storage.MySql
         /// </summary>
         /// <returns></returns>
         public async Task<List<NodeInfo>> GetNodesAsync() =>
-             await LoggingSqlOperation(async connection => (await connection.QueryAsync<string>("Select Distinct Node FROM RequestInfo;").ConfigureAwait(false)).Select(m => new NodeInfo { Name = m }).ToList(), "获取所有节点信息失败").ConfigureAwait(false);
-
+            await LoggingSqlOperation(async connection => (await connection.QueryAsync<string>("Select Distinct Node FROM RequestInfo;").ConfigureAwait(false)).Select(m => new NodeInfo { Name = m }).ToList(), "获取所有节点信息失败").ConfigureAwait(false);
+        
         /// <summary>
         /// 获取Url的平均请求处理时间统计
         /// </summary>
