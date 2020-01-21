@@ -379,9 +379,7 @@ namespace HttpReports.Dashboard.Controllers
         public async Task<IActionResult> DeleteMonitorRule(int Id)
         {
             // 先修改job , 然后删除 
-            var rule = await _storage.GetMonitorRuleAsync(Id).ConfigureAwait(false);
-
-            await _quartzScheduler.UpdateMonitorRuleAsync(rule).ConfigureAwait(false);
+            await _quartzScheduler.DeleteMonitorRuleAsync(Id).ConfigureAwait(false);
 
             await _storage.DeleteMonitorRuleAsync(Id).ConfigureAwait(false);   
 

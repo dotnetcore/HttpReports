@@ -88,12 +88,16 @@ namespace HttpReports.Dashboard.Services.Quartz
             var ruleJobPrefix = MonitorExecuteJob.CreateJobNamePrefix(rule.Id);
             var ruleJobKeys = allJobKeys.Where(m => m.Name.StartsWith(ruleJobPrefix)).ToList();
 
-            if ((rule.Nodes is null
+            if (rule.Nodes is null
                 || rule.Nodes.Count == 0
                 || rule.Monitors is null
-                || rule.Monitors.Count == 0) && ruleJobKeys.Count > 0)
+                || rule.Monitors.Count == 0)
             {
-                await _scheduler.DeleteJobs(ruleJobKeys).ConfigureAwait(false);
+                if (ruleJobKeys.Count > 0)
+                {
+                    await _scheduler.DeleteJobs(ruleJobKeys).ConfigureAwait(false);
+                }
+                return;
             }
 
             var currentJobKeys = new List<JobKey>();
