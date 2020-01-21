@@ -367,13 +367,11 @@ namespace HttpReports.Dashboard.Controllers
             if (Rule.Id == 0) 
                 await _storage.AddMonitorRuleAsync(Rule).ConfigureAwait(false);
             else
-                await _storage.UpdateMonitorRuleAsync(Rule).ConfigureAwait(false);
+                await _storage.UpdateMonitorRuleAsync(Rule).ConfigureAwait(false); 
 
-
-            if (Rule.Nodes.Count > 0)
-            {
-                await _quartzScheduler.UpdateMonitorRuleAsync(Rule).ConfigureAwait(false);
-            } 
+          
+            // 修改job
+            await _quartzScheduler.UpdateMonitorRuleAsync(Rule).ConfigureAwait(false); 
 
             return  Json(new HttpResultEntity(1, "ok",null));
         }
