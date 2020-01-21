@@ -379,7 +379,9 @@ namespace HttpReports.Dashboard.Controllers
         public async Task<IActionResult> DeleteMonitorRule(int Id)
         {
             // 先修改job , 然后删除 
-            await _quartzScheduler.DeleteMonitorRuleAsync(Id).ConfigureAwait(false); 
+            var rule = await _storage.GetMonitorRuleAsync(Id).ConfigureAwait(false);
+
+            await _quartzScheduler.UpdateMonitorRuleAsync(rule).ConfigureAwait(false);
 
             await _storage.DeleteMonitorRuleAsync(Id).ConfigureAwait(false);   
 
@@ -417,23 +419,8 @@ namespace HttpReports.Dashboard.Controllers
 
             await _storage.UpdateMonitorRuleAsync(rule).ConfigureAwait(false);
 
-            // 修改后台job
-            if (nodes.IsEmpty())
-            {
-               await _quartzScheduler.DeleteMonitorRuleAsync(ruleId).ConfigureAwait(false);
-            }
-            else
-            {
-                if (rule.Nodes.Count == 0)
-                {
-                    await _quartzScheduler.AddMonitorRuleAsync(rule).ConfigureAwait(false);
-                }
-                else
-                {
-                    await _quartzScheduler.UpdateMonitorRuleAsync(rule).ConfigureAwait(false);
-                } 
-            }
-
+            await _quartzScheduler.UpdateMonitorRuleAsync(rule).ConfigureAwait(false); 
+            
             return Json(new HttpResultEntity(1, "ok", null));
         } 
 
