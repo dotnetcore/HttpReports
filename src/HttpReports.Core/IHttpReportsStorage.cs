@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 
 using HttpReports.Models;
-using HttpReports.Monitor;
+using HttpReports.Monitor; 
 using HttpReports.Storage.FilterOptions;
 
 namespace HttpReports
@@ -91,40 +91,17 @@ namespace HttpReports
         #endregion Statistics
 
         #region Monitor
+         
+        Task<bool> AddMonitorJob(IMonitorJob job);
 
-        /// <summary>
-        /// 添加监控规则
-        /// </summary>
-        /// <param name="rule"></param>
-        /// <returns></returns>
-        Task<bool> AddMonitorRuleAsync(IMonitorRule rule);
+        Task<bool> UpdateMonitorJob(IMonitorJob job);
 
-        /// <summary>
-        /// 更新监控规则
-        /// </summary>
-        /// <param name="rule"></param>
-        /// <returns></returns>
-        Task<bool> UpdateMonitorRuleAsync(IMonitorRule rule);
+        Task<bool> DeleteMonitorJob(int Id);
 
-        /// <summary>
-        /// 删除监控规则
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        Task<bool> DeleteMonitorRuleAsync(int ruleId);
+        Task<IMonitorJob> GetMonitorJob(int Id);
 
-        /// <summary>
-        /// 获取指定监控规则
-        /// </summary>
-        /// <param name="ruleId"></param>
-        /// <returns></returns>
-        Task<IMonitorRule> GetMonitorRuleAsync(int ruleId);
+        Task<List<IMonitorJob>> GetMonitorJobs();  
 
-        /// <summary>
-        /// 获取所有监控规则
-        /// </summary>
-        /// <returns></returns>
-        Task<List<IMonitorRule>> GetAllMonitorRulesAsync();
 
         #region Query
 

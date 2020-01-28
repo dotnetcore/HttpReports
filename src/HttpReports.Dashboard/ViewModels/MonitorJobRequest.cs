@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace HttpReports.Dashboard.ViewModels
 {
-    public class AddMonitorRuleRequest
+    public class MonitorJobRequest
     {
         public int Id { get; set; }
 
@@ -13,15 +13,24 @@ namespace HttpReports.Dashboard.ViewModels
 
         public string Description { get; set; }
 
-        public string Email { get; set; }
+        public string Nodes { get; set; }
+
+        public string Emails { get; set; }
+
+        public string Mobiles { get; set; }
+
+        public int Interval { get; set; }
+
+        public int Status { get; set; }
+
 
         public ResponseTimeOutMonitorViewModel ResponseTimeOutMonitor { get; set; }
 
         public ErrorResponseMonitorViewModel ErrorResponseMonitor { get; set; }
 
-        public RemoteAddressRequestTimesMonitorViewModel RemoteAddressRequestTimesMonitor { get; set; }
+        public IPMonitorViewModel IPMonitor { get; set; }
 
-        public RequestTimesMonitorViewModel RequestTimesMonitor { get; set; } 
+        public RequestCountMonitorViewModel RequestCountMonitor { get; set; } 
 
     }
 
@@ -31,13 +40,11 @@ namespace HttpReports.Dashboard.ViewModels
     /// </summary>
     public class ResponseTimeOutMonitorViewModel
     {
-        public int Id { get; set; }
+        public int Status { get; set; }
 
-        public int Interval { get; set; }
+        public string TimeOutMs { get; set; }
 
         public string Percentage { get; set; }
-
-        public string TimeoutThreshold { get; set; }
 
     } 
 
@@ -46,13 +53,11 @@ namespace HttpReports.Dashboard.ViewModels
     /// </summary>
     public class ErrorResponseMonitorViewModel
     {
-        public int Id { get; set; }
+        public int Status { get; set; }
 
-        public int Interval { get; set; }
+        public string HttpCodeStatus { get; set; }
 
-        public string StatusCodes { get; set; }  
-
-        public string Percentage { get; set; }  
+        public string Percentage { get; set; }
 
     }   
 
@@ -60,15 +65,13 @@ namespace HttpReports.Dashboard.ViewModels
     /// <summary>
     /// IP监控
     /// </summary>
-    public class RemoteAddressRequestTimesMonitorViewModel
-    { 
-        public int Id { get; set; } 
-
-        public int Interval { get; set; }
-
-        public string Percentage { get; set; }
+    public class IPMonitorViewModel
+    {
+        public int Status { get; set; }
 
         public string WhileList { get; set; }
+
+        public string Percentage { get; set; }
 
     }
 
@@ -76,13 +79,11 @@ namespace HttpReports.Dashboard.ViewModels
     /// <summary>
     /// 请求量过多监控
     /// </summary>
-    public class RequestTimesMonitorViewModel
+    public class RequestCountMonitorViewModel
     {
-        public int Id { get; set; }
+        public int Status { get; set; }
 
-        public int Interval { get; set; }
-
-        public string WarningThreshold { get; set; }
+        public string  Max { get; set; } 
 
     } 
 

@@ -33,8 +33,8 @@ namespace HttpReports.Dashboard
         }
 
         public void Configure(IApplicationBuilder app)
-        {
-            app.ConfigHttpReports();
+        { 
+            app.UseHttpReports();
 
             app.UseStaticFiles();
             app.UseCookiePolicy();

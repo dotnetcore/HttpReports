@@ -2,6 +2,8 @@
 @{
     ViewData["Title"] = "EditMonitorRule";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    List<string> nodes = ViewBag.nodes;
 }
 
 
@@ -37,16 +39,17 @@
 </style>
 
 
-<div class="panel panel-default">
+<div class="panel panel-default"> 
+    
 
     <div class="panel-body  task_content" style="padding-left:30px;padding-right:30px;padding-top:30px;min-height:720px;padding-bottom:30px">
 
         <ol class="breadcrumb">
-            <li><span>监控规则</span></li>
-            <li><span>@(ViewBag.Id == 0 ? "添加" : "编辑")规则</span></li>
+            <li><a href="/Home/Monitor">预警监控</a></li>
+            <li><span href="#">@(ViewBag.Id == 0 ? "添加" : "编辑")任务</span></li>
         </ol>
 
-        <h3 style="margin-bottom:20px;">@(ViewBag.Id == 0 ? "添加" : "编辑")规则</h3>
+        <h3 style="margin-bottom:20px;">@(ViewBag.Id == 0 ? "添加" : "编辑")监控任务</h3>
 
         <div class="row">
 
@@ -58,8 +61,8 @@
                         <div class="row" style="margin-left:0;margin-right:0;margin-top:15px">
 
                             <div class="col-lg-9">
-                                <label style="width:80px" class="form-label">规则标题</label>
-                                <input type="text" class="form-control title" placeholder="请简单输入规则标题">
+                                <label style="width:80px" class="form-label">任务标题</label>
+                                <input type="text" class="form-control title" placeholder="请简单输入任务标题">
                             </div>
 
                         </div>
@@ -67,8 +70,22 @@
                         <div class="row" style="margin-left:0;margin-right:0;margin-top:15px">
 
                             <div class="col-lg-9">
-                                <label style="width:80px" class="form-label">规则描述</label>
-                                <input type="text" class="form-control description" placeholder="请输入规则描述">
+                                <label style="width:80px" class="form-label">任务描述</label>
+                                <input type="text" class="form-control description" placeholder="请输入任务描述">
+                            </div>
+
+                        </div>
+
+                        <div class="row" style="margin-left:0;margin-right:0;margin-top:15px;">
+
+                            <div class="col-lg-9 node-row">
+                                <label style="width:80px" class="form-label">服务节点</label>
+
+                                @foreach (var item in nodes)
+                                {
+                                    <button onclick="check_node(this)" style="width:120px;margin-right:10px;border-radius:4px;" class="btn btn-info service-button">@item</button>
+                                }
+
                             </div>
 
                         </div>
@@ -93,6 +110,38 @@
                             </div>
 
                         </div>
+
+                        <div class="row" style="margin-left:0;margin-right:0;margin-top:15px;">
+
+                            <div class="col-lg-9">
+                                <label style="width:80px" class="form-label">监控周期</label>
+                                <select class="form-control interval">
+                                    <option value="1">1分钟</option>
+                                    <option value="3">3分钟</option>
+                                    <option value="5">5分钟</option>
+                                    <option value="10">10分钟</option>
+                                    <option value="30">30分钟</option>
+                                    <option value="60" selected>1小时</option>
+                                    <option value="120">2小时</option>
+                                    <option value="240">4小时</option>
+                                    <option value="360">6小时</option>
+                                    <option value="480">8小时</option>
+                                    <option value="720">12小时</option>
+                                    <option value="1440">1天</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div class="row" style="margin-left:0;margin-right:0;margin-top:15px">
+
+                            <div class="col-lg-9">
+                                <label style="width:80px" class="form-label">任务状态</label>
+                                <input type="checkbox" checked class="checkbox" data-on-text="开" data-handle-width="30" data-off-text="关" data-size="mini" value="" />
+                            </div>
+
+                        </div>
+
 
                     </div>
 
@@ -124,37 +173,14 @@
 
                                         <div class="col-lg-12">
 
-                                            <label class="form-label" style="margin-right:10px">监控状态</label>
+                                            <label class="form-label" style="margin-right:10px">状态</label>
 
                                             <input data-id="0" type="checkbox" class="checkbox" data-on-text="开" data-handle-width="30" data-off-text="关" data-size="mini" value="" />
 
                                         </div>
 
-                                    </div>
-
-                                    <div class="col-sm-12" style="margin-top:6px">
-
-                                        <div class="col-sm-3">
-
-                                            <label style="width:80px" class="form-label">监控周期</label>
-                                            <select class="form-control rate">
-                                                <option value="1">1分钟</option>
-                                                <option selected value="3">3分钟</option>
-                                                <option value="5">5分钟</option>
-                                                <option value="10">10分钟</option>
-                                                <option value="30">30分钟</option>
-                                                <option value="60">1小时</option>
-                                                <option value="120">2小时</option>
-                                                <option value="240">4小时</option>
-                                                <option value="360">6小时</option>
-                                                <option value="480">8小时</option>
-                                                <option value="720">12小时</option>
-                                                <option value="1440">1天</option>
-                                            </select>
-
-                                        </div>
-
-                                    </div>
+                                    </div> 
+                                   
 
                                     <div class="col-sm-12" style="margin-top:6px">
 
@@ -194,37 +220,13 @@
 
                                         <div class="col-lg-12">
 
-                                            <label class="form-label" style="margin-right:10px">监控状态</label>
+                                            <label class="form-label" style="margin-right:10px">状态</label>
 
-                                            <input data-id="0" type="checkbox" class="checkbox" data-on-text="开" data-handle-width="30" data-off-text="关" data-size="mini" value="" />
-
-                                        </div>
-
-                                    </div>
-
-                                    <div class="col-sm-12" style="margin-top:6px">
-
-                                        <div class="col-sm-3">
-
-                                            <label style="width:80px" class="form-label">监控周期</label>
-                                            <select class="form-control rate">
-                                                <option value="1">1分钟</option>
-                                                <option selected value="3">3分钟</option>
-                                                <option value="5">5分钟</option>
-                                                <option value="10">10分钟</option>
-                                                <option value="30">30分钟</option>
-                                                <option value="60">1小时</option>
-                                                <option value="120">2小时</option>
-                                                <option value="240">4小时</option>
-                                                <option value="360">6小时</option>
-                                                <option value="480">8小时</option>
-                                                <option value="720">12小时</option>
-                                                <option value="1440">1天</option>
-                                            </select>
+                                            <input type="checkbox" class="checkbox" data-on-text="开" data-handle-width="30" data-off-text="关" data-size="mini" value="" />
 
                                         </div>
 
-                                    </div>
+                                    </div> 
 
                                     <div class="col-sm-12" style="margin-top:6px">
 
@@ -264,37 +266,14 @@
 
                                         <div class="col-lg-12">
 
-                                            <label class="form-label" style="margin-right:10px">监控状态</label>
+                                            <label class="form-label" style="margin-right:10px">状态</label>
 
-                                            <input data-id="0" type="checkbox"  class="checkbox" data-on-text="开" data-handle-width="30" data-off-text="关" data-size="mini" value="" />
-
-                                        </div>
-
-                                    </div>
-
-                                    <div class="col-sm-12" style="margin-top:6px">
-
-                                        <div class="col-sm-3">
-
-                                            <label style="width:80px" class="form-label">监控周期</label>
-                                            <select class="form-control rate">
-                                                <option value="1">1分钟</option>
-                                                <option selected value="3">3分钟</option>
-                                                <option value="5">5分钟</option>
-                                                <option value="10">10分钟</option>
-                                                <option value="30">30分钟</option>
-                                                <option value="60">1小时</option>
-                                                <option value="120">2小时</option>
-                                                <option value="240">4小时</option>
-                                                <option value="360">6小时</option>
-                                                <option value="480">8小时</option>
-                                                <option value="720">12小时</option>
-                                                <option value="1440">1天</option>
-                                            </select>
+                                            <input  type="checkbox"  class="checkbox" data-on-text="开" data-handle-width="30" data-off-text="关" data-size="mini" value="" />
 
                                         </div>
 
-                                    </div>
+                                    </div> 
+                                   
 
                                     <div class="col-sm-12" style="margin-top:6px">
 
@@ -335,37 +314,13 @@
 
                                         <div class="col-lg-12">
 
-                                            <label class="form-label" style="margin-right:10px">监控状态</label>
+                                            <label class="form-label" style="margin-right:10px">状态</label>
 
-                                            <input data-id="0" type="checkbox"  class="checkbox" data-on-text="开" data-handle-width="30" data-off-text="关" data-size="mini" value="" />
-
-                                        </div>
-
-                                    </div>
-
-                                    <div class="col-sm-12" style="margin-top:6px">
-
-                                        <div class="col-sm-3">
-
-                                            <label style="width:80px" class="form-label">监控周期</label>
-                                            <select class="form-control rate">
-                                                <option value="1">1分钟</option>
-                                                <option selected value="3">3分钟</option>
-                                                <option value="5">5分钟</option>
-                                                <option value="10">10分钟</option>
-                                                <option value="30">30分钟</option>
-                                                <option value="60">1小时</option>
-                                                <option value="120">2小时</option>
-                                                <option value="240">4小时</option>
-                                                <option value="360">6小时</option>
-                                                <option value="480">8小时</option>
-                                                <option value="720">12小时</option>
-                                                <option value="1440">1天</option>
-                                            </select>
+                                            <input type="checkbox"  class="checkbox" data-on-text="开" data-handle-width="30" data-off-text="关" data-size="mini" value="" />
 
                                         </div>
 
-                                    </div>
+                                    </div> 
 
                                     <div class="col-sm-12" style="margin-top:6px">
 
@@ -394,16 +349,14 @@
 
                         </div>
 
-                        <input type="hidden" class="id" value="0">
+                        <input type="hidden" class="id" value="@(ViewBag.Id)">
 
                         <div class="actions" style="margin-top:15px;margin-bottom:8px;">
-                            <button onclick="saveMonitorRule()" type="button" class="btn btn-info button-previous" style="width:80px"> 保 存 </button>
+                            <button onclick="saveMonitorJob()" type="button" class="btn btn-info button-previous" style="width:80px"> 保 存 </button>
 
-                            <a href="/Home/MonitorRule" type="button" class="btn btn-info button-previous" style="width:120px;margin-left:20px"> 返回上一页 </a>
+                            <a href="/Home/Monitor" type="button" class="btn btn-info button-previous" style="width:120px;margin-left:20px"> 返回上一页 </a>
 
-                        </div>
-
-                        <input type="hidden" value="@ViewBag.Id" class="ruleId" />
+                        </div> 
 
 
                     </div>
@@ -418,6 +371,6 @@
 </div>
 
 
-<script src="~/Content/page/edit_monitor_rule.js?ver=1.0.2"></script>
+<script src="~/Content/page/edit_monitor.js?ver=1.0.2"></script>
 
 

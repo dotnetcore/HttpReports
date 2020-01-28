@@ -17,6 +17,7 @@
         /// <summary>
         /// 警告阈值
         /// </summary>
-        public int WarningThreshold { get; set; }
+        public int Max { get; set; }
+        public int WarningThreshold { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
     }
 }

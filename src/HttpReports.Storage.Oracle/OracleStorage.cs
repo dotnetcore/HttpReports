@@ -63,7 +63,45 @@ namespace HttpReports.Storage.Oracle
 
                      ").ConfigureAwait(false); 
 
-                    }, "").ConfigureAwait(false);    
+                    }, "").ConfigureAwait(false);   
+
+                }
+
+                // 检查MonitorJob并创建
+                if (con.QueryFirstOrDefault<int>($" Select count(*) from user_tables where table_name = upper('MonitorJob') ") == 0)
+                {
+                    await con.ExecuteAsync(@"   
+
+                        create table MonitorJob
+                        (
+	                        id number(15) primary key,
+	                        Title varchar2(255),
+	                        Description varchar2(255),
+	                        CronLike varchar2(255),
+	                        Emails varchar2(1000),
+                            Mobiles varchar2(1000),
+	                        Status number(15),
+                            Nodes varchar2(255),
+                            PayLoad varchar2(2000), 
+	                        CreateTime date
+                        )
+
+                     ").ConfigureAwait(false);
+
+                    await LoggingSqlOperation(async connection =>
+                    {
+                        await connection.ExecuteAsync(@"   
+
+                        create sequence monitorjob_seq_id
+                        increment by 1              
+                        start with 1                
+                        nomaxvalue                      
+                        nocycle                         
+                        nocache
+
+                     ").ConfigureAwait(false);
+
+                    }, "").ConfigureAwait(false);
 
                 }
             }  
@@ -74,9 +112,7 @@ namespace HttpReports.Storage.Oracle
         {
             //TODO 实现批量存储
             await LoggingSqlOperation(async connection =>
-            {
-                //await connection.InsertAsync(request as RequestInfo).ConfigureAwait(false);
-
+            { 
                 string sql = $@"Insert Into RequestInfo Values (request_seq_id.nextval,'
                     {request.Node}','{request.Route}','{request.Url}','{request.Method}',{request.Milliseconds},{request.StatusCode},'{request.IP}', 
                  to_date('{request.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss'))"; 
@@ -198,7 +234,7 @@ namespace HttpReports.Storage.Oracle
          
         protected string BuildTopSql(string sql,int Count)
         {
-            return " Select * FRom ( " + sql + " ) Where RowNum <= 10  ";  
+            return " Select * From ( " + sql + " ) Where RowNum <=  " + Count;  
         } 
 
 
@@ -276,6 +312,22 @@ namespace HttpReports.Storage.Oracle
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Method: {method} Message: {message ?? "数据库操作异常"}");
+            }
+        }
+
+        protected async Task<T> LoggingSqlOperation<T>(Func<IDbConnection, Task<T>> func, string message = null, [CallerMemberName]string method = null)
+        {
+            try
+            {
+                using (var connection = ConnectionFactory.GetConnection())
+                {
+                    return await func(connection).ConfigureAwait(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Method: {method} Message: {message ?? "数据库操作异常"}");
+                throw;
             }
         }
 
@@ -555,34 +607,13 @@ namespace HttpReports.Storage.Oracle
             return result;
         }
 
-        public Task<bool> AddMonitorRuleAsync(IMonitorRule rule)
+        public async Task<int> GetRequestCountAsync(RequestCountFilterOption filterOption)
         {
-            throw new NotImplementedException();
-        }
+            var sql = $"SELECT COUNT(1) FROM RequestInfo {BuildSqlFilter(filterOption)}";
 
-        public Task<bool> UpdateMonitorRuleAsync(IMonitorRule rule)
-        {
-            throw new NotImplementedException();
-        }
+            TraceLogSql(sql);
 
-        public Task<bool> DeleteMonitorRuleAsync(int ruleId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IMonitorRule> GetMonitorRuleAsync(int ruleId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<IMonitorRule>> GetAllMonitorRulesAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<int> GetRequestCountAsync(RequestCountFilterOption filterOption)
-        {
-            throw new NotImplementedException();
+            return await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql).ConfigureAwait(false));
         }
 
         public Task<(int Max, int All)> GetRequestCountWithWhiteListAsync(RequestCountWithListFilterOption filterOption)
@@ -593,6 +624,71 @@ namespace HttpReports.Storage.Oracle
         public Task<int> GetTimeoutResponeCountAsync(RequestCountFilterOption filterOption, int timeoutThreshold)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<bool> AddMonitorJob(IMonitorJob job)
+        {
+            string sql = $@"Insert Into MonitorJob 
+            (Id,Title,Description,CronLike,Emails,Mobiles,Status,Nodes,PayLoad,CreateTime)
+             Values (monitorjob_seq_id,@Title,@Description,@CronLike,@Emails,@Mobiles,@Status,@Nodes,@PayLoad,@CreateTime)";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => ( await connection.ExecuteAsync(sql, job).ConfigureAwait(false)  ) > 0).ConfigureAwait(false);
+
+        }
+
+        public async Task<bool> UpdateMonitorJob(IMonitorJob job)
+        {
+            string sql = $@"Update MonitorJob 
+
+                Set Title = @Title,Description = @Description,CronLike = @CronLike,Emails = @Emails,Mobiles = @Mobiles,Status= @Status,Nodes = @Nodes,PayLoad = @PayLoad 
+
+                Where Id = @Id ";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => (
+
+            await connection.ExecuteAsync(sql, job).ConfigureAwait(false)
+
+            ) > 0).ConfigureAwait(false);
+        }
+
+        public async Task<IMonitorJob> GetMonitorJob(int Id)
+        {
+            string sql = $@"Select * From MonitorJob Where Id = " + Id;
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => (
+
+              await connection.QueryFirstOrDefaultAsync<MonitorJob>(sql).ConfigureAwait(false)
+
+            )).ConfigureAwait(false);
+        }
+
+        public async Task<List<IMonitorJob>> GetMonitorJobs()
+        {
+            string sql = $@"Select * From MonitorJob ";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => (
+
+            await connection.QueryAsync<MonitorJob>(sql).ConfigureAwait(false)
+
+            ).ToList().Select(x => x as IMonitorJob).ToList()).ConfigureAwait(false);
+        }
+
+        public async Task<bool> DeleteMonitorJob(int Id)
+        {
+            string sql = $@"Delete From MonitorJob Where Id = " + Id;
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection =>
+            (await connection.ExecuteAsync(sql).ConfigureAwait(false)) > 0).ConfigureAwait(false);
         }
     }
 }

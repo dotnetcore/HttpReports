@@ -2,6 +2,7 @@
 
 using HttpReports;
 using HttpReports.Dashboard;
+using HttpReports.Dashboard.Implements;
 using HttpReports.Dashboard.Services;
 using HttpReports.Dashboard.Services.Quartz;
 
@@ -21,7 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services"></param>
         /// <returns></returns>
         internal static IHttpReportsBuilder AddHttpReports(this IServiceCollection services)
-        {
+        { 
             IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");
 
             return services.AddHttpReports(configuration);
@@ -64,6 +65,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services, IConfiguration configuration)
         {
+            ServiceContainer.provider = services.BuildServiceProvider();
+
             services.AddOptions();
             services.Configure<HttpReportsOptions>(configuration);
             services.Configure<MailOptions>(configuration.GetSection("Mail"));
@@ -84,10 +87,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         internal static IServiceCollection AddQuartz(this IServiceCollection services)
         {
-            services.AddTransient<MonitorExecuteJob>();
-            services.AddSingleton<IJobFactory, AutoInjectionJobFactory>();
-            services.AddSingleton<QuartzLogProvider>();
-            services.AddSingleton<ISchedulerService, QuartzSchedulerService>();
+            services.AddSingleton<ScheduleService>();
 
             return services;
         }
@@ -97,10 +97,12 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        internal static IApplicationBuilder ConfigHttpReports(this IApplicationBuilder app)
+        internal static IApplicationBuilder UseHttpReports(this IApplicationBuilder app)
         {
             var storage = app.ApplicationServices.GetRequiredService<IHttpReportsStorage>() ?? throw new ArgumentNullException("未正确配置存储方式");
             storage.InitAsync().Wait();
+
+            app.ApplicationServices.GetService<ScheduleService>().InitAsync().Wait();
 
             app.ConfigQuartz();
 
@@ -114,18 +116,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         private static IApplicationBuilder ConfigQuartz(this IApplicationBuilder app)
         {
-            var schedulerService = app.ApplicationServices.GetRequiredService<ISchedulerService>();
-            schedulerService.InitAsync().Wait();
-
-            var storage = app.ApplicationServices.GetRequiredService<IHttpReportsStorage>();
-
-            var rules = storage.GetAllMonitorRulesAsync().Result;
-
-            rules.ForEach(m =>
-            {
-                schedulerService.AddMonitorRuleAsync(m).Wait();
-            });
-
+            var schedulerService = app.ApplicationServices.GetRequiredService<ScheduleService>();
+            schedulerService.InitAsync().Wait(); 
+            
             return app;
         }
     }

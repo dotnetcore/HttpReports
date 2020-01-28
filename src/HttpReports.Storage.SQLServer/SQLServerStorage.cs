@@ -33,9 +33,7 @@ namespace HttpReports.Storage.SQLServer
                 // 检查RequestInfo并创建
                 if (con.QueryFirstOrDefault<int>($" Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.RequestInfo') ") == 0)
                 {
-                   await con.ExecuteAsync(@"  
-                        SET ANSI_NULLS ON; 
-                        SET QUOTED_IDENTIFIER ON; 
+                   await con.ExecuteAsync(@"   
                         CREATE TABLE [dbo].[RequestInfo](
 	                        [Id] [int] IDENTITY(1,1) NOT NULL,
 	                        [Node] [nvarchar](50) NOT NULL,
@@ -55,31 +53,20 @@ namespace HttpReports.Storage.SQLServer
                 }
 
                 // 检查Job并创建
-                if (con.QueryFirstOrDefault<int>($"Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.Job')") == 0)
+                if (con.QueryFirstOrDefault<int>($"Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.MonitorJob')") == 0)
                 {
-                   await con.ExecuteAsync(@" 
-                            SET ANSI_NULLS ON;
-                            SET QUOTED_IDENTIFIER ON; 
-                            CREATE TABLE [dbo].[Job](
+                   await con.ExecuteAsync(@"  
+                            CREATE TABLE [dbo].[MonitorJob](
 	                            [Id] [int] IDENTITY(1,1) NOT NULL,
-	                            [Title] [nvarchar](50) NOT NULL,
-	                            [CronLike] [nvarchar](50) NOT NULL,
-	                            [Emails] [nvarchar](500) NOT NULL,
-                                [Mobiles] [nvarchar](500) NOT NULL,
-	                            [Status] [int] NOT NULL,
-	                            [Servers] [nvarchar](500) NOT NULL,
-	                            [RtStatus] [int] NOT NULL,
-	                            [RtTime] [int] NOT NULL,
-	                            [RtRate] [decimal](18, 4) NOT NULL,
-	                            [HttpStatus] [int] NOT NULL,
-	                            [HttpCodes] [nvarchar](500) NOT NULL,
-	                            [HttpRate] [decimal](18, 4) NOT NULL,
-	                            [IPStatus] [int] NOT NULL,
-	                            [IPWhiteList] [nvarchar](500) NOT NULL,
-	                            [IPRate] [decimal](18, 4) NOT NULL,
-	                            [CreateTime] [datetime] NULL,
-                                [RequestStatus] [int] NOT NULL,
-                                [RequestCount] [int] NOT NULL,
+	                            [Title] [nvarchar](255) NOT NULL,
+                                [Description] [nvarchar](255) NOT NULL,
+                                [CronLike] [nvarchar](255) NOT NULL, 
+                                [Emails] [nvarchar](1000) NOT NULL,
+                                [Mobiles] [nvarchar](1000) NOT NULL,
+                                [Status] [int] NOT NULL,
+                                [Nodes] [nvarchar](255) NOT NULL,
+                                [PayLoad] [nvarchar](2000) NOT NULL, 
+	                            [CreateTime] [datetime] NULL, 
                              CONSTRAINT [PK_Job] PRIMARY KEY CLUSTERED 
                             (
 	                            [Id] ASC
@@ -280,6 +267,22 @@ namespace HttpReports.Storage.SQLServer
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Method: {method} Message: {message ?? "数据库操作异常"}");
+            }
+        }
+
+        protected async Task<T> LoggingSqlOperation<T>(Func<IDbConnection, Task<T>> func, string message = null, [CallerMemberName]string method = null)
+        {
+            try
+            {
+                using (var connection = ConnectionFactory.GetConnection())
+                {
+                    return await func(connection).ConfigureAwait(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Method: {method} Message: {message ?? "数据库操作异常"}");
+                throw;
             }
         }
 
@@ -496,39 +499,13 @@ namespace HttpReports.Storage.SQLServer
             return dateFormat;
         }
 
-        public Task<bool> AddMonitorRuleAsync(IMonitorRule rule)
+        public async Task<int> GetRequestCountAsync(RequestCountFilterOption filterOption)
         {
-            throw new NotImplementedException();
-        }
+            var sql = $"SELECT COUNT(1) FROM RequestInfo {BuildSqlFilter(filterOption)}";
 
-        public Task<bool> UpdateMonitorRuleAsync(IMonitorRule rule)
-        {
-            throw new NotImplementedException();
-        }
+            TraceLogSql(sql);
 
-        public Task<bool> DeleteMonitorRuleAsync(int ruleId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IMonitorRule> GetMonitorRuleAsync(int ruleId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<IMonitorRule>> GetAllMonitorRulesAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<MonitorExecuteResult> ExecuteDataMonitorAsync(IMonitor monitor)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<int> GetRequestCountAsync(RequestCountFilterOption filterOption)
-        {
-            throw new NotImplementedException();
+            return await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql).ConfigureAwait(false));
         }
 
         public Task<(int Max, int All)> GetRequestCountWithWhiteListAsync(RequestCountWithListFilterOption filterOption)
@@ -539,6 +516,75 @@ namespace HttpReports.Storage.SQLServer
         public Task<int> GetTimeoutResponeCountAsync(RequestCountFilterOption filterOption, int timeoutThreshold)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<bool> AddMonitorJob(IMonitorJob job)
+        {
+            string sql = $@"Insert Into MonitorJob 
+            (Title,Description,CronLike,Emails,Mobiles,Status,Nodes,PayLoad,CreateTime)
+             Values (@Title,@Description,@CronLike,@Emails,@Mobiles,@Status,@Nodes,@PayLoad,@CreateTime)";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => (
+
+            await connection.ExecuteAsync(sql, job).ConfigureAwait(false)
+
+            ) > 0).ConfigureAwait(false);
+
+        }
+
+        public async Task<bool> UpdateMonitorJob(IMonitorJob job)
+        {
+            string sql = $@"Update MonitorJob 
+
+                Set Title = @Title,Description = @Description,CronLike = @CronLike,Emails = @Emails,Mobiles = @Mobiles,Status= @Status,Nodes = @Nodes,PayLoad = @PayLoad 
+
+                Where Id = @Id ";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => (
+
+            await connection.ExecuteAsync(sql, job).ConfigureAwait(false)
+
+            ) > 0).ConfigureAwait(false);
+        }
+
+        public async Task<IMonitorJob> GetMonitorJob(int Id)
+        {
+            string sql = $@"Select * From MonitorJob Where Id = " + Id;
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => (
+
+              await connection.QueryFirstOrDefaultAsync<MonitorJob>(sql).ConfigureAwait(false)
+
+            )).ConfigureAwait(false);
+        }
+
+        public async Task<List<IMonitorJob>> GetMonitorJobs()
+        {
+            string sql = $@"Select * From MonitorJob ";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => (
+
+            await connection.QueryAsync<MonitorJob>(sql).ConfigureAwait(false)
+
+            ).ToList().Select(x => x as IMonitorJob).ToList()).ConfigureAwait(false);
+        }
+
+        public async Task<bool> DeleteMonitorJob(int Id)
+        {
+            string sql = $@"Delete From MonitorJob Where Id = " + Id;
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection =>
+            (await connection.ExecuteAsync(sql).ConfigureAwait(false)) > 0).ConfigureAwait(false);
         }
     }
 }

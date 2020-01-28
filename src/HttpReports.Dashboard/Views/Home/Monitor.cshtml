@@ -1,149 +1,99 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    var nodes =  ViewBag.nodes as List<string>;
-
-    var rules = ViewBag.rules as List<HttpReports.Monitor.IMonitorRule>;
-
+    List<HttpReports.Monitor.IMonitorJob> list = ViewBag.list;
 }
 
-<style type="text/css">
+    <style type="text/css">
 
-    .table td, th {
-        text-align: center;
-        line-height: 24px !important;
-    }
-</style>
+        .table td, th {
+            text-align: center;
+            line-height: 24px !important;
+        }
+    </style>
 
-<div class="panel panel-default">
+    <div class="panel panel-default">
 
-    <div class="panel-body" style="padding-left:30px;padding-right:30px;padding-top:30px;padding-bottom:30px">
+        <div class="panel-body" style="padding-left:30px;padding-right:30px;padding-top:30px;padding-bottom:30px">
 
-        <div class="row">
+            <div class="row">
 
-            <div class="panel panel-default">
-                <div class="panel-body" style="padding-bottom:20px;padding-left:14px;padding-right:14px">
+                <div class="panel panel-default">
+                    <div class="panel-body" style="padding-bottom:20px">
 
-                    <div class="col-sm-12" style="margin-bottom:30px;padding:0">
+                        <div class="col-sm-12" style="margin-bottom:30px;padding:0">
 
-                        <div class="col-sm-3" style="padding-left:0">
+                            <div class="col-sm-3" style="padding-left:0">
 
-                            <button style="min-width:120px;" onclick="selectRule(this)" data-id="0"  href="/Home/AddMonitor" class="btn btn-info btn-search"><i class="glyphicon glyphicon-plus-sign"></i> 添加任务</button>
+                                <a style="min-width:120px;" href="/Home/EditMonitor" class="btn btn-primary btn-search">添加</a>
 
-                            <a style="min-width:120px;margin-left:12px" href="/Home/MonitorRule" class="btn btn-info btn-search"><i class="glyphicon glyphicon-wrench"></i> 规则管理</a>
+                            </div>
 
                         </div>
-                    </div>
 
-                    <table class="table table-striped table-bordered">
-                        <thead>
-                            <tr>
-                                <th>监控规则</th>
-                                <th>服务节点</th>
-                                <th width="276">操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                            @foreach (var item in rules.Where(x=>x.Nodes != null && x.Nodes.Count > 0))
-                            { 
-                            <tr>
-
-                                <td>@item.Title</td>
-                                <td>@(string.Join(',', item.Nodes))</td>
-                                <td>
-                                    <button data-id="@item.Id" style="margin:4px" type="button" onclick="selectRule(this)" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-edit"></span> 编辑任务</button>
-
-                                   
-                                    <button data-id="@item.Id" style="margin:4px" type="button" onclick="removeRule(this)" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove-sign"></span> 移除规则</button>
-
-                                </td>
-                            </tr>  
-                            } 
-
-                        </tbody>
-                    </table>
-
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<!-- 选择规则弹出框 -->
-<div class="modal fade" id="SelectRuleModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-
-                <input class="resetId" type="hidden" value="0" />
-
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <b style="font-size:16px" class="modal-title"><i class="glyphicon glyphicon-transfer"></i> 编辑任务</b>
-            </div>
-            <div class="modal-body">
-
-                <div class="col-sm-12" style="">
-
-                    <b><i class="glyphicon glyphicon-signal"></i> 服务节点</b>
-
-                    <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="" style="font-size:20px;top:0.2em;cursor:pointer;" data-original-title="服务节点是WebAPI请求的服务节点，点击选中和取消节点"></span>
-
-
-                </div>
-
-                <div class="col-sm-12 node-row" style="margin-top:2px;margin-bottom:26px;min-height:44px">
-
-                    @foreach (var item in nodes)
-                    {
-                        <button onclick="check_node(this)" style="width:120px;margin-left:20px;border-radius:4px;" class="btn btn-default service-button">@item</button>
-                    }
-
-                </div>
-
-                <div style="max-height:360px !important;overflow-y:auto !important;width:100%">
-
-                    <table class="table table-striped table-bordered" >
-                        <thead>
-                            <tr>
-                                <th>规则标题</th>
-                                <th>通知邮箱</th>
-                                <th width="276">操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                            @foreach (var item in rules)
-                            {
+                        <table class="table table-striped table-bordered">
+                            <thead>
                                 <tr>
-                                    <td>@item.Title</td>
-                                    <td>@(string.Join(',', item.NotificationEmails))</td>
-                                    <td>
-
-                                        <button data-id="@item.Id" type="button" onclick="select_rule(this)" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs select_rule_button">选择</button>
-
-                                    </td>
+                                    <th>任务标题</th>
+                                    <th>状态</th>
+                                    <th>监控频率</th>
+                                    <th>邮箱</th>
+                                    <th>服务节点</th>
+                                    <th width="276">操作</th>
                                 </tr>
+                            </thead>
+                            <tbody>
 
-                            }
+                                @foreach (var item in list)
+                                {
+                                    <tr>
+                                        <td>@item.Title</td>
+                                        <td>
 
-                        </tbody>
-                    </table>
+                                            @if (item.Status == 1)
+                                            {
+                                                <span style="width: 60px;padding-left:10px; padding-right:10px;margin-right: 8px;border-radius:0;" class="label label-success">运行中</span>
+                                            }
+                                            else
+                                            {
+                                                <span style="width: 60px;padding-left:10px; padding-right:10px;margin-right: 8px;border-radius:0;" class="label label-danger">已停止</span>
+                                            }
 
-                </div> 
-                 
-               
+                                        </td>
+                                        <td>@item.CronLike</td>
+                                        <td>@item.Emails</td>
+                                        <td>@item.Nodes</td>
 
-            </div>
+                                        <td>
 
-            <div class="modal-footer"> 
-                <button type="button" class="btn btn-info" onclick="Save_Select_Rule()" style="width:120px"> 保 存 </button>
+                                            <a href="/Home/EditMonitor/@item.Id" style="margin:4px" type="button" class="btn btn-info btn-xs"><span class="glyphicon glyphicon-edit"></span> 编辑</a>
+
+                                            @if (item.Status == 1)
+                                            {
+                                                <button style="margin:4px" type="button" onclick="stopJob(@item.Id)" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-off"></span> 停止</button>
+                                            }
+                                            else
+                                            {
+                                                <button style="margin:4px" type="button" onclick="startJob(@item.Id)" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-play-circle"></span> 开启</button>
+                                            }
+
+                                            <button style="margin:4px" type="button" onclick="delJob(@item.Id)" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove-sign"></span> 删除</button>
+
+                                        </td>
+                                    </tr>
+
+                                }
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+
             </div>
 
         </div>
-    </div>
-</div>
 
+    </div> 
 
-<script src="/Content/page/monitor.js?ver=1.0.2"></script>
+    <script src="/Content/page/monitor.js?ver=1.0.2"></script>

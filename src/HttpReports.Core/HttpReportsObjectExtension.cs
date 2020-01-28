@@ -78,11 +78,19 @@ namespace HttpReports
         }
 
 
-        public static double ToDouble(this string str)
+        public static double ToDouble(this string str, int digits = -1)
         {
             try
             {
-                return Convert.ToDouble(str);
+                if (digits == -1)
+                {
+                    return Convert.ToDouble(str);
+                }
+                else
+                {
+                    return Math.Round(Convert.ToDouble(str),digits);
+                }
+               
             }
             catch (Exception)
             {

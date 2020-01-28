@@ -5,19 +5,14 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-
-using Dapper;
-
+using System.Threading.Tasks; 
+using Dapper; 
 using HttpReports.Models;
 using HttpReports.Monitor;
-using HttpReports.Storage.FilterOptions;
-
+using HttpReports.Storage.FilterOptions; 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-
-using MySql.Data.MySqlClient;
-
+using Microsoft.Extensions.Options; 
+using MySql.Data.MySqlClient;  
 using Newtonsoft.Json;
 
 namespace HttpReports.Storage.MySql
@@ -81,32 +76,20 @@ namespace HttpReports.Storage.MySql
   KEY `idx_create_time` (`CreateTime`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;").ConfigureAwait(false);
 
-                await connection.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS `MonitorRule` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
-  `Title` varchar(255) NOT NULL COMMENT '标题',
-  `Description` varchar(512) NOT NULL COMMENT '描述',
-  `NotificationEmails` varchar(4096) DEFAULT NULL COMMENT '通知的邮箱列表',
-  `NotificationPhoneNumbers` varchar(2048) DEFAULT NULL COMMENT '通知的电话列表',
+                await connection.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS `MonitorJob` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `Title` varchar(255) DEFAULT NULL,
+  `Description` varchar(255) DEFAULT NULL,
+  `CronLike` varchar(255) DEFAULT NULL,
+  `Emails` varchar(1000) DEFAULT NULL,
+  `Mobiles` varchar(1000) DEFAULT NULL,
+  `Status` int(11) DEFAULT NULL,
+  `Nodes` varchar(255) DEFAULT NULL,
+  `PayLoad` varchar(2000) DEFAULT NULL,
+  `CreateTime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='监控规则';").ConfigureAwait(false);
-
-                await connection.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS `Monitor` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
-  `RuleId` int(11) NOT NULL COMMENT '所属规则ID',
-  `Type` int(11) NOT NULL COMMENT '监控类型',
-  `Description` varchar(512) DEFAULT NULL COMMENT '描述',
-  `CronExpression` varchar(64) NOT NULL COMMENT 'Cron表达式',
-  `Payload` varchar(10240) NOT NULL COMMENT '具体内容',
-  PRIMARY KEY (`Id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='监控定义';").ConfigureAwait(false);
-
-                await connection.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS `MonitorRuleApplied` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
-  `RuleId` int(11) NOT NULL COMMENT '规则ID',
-  `Node` varchar(50) NOT NULL COMMENT '应用的节点',
-  PRIMARY KEY (`Id`),
-  UNIQUE KEY `idx_ruleid_node` (`RuleId`,`Node`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='规则应用表';").ConfigureAwait(false);
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;").ConfigureAwait(false); 
+                
             }
         }
 
@@ -484,189 +467,14 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
             public string NotificationPhoneNumbers { get; set; }
         }
 
-        #endregion Base
-
-        public async Task<bool> AddMonitorRuleAsync(IMonitorRule rule)
-        {
-            await LoggingSqlOperationWithTransaction(async (connection, transaction) =>
-            {
-                var sql = $"INSERT INTO `MonitorRule`(`Title`, `Description`, `NotificationEmails`, `NotificationPhoneNumbers`) VALUES ('{MySqlHelper.EscapeString(rule.Title)}', '{MySqlHelper.EscapeString(rule.Description)}', '{MySqlHelper.EscapeString(string.Join(",", rule.NotificationEmails))}', '{MySqlHelper.EscapeString(string.Join(",", rule.NotificationPhoneNumbers))}')";
-                if (await connection.ExecuteAsync(sql, transaction: transaction).ConfigureAwait(false) <= 0)
-                {
-                    throw new StorageException("插入 MonitorRule 表失败");
-                }
-
-                var id = (await connection.QueryAsync<int>("SELECT LAST_INSERT_ID();", transaction: transaction).ConfigureAwait(false)).FirstOrDefault();
-                if (id <= 0)
-                {
-                    throw new StorageException("插入 MonitorRule 表失败");
-                }
-
-                rule.Id = id;
-
-                await UpdateMonitorRuleAppliedAsync(connection, transaction, rule.Id, rule.Nodes).ConfigureAwait(false);
-
-                await InsertMonitorAsync(connection, transaction, rule.Id, rule.Monitors).ConfigureAwait(false);
-            }, "插入新的监控规则失败").ConfigureAwait(false);
-            return true;
-        }
-
-        public async Task<bool> UpdateMonitorRuleAsync(IMonitorRule rule)
-        {
-            if (rule.Id <= 0)
-            {
-                return false;
-            }
-
-            await LoggingSqlOperationWithTransaction(async (connection, transaction) =>
-            {
-                var sql = $"UPDATE `MonitorRule` SET `Title`='{MySqlHelper.EscapeString(rule.Title)}', `Description`='{MySqlHelper.EscapeString(rule.Description)}', `NotificationEmails`='{MySqlHelper.EscapeString(string.Join(",", rule.NotificationEmails))}', `NotificationPhoneNumbers`='{MySqlHelper.EscapeString(string.Join(",", rule.NotificationPhoneNumbers))}' WHERE `Id` = {rule.Id}";
-                if (await connection.ExecuteAsync(sql, transaction: transaction).ConfigureAwait(false) <= 0)
-                {
-                    throw new StorageException("更新 MonitorRule 表失败");
-                }
-
-                await UpdateMonitorRuleAppliedAsync(connection, transaction: transaction, rule.Id, rule.Nodes).ConfigureAwait(false);
-
-                if (rule.Monitors?.Count > 0)
-                {
-                    var idsString = string.Join(",", rule.Monitors.Select(m => m.Id));
-                    await connection.ExecuteAsync($"DELETE FROM `Monitor` WHERE `RuleId` = {rule.Id} AND Id NOT IN ({idsString});", transaction: transaction).ConfigureAwait(false);
-
-                    var existIds = await connection.QueryAsync<int>($"SELECT Id FROM `Monitor` WHERE Id IN ({idsString})", transaction: transaction).ConfigureAwait(false);
-
-                    foreach (var id in existIds)
-                    {
-                        var monitor = rule.Monitors.Where(m => m.Id == id).First();
-                        await connection.ExecuteAsync($"UPDATE `Monitor` SET `Description`='{MySqlHelper.EscapeString(monitor.Description)}',`CronExpression`='{MySqlHelper.EscapeString(monitor.CronExpression)}',`Payload`='{MySqlHelper.EscapeString(JsonConvert.SerializeObject(monitor))}' WHERE `Id` = {id}", transaction: transaction).ConfigureAwait(false);
-                    }
-
-                    var newMonitors = rule.Monitors.Where(m => m.Id <= 0).ToArray();
-                    await InsertMonitorAsync(connection, transaction: transaction, rule.Id, newMonitors).ConfigureAwait(false);
-                }
-                else
-                {
-                    sql = $"DELETE FROM `Monitor` WHERE `RuleId` = {rule.Id};";
-                    await connection.ExecuteAsync(sql, transaction: transaction).ConfigureAwait(false);
-                }
-            }, "更新监控规则失败").ConfigureAwait(false);
-            return true;
-        }
-
-        public async Task<bool> DeleteMonitorRuleAsync(int ruleId)
-        {
-            await LoggingSqlOperationWithTransaction(async (connection, transaction) =>
-            {
-                var sqls = new string[] {
-                    $"DELETE FROM `MonitorRule` WHERE `Id` = {ruleId}",
-                    $"DELETE FROM `MonitorRuleApplied` WHERE `RuleId` = {ruleId}",
-                    $"DELETE FROM `Monitor` WHERE `RuleId` = {ruleId}",
-                };
-
-                foreach (var sql in sqls)
-                {
-                    await connection.ExecuteAsync(sql, transaction: transaction).ConfigureAwait(false);
-                }
-            }, "删除监控规则失败").ConfigureAwait(false);
-            return true;
-        }
-
-        public async Task<IMonitorRule> GetMonitorRuleAsync(int ruleId)
-        {
-            return await LoggingSqlOperation(async connection =>
-            {
-                MonitorRule rule = await QueryMonitorRuleAsync(connection).ConfigureAwait(false);
-
-                if (rule != null)
-                {
-                    var allNodeMaps = await connection.QueryAsync<MonitorRuleApplied>($"SELECT `RuleId`,`Node` FROM `MonitorRuleApplied` WHERE `RuleId` = {rule.Id};").ConfigureAwait(false);
-                    var allMonitors = await connection.QueryAsync<UnTypedMonitor>($"SELECT `Id`,`RuleId`,`Type`,`Payload` FROM `Monitor` WHERE `RuleId` = {rule.Id};").ConfigureAwait(false);
-
-                    allNodeMaps.Where(m => m.RuleId == rule.Id).Select(m => m.Node).ToList().ForEach(m => rule.Nodes.Add(m));
-                    allMonitors.Where(m => m.RuleId == rule.Id).Select(m =>
-                    {
-                        IMonitor monitor = DeserializeMonitor(m.Type, m.Payload);
-                        monitor.Id = m.Id;
-                        monitor.RuleId = rule.Id;
-                        return monitor;
-                    }).ToList().ForEach(m =>
-                    {
-                        rule.Monitors.Add(m);
-                    });
-                }
-                return rule;
-            }, $"获取监控规则 [{ruleId}] 失败").ConfigureAwait(false);
-
-            async Task<MonitorRule> QueryMonitorRuleAsync(IDbConnection connection)
-            {
-                var tmp = (await connection.QueryAsync<TempMonitorRule>($"SELECT `Id`,`Title`,`Description`,`NotificationEmails`,`NotificationPhoneNumbers` FROM `MonitorRule` WHERE `Id`={ruleId};").ConfigureAwait(false)).FirstOrDefault(); ;
-                return new MonitorRule()
-                {
-                    Description = tmp.Description,
-                    Id = tmp.Id,
-                    Title = tmp.Title,
-                    NotificationEmails = string.IsNullOrWhiteSpace(tmp.NotificationEmails) ? new List<string>() : new List<string>(tmp.NotificationEmails.Split(',')),
-                    NotificationPhoneNumbers = string.IsNullOrWhiteSpace(tmp.NotificationPhoneNumbers) ? new List<string>() : new List<string>(tmp.NotificationEmails.Split(',')),
-                };
-            }
-        }
-
-        public async Task<List<IMonitorRule>> GetAllMonitorRulesAsync()
-        {
-            var result = new List<IMonitorRule>();
-
-            await LoggingSqlOperation(async connection =>
-            {
-                var rules = await QueryMonitorRulesAsync(connection).ConfigureAwait(false);
-                if (rules.Count > 0)
-                {
-                    var ruleIds = string.Join(",", rules.Select(m => m.Id));
-                    var allNodeMaps = await connection.QueryAsync<MonitorRuleApplied>($"SELECT `RuleId`,`Node` FROM `MonitorRuleApplied` WHERE `RuleId` IN ({ruleIds});").ConfigureAwait(false);
-                    var allMonitors = await connection.QueryAsync<UnTypedMonitor>($"SELECT `Id`,`RuleId`,`Type`,`Payload` FROM `Monitor` WHERE `RuleId` IN ({ruleIds});").ConfigureAwait(false);
-
-                    rules.ForEach(rule =>
-                    {
-                        allNodeMaps.Where(m => m.RuleId == rule.Id).Select(m => m.Node).ToList().ForEach(m => rule.Nodes.Add(m));
-                        allMonitors.Where(m => m.RuleId == rule.Id).Select(m =>
-                        {
-                            IMonitor monitor = DeserializeMonitor(m.Type, m.Payload);
-                            monitor.Id = m.Id;
-                            monitor.RuleId = rule.Id;
-                            return monitor;
-                        }).ToList().ForEach(m =>
-                        {
-                            rule.Monitors.Add(m);
-                        });
-
-                        result.Add(rule);
-                    });
-                }
-            }, "获取所有监控规则失败").ConfigureAwait(false);
-
-            return result;
-
-            async Task<List<MonitorRule>> QueryMonitorRulesAsync(IDbConnection connection)
-            {
-                var tmps = (await connection.QueryAsync<TempMonitorRule>("SELECT `Id`,`Title`,`Description`,`NotificationEmails`,`NotificationPhoneNumbers` FROM `MonitorRule`;").ConfigureAwait(false)).ToList();
-                return tmps.Select(tmp =>
-                {
-                    return new MonitorRule()
-                    {
-                        Description = tmp.Description,
-                        Id = tmp.Id,
-                        Title = tmp.Title,
-                        NotificationEmails = string.IsNullOrWhiteSpace(tmp.NotificationEmails) ? new List<string>() : new List<string>(tmp.NotificationEmails.Split(',')),
-                        NotificationPhoneNumbers = string.IsNullOrWhiteSpace(tmp.NotificationPhoneNumbers) ? new List<string>() : new List<string>(tmp.NotificationEmails.Split(',')),
-                    };
-                }).ToList();
-            }
-        }
+        #endregion Base 
+       
 
         #region Query
 
         public async Task<int> GetRequestCountAsync(RequestCountFilterOption filterOption)
         {
-            var sql = $"SELECT COUNT(1) FROM `RequestInfo` {BuildSqlFilter(filterOption)}";
+            var sql = $"SELECT COUNT(1) FROM RequestInfo {BuildSqlFilter(filterOption)}";
 
             TraceLogSql(sql);
 
@@ -690,10 +498,10 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
                 ipFilter = "IP NOT IN " + ipFilter;
             }
 
-            var sql = $"SELECT COUNT(1) TOTAL FROM `RequestInfo` {BuildSqlFilter(filterOption)} AND {ipFilter} GROUP BY `IP` ORDER BY TOTAL DESC LIMIT 1";
+            var sql = $"SELECT COUNT(1) TOTAL FROM RequestInfo {BuildSqlFilter(filterOption)} AND {ipFilter} GROUP BY IP ORDER BY TOTAL DESC LIMIT 1";
             TraceLogSql(sql);
             var max = await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql).ConfigureAwait(false));
-            sql = $"SELECT COUNT(1) TOTAL FROM `RequestInfo` {BuildSqlFilter(filterOption)} AND {ipFilter}";
+            sql = $"SELECT COUNT(1) TOTAL FROM RequestInfo {BuildSqlFilter(filterOption)} AND {ipFilter}";
             TraceLogSql(sql);
             var all = await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql).ConfigureAwait(false));
             return (max, all);
@@ -931,6 +739,75 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
             }
 
             return builder.ToString();
+        }
+
+        public async Task<bool> AddMonitorJob(IMonitorJob job)
+        {
+            string sql = $@"Insert Into MonitorJob 
+            (Title,Description,CronLike,Emails,Mobiles,Status,Nodes,PayLoad,CreateTime)
+             Values (@Title,@Description,@CronLike,@Emails,@Mobiles,@Status,@Nodes,@PayLoad,@CreateTime)";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => (
+
+            await connection.ExecuteAsync(sql,job).ConfigureAwait(false)
+            
+            ) > 0 ).ConfigureAwait(false);
+
+        }
+
+        public async Task<bool> UpdateMonitorJob(IMonitorJob job)
+        {
+            string sql = $@"Update MonitorJob 
+
+                Set Title = @Title,Description = @Description,CronLike = @CronLike,Emails = @Emails,Mobiles = @Mobiles,Status= @Status,Nodes = @Nodes,PayLoad = @PayLoad 
+
+                Where Id = @Id ";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => (
+
+            await connection.ExecuteAsync(sql, job).ConfigureAwait(false)
+
+            ) > 0).ConfigureAwait(false);
+        }
+
+        public async Task<IMonitorJob> GetMonitorJob(int Id)
+        {
+            string sql = $@"Select * From MonitorJob Where Id = " + Id;
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => (
+
+              await connection.QueryFirstOrDefaultAsync<MonitorJob>(sql).ConfigureAwait(false) 
+
+            )).ConfigureAwait(false);
+        }
+
+        public async Task<List<IMonitorJob>> GetMonitorJobs()
+        {
+            string sql = $@"Select * From MonitorJob ";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => (
+
+            await connection.QueryAsync<MonitorJob>(sql).ConfigureAwait(false)
+
+            ).ToList().Select(x => x as IMonitorJob).ToList()).ConfigureAwait(false);
+        }
+
+        public async Task<bool> DeleteMonitorJob(int Id)
+        {
+            string sql = $@"Delete From MonitorJob Where Id = " + Id;
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection =>
+            ( await connection.ExecuteAsync(sql).ConfigureAwait(false)) > 0 ).ConfigureAwait(false);
         }
 
         #endregion Base
