@@ -4,11 +4,13 @@ using HttpReports.Models;
 using HttpReports.Monitor;
 using HttpReports.Storage.FilterOptions;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Quartz;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HttpReports.Dashboard.Services.Quartz
@@ -21,8 +23,10 @@ namespace HttpReports.Dashboard.Services.Quartz
 
         private IAlarmService _alarmService;
 
+        private ILogger<MonitorBackendJob> _logger;
+
         public MonitorBackendJob()
-        { 
+        {
 
         }
 
@@ -32,50 +36,54 @@ namespace HttpReports.Dashboard.Services.Quartz
             _storage = _storage ?? ServiceContainer.provider.GetService(typeof(IHttpReportsStorage)) as IHttpReportsStorage;
             _alarmService = _alarmService ?? ServiceContainer.provider.GetService(typeof(IAlarmService)) as IAlarmService;
             _monitorService = _monitorService ?? ServiceContainer.provider.GetService(typeof(MonitorService)) as MonitorService;
+            _logger = _logger ?? ServiceContainer.provider.GetService(typeof(ILogger<MonitorBackendJob>)) as ILogger<MonitorBackendJob>;
 
 
             IMonitorJob job = context.JobDetail.JobDataMap.Get("job") as IMonitorJob;
 
             MonitorJobPayload payload = JsonConvert.DeserializeObject<MonitorJobPayload>(job.Payload);
 
-            if (payload.ResponseTimeOutMonitor != null)
-            {
-                 AlarmOption alarmOption = await CheckResponseTimeOutMonitor(job, payload);
 
-                 await AlarmAsync(alarmOption,job);
-            }
+            //开始调用任务 
+            var response = GetCheckResponse(new List<Func<IMonitorJob, MonitorJobPayload, Task<AlarmOption>>> {
 
-            if (payload.ErrorResponseMonitor != null)
-            {
-                AlarmOption alarmOption = await CheckErrorResponseMonitor(job, payload);
+                CheckResponseTimeOutMonitor,
+                CheckErrorResponseMonitor,
+                CheckIPMonitor,
+                CheckRequestCountMonitor
 
-                await AlarmAsync(alarmOption, job);
-            }
+           }, job, payload); 
+           
+            await AlarmAsync(response.Select(x => x.Result).ToList(), job);
 
-            if (payload.IPMonitor != null)
-            {
-                AlarmOption alarmOption = await CheckIPMonitor(job, payload);
-
-                await AlarmAsync(alarmOption, job);
-            }
-
-            if (payload.RequestCountMonitor != null)
-            {
-                AlarmOption alarmOption = await CheckRequestCountMonitor(job, payload);
-
-                await AlarmAsync(alarmOption, job);
-            }  
         }
 
-        private async Task AlarmAsync(AlarmOption alarmOption,IMonitorJob job)
+        private IEnumerable<Task<AlarmOption>> GetCheckResponse(List<Func<IMonitorJob, MonitorJobPayload, Task<AlarmOption>>> funcs, IMonitorJob job, MonitorJobPayload payload)
         {
-            if (alarmOption != null)
+            List<Task<AlarmOption>> alarmOptions = new List<Task<AlarmOption>>();
+
+            foreach (var func in funcs)
             {
-                alarmOption.Emails = job.Emails.Split(',').AsEnumerable();
-                alarmOption.Phones = job.Mobiles.Split(',').AsEnumerable();
-                await _alarmService.AlarmAsync(alarmOption);
-            } 
+                alarmOptions.Add(Task.Run(() => func.Invoke(job, payload)));
+            }
+
+            return alarmOptions;
         }
+
+
+        private async Task AlarmAsync(IList<AlarmOption> alarmOption, IMonitorJob job)
+        {
+            foreach (var item in alarmOption)
+            {
+                if (alarmOption != null)
+                {
+                    item.Emails = job.Emails.Split(',').AsEnumerable();
+                    item.Phones = job.Mobiles.Split(',').AsEnumerable();
+                    await _alarmService.AlarmAsync(item);
+                }
+            }
+
+        } 
 
 
         /// <summary>
@@ -83,13 +91,15 @@ namespace HttpReports.Dashboard.Services.Quartz
         /// </summary>
         /// <returns></returns>
         private async Task<AlarmOption> CheckResponseTimeOutMonitor(IMonitorJob job, MonitorJobPayload payload)
-        {
+        {  
             if (payload.ResponseTimeOutMonitor == null)
             {
                 return null;
             }
 
             var (now, start, end) = GetNowTimes(_monitorService.ParseJobCron(job.CronLike));
+
+            _logger.LogInformation("检查超时监控开始 " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
             var timeoutCount = await _storage.GetTimeoutResponeCountAsync(new RequestCountFilterOption()
             {
@@ -110,10 +120,12 @@ namespace HttpReports.Dashboard.Services.Quartz
                 return null;
             }
 
-            var percent = timeoutCount * 100.0 / count;
+            var percent = timeoutCount * 100.0 / count; 
+
+            _logger.LogInformation("检查超时监控结束  " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + $"  检查结果 {(percent > payload.ResponseTimeOutMonitor.Percentage ? "预警":"正常")}");
 
             if (percent > payload.ResponseTimeOutMonitor.Percentage)
-            {
+            { 
                 return new AlarmOption()
                 {
                     IsHtml = true,
@@ -146,13 +158,15 @@ namespace HttpReports.Dashboard.Services.Quartz
         /// <param name="payload"></param>
         /// <returns></returns>
         private async Task<AlarmOption> CheckErrorResponseMonitor(IMonitorJob job, MonitorJobPayload payload)
-        {
+        {  
             if (payload.ErrorResponseMonitor == null)
             {
                 return null;
             }
 
             var (now, start, end) = GetNowTimes(_monitorService.ParseJobCron(job.CronLike));
+
+            _logger.LogInformation("检查请求错误监控开始 " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
             var errorCount = await _storage.GetRequestCountAsync(new RequestCountFilterOption()
             {
@@ -174,6 +188,8 @@ namespace HttpReports.Dashboard.Services.Quartz
                 return null;
             }
             var percent = errorCount * 100.0 / count;
+
+            _logger.LogInformation("检查请求错误监控结束  " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + $"  检查结果 {(percent > payload.ErrorResponseMonitor.Percentage ? "预警" : "正常")}");
 
             if (percent > payload.ErrorResponseMonitor.Percentage)
             {
@@ -209,11 +225,13 @@ namespace HttpReports.Dashboard.Services.Quartz
         /// <param name="payload"></param>
         /// <returns></returns>
         private async Task<AlarmOption> CheckIPMonitor(IMonitorJob job, MonitorJobPayload payload)
-        { 
+        {
             if (payload.IPMonitor == null)
             {
                 return null;
-            } 
+            }
+
+            _logger.LogInformation("检查IP异常监控开始 " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
             var (now, start, end) = GetNowTimes(_monitorService.ParseJobCron(job.CronLike));
 
@@ -231,6 +249,8 @@ namespace HttpReports.Dashboard.Services.Quartz
                 return null;
             }
             var percent = max * 100.0 / count;
+
+            _logger.LogInformation("检查IP异常监控结束  " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + $"  检查结果 {(percent > payload.IPMonitor.Percentage ? "预警" : "正常")}");
 
             if (percent > payload.IPMonitor.Percentage)
             {
@@ -268,11 +288,13 @@ namespace HttpReports.Dashboard.Services.Quartz
         /// <param name="payload"></param>
         /// <returns></returns>
         private async Task<AlarmOption> CheckRequestCountMonitor(IMonitorJob job, MonitorJobPayload payload)
-        { 
+        {
             if (payload.RequestCountMonitor == null)
             {
                 return null;
             }
+
+            _logger.LogInformation("检查请求量监控开始 " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
             var (now, start, end) = GetNowTimes(_monitorService.ParseJobCron(job.CronLike));
             var count = await _storage.GetRequestCountAsync(new RequestCountFilterOption()
@@ -281,6 +303,8 @@ namespace HttpReports.Dashboard.Services.Quartz
                 StartTime = start,
                 EndTime = end,
             }).ConfigureAwait(false);
+
+            _logger.LogInformation("检查请求量监控结束  " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + $"  检查结果 {(count > payload.RequestCountMonitor.Max ? "预警" : "正常")}");
 
             if (count > payload.RequestCountMonitor.Max)
             {
@@ -304,9 +328,9 @@ namespace HttpReports.Dashboard.Services.Quartz
                 };
             }
 
-            return null; 
+            return null;
 
-        } 
+        }
 
 
         /// <summary>

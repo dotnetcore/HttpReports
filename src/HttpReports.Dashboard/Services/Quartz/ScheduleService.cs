@@ -48,7 +48,9 @@ namespace HttpReports.Dashboard.Services
             foreach (var item in list)
             {
                 await ScheduleJobAsync(item);
-            } 
+            }
+
+            await scheduler.Start();  
         }
 
         private async Task ScheduleJobAsync(IMonitorJob model)
@@ -59,7 +61,8 @@ namespace HttpReports.Dashboard.Services
 
             var trigger = TriggerBuilder.Create().WithCronSchedule(model.CronLike).Build();
 
-            await scheduler.ScheduleJob(job, trigger);   
+            await scheduler.ScheduleJob(job, trigger);    
+
         }
 
         private async Task DeleteJobAsync(IJobDetail job)

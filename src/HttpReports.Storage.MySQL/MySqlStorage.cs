@@ -330,7 +330,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
                 result.Items = new Dictionary<string, int>();
                 (await connection.QueryAsync<KVClass<string, int>>(sql).ConfigureAwait(false)).ToList().ForEach(m =>
                 {
-                    result.Items.Add(m.KeyField, m.ValueField);
+                    result.Items.Add(m.KeyField.Split('-').Last().ToInt().ToString(), m.ValueField);
                 });
             }, "获取请求次数统计异常").ConfigureAwait(false);
 
@@ -362,7 +362,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
                 result.Items = new Dictionary<string, int>();
                 (await connection.QueryAsync<KVClass<string, int>>(sql).ConfigureAwait(false)).ToList().ForEach(m =>
                 {
-                    result.Items.Add(m.KeyField, m.ValueField);
+                    result.Items.Add(m.KeyField.ToInt().ToString(), m.ValueField);
                 });
             }, "获取响应时间统计异常").ConfigureAwait(false);
 
@@ -510,7 +510,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
         public async Task<int> GetTimeoutResponeCountAsync(RequestCountFilterOption filterOption, int timeoutThreshold)
         {
             var where = BuildSqlFilter(filterOption);
-            var sql = $"SELECT COUNT(1) FROM `RequestInfo` {(string.IsNullOrWhiteSpace(where) ? "WHERE" : where)} AND Milliseconds >= {timeoutThreshold}";
+            var sql = $"SELECT COUNT(1) FROM  RequestInfo {(string.IsNullOrWhiteSpace(where) ? "WHERE" : where)} AND Milliseconds >= {timeoutThreshold}";
 
             TraceLogSql(sql);
 

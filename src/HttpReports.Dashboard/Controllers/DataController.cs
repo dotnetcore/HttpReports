@@ -23,26 +23,29 @@ namespace HttpReports.Dashboard.Controllers
 
         private readonly MonitorService _monitorService;
 
+        private readonly ScheduleService _scheduleService;
+
         private static readonly IReadOnlyList<int> Hours = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23 };
 
-        public DataController(IHttpReportsStorage storage, MonitorService monitorService)
+        public DataController(IHttpReportsStorage storage, MonitorService monitorService, ScheduleService scheduleService)
         {
             _storage = storage;
             _monitorService = monitorService;
+            _scheduleService = scheduleService;
         }
 
         public async Task<IActionResult> GetIndexChartA(GetIndexDataRequest request)
         {
-            var startTime = request.Start.ToDateTimeOrNow().Date;
-            var endTime = request.End.ToDateTimeOrNow().Date.AddDays(1);
+            var start = (request.Start.IsEmpty() ? DateTime.Now.ToString("yyyy-MM-dd") : request.Start).ToDateTime();
+            var end = (request.End.IsEmpty() ? DateTime.Now.AddDays(1).ToString("yyyy-MM-dd") : request.End).ToDateTime();
 
             var nodes = request.Node.IsEmpty() ? null : request.Node.Split(',');
 
             var topRequest = await _storage.GetUrlRequestStatisticsAsync(new RequestInfoFilterOption()
             {
                 Nodes = nodes,
-                StartTime = startTime,
-                EndTime = endTime,
+                StartTime = start,
+                EndTime = end,
                 IsAscend = false,
                 Take = request.TOP,
             }).ConfigureAwait(false);
@@ -50,8 +53,8 @@ namespace HttpReports.Dashboard.Controllers
             var topError500 = await _storage.GetUrlRequestStatisticsAsync(new RequestInfoFilterOption()
             {
                 Nodes = nodes,
-                StartTime = startTime,
-                EndTime = endTime,
+                StartTime = start,
+                EndTime = end,
                 IsAscend = false,
                 Take = request.TOP,
                 StatusCodes = new[] { 500 },
@@ -60,8 +63,8 @@ namespace HttpReports.Dashboard.Controllers
             var fast = await _storage.GetRequestAvgResponeTimeStatisticsAsync(new RequestInfoFilterOption()
             {
                 Nodes = nodes,
-                StartTime = startTime,
-                EndTime = endTime,
+                StartTime = start,
+                EndTime = end,
                 IsAscend = true,
                 Take = request.TOP,
             }).ConfigureAwait(false);
@@ -69,8 +72,8 @@ namespace HttpReports.Dashboard.Controllers
             var slow = await _storage.GetRequestAvgResponeTimeStatisticsAsync(new RequestInfoFilterOption()
             {
                 Nodes = nodes,
-                StartTime = startTime,
-                EndTime = endTime,
+                StartTime = start,
+                EndTime = end,
                 IsAscend = false,
                 Take = request.TOP,
             }).ConfigureAwait(false);
@@ -84,16 +87,16 @@ namespace HttpReports.Dashboard.Controllers
             var StatusCode = (await _storage.GetStatusCodeStatisticsAsync(new RequestInfoFilterOption()
             {
                 Nodes = nodes,
-                StartTime = startTime,
-                EndTime = endTime,
+                StartTime = start,
+                EndTime = end,
                 StatusCodes = new[] { 200, 301, 302, 303, 400, 401, 403, 404, 500, 502, 503 },
             }).ConfigureAwait(false)).Where(m => m.Total > 0).Select(m => new EchartPineDataModel(m.Code.ToString(), m.Total)).ToArray();
 
             var ResponseTime = (await _storage.GetGroupedResponeTimeStatisticsAsync(new GroupResponeTimeFilterOption()
             {
                 Nodes = nodes,
-                StartTime = startTime,
-                EndTime = endTime,
+                StartTime = start,
+                EndTime = end,
             }).ConfigureAwait(false)).Where(m => m.Total > 0).Select(m => new EchartPineDataModel(m.Name, m.Total)).ToArray();
 
             return Json(new HttpResultEntity(1, "ok", new { StatusCode, ResponseTime, topRequest, topError500, Art }));
@@ -103,6 +106,8 @@ namespace HttpReports.Dashboard.Controllers
         {
             var startTime = request.Day.ToDateTimeOrNow().Date;
             var endTime = startTime.AddDays(1);
+
+
             var nodes = request.Node.IsEmpty() ? null : request.Node.Split(',');
 
             // 每小时请求次数
@@ -121,7 +126,7 @@ namespace HttpReports.Dashboard.Controllers
                 EndTime = endTime,
                 Nodes = nodes,
                 Type = TimeUnit.Hour,
-            }).ConfigureAwait(false);
+            }).ConfigureAwait(false);  
 
             List<int> timesList = new List<int>();
             List<int> avgList = new List<int>();
@@ -162,7 +167,7 @@ namespace HttpReports.Dashboard.Controllers
             var monthDayCount = (endTime - startTime).Days;
             for (int i = 0; i < monthDayCount; i++)
             {
-                var day = $"{request.Month}-{(i + 1).ToString("D2")}";
+                var day = (i + 1).ToString();
 
                 var times = responseTimeStatistics.Items.TryGetValue(day, out var tTimes) ? tTimes : 0;
 
@@ -194,10 +199,9 @@ namespace HttpReports.Dashboard.Controllers
 
             for (int i = 0; i < 12; i++)
             {
-                var month = string.Format("{0:00}", i + 1);
-                var key = $"{request.Year}-{month}";
+                var month = (i + 1).ToString(); 
 
-                var times = responseTimeStatistics.Items.TryGetValue(key, out var tTimes) ? tTimes : 0;
+                var times = responseTimeStatistics.Items.TryGetValue(month, out var tTimes) ? tTimes : 0;
 
                 time.Add(month);
                 value.Add(times);
@@ -312,8 +316,8 @@ namespace HttpReports.Dashboard.Controllers
 
         public async Task<IActionResult> GetIndexData(GetIndexDataRequest request)
         {
-            var start = request.Start.ToDateTimeOrNow().Date;
-            var end = request.End.ToDateTimeOrNow().Date.AddDays(1);
+            var start = ( request.Start.IsEmpty() ? DateTime.Now.ToString("yyyy-MM-dd") : request.Start ).ToDateTime();
+            var end = (request.End.IsEmpty() ? DateTime.Now.AddDays(1).ToString("yyyy-MM-dd") : request.End).ToDateTime(); 
 
             var result = await _storage.GetIndexPageDataAsync(new IndexPageDataFilterOption()
             {
@@ -335,13 +339,20 @@ namespace HttpReports.Dashboard.Controllers
 
         public async Task<IActionResult> GetRequestList(GetRequestListRequest request)
         {
+            if (request.Start.IsEmpty() && request.End.IsEmpty())
+            {
+                request.Start = DateTime.Now.ToString("yyyy-MM-dd");
+
+                request.End = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"); 
+            } 
+
             var result = await _storage.SearchRequestInfoAsync(new RequestInfoSearchFilterOption()
             {
                 Nodes = request.Node.IsEmpty() ? null : request.Node.Split(','),
                 IPs = request.IP?.Split(','),
                 Urls = request.Url?.Split(','),
-                StartTime = request.Start.ToDateTimeOrNow().Date,
-                EndTime = request.End.ToDateTimeOrNow().Date.AddDays(1),
+                StartTime = request.Start.TryToDateTime(),
+                EndTime = request.End.TryToDateTime(),
                 Page = request.pageNumber,
                 PageSize = request.pageSize,
             }).ConfigureAwait(false);
@@ -363,6 +374,8 @@ namespace HttpReports.Dashboard.Controllers
 
             else
                 await _storage.UpdateMonitorJob(model).ConfigureAwait(false);
+
+            await _scheduleService.UpdateMonitorJobAsync(); 
 
             return Json(new HttpResultEntity(1, "ok",null));
         }
@@ -386,16 +399,20 @@ namespace HttpReports.Dashboard.Controllers
         {
             await _storage.DeleteMonitorJob(Id).ConfigureAwait(false);
 
+            await _scheduleService.UpdateMonitorJobAsync();
+
             return Json(new HttpResultEntity(1, "ok",null));
         }
 
-        public async Task<IActionResult> ChangeJobState(int Id)
+        public async Task<IActionResult> ChangeJobState(int Id) 
         {
             var model = await _storage.GetMonitorJob(Id).ConfigureAwait(false);
 
             model.Status = model.Status == 1 ? 0 : 1;
 
             await _storage.UpdateMonitorJob(model).ConfigureAwait(false);
+
+            await _scheduleService.UpdateMonitorJobAsync();
 
             return Json(new HttpResultEntity(1, "ok", null));
         }  

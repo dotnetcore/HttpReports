@@ -71,26 +71,19 @@ namespace Microsoft.Extensions.DependencyInjection
             services.Configure<HttpReportsOptions>(configuration);
             services.Configure<MailOptions>(configuration.GetSection("Mail"));
 
+            
+
             services.AddSingleton<IModelCreator, DefaultModelCreator>();
 
             services.AddSingleton<IAlarmService, AlarmService>();
 
-            services.AddQuartz();
+            services.AddTransient<MonitorService>();
 
+            services.AddSingleton<ScheduleService>(); 
+           
             return new HttpReportsBuilder(services, configuration);
-        }
-
-        /// <summary>
-        /// 添加Quartz
-        /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        internal static IServiceCollection AddQuartz(this IServiceCollection services)
-        {
-            services.AddSingleton<ScheduleService>();
-
-            return services;
-        }
+        } 
+        
 
         /// <summary>
         /// 使用HttpReports, 必须放到请求管道的顶部
@@ -99,27 +92,15 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         internal static IApplicationBuilder UseHttpReports(this IApplicationBuilder app)
         {
+            ServiceContainer.provider = app.ApplicationServices as ServiceProvider; 
+
             var storage = app.ApplicationServices.GetRequiredService<IHttpReportsStorage>() ?? throw new ArgumentNullException("未正确配置存储方式");
             storage.InitAsync().Wait();
 
-            app.ApplicationServices.GetService<ScheduleService>().InitAsync().Wait();
-
-            app.ConfigQuartz();
-
+            app.ApplicationServices.GetService<ScheduleService>().InitAsync().Wait(); 
+             
             return app;
-        }
-
-        /// <summary>
-        /// 配置Quartz
-        /// </summary>
-        /// <param name="app"></param>
-        /// <returns></returns>
-        private static IApplicationBuilder ConfigQuartz(this IApplicationBuilder app)
-        {
-            var schedulerService = app.ApplicationServices.GetRequiredService<ScheduleService>();
-            schedulerService.InitAsync().Wait(); 
-            
-            return app;
-        }
+        } 
+        
     }
 }

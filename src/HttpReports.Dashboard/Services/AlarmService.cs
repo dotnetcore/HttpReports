@@ -25,17 +25,25 @@ namespace HttpReports.Dashboard.Services
         }
 
         private async Task SendMessageAsync(MimeMessage message)
-        {
-            using (var client = new SmtpClient())
+        { 
+            try
             {
-                client.AuthenticationMechanisms.Remove("XOAUTH2");
-                client.Connect(MailOptions.Server, MailOptions.Port, MailOptions.EnableSsl);
-                client.Authenticate(MailOptions.Account, MailOptions.Password);
+                using (var client = new SmtpClient())
+                {
+                    client.AuthenticationMechanisms.Remove("XOAUTH2");
+                    client.Connect(MailOptions.Server, MailOptions.Port, MailOptions.EnableSsl);
+                    client.Authenticate(MailOptions.Account, MailOptions.Password);
 
-                await client.SendAsync(message).ConfigureAwait(false);
+                    await client.SendAsync(message).ConfigureAwait(false);
 
-                await client.DisconnectAsync(true).ConfigureAwait(false);
+                    await client.DisconnectAsync(true).ConfigureAwait(false);
+                }  
             }
+            catch (System.Exception ex)
+            {
+
+                throw;
+            } 
         }
 
         public async Task AlarmAsync(AlarmOption option)

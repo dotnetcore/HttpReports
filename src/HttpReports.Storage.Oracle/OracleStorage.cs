@@ -113,8 +113,7 @@ namespace HttpReports.Storage.Oracle
             //TODO 实现批量存储
             await LoggingSqlOperation(async connection =>
             { 
-                string sql = $@"Insert Into RequestInfo Values (request_seq_id.nextval,'
-                    {request.Node}','{request.Route}','{request.Url}','{request.Method}',{request.Milliseconds},{request.StatusCode},'{request.IP}', 
+                string sql = $@"Insert Into RequestInfo Values (request_seq_id.nextval,'{request.Node}','{request.Route}','{request.Url}','{request.Method}',{request.Milliseconds},{request.StatusCode},'{request.IP}', 
                  to_date('{request.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss'))"; 
 
                 await connection.ExecuteAsync(sql).ConfigureAwait(false); 
@@ -366,11 +365,11 @@ namespace HttpReports.Storage.Oracle
             {
                 if (timeSpanFilterOption.StartTime.HasValue)
                 {
-                    CheckSqlWhere(builder).Append($"CreateTime >= to_date('{timeSpanFilterOption.StartTime.Value.ToString(timeSpanFilterOption.StartTimeFormat)}','YYYY-MM-DD') ");
+                    CheckSqlWhere(builder).Append($"CreateTime >= to_date('{timeSpanFilterOption.StartTime.Value.ToString(timeSpanFilterOption.StartTimeFormat)}','YYYY-MM-DD hh24:mi:ss') ");
                 }
                 if (timeSpanFilterOption.EndTime.HasValue)
                 {
-                    CheckSqlWhere(builder).Append($"CreateTime < to_date('{timeSpanFilterOption.EndTime.Value.ToString(timeSpanFilterOption.EndTimeFormat)}','YYYY-MM-DD') ");
+                    CheckSqlWhere(builder).Append($"CreateTime < to_date('{timeSpanFilterOption.EndTime.Value.ToString(timeSpanFilterOption.EndTimeFormat)}','YYYY-MM-DD hh24:mi:ss') ");
                 }
             }
 
@@ -388,64 +387,7 @@ namespace HttpReports.Storage.Oracle
                 builder.Append("AND ");
             }
             return builder;
-        }
-
-
-        /// <summary>
-        /// 获取请求信息
-        /// </summary>
-        /// <param name="filterOption"></param>
-        /// <returns></returns>
-        //public async Task<RequestInfoSearchResult> SearchRequestInfoAsync(RequestInfoSearchFilterOption filterOption)
-        //{
-        //    var whereBuilder = new StringBuilder(BuildSqlFilter(filterOption), 512);
-
-        //    var sqlBuilder = new StringBuilder("Select * From RequestInfo ", 512);
-
-        //    if (whereBuilder.Length == 0)
-        //    {
-        //        whereBuilder.Append("Where 1=1 ");
-        //    }
-
-        //    if (filterOption.IPs?.Length > 0)
-        //    {
-        //        whereBuilder.Append($" AND IP = '{string.Join(",", filterOption.IPs.Select(m => $"'{m}'"))}' ");
-        //    }
-
-        //    if (filterOption.Urls?.Length > 0)
-        //    {
-        //        if (filterOption.Urls.Length > 1)
-        //        {
-        //            throw new ArgumentOutOfRangeException($"{nameof(SQLServer)}暂时只支持单条Url查询");
-        //        }
-        //        whereBuilder.Append($" AND  Url like '%{filterOption.Urls[0]}%' ");
-        //    }
-
-        //    var where = whereBuilder.ToString();
-
-        //    sqlBuilder.Append(where);
-
-        //    var sql = sqlBuilder.ToString();
-
-        //    TraceLogSql(sql);
-
-        //    var countSql = "Select count(1) From RequestInfo " + where;
-        //    TraceLogSql(countSql);
-
-        //    var result = new RequestInfoSearchResult()
-        //    {
-        //        SearchOption = filterOption,
-        //    };
-
-        //    await LoggingSqlOperation(async connection =>
-        //    { 
-        //        result.AllItemCount = connection.QueryFirstOrDefault<int>(countSql);
-
-        //        result.List.AddRange((await connection.GetListBySqlAsync<RequestInfo>(sql,"Id desc",filterOption.PageSize,filterOption.Take,result.AllItemCount).ConfigureAwait(false)).ToArray());
-        //    }, "查询请求信息列表异常").ConfigureAwait(false);
-
-        //    return result;
-        //}
+        } 
 
         /// <summary>
         /// 获取请求次数统计
@@ -472,7 +414,7 @@ namespace HttpReports.Storage.Oracle
                 result.Items = new Dictionary<string, int>();
                 (await connection.QueryAsync<KVClass<string, int>>(sql).ConfigureAwait(false)).ToList().ForEach(m =>
                 {
-                    result.Items.Add(m.KeyField, m.ValueField);
+                    result.Items.Add(m.KeyField.ToInt().ToString(), m.ValueField);
                 });
             }, "获取请求次数统计异常").ConfigureAwait(false);
 
@@ -504,7 +446,7 @@ namespace HttpReports.Storage.Oracle
                 result.Items = new Dictionary<string, int>();
                 (await connection.QueryAsync<KVClass<string, int>>(sql).ConfigureAwait(false)).ToList().ForEach(m =>
                 {
-                    result.Items.Add(m.KeyField, m.ValueField);
+                    result.Items.Add(m.KeyField.ToInt().ToString(), m.ValueField);
                 });
             }, "获取响应时间统计异常").ConfigureAwait(false);
 
@@ -616,21 +558,53 @@ namespace HttpReports.Storage.Oracle
             return await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql).ConfigureAwait(false));
         }
 
-        public Task<(int Max, int All)> GetRequestCountWithWhiteListAsync(RequestCountWithListFilterOption filterOption)
+        /// <summary>
+        /// 获取白名单外的获取请求总次数
+        /// </summary>
+        /// <param name="filterOption"></param>
+        /// <returns></returns>
+        public async Task<(int Max, int All)> GetRequestCountWithWhiteListAsync(RequestCountWithListFilterOption filterOption)
         {
-            throw new NotImplementedException();
+            var ipFilter = $"({string.Join(",", filterOption.List.Select(x=> $"'{x}'"))})";
+            if (filterOption.InList)
+            {
+                ipFilter = "IP IN " + ipFilter;
+            }
+            else
+            {
+                ipFilter = "IP NOT IN " + ipFilter;
+            }
+
+            var sql = $"SELECT COUNT(1) TOTAL FROM RequestInfo {BuildSqlFilter(filterOption)} AND {ipFilter} GROUP BY IP ORDER BY TOTAL DESC ";
+
+            sql = BuildTopSql(sql,1);
+
+            TraceLogSql(sql);
+
+            var max = await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql).ConfigureAwait(false));
+            sql = $"SELECT COUNT(1) TOTAL FROM RequestInfo {BuildSqlFilter(filterOption)} AND {ipFilter}";
+
+
+            TraceLogSql(sql);
+            var all = await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql).ConfigureAwait(false));
+            return (max, all);
         }
 
-        public Task<int> GetTimeoutResponeCountAsync(RequestCountFilterOption filterOption, int timeoutThreshold)
+        public async Task<int> GetTimeoutResponeCountAsync(RequestCountFilterOption filterOption, int timeoutThreshold)
         {
-            throw new NotImplementedException();
+            var where = BuildSqlFilter(filterOption);
+            var sql = $"SELECT COUNT(1) FROM RequestInfo {(string.IsNullOrWhiteSpace(where) ? "WHERE" : where)} AND Milliseconds >= {timeoutThreshold}";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql).ConfigureAwait(false));
         }
 
         public async Task<bool> AddMonitorJob(IMonitorJob job)
         {
             string sql = $@"Insert Into MonitorJob 
             (Id,Title,Description,CronLike,Emails,Mobiles,Status,Nodes,PayLoad,CreateTime)
-             Values (monitorjob_seq_id,@Title,@Description,@CronLike,@Emails,@Mobiles,@Status,@Nodes,@PayLoad,@CreateTime)";
+             Values (monitorjob_seq_id.nextval,'{job.Title}','{job.Description}','{job.CronLike}','{job.Emails}','{job.Mobiles}',{job.Status},'{job.Nodes}','{job.Payload}',to_date('{job.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','YYYY-MM-DD HH24:MI:SS'))";
 
             TraceLogSql(sql);
 
@@ -642,9 +616,9 @@ namespace HttpReports.Storage.Oracle
         {
             string sql = $@"Update MonitorJob 
 
-                Set Title = @Title,Description = @Description,CronLike = @CronLike,Emails = @Emails,Mobiles = @Mobiles,Status= @Status,Nodes = @Nodes,PayLoad = @PayLoad 
+                Set Title = '{job.Title}' ,Description = '{job.Description}',CronLike = '{job.CronLike}',Emails = '{job.Emails}',Mobiles = '{job.Mobiles}',Status= {job.Status} ,Nodes = '{job.Nodes}',PayLoad = '{job.Payload}' 
 
-                Where Id = @Id ";
+                Where Id = {job.Id} ";
 
             TraceLogSql(sql);
 

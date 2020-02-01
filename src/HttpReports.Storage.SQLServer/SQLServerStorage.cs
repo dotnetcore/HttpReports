@@ -67,7 +67,7 @@ namespace HttpReports.Storage.SQLServer
                                 [Nodes] [nvarchar](255) NOT NULL,
                                 [PayLoad] [nvarchar](2000) NOT NULL, 
 	                            [CreateTime] [datetime] NULL, 
-                             CONSTRAINT [PK_Job] PRIMARY KEY CLUSTERED 
+                             CONSTRAINT [PK_MonitorJob] PRIMARY KEY CLUSTERED 
                             (
 	                            [Id] ASC
                             )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -396,7 +396,7 @@ namespace HttpReports.Storage.SQLServer
             { 
                 result.AllItemCount = connection.QueryFirstOrDefault<int>(countSql);
 
-                result.List.AddRange((await connection.GetListBySqlAsync<RequestInfo>(sql,"Id desc",filterOption.PageSize,filterOption.Take,result.AllItemCount).ConfigureAwait(false)).ToArray());
+                result.List.AddRange((await connection.GetListBySqlAsync<RequestInfo>(sql,"Id desc",filterOption.PageSize,filterOption.Page,result.AllItemCount).ConfigureAwait(false)).ToArray());
             }, "查询请求信息列表异常").ConfigureAwait(false);
 
             return result;
@@ -427,7 +427,7 @@ namespace HttpReports.Storage.SQLServer
                 result.Items = new Dictionary<string, int>();
                 (await connection.QueryAsync<KVClass<string, int>>(sql).ConfigureAwait(false)).ToList().ForEach(m =>
                 {
-                    result.Items.Add(m.KeyField, m.ValueField);
+                    result.Items.Add(m.KeyField.Split('-').Last().ToInt().ToString(), m.ValueField);
                 });
             }, "获取请求次数统计异常").ConfigureAwait(false);
 
@@ -459,7 +459,7 @@ namespace HttpReports.Storage.SQLServer
                 result.Items = new Dictionary<string, int>();
                 (await connection.QueryAsync<KVClass<string, int>>(sql).ConfigureAwait(false)).ToList().ForEach(m =>
                 {
-                    result.Items.Add(m.KeyField, m.ValueField);
+                    result.Items.Add(m.KeyField.ToInt().ToString(), m.ValueField);
                 });
             }, "获取响应时间统计异常").ConfigureAwait(false);
 
@@ -508,14 +508,43 @@ namespace HttpReports.Storage.SQLServer
             return await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql).ConfigureAwait(false));
         }
 
-        public Task<(int Max, int All)> GetRequestCountWithWhiteListAsync(RequestCountWithListFilterOption filterOption)
+        /// <summary>
+        /// 获取白名单外的获取请求总次数
+        /// </summary>
+        /// <param name="filterOption"></param>
+        /// <returns></returns>
+        public async Task<(int Max, int All)> GetRequestCountWithWhiteListAsync(RequestCountWithListFilterOption filterOption)
         {
-            throw new NotImplementedException();
+            var ipFilter = $"({string.Join(",", filterOption.List.Select(x=> $"'{x}'" ))})";
+            if (filterOption.InList)
+            {
+                ipFilter = "IP IN " + ipFilter;
+            }
+            else
+            {
+                ipFilter = "IP NOT IN " + ipFilter;
+            }
+
+            var sql = $"SELECT TOP 1 COUNT(1) FROM RequestInfo {BuildSqlFilter(filterOption)} AND {ipFilter} Group By IP Order BY COUNT(1) Desc";
+            TraceLogSql(sql);
+
+            var max = await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql).ConfigureAwait(false));
+
+
+            sql = $"SELECT COUNT(1) TOTAL FROM RequestInfo {BuildSqlFilter(filterOption)} AND {ipFilter}";
+            TraceLogSql(sql);
+            var all = await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql).ConfigureAwait(false));
+            return (max, all);
         }
 
-        public Task<int> GetTimeoutResponeCountAsync(RequestCountFilterOption filterOption, int timeoutThreshold)
+        public async Task<int> GetTimeoutResponeCountAsync(RequestCountFilterOption filterOption, int timeoutThreshold)
         {
-            throw new NotImplementedException();
+            var where = BuildSqlFilter(filterOption);
+            var sql = $"SELECT COUNT(1) FROM RequestInfo {(string.IsNullOrWhiteSpace(where) ? "WHERE" : where)} AND Milliseconds >= {timeoutThreshold}";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql).ConfigureAwait(false));
         }
 
         public async Task<bool> AddMonitorJob(IMonitorJob job)
