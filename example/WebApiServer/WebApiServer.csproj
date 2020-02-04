@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\HttpReports.Storage.MySQL\HttpReports.Storage.MySql.csproj" />
+    <ProjectReference Include="..\..\src\HttpReports.Storage.MySQL\HttpReports.Storage.MySQL.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Storage.Oracle\HttpReports.Storage.Oracle.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Storage.SQLServer\HttpReports.Storage.SQLServer.csproj" />
     <ProjectReference Include="..\..\src\HttpReports\HttpReports.csproj" />

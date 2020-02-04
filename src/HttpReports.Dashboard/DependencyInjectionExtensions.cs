@@ -8,7 +8,7 @@ using HttpReports.Dashboard.Services.Quartz;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
-
+using Microsoft.Extensions.FileProviders;
 using Quartz.Spi;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -21,49 +21,21 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        internal static IHttpReportsBuilder AddHttpReports(this IServiceCollection services)
+        public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services)
         { 
             IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");
 
             return services.AddHttpReports(configuration);
         }
 
-        /// <summary>
-        /// 根据配置自动设置Storage
-        /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        internal static IHttpReportsBuilder UseStorageAutomatically(this IHttpReportsBuilder builder)
-        {
-            var type = builder.Configuration.GetSection("StorageType").Value.ToUpperInvariant();
-
-            switch (type)
-            {
-                case "MYSQL":
-                    builder.UseMySqlStorage();
-                    break;
-
-                case "ORACLE":
-                    builder.UseOracleStorage();
-                    break;
-
-                case "SQLSERVER":
-                    builder.UseSQLServerStorage();
-                    break;
-
-                default:
-                    throw new ArgumentException($"存储类型没有正确配置: {type}");
-            }
-            return builder;
-        }
-
+        
         /// <summary>
         /// 添加HttpReports
         /// </summary>
         /// <param name="services"></param>
         /// <param name="configuration">HttpReports的配置节点</param>
         /// <returns></returns>
-        public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services, IConfiguration configuration)
+        private static IHttpReportsBuilder AddHttpReports(this IServiceCollection services, IConfiguration configuration)
         {
             ServiceContainer.provider = services.BuildServiceProvider();
 
@@ -90,15 +62,36 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        internal static IApplicationBuilder UseHttpReports(this IApplicationBuilder app)
+        public static IApplicationBuilder UseHttpReports(this IApplicationBuilder app)
         {
+            app.Use(async (context, next) => {
+
+                if (context.Request.Path.Value.ToLower() == "/dashboard")
+                {
+                    context.Request.Path = "/HttpReportsHome";
+                }
+
+                await next();
+
+            });
+
             ServiceContainer.provider = app.ApplicationServices as ServiceProvider; 
 
             var storage = app.ApplicationServices.GetRequiredService<IHttpReportsStorage>() ?? throw new ArgumentNullException("未正确配置存储方式");
             storage.InitAsync().Wait();
 
-            app.ApplicationServices.GetService<ScheduleService>().InitAsync().Wait(); 
-             
+            app.ApplicationServices.GetService<ScheduleService>().InitAsync().Wait();  
+
+            // 静态资源文件引用
+            if (System.IO.Directory.Exists(System.IO.Path.Combine(AppContext.BaseDirectory, @"wwwroot\HttpReportsStaticFiles")))
+            {
+                app.UseStaticFiles(new StaticFileOptions
+                {
+                    FileProvider = new PhysicalFileProvider(System.IO.Path.Combine(AppContext.BaseDirectory, @"wwwroot\HttpReportsStaticFiles")),
+                    RequestPath = new Microsoft.AspNetCore.Http.PathString("/HttpReportsStaticFiles") 
+                });
+            } 
+
             return app;
         } 
         

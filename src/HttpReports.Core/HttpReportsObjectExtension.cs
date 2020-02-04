@@ -113,6 +113,24 @@ namespace HttpReports
             return false;
         }
 
+        public static DateTime? TryToDateTime(this string str)
+        {
+            if (str.IsEmpty())
+            {
+                return null;
+            }
+
+            try
+            {
+                return Convert.ToDateTime(str);
+            }
+            catch (Exception)
+            {
+                return DateTime.Now;
+            }
+        }
+
+
         public static DateTime ToDateTime(this string str)
         {
             try

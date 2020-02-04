@@ -1,36 +1,44 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
-    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-    <UserSecretsId>38d1b15a-6fcd-4666-9a30-659abe6244ae</UserSecretsId>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>HttpReports.Dashboard</AssemblyName>
+    <RootNamespace>HttpReports.Dashboard</RootNamespace>
+    <Version>1.1.2</Version>
+    <PackageId>HttpReports.Dashboard</PackageId>
+    <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Quartz" Version="3.0.7" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="MailKit" Version="2.4.1" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.0'">
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
-    <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor.Language" Version="2.1.2" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.10" />
-  </ItemGroup>
+    <Content Include="Views\**">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>false</PackageCopyToOutput>
+    </Content>
+  </ItemGroup> 
 
   <ItemGroup>
+  <Content Include="wwwroot\**">
+    <Pack>true</Pack>
+    <PackageFlatten>true</PackageFlatten>
+    <PackageCopyToOutput>true</PackageCopyToOutput>
+  </Content>
+  </ItemGroup>  
+  
+  <ItemGroup>
+    <PackageReference Include="MailKit" Version="2.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
+    <PackageReference Include="Quartz" Version="3.0.7" />
+  </ItemGroup> 
+  
+  
+  <ItemGroup>
     <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
-    <ProjectReference Include="..\HttpReports.Storage.MySQL\HttpReports.Storage.MySql.csproj" />
-    <ProjectReference Include="..\HttpReports.Storage.Oracle\HttpReports.Storage.Oracle.csproj" />
-    <ProjectReference Include="..\HttpReports.Storage.SQLServer\HttpReports.Storage.SQLServer.csproj" />
-  </ItemGroup>
-</Project>
+  </ItemGroup> 
+ 
+
+</Project> 
+
+
