@@ -33,7 +33,7 @@ namespace HttpReports
                 stopwatch.Stop();
                 if (!string.IsNullOrEmpty(context.Request.Path))
                 {
-                    InvokeProcesser.Process(context, stopwatch);
+                   InvokeProcesser.Process(context, stopwatch);
                 }
             }
         }

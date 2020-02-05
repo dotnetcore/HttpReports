@@ -33,6 +33,8 @@ namespace HttpReports
             request.Milliseconds = ToInt32(stopwatch.ElapsedMilliseconds);
             request.CreateTime = DateTime.Now;
 
+            path = path.Replace(@"///",@"/").Replace(@"//", @"/");
+
             return Build(request, path);
         }
 
@@ -53,18 +55,18 @@ namespace HttpReports
         /// <returns></returns>
         protected string GetNode(string path)
         {
-            string Default = Options.Node;
+            string Node = Options.Node; 
 
             var arr = path.Substring(1).Split('/');   
 
-            if (arr.Length > 1 && arr[1] == Options.ApiPoint)
+            if (arr.Length > 1 && (arr[1] ?? string.Empty).ToLower() == Options.ApiPoint.ToLower())
             {
-                Default = arr[0];
+                Node = arr[0];
             }
 
-            Default = Default.Substring(0, 1).ToUpper() + Default.Substring(1).ToLower();
+            Node = Node.Substring(0, 1).ToUpper() + Node.Substring(1).ToLower();
 
-            return Default;
+            return Node;
         }
 
         protected static bool IsNumber(string str)

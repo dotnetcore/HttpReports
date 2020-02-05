@@ -7,10 +7,1180 @@
 
 
   <ItemGroup>
-    <PackageReference Include="HttpReports.Dashboard" Version="1.1.2" />
-    <PackageReference Include="HttpReports.SQLServer" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\HttpReports.Core\HttpReports.Core.csproj" />
+    <ProjectReference Include="..\..\src\HttpReports.Dashboard\HttpReports.Dashboard.csproj" />
+    <ProjectReference Include="..\..\src\HttpReports.Storage.MySQL\HttpReports.Storage.MySQL.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Content Update="Views\HttpReportsHome\Detail.cshtml">
+      <PackageCopyToOutput>false</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="Views\HttpReportsHome\EditMonitor.cshtml">
+      <PackageCopyToOutput>false</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="Views\HttpReportsHome\Index.cshtml">
+      <PackageCopyToOutput>false</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="Views\HttpReportsHome\Monitor.cshtml">
+      <PackageCopyToOutput>false</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="Views\HttpReportsHome\Test.cshtml">
+      <PackageCopyToOutput>false</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="Views\HttpReportsHome\Trend.cshtml">
+      <PackageCopyToOutput>false</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="Views\HttpReportsUser\Login.cshtml">
+      <PackageCopyToOutput>false</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="Views\HttpReportsUser\Test.cshtml">
+      <PackageCopyToOutput>false</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="Views\Shared\HttpReportsTemplate\_Layout.cshtml">
+      <PackageCopyToOutput>false</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\alert\alert.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\alert\alert.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\alert\img\error.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\alert\img\right.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\alert\img\warning.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\css\add-ons.min.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\css\bootstrap.min.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\css\climacons-font.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\css\filetypes.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\css\font-awesome.min.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\css\glyphicons.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\css\halflings.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\css\jquery.mmenu.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\css\social.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\css\style.min.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\fonts\climacons-webfont.eot">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\fonts\climacons-webfont.svg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\fonts\climacons-webfont.ttf">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\fonts\climacons-webfont.woff">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\fonts\fontawesome-webfont.eot">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\fonts\fontawesome-webfont.svg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\fonts\fontawesome-webfont.ttf">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\fonts\fontawesome-webfont.woff">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\fonts\FontAwesome.otf">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\fonts\glyphicons-halflings-regular.eot">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\fonts\glyphicons-halflings-regular.svg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\fonts\glyphicons-halflings-regular.ttf">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\fonts\glyphicons-halflings-regular.woff">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\ico\favicon.ico">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\ico\flags\Brazil.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\ico\flags\Germany.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\ico\flags\India.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\ico\flags\Russia.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\ico\flags\Spain.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\ico\flags\Thumbs.db">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\ico\flags\USA.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\ico\Thumbs.db">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\avatar.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\avatar1.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\avatar2.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\avatar3.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\avatar4.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\avatar5.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\avatar6.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\avatar7.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\browser-chrome-big.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\browser-firefox-big.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\browser-ie.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\browser-opera.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\browser-safari.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\gallery\photo1.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\gallery\photo10.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\gallery\photo11.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\gallery\photo12.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\gallery\photo13.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\gallery\photo14.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\gallery\photo15.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\gallery\photo2.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\gallery\photo3.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\gallery\photo4.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\gallery\photo5.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\gallery\photo6.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\gallery\photo7.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\gallery\photo8.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\gallery\photo9.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\gallery\Thumbs.db">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\img.ico">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\logo1.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\img\select.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\js\bootstrap-table-zh-CN.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\js\bootstrap.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\js\core.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\js\jquery-2.1.1.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\js\jquery-migrate-1.2.1.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\js\jquery.goup.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\js\jquery.mmenu.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\js\pages\calendar.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\js\pages\charts-flot.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\js\pages\charts-other.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\js\pages\charts-xcharts.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\js\pages\form-dropzone.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\js\pages\form-wizard.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\js\pages\form-x-editable-demo.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\js\pages\form-x-editable.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\js\pages\index.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\js\SmoothScroll.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\autosize\jquery.autosize.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\chosen\js\chosen.jquery.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\d3\d3.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\datatables\js\dataTables.bootstrap.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\datatables\js\jquery.dataTables.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\dropzone\css\dropzone.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\dropzone\images\spritemap.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\dropzone\js\dropzone.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\easypiechart\js\jquery.easypiechart.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\editable\css\bootstrap-editable.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\editable\inputs-ext\address\address.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\editable\inputs-ext\typeaheadjs\typeaheadjs.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\editable\js\bootstrap-editable.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\flot\jquery.flot.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\flot\jquery.flot.pie.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\flot\jquery.flot.resize.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\flot\jquery.flot.spline.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\flot\jquery.flot.stack.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\flot\jquery.flot.time.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\fullcalendar\css\fullcalendar.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\fullcalendar\js\fullcalendar.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\gauge\gauge.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\jquery-ui\css\jquery-ui-1.10.4.min.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\jquery-ui\js\jquery-ui-1.10.4.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\justgage\justgage.1.0.1.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\jvectormap\css\jquery-jvectormap-1.2.2.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\jvectormap\js\gdp-data.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\jvectormap\js\jquery-jvectormap-1.2.2.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\jvectormap\js\jquery-jvectormap-world-mill-en.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\maskedinput\jquery.maskedinput.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\mockjax\jquery.mockjax.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\moment\moment.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\morris\css\morris.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\morris\js\morris.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\placeholder\jquery.placeholder.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\raphael\raphael.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\select2\js\select2.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\sparkline\jquery.sparkline.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\touchpunch\jquery.ui.touch-punch.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\wizard\jquery.bootstrap.wizard.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\xcharts\css\xcharts.min.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\assets\plugins\xcharts\js\xcharts.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\bootstrap\bootstrap-switch\3.3.4\bootstrap-switch.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\bootstrap\bootstrap-switch\3.3.4\bootstrap-switch.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\bootstrap\bootstrap-table\1.14.2\bootstrap-table.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\bootstrap\css\bootstrap-theme.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\bootstrap\css\bootstrap-theme.css.map">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\bootstrap\css\bootstrap-theme.min.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\bootstrap\css\bootstrap.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\bootstrap\css\bootstrap.css.map">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\bootstrap\css\bootstrap.min.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\bootstrap\fonts\glyphicons-halflings-regular.eot">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\bootstrap\fonts\glyphicons-halflings-regular.svg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\bootstrap\fonts\glyphicons-halflings-regular.ttf">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\bootstrap\fonts\glyphicons-halflings-regular.woff">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\bootstrap\fonts\glyphicons-halflings-regular.woff2">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\bootstrap\js\bootstrap.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\bootstrap\js\bootstrap.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\bootstrap\js\npm.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\busyload\app.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\busyload\app.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\common\basic.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\common\basic.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\css\form-elements.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\css\style.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\css\theme\dark.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\css\theme\light.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\echarts\4.3.0\dark.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\echarts\4.3.0\echarts.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\echarts\4.3.0\macarons.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\css\font-awesome.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\css\font-awesome.min.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\fonts\fontawesome-webfont.eot">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\fonts\fontawesome-webfont.svg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\fonts\fontawesome-webfont.ttf">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\fonts\fontawesome-webfont.woff">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\fonts\fontawesome-webfont.woff2">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\fonts\FontAwesome.otf">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\less\animated.less">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\less\bordered-pulled.less">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\less\core.less">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\less\fixed-width.less">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\less\font-awesome.less">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\less\icons.less">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\less\larger.less">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\less\list.less">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\less\mixins.less">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\less\path.less">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\less\rotated-flipped.less">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\less\stacked.less">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\less\variables.less">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\scss\font-awesome.scss">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\scss\_animated.scss">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\scss\_bordered-pulled.scss">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\scss\_core.scss">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\scss\_fixed-width.scss">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\scss\_icons.scss">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\scss\_larger.scss">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\scss\_list.scss">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\scss\_mixins.scss">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\scss\_path.scss">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\scss\_rotated-flipped.scss">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\scss\_stacked.scss">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\font-awesome\scss\_variables.scss">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\ico\apple-touch-icon-114-precomposed.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\ico\apple-touch-icon-144-precomposed.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\ico\apple-touch-icon-57-precomposed.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\ico\apple-touch-icon-72-precomposed.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\ico\favicon.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\img\backgrounds\1%402x.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\img\backgrounds\1.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\img\git\a1.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\img\git\a2.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\img\git\a20.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\img\git\a21.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\img\git\a3.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\img\git\a5.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\img\git\a6.png">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\img\git\a9.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\js\jquery-1.11.1.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\js\jquery-1.11.1.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\js\jquery.backstretch.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\js\jquery.backstretch.min.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\js\placeholder.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\js\scripts.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\js\tooltip.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\js\tooltip.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\laydate\laydate.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\laydate\theme\default\font\iconfont.eot">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\laydate\theme\default\font\iconfont.svg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\laydate\theme\default\font\iconfont.ttf">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\laydate\theme\default\font\iconfont.woff">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\laydate\theme\default\laydate.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\page\detail.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\page\edit_monitor.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\page\index.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\page\main.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\page\monitor.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\page\trend.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
   </ItemGroup>
 
 </Project>

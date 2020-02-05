@@ -15,35 +15,22 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class DependencyInjectionExtensions
     {
-        /// <summary>
-        /// 添加HttpReports
-        /// <para/>自动使用配置文件中的HttpReports节点
-        /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services)
+       
+        public static IHttpReportsBuilder AddHttpReportsDashborad(this IServiceCollection services)
         { 
             IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");
 
-            return services.AddHttpReports(configuration);
+            return services.AddHttpReportsDashborad(configuration);
         }
 
-        
-        /// <summary>
-        /// 添加HttpReports
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="configuration">HttpReports的配置节点</param>
-        /// <returns></returns>
-        private static IHttpReportsBuilder AddHttpReports(this IServiceCollection services, IConfiguration configuration)
+       
+        private static IHttpReportsBuilder AddHttpReportsDashborad(this IServiceCollection services, IConfiguration configuration)
         {
             ServiceContainer.provider = services.BuildServiceProvider();
 
             services.AddOptions();
             services.Configure<HttpReportsOptions>(configuration);
-            services.Configure<MailOptions>(configuration.GetSection("Mail"));
-
-            
+            services.Configure<MailOptions>(configuration.GetSection("Mail")); 
 
             services.AddSingleton<IModelCreator, DefaultModelCreator>();
 
@@ -62,7 +49,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseHttpReports(this IApplicationBuilder app)
+        public static IApplicationBuilder UseHttpReportsDashboard(this IApplicationBuilder app)
         {
             app.Use(async (context, next) => {
 

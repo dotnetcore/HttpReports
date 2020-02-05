@@ -27,13 +27,15 @@ namespace HttpReports.Storage.Oracle
         }
 
         public async Task InitAsync()
-        {  
-            using (var con = ConnectionFactory.GetConnection())
+        {
+            try
             {
-                // 检查RequestInfo并创建
-                if (con.QueryFirstOrDefault<int>($" Select count(*) from user_tables where table_name = upper('RequestInfo') ") == 0)
-                {  
-                    await con.ExecuteAsync(@"   
+                using (var con = ConnectionFactory.GetConnection())
+                {
+                    // 检查RequestInfo并创建
+                    if (con.QueryFirstOrDefault<int>($" Select count(*) from user_tables where table_name = upper('RequestInfo') ") == 0)
+                    {
+                        await con.ExecuteAsync(@"   
 
                         create table RequestInfo
                         (
@@ -48,11 +50,11 @@ namespace HttpReports.Storage.Oracle
 	                        CreateTime date
                         )
 
-                     ").ConfigureAwait(false); 
+                     ").ConfigureAwait(false);
 
-                    await LoggingSqlOperation(async connection =>
-                    {
-                        await connection.ExecuteAsync(@"   
+                        await LoggingSqlOperation(async connection =>
+                        {
+                            await connection.ExecuteAsync(@"   
 
                         create sequence request_seq_id
                         increment by 1              
@@ -61,16 +63,16 @@ namespace HttpReports.Storage.Oracle
                         nocycle                         
                         nocache
 
-                     ").ConfigureAwait(false); 
+                     ").ConfigureAwait(false);
 
-                    }, "").ConfigureAwait(false);   
+                        }, "").ConfigureAwait(false);
 
-                }
+                    }
 
-                // 检查MonitorJob并创建
-                if (con.QueryFirstOrDefault<int>($" Select count(*) from user_tables where table_name = upper('MonitorJob') ") == 0)
-                {
-                    await con.ExecuteAsync(@"   
+                    // 检查MonitorJob并创建
+                    if (con.QueryFirstOrDefault<int>($" Select count(*) from user_tables where table_name = upper('MonitorJob') ") == 0)
+                    {
+                        await con.ExecuteAsync(@"   
 
                         create table MonitorJob
                         (
@@ -88,9 +90,9 @@ namespace HttpReports.Storage.Oracle
 
                      ").ConfigureAwait(false);
 
-                    await LoggingSqlOperation(async connection =>
-                    {
-                        await connection.ExecuteAsync(@"   
+                        await LoggingSqlOperation(async connection =>
+                        {
+                            await connection.ExecuteAsync(@"   
 
                         create sequence monitorjob_seq_id
                         increment by 1              
@@ -101,10 +103,15 @@ namespace HttpReports.Storage.Oracle
 
                      ").ConfigureAwait(false);
 
-                    }, "").ConfigureAwait(false);
+                        }, "").ConfigureAwait(false);
 
-                }
-            }  
+                    }
+                } 
+            }
+            catch (Exception ex)
+            { 
+                throw;
+            } 
          
         }
 

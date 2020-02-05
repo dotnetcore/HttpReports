@@ -28,12 +28,14 @@ namespace HttpReports.Storage.SQLServer
 
         public async Task InitAsync()
         {
-            using (var con = ConnectionFactory.GetConnection())
+            try
             {
-                // 检查RequestInfo并创建
-                if (con.QueryFirstOrDefault<int>($" Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.RequestInfo') ") == 0)
+                using (var con = ConnectionFactory.GetConnection())
                 {
-                   await con.ExecuteAsync(@"   
+                    // 检查RequestInfo并创建
+                    if (con.QueryFirstOrDefault<int>($" Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.RequestInfo') ") == 0)
+                    {
+                        await con.ExecuteAsync(@"   
                         CREATE TABLE [dbo].[RequestInfo](
 	                        [Id] [int] IDENTITY(1,1) NOT NULL,
 	                        [Node] [nvarchar](50) NOT NULL,
@@ -49,13 +51,13 @@ namespace HttpReports.Storage.SQLServer
 	                        [Id] ASC
                         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
                         ) ON [PRIMARY]
-                    ").ConfigureAwait(false); 
-                }
+                    ").ConfigureAwait(false);
+                    }
 
-                // 检查Job并创建
-                if (con.QueryFirstOrDefault<int>($"Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.MonitorJob')") == 0)
-                {
-                   await con.ExecuteAsync(@"  
+                    // 检查Job并创建
+                    if (con.QueryFirstOrDefault<int>($"Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.MonitorJob')") == 0)
+                    {
+                        await con.ExecuteAsync(@"  
                             CREATE TABLE [dbo].[MonitorJob](
 	                            [Id] [int] IDENTITY(1,1) NOT NULL,
 	                            [Title] [nvarchar](255) NOT NULL,
@@ -73,9 +75,14 @@ namespace HttpReports.Storage.SQLServer
                             )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
                             ) ON [PRIMARY]
                       ").ConfigureAwait(false);
-                } 
+                    }
 
+                } 
             }
+            catch (Exception ex)
+            { 
+                throw;
+            } 
         }
 
         public async Task AddRequestInfoAsync(IRequestInfo request)

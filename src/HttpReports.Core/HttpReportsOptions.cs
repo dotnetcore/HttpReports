@@ -14,22 +14,8 @@ namespace HttpReports
         /// <summary>
         /// 服务节点名称
         /// </summary>
-        public string Node { get; set; }
+        public string Node { get; set; } = "default";
 
         public HttpReportsOptions Value => this;
-    }
-
-    [Obsolete("有新的替代方案", true)]
-    public enum DBType
-    {
-        SqlServer,
-        MySql
-    }
-
-    [Obsolete("有新的替代方案", true)]
-    public enum WebType
-    {
-        API,
-        MVC
-    }
+    } 
 }

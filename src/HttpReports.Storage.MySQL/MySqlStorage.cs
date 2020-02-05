@@ -42,25 +42,11 @@ namespace HttpReports.Storage.MySql
 
         public async Task InitAsync()
         {
-            using (var connection = ConnectionFactory.GetConnection())
+            try
             {
-                try
+                using (var connection = ConnectionFactory.GetConnection())
                 {
-                    connection.Open();
-                }
-                catch (MySqlException ex)
-                {
-                    if (ex.Message.ToUpperInvariant().Contains("UNKNOWN DATABASE"))
-                    {
-                        await CreateDatabaseAsync().ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-
-                await connection.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS `RequestInfo` (
+                    await connection.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS `RequestInfo` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `Node` varchar(50) DEFAULT NULL,
   `Route` varchar(50) DEFAULT NULL,
@@ -76,7 +62,7 @@ namespace HttpReports.Storage.MySql
   KEY `idx_create_time` (`CreateTime`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;").ConfigureAwait(false);
 
-                await connection.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS `MonitorJob` (
+                    await connection.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS `MonitorJob` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `Title` varchar(255) DEFAULT NULL,
   `Description` varchar(255) DEFAULT NULL,
@@ -88,9 +74,14 @@ namespace HttpReports.Storage.MySql
   `PayLoad` varchar(2000) DEFAULT NULL,
   `CreateTime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`Id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;").ConfigureAwait(false); 
-                
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;").ConfigureAwait(false);
+
+                } 
             }
+            catch (Exception ex)
+            { 
+                throw ex;
+            }  
         }
 
         private async Task CreateDatabaseAsync()
@@ -131,6 +122,8 @@ namespace HttpReports.Storage.MySql
             {
                 await LoggingSqlOperation(async connection =>
                 {
+                    System.Threading.Thread.Sleep(3000);
+
                     await connection.ExecuteAsync("INSERT INTO `RequestInfo`(`Node`, `Route`, `Url`, `Method`, `Milliseconds`, `StatusCode`, `IP`, `CreateTime`) VALUES (@Node, @Route, @Url, @Method, @Milliseconds, @StatusCode, @IP, @CreateTime)", request).ConfigureAwait(false);
                 }, "请求数据保存失败").ConfigureAwait(false);
             }

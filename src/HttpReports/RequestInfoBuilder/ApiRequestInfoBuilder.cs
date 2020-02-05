@@ -10,7 +10,7 @@ namespace HttpReports
         { }
 
         protected override IRequestInfo Build(IRequestInfo request, string path)
-        {
+        { 
             request.Node = GetNode(path);
             request.Route = GetRouteForAPI(path);
 
