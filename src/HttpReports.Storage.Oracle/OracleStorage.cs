@@ -1,15 +1,18 @@
 ﻿using Dapper;
 using Dapper.Contrib.Extensions;
+using HttpReports.Core.Models;
 using HttpReports.Models;
 using HttpReports.Monitor;
 using HttpReports.Storage.FilterOptions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HttpReports.Storage.Oracle
@@ -20,10 +23,20 @@ namespace HttpReports.Storage.Oracle
 
         public ILogger<OracleStorage> Logger { get; }
 
-        public OracleStorage(OracleConnectionFactory connectionFactory, ILogger<OracleStorage> logger)
+        private readonly AsyncCallbackDeferFlushCollection<IRequestInfo> _deferFlushCollection = null;
+
+        public OracleStorageOptions _options;
+
+        public OracleStorage(IOptions<OracleStorageOptions> options,OracleConnectionFactory connectionFactory, ILogger<OracleStorage> logger)
         {
+            _options = options.Value;
             ConnectionFactory = connectionFactory;
             Logger = logger;
+
+            if (_options.EnableDefer)
+            {
+                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<IRequestInfo>(AddRequestInfoAsync, _options.DeferThreshold, _options.DeferTime);
+            } 
         }
 
         public async Task InitAsync()
@@ -31,8 +44,8 @@ namespace HttpReports.Storage.Oracle
             try
             {
                 using (var con = ConnectionFactory.GetConnection())
-                {
-                    // 检查RequestInfo并创建
+                {   
+                    
                     if (con.QueryFirstOrDefault<int>($" Select count(*) from user_tables where table_name = upper('RequestInfo') ") == 0)
                     {
                         await con.ExecuteAsync(@"   
@@ -67,9 +80,8 @@ namespace HttpReports.Storage.Oracle
 
                         }, "").ConfigureAwait(false);
 
-                    }
-
-                    // 检查MonitorJob并创建
+                    } 
+                   
                     if (con.QueryFirstOrDefault<int>($" Select count(*) from user_tables where table_name = upper('MonitorJob') ") == 0)
                     {
                         await con.ExecuteAsync(@"   
@@ -106,6 +118,44 @@ namespace HttpReports.Storage.Oracle
                         }, "").ConfigureAwait(false);
 
                     }
+
+                    if (con.QueryFirstOrDefault<int>($" Select count(*) from user_tables where table_name = upper('SysUser') ") == 0)
+                    {
+                        await con.ExecuteAsync(@"   
+
+                        create table SysUser
+                        (
+	                        id number(15) primary key,
+	                        UserName varchar2(100),
+	                        Password varchar2(100) 
+                        )
+
+                     ").ConfigureAwait(false);
+
+                        await LoggingSqlOperation(async connection =>
+                        {
+                            await connection.ExecuteAsync(@"   
+
+                        create sequence sysuser_seq_id
+                        increment by 1              
+                        start with 1                
+                        nomaxvalue                      
+                        nocycle                         
+                        nocache
+
+                     ").ConfigureAwait(false);
+
+                        }, "").ConfigureAwait(false);
+
+                    }
+
+                    if (con.QueryFirstOrDefault<int>($" Select count(1) from SysUser ") == 0)
+                    {
+                        var sql = $" Insert Into SysUser Values (sysuser_seq_id,'{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ";
+
+                       await con.ExecuteAsync($" Insert Into SysUser Values (sysuser_seq_id.nextval,'{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ").ConfigureAwait(false);
+                    }
+
                 } 
             }
             catch (Exception ex)
@@ -113,19 +163,46 @@ namespace HttpReports.Storage.Oracle
                 throw;
             } 
          
-        }
+        } 
+
+        private async Task AddRequestInfoAsync(IEnumerable<IRequestInfo> requests, CancellationToken token)
+        {
+            await LoggingSqlOperation(async connection =>
+            {
+                StringBuilder sb = new StringBuilder();
+
+                sb.AppendLine("begin");
+
+                foreach (var request in requests)
+                {
+                    sb.AppendLine($@"Insert Into RequestInfo Values (request_seq_id.nextval,'{request.Node}','{request.Route}','{request.Url}','{request.Method}',{request.Milliseconds},{request.StatusCode},'{request.IP}',to_date('{request.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss'));  " );
+                }
+
+                sb.AppendLine("end;"); 
+              
+                await connection.ExecuteAsync(sb.ToString()).ConfigureAwait(false);
+            }, "请求数据批量保存失败").ConfigureAwait(false);
+        } 
+
 
         public async Task AddRequestInfoAsync(IRequestInfo request)
         {
-            //TODO 实现批量存储
-            await LoggingSqlOperation(async connection =>
-            { 
-                string sql = $@"Insert Into RequestInfo Values (request_seq_id.nextval,'{request.Node}','{request.Route}','{request.Url}','{request.Method}',{request.Milliseconds},{request.StatusCode},'{request.IP}', 
-                 to_date('{request.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss'))"; 
+            if (_options.EnableDefer)
+            {
+                _deferFlushCollection.Push(request);
+            }
+            else
+            {
+                await LoggingSqlOperation(async connection =>
+                {
+                    string sql = $@"Insert Into RequestInfo Values (request_seq_id.nextval,'{request.Node}','{request.Route}','{request.Url}','{request.Method}',{request.Milliseconds},{request.StatusCode},'{request.IP}', 
+                 to_date('{request.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss'))";
 
-                await connection.ExecuteAsync(sql).ConfigureAwait(false); 
+                    await connection.ExecuteAsync(sql).ConfigureAwait(false);
 
-            }, "请求数据保存失败").ConfigureAwait(false);
+                }, "请求数据保存失败").ConfigureAwait(false);
+
+            } 
         }
 
         /// <summary>
@@ -671,5 +748,48 @@ namespace HttpReports.Storage.Oracle
             return await LoggingSqlOperation(async connection =>
             (await connection.ExecuteAsync(sql).ConfigureAwait(false)) > 0).ConfigureAwait(false);
         }
+
+        public async Task<SysUser> CheckLogin(string Username, string Password)
+        {
+            string sql = $" Select * From SysUser Where UserName = '{Username}' AND Password = '{Password}' ";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => (
+
+              await connection.QueryFirstOrDefaultAsync<SysUser>(sql, new { Username, Password }).ConfigureAwait(false)
+
+            )).ConfigureAwait(false);
+
+        }
+
+        public async Task<bool> UpdateLoginUser(SysUser model)
+        {
+            string sql = $" Update SysUser Set UserName = '{model.UserName}' , Password = '{model.Password}'  Where Id = {model.Id} ";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => (
+
+              await connection.ExecuteAsync(sql, model).ConfigureAwait(false)
+
+             ) > 0).ConfigureAwait(false);
+
+        }
+
+
+        public async Task<SysUser> GetSysUser(string UserName)
+        {
+            string sql = $" Select * From SysUser Where UserName = '{UserName}' ";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => (
+
+              await connection.QueryFirstOrDefaultAsync<SysUser>(sql, new { UserName }).ConfigureAwait(false)
+
+            )).ConfigureAwait(false);
+        } 
+
     }
 }

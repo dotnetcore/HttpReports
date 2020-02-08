@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace System
 {
@@ -37,6 +39,14 @@ namespace System
             }
 
             return true;
+        } 
+         
+        public static string MD5(this string source)
+        {
+            MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
+            byte[] bytes = Encoding.UTF8.GetBytes(source);
+            string result = BitConverter.ToString(md5.ComputeHash(bytes));
+            return result.Replace("-", "").ToLower();
         }
 
         public static double ToDouble(this string str)

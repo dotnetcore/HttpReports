@@ -238,7 +238,7 @@ input:-ms-input-placeholder {
 .modal-content {
     background-color: #454b50 !important;
     color: #FFF !important;
-    border: 2px solid #FFF !important;
+    border: 1px solid #949494 !important;
 }
 
     .modal-content .close {
@@ -251,5 +251,38 @@ input:-ms-input-placeholder {
     color: #FFF !important;
     background-color: #597e84 !important;
 }
+
+
+
+body.my-login-page {
+    background-color: #34363a !important;
+}
+
+.my-login-page .card {
+    background-color: #3d4148 !important;
+    /*box-shadow: initial !important;*/
+    box-shadow: 16px 16px 28px #161e2f !important
+}
+
+.my-login-page .hr_title {
+    color:#FFF !important;
+    text-shadow:initial !important;
+}
+
+.my-login-page .card label {
+    color: #FFF !important;
+}
+
+.my-login-page .btn.btn-block {
+    background-color: #67c2ef !important;
+    box-shadow: 6px 6px 10px #171f2f !important;
+}
+
+
+.my-login-page .username, .password {
+    color: #000000 !important;
+    background-color: aliceblue !important;
+}
+
 
  

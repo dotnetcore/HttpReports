@@ -1,29 +1,43 @@
 ﻿using Dapper;
 using Dapper.Contrib.Extensions;
+using HttpReports.Core.Models;
 using HttpReports.Models;
 using HttpReports.Monitor;
 using HttpReports.Storage.FilterOptions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks; 
 
 namespace HttpReports.Storage.SQLServer
 {  
     internal class SQLServerStorage : IHttpReportsStorage
     {
+        public SQLServerStorageOptions _options;
+
         public SQLServerConnectionFactory ConnectionFactory { get; }
 
-        public ILogger<SQLServerStorage> Logger { get; }
+        public ILogger<SQLServerStorage> Logger { get; } 
 
-        public SQLServerStorage(SQLServerConnectionFactory connectionFactory, ILogger<SQLServerStorage> logger)
+        private readonly AsyncCallbackDeferFlushCollection<IRequestInfo> _deferFlushCollection = null;
+
+        public SQLServerStorage(IOptions<SQLServerStorageOptions> options,SQLServerConnectionFactory connectionFactory, ILogger<SQLServerStorage> logger)
         {
+            _options = options.Value;
+
             ConnectionFactory = connectionFactory;
             Logger = logger;
+
+            if (_options.EnableDefer)
+            {
+                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<IRequestInfo>(AddRequestInfoAsync,_options.DeferThreshold, _options.DeferTime);
+            }
         }
 
         public async Task InitAsync()
@@ -31,8 +45,7 @@ namespace HttpReports.Storage.SQLServer
             try
             {
                 using (var con = ConnectionFactory.GetConnection())
-                {
-                    // 检查RequestInfo并创建
+                { 
                     if (con.QueryFirstOrDefault<int>($" Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.RequestInfo') ") == 0)
                     {
                         await con.ExecuteAsync(@"   
@@ -52,9 +65,8 @@ namespace HttpReports.Storage.SQLServer
                         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
                         ) ON [PRIMARY]
                     ").ConfigureAwait(false);
-                    }
-
-                    // 检查Job并创建
+                    } 
+                  
                     if (con.QueryFirstOrDefault<int>($"Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.MonitorJob')") == 0)
                     {
                         await con.ExecuteAsync(@"  
@@ -75,8 +87,22 @@ namespace HttpReports.Storage.SQLServer
                             )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
                             ) ON [PRIMARY]
                       ").ConfigureAwait(false);
-                    }
+                    } 
+                   
+                    if (con.QueryFirstOrDefault<int>($"Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.SysUser')") == 0)
+                    {
+                        await con.ExecuteAsync($@"
 
+                           CREATE TABLE [SysUser]( 
+	                            [Id] [int] IDENTITY(1,1) NOT NULL,
+	                            [UserName] [nvarchar](100) NOT NULL, 
+	                            [Password] [nvarchar](100) NOT NULL );  
+
+                            Insert Into [SysUser] Values ('{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}'); 
+
+                         ").ConfigureAwait(false);
+
+                    } 
                 } 
             }
             catch (Exception ex)
@@ -84,14 +110,32 @@ namespace HttpReports.Storage.SQLServer
                 throw;
             } 
         }
+         
+        private async Task AddRequestInfoAsync(IEnumerable<IRequestInfo> requests, CancellationToken token)
+        {
+            await LoggingSqlOperation(async connection =>
+            { 
+                string sql = string.Join(",", requests.Select(x => $" ('{x.Node}','{x.Route}','{x.Url}','{x.Method}',{x.Milliseconds},{x.StatusCode},'{x.IP}','{x.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}') ")); 
+              
+                await connection.ExecuteAsync($"Insert into [RequestInfo] ([Node],[Route],[Url],[Method],[Milliseconds],[StatusCode],[IP],[CreateTime]) VALUES {sql}").ConfigureAwait(false);
+            }, "请求数据批量保存失败").ConfigureAwait(false);
+        }
+
 
         public async Task AddRequestInfoAsync(IRequestInfo request)
         {
-            //TODO 实现批量存储
-            await LoggingSqlOperation(async connection =>
-            {  
-                await connection.InsertAsync(request as RequestInfo).ConfigureAwait(false); 
-            }, "请求数据保存失败").ConfigureAwait(false); 
+            if (_options.EnableDefer)
+            {
+                _deferFlushCollection.Push(request);
+            }
+            else
+            {
+                await LoggingSqlOperation(async connection =>
+                {
+                    await connection.InsertAsync(request as RequestInfo).ConfigureAwait(false);
+                }, "请求数据保存失败").ConfigureAwait(false);
+
+            } 
 
         }
 
@@ -622,5 +666,47 @@ namespace HttpReports.Storage.SQLServer
             return await LoggingSqlOperation(async connection =>
             (await connection.ExecuteAsync(sql).ConfigureAwait(false)) > 0).ConfigureAwait(false);
         }
+
+        public async Task<SysUser> CheckLogin(string Username, string Password)
+        {
+            string sql = " Select * From SysUser Where UserName = @UserName AND Password = @Password ";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => (
+
+              await connection.QueryFirstOrDefaultAsync<SysUser>(sql, new { Username, Password }).ConfigureAwait(false)
+
+            )).ConfigureAwait(false);
+
+        }
+
+        public async Task<bool> UpdateLoginUser(SysUser model)
+        {
+            string sql = " Update SysUser Set UserName = @UserName , Password = @Password  Where Id = @Id ";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => (
+
+              await connection.ExecuteAsync(sql, model).ConfigureAwait(false)
+
+             ) > 0).ConfigureAwait(false);
+
+        } 
+
+        public async Task<SysUser> GetSysUser(string UserName)
+        {
+            string sql = " Select * From SysUser Where UserName = @UserName";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => (
+
+              await connection.QueryFirstOrDefaultAsync<SysUser>(sql, new { UserName }).ConfigureAwait(false)
+
+            )).ConfigureAwait(false);
+        } 
+
     }
 }

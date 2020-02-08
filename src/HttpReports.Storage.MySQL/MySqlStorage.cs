@@ -6,7 +6,8 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks; 
-using Dapper; 
+using Dapper;
+using HttpReports.Core.Models;
 using HttpReports.Models;
 using HttpReports.Monitor;
 using HttpReports.Storage.FilterOptions; 
@@ -62,7 +63,8 @@ namespace HttpReports.Storage.MySql
   KEY `idx_create_time` (`CreateTime`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;").ConfigureAwait(false);
 
-                    await connection.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS `MonitorJob` (
+                    await connection.ExecuteAsync(@"
+CREATE TABLE IF NOT EXISTS `MonitorJob` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `Title` varchar(255) DEFAULT NULL,
   `Description` varchar(255) DEFAULT NULL,
@@ -76,7 +78,19 @@ namespace HttpReports.Storage.MySql
   PRIMARY KEY (`Id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;").ConfigureAwait(false);
 
-                } 
+                    await connection.ExecuteAsync(@"
+CREATE TABLE IF NOT EXISTS `SysUser` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `UserName` varchar(255) DEFAULT NULL,
+  `Password` varchar(255) DEFAULT NULL, 
+  PRIMARY KEY (`Id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;").ConfigureAwait(false); 
+
+                    if (connection.QueryFirstOrDefault<int>("Select count(1) from `SysUser`") == 0)
+                    {
+                        await connection.ExecuteAsync($@" Insert Into `SysUser` (`UserName`,`Password`) Values ('{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ").ConfigureAwait(false);
+                    }  
+                }   
             }
             catch (Exception ex)
             { 
@@ -116,7 +130,7 @@ namespace HttpReports.Storage.MySql
         {
             if (Options.EnableDefer)
             {
-                _deferFlushCollection.Add(request);
+                _deferFlushCollection.Push(request);
             }
             else
             {
@@ -802,6 +816,48 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
             return await LoggingSqlOperation(async connection =>
             ( await connection.ExecuteAsync(sql).ConfigureAwait(false)) > 0 ).ConfigureAwait(false);
         }
+
+        public async Task<SysUser> CheckLogin(string Username, string Password)
+        {
+            string sql = " Select * From SysUser Where UserName = @UserName AND Password = @Password ";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => (
+
+              await connection.QueryFirstOrDefaultAsync<SysUser>(sql,new { Username,Password }).ConfigureAwait(false)
+
+            )).ConfigureAwait(false);
+
+        }
+
+        public async Task<bool> UpdateLoginUser(SysUser model)
+        {
+            string sql = " Update SysUser Set UserName = @UserName , Password = @Password  Where Id = @Id ";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => (
+
+              await connection.ExecuteAsync(sql,model).ConfigureAwait(false)
+
+             )>0).ConfigureAwait(false);
+             
+        }
+
+        public async Task<SysUser> GetSysUser(string UserName)
+        {
+            string sql = " Select * From SysUser Where UserName = @UserName";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => (
+
+              await connection.QueryFirstOrDefaultAsync<SysUser>(sql, new { UserName }).ConfigureAwait(false)
+
+            )).ConfigureAwait(false); 
+        } 
+
 
         #endregion Base
     }

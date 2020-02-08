@@ -10,6 +10,7 @@ namespace HttpReports.Dashboard.Implements
         {
             context.Response.Cookies.Append(key, value, new CookieOptions
             {
+                IsEssential = true,
                 Expires = DateTime.Now.AddMinutes(minutes)
             });
         }

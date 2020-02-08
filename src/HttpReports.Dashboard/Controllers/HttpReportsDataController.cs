@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using HttpReports.Core.Config;
+using HttpReports.Core.Models;
 using HttpReports.Dashboard.DTO;
+using HttpReports.Dashboard.Implements;
 using HttpReports.Dashboard.Models;
 using HttpReports.Dashboard.Services;
 using HttpReports.Dashboard.Services.Quartz;
@@ -11,7 +13,7 @@ using HttpReports.Dashboard.ViewModels;
 using HttpReports.Models;
 using HttpReports.Monitor;
 using HttpReports.Storage.FilterOptions;
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -415,7 +417,50 @@ namespace HttpReports.Dashboard.Controllers
             await _scheduleService.UpdateMonitorJobAsync();
 
             return Json(new HttpResultEntity(1, "ok", null));
-        }  
-       
+        }
+
+
+        [AllowAnonymous]
+        public async Task<IActionResult> CheckUserLogin(SysUser user)
+        {  
+            var model = await _storage.CheckLogin(user.UserName.Trim(),user.Password.Trim().MD5()).ConfigureAwait(false);
+
+            if (model == null) 
+                return Json(new HttpResultEntity(-1, "用户名或者密码错误", null)); 
+
+            HttpContext.SetCookie(BasicConfig.Login_Cookie_Id,user.UserName, 60 * 30 * 7); 
+
+            return Json(new HttpResultEntity(1, "登录成功",null));  
+        }
+
+        public async Task<IActionResult> UpdateAccountInfo(UpdateAccountRequest request)
+        {
+            var user = await _storage.GetSysUser(request.Username).ConfigureAwait(false);
+
+            if (user.Password != request.OldPwd.MD5())
+            {
+                return Json(new HttpResultEntity(-1, "旧密码错误", null)); 
+            }
+
+            if (request.NewUserName.Length <= 2 || request.NewUserName.Length > 20)
+            {
+                return Json(new HttpResultEntity(-1, "用户名格式错误", null));
+            }
+
+            if (request.OldPwd.Length <= 5 || request.OldPwd.Length > 20)
+            {
+                return Json(new HttpResultEntity(-1, "新密码格式错误", null));
+            }
+
+            await _storage.UpdateLoginUser(new SysUser {  
+                Id = user.Id,
+                UserName = request.NewUserName,
+                Password = request.NewPwd.MD5() 
+            });
+
+            return Json(new HttpResultEntity(1, "修改成功", null));  
+
+        } 
+         
     }
 }

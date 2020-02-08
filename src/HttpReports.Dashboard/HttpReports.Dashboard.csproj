@@ -14,14 +14,6 @@
       <Pack>true</Pack>
       <PackageCopyToOutput>false</PackageCopyToOutput>
     </Content>
-  </ItemGroup> 
-
-  <ItemGroup>
-  <Content Include="wwwroot\**">
-    <Pack>true</Pack>
-    <PackageFlatten>true</PackageFlatten>
-    <PackageCopyToOutput>true</PackageCopyToOutput>
-  </Content>
   </ItemGroup>  
   
   <ItemGroup>
@@ -36,6 +28,12 @@
   
   <ItemGroup>
     <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
+  </ItemGroup> 
+  
+  
+  <ItemGroup>
+    <Folder Include="Views\" />
+    <Folder Include="wwwroot\" />
   </ItemGroup> 
  
 

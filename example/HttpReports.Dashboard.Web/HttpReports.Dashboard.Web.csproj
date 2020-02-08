@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.4" />
   </ItemGroup>
 
 
@@ -16,43 +17,37 @@
     <ProjectReference Include="..\..\src\HttpReports.Core\HttpReports.Core.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Dashboard\HttpReports.Dashboard.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Storage.MySQL\HttpReports.Storage.MySQL.csproj" />
+    <ProjectReference Include="..\..\src\HttpReports.Storage.Oracle\HttpReports.Storage.Oracle.csproj" />
+    <ProjectReference Include="..\..\src\HttpReports.Storage.SQLServer\HttpReports.Storage.SQLServer.csproj" />
   </ItemGroup>
 
 
   <ItemGroup>
-    <Content Update="Views\HttpReportsHome\Detail.cshtml">
+    <Content Update="Views\HttpReports\Detail.cshtml">
       <PackageCopyToOutput>false</PackageCopyToOutput>
       <Pack>true</Pack>
     </Content>
-    <Content Update="Views\HttpReportsHome\EditMonitor.cshtml">
+    <Content Update="Views\HttpReports\EditMonitor.cshtml">
       <PackageCopyToOutput>false</PackageCopyToOutput>
       <Pack>true</Pack>
     </Content>
-    <Content Update="Views\HttpReportsHome\Index.cshtml">
+    <Content Update="Views\HttpReports\HttpReportsTemplate.cshtml">
       <PackageCopyToOutput>false</PackageCopyToOutput>
       <Pack>true</Pack>
     </Content>
-    <Content Update="Views\HttpReportsHome\Monitor.cshtml">
+    <Content Update="Views\HttpReports\Index.cshtml">
       <PackageCopyToOutput>false</PackageCopyToOutput>
       <Pack>true</Pack>
     </Content>
-    <Content Update="Views\HttpReportsHome\Test.cshtml">
+    <Content Update="Views\HttpReports\Monitor.cshtml">
       <PackageCopyToOutput>false</PackageCopyToOutput>
       <Pack>true</Pack>
     </Content>
-    <Content Update="Views\HttpReportsHome\Trend.cshtml">
+    <Content Update="Views\HttpReports\Test.cshtml">
       <PackageCopyToOutput>false</PackageCopyToOutput>
       <Pack>true</Pack>
     </Content>
-    <Content Update="Views\HttpReportsUser\Login.cshtml">
-      <PackageCopyToOutput>false</PackageCopyToOutput>
-      <Pack>true</Pack>
-    </Content>
-    <Content Update="Views\HttpReportsUser\Test.cshtml">
-      <PackageCopyToOutput>false</PackageCopyToOutput>
-      <Pack>true</Pack>
-    </Content>
-    <Content Update="Views\Shared\HttpReportsTemplate\_Layout.cshtml">
+    <Content Update="Views\HttpReports\Trend.cshtml">
       <PackageCopyToOutput>false</PackageCopyToOutput>
       <Pack>true</Pack>
     </Content>
@@ -801,6 +796,11 @@
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <Pack>true</Pack>
     </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\css\animate\3.5.2\animate.min.css">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
     <Content Update="wwwroot\HttpReportsStaticFiles\Content\css\form-elements.css">
       <PackageFlatten>true</PackageFlatten>
       <PackageCopyToOutput>true</PackageCopyToOutput>
@@ -1077,6 +1077,16 @@
       <Pack>true</Pack>
     </Content>
     <Content Update="wwwroot\HttpReportsStaticFiles\Content\img\git\a9.jpg">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\js\jquery.cookie.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\js\jquery.cookie.min.js">
       <PackageFlatten>true</PackageFlatten>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <Pack>true</Pack>

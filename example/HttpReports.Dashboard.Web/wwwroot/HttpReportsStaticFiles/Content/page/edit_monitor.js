@@ -99,7 +99,7 @@ function saveMonitorJob() {
 
                 alert("保存成功", function () {
 
-                    location.href = "/HttpReportsHome/Monitor";
+                    location.href = "/HttpReports/Monitor";
 
                 });
             }

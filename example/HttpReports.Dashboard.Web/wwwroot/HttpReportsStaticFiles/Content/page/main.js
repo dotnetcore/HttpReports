@@ -41,8 +41,7 @@ function timeChange(k) {
         }
     });
 
-} 
-
+}  
 
 //选择服务节点
 function check_node(item) {
@@ -75,9 +74,9 @@ function initTheme() {
 
     if (current == null || current == "" || current == undefined) {
        
-        $("#theme_dark").remove();
+        $("#theme_light").remove();
 
-        httpreports.theme = "light"; 
+        httpreports.theme = "dark"; 
     }
     else { 
 
@@ -102,4 +101,62 @@ function initTheme() {
     }   
 
 } 
+
+function show_password_modal() {   
+
+    var username = $.cookie('HttpReports.Login.User');
+
+    if (username == undefined || username == "") {
+        location.href = "/HttpReports/UserLogin";
+        return;
+    }   
+
+    $(".update_username").val(username); 
+
+    $(".userModal").modal("show");  
+
+}
+
+function update_password() {  
+
+    var username = $.cookie('HttpReports.Login.User');  
+    var newUserName = $(".update_username").val().trim();
+    var oldPwd = $(".update_oldpwd").val().trim();
+    var newPwd = $(".update_newpwd").val().trim(); 
+
+    if (newUserName.length == 0 || oldPwd.length == 0 || newPwd.length == 0) { 
+        alert("不能为空");
+        return;  
+    }  
+
+    if (oldPwd == newPwd) {
+        alert("新旧密码不能一样");
+        return;  
+    } 
+
+    $.ajax({
+
+        url: "/HttpReportsData/UpdateAccountInfo",
+        type: "POST",
+        data: {
+            username, newUserName, oldPwd, newPwd
+        },
+        success: function (result) {
+
+            if (result.code == 1) {
+
+                alert("保存成功", function () { 
+                    location.href = "/HttpReports/UserLogout"; 
+                }); 
+            }
+            else {
+                alert(result.msg);
+            } 
+        }
+
+    })
+
+
+
+}
 

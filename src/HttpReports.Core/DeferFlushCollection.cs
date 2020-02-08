@@ -90,7 +90,7 @@ namespace HttpReports
             Task.Run(AutoFlushAsync, _autoFlushCTS.Token).ConfigureAwait(false);
         }
 
-        public void Add(T item)
+        public void Push(T item)
         {
             lock (_syncRoot)
             {

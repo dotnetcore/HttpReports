@@ -26,7 +26,7 @@ namespace WebApiServer
         {
             services.AddControllers();
 
-            services.AddHttpReports().UseWebApi().UseMySqlStorage(); 
+            services.AddHttpReports().UseWebApi().UseOracleStorage(); 
 
         }
 

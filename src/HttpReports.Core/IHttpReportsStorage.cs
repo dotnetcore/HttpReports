@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using HttpReports.Core.Models;
 using HttpReports.Models;
 using HttpReports.Monitor; 
 using HttpReports.Storage.FilterOptions;
@@ -131,6 +131,11 @@ namespace HttpReports
 
         #endregion Monitor
 
-        //TODO 定义所有数据存取接口
+        Task<SysUser> CheckLogin(string Username, string Password);
+
+        Task<SysUser> GetSysUser(string UserName); 
+
+        Task<bool> UpdateLoginUser(SysUser model); 
+
     }
 }
