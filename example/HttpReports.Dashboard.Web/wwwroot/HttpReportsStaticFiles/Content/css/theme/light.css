@@ -4,8 +4,8 @@
 .sidebar-footer {
     background-color:#ffffff !important;
 }
-.logo_title {
-    color: #3788db;
+#logo_title {
+    color: #3788db !important;
 }
 
 .sidebar-menu .active a{

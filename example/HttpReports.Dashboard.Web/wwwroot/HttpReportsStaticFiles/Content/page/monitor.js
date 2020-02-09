@@ -9,7 +9,7 @@ function startJob(Id) {
             url: "/HttpReportsData/ChangeJobState/" + Id,
             success: function (result) {
 
-                alert("修改成功", function () {
+                alertOk("修改成功",1200,function () {
 
                     location.reload();
 
@@ -30,7 +30,7 @@ function stopJob(Id) {
             url: "/HttpReportsData/ChangeJobState/" + Id,
             success: function (result) {
 
-                alert("修改成功", function () {
+                alertOk("修改成功",1200, function () {
 
                     location.reload();
 
@@ -52,7 +52,7 @@ function delJob(Id) {
             url: "/HttpReportsData/DeleteJob/" + Id,
             success: function (result) {
 
-                alert("删除成功", function () {
+                alertOk("删除成功",1200, function () {
 
                     location.reload();
 

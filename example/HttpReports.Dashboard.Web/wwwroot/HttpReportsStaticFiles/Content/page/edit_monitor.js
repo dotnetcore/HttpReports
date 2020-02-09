@@ -97,14 +97,14 @@ function saveMonitorJob() {
 
             if (result.code == 1) {
 
-                alert("保存成功", function () {
+                alertOk("保存成功",1200,function () {
 
                     location.href = "/HttpReports/Monitor";
 
                 });
             }
             else {
-                alert(result.msg)
+                alertError(result.msg)
             }
         }
 

@@ -1,16 +1,82 @@
-﻿ 
-
+﻿  
 var M = {};   
 
-window.alert = function (msg) {  
+window.alertOk = function (msg,time = 2000, callback = () => { }) {
 
-    M.dialog1 = jqueryAlert({
-        'content': msg,
-        'closeTime': 1500
-    });    
+    if (typeof (time) == "function") {
+        callback = time;
+        time = 2000;
+    }
+
+    $.message({
+        time: time,
+        message: msg,
+        type: 'success'
+    });
+
+    setTimeout(function () {
+        callback();
+    }, time);
+}
+
+
+window.alertInfo = function (msg, time = 200, callback = () => { }) {
+
+    if (typeof (time) == "function") {
+        callback = time;
+        time = 2000;
+    }
+
+    $.message({
+        time: time,
+        message: msg,
+        type: 'info'
+    });
+
+    setTimeout(function () {
+        callback();
+    }, time);
+}
+
+window.alertError = function (msg, time = 2000, callback = () => { }) {
+
+    if (typeof (time) == "function") { 
+        callback = time;
+        time = 2000;
+    } 
+
+    $.message({
+        time: time,
+        message: msg,
+        type: 'error'
+    });
+
+    setTimeout(function () {
+        callback();
+    }, time);
+}
+
+window.alertWarn = function (msg, time = 2000, callback = () => { }) {
+
+    if (typeof (time) == "function") {
+        callback = time;
+        time = 2000;
+    }
+
+    $.message({
+        time: time,
+        message: msg,
+        type: 'warning'
+    });
+
+    setTimeout(function () {
+        callback();
+    }, time);
+
 } 
 
-window.alert = function (msg, callback = () => { }) {   
+
+window.alert = function (msg, callback = () => { }) {    
 
     M.dialog1 = jqueryAlert({
         'content': msg,
@@ -23,27 +89,6 @@ window.alert = function (msg, callback = () => { }) {
    
 }  
  
-function Show(msg) {
-
-    M.dialog1 = jqueryAlert({
-        'content': msg,
-        'closeTime': 1500 
-    })  
-}  
-
-function Show(msg,fun) {
-
-    M.dialog1 = jqueryAlert({
-        'content': msg,
-        'closeTime': 1500
-    });
-
-    if (fun != 0) {
-        setTimeout(function () {
-            fun()
-        }, 1500); 
-    } 
-}  
  
 function DelayGo(url) {
 

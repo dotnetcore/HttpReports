@@ -124,13 +124,13 @@ function update_password() {
     var oldPwd = $(".update_oldpwd").val().trim();
     var newPwd = $(".update_newpwd").val().trim(); 
 
-    if (newUserName.length == 0 || oldPwd.length == 0 || newPwd.length == 0) { 
-        alert("不能为空");
+    if (newUserName.length == 0 || oldPwd.length == 0 || newPwd.length == 0) {
+        alertError("不能为空");
         return;  
     }  
 
     if (oldPwd == newPwd) {
-        alert("新旧密码不能一样");
+        alertError("新旧密码不能一样");
         return;  
     } 
 
@@ -145,12 +145,12 @@ function update_password() {
 
             if (result.code == 1) {
 
-                alert("保存成功", function () { 
+                alertOk("修改成功",800,function () { 
                     location.href = "/HttpReports/UserLogout"; 
                 }); 
             }
             else {
-                alert(result.msg);
+                alertError(result.msg);
             } 
         }
 

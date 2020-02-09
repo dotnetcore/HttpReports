@@ -54,13 +54,22 @@ $(document).ready(function () {
 
 }); 
 
-function login() {
+$(document).keydown(function (e) {
+
+
+	if (e.keyCode == 13) {
+
+		login();
+	}
+});
+
+function login() { 
 
 	var username = $(".username").val().trim();
 	var password = $(".password").val().trim();
 
 	if (username.length == 0 || password.length == 0) { 
-		alert("用户名或者密码不能为空");
+		alertError("用户名或者密码不能为空");
 		return;
 	} 
 
@@ -72,12 +81,14 @@ function login() {
 		},
 		success: function (result) {
 
-			if (result.code == 1) {
+			if (result.code == 1) { 
 
 				location.href = "/HttpReports"; 
 			}
-			else {
-				alert(result.msg);
+			else { 
+
+				alertError(result.msg); 
+
 			} 
 		}
 
