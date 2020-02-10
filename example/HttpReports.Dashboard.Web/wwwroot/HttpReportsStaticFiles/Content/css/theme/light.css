@@ -28,4 +28,8 @@
 .sidebar a {
     color: #495057 !important;
 }
- 
+
+
+.navbar .navbar-nav li .dropdown-menu a:hover {
+    background-color: #f3f3f3 !important;
+}

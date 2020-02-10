@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS `SysUser` (
         public async Task AddRequestInfoAsync(IRequestInfo request)
         {
             if (Options.EnableDefer)
-            {
+            { 
                 _deferFlushCollection.Push(request);
             }
             else
