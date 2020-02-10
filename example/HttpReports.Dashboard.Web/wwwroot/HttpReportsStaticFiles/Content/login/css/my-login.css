@@ -16,6 +16,7 @@ html,body {
 }
 
 .hr_title {
+	margin-top:36px;
 	margin-bottom: 70px;
 	font-size: 36px;
 	color: #3788db;
@@ -46,7 +47,8 @@ html,body {
 }
 
 	.my-login-page .card.fat {
-		background-color:#fff;
+		border-top: 2px solid #67c2ef;
+		background-color: #fff;
 		padding: 10px;
 		padding-bottom: 30px;
 	}

@@ -135,9 +135,7 @@ CREATE TABLE IF NOT EXISTS `SysUser` (
             else
             {
                 await LoggingSqlOperation(async connection =>
-                {
-                    System.Threading.Thread.Sleep(3000);
-
+                { 
                     await connection.ExecuteAsync("INSERT INTO `RequestInfo`(`Node`, `Route`, `Url`, `Method`, `Milliseconds`, `StatusCode`, `IP`, `CreateTime`) VALUES (@Node, @Route, @Url, @Method, @Milliseconds, @StatusCode, @IP, @CreateTime)", request).ConfigureAwait(false);
                 }, "请求数据保存失败").ConfigureAwait(false);
             }
@@ -151,19 +149,11 @@ CREATE TABLE IF NOT EXISTS `SysUser` (
 
             return await LoggingSqlOperation(async connection => (await connection.QueryAsync<UrlRequestCount>(sql).ConfigureAwait(false)).ToList()).ConfigureAwait(false);
         }
-
-        /// <summary>
-        /// 获取所有节点信息
-        /// </summary>
-        /// <returns></returns>
+ 
         public async Task<List<NodeInfo>> GetNodesAsync() =>
             await LoggingSqlOperation(async connection => (await connection.QueryAsync<string>("Select Distinct Node FROM RequestInfo;").ConfigureAwait(false)).Select(m => new NodeInfo { Name = m }).ToList(), "获取所有节点信息失败").ConfigureAwait(false);
         
-        /// <summary>
-        /// 获取Url的平均请求处理时间统计
-        /// </summary>
-        /// <param name="filterOption"></param>
-        /// <returns></returns>
+        
         public async Task<List<RequestAvgResponeTime>> GetRequestAvgResponeTimeStatisticsAsync(RequestInfoFilterOption filterOption)
         {
             string sql = $"Select Url,Avg(Milliseconds) Time FROM RequestInfo {BuildSqlFilter(filterOption)} Group By Url order by Time {BuildSqlControl(filterOption)}";
@@ -312,11 +302,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
             return result;
         }
 
-        /// <summary>
-        /// 获取请求次数统计
-        /// </summary>
-        /// <param name="filterOption"></param>
-        /// <returns></returns>
+       
         public async Task<RequestTimesStatisticsResult> GetRequestTimesStatisticsAsync(TimeSpanStatisticsFilterOption filterOption)
         {
             var where = BuildSqlFilter(filterOption);

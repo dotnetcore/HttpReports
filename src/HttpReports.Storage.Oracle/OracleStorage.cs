@@ -150,9 +150,7 @@ namespace HttpReports.Storage.Oracle
                     }
 
                     if (con.QueryFirstOrDefault<int>($" Select count(1) from SysUser ") == 0)
-                    {
-                        var sql = $" Insert Into SysUser Values (sysuser_seq_id,'{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ";
-
+                    {  
                        await con.ExecuteAsync($" Insert Into SysUser Values (sysuser_seq_id.nextval,'{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ").ConfigureAwait(false);
                     }
 

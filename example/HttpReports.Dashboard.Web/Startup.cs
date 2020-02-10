@@ -23,7 +23,7 @@ namespace HttpReports.Dashboard.Web
        
         public void ConfigureServices(IServiceCollection services)
         { 
-            services.AddHttpReportsDashborad().UseOracleStorage();
+            services.AddHttpReportsDashborad().UsePostgreSQLStorage();
 
             services.Configure<CookiePolicyOptions>(options =>
             { 
