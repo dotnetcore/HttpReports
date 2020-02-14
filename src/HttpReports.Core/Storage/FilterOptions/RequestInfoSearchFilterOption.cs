@@ -22,16 +22,11 @@ namespace HttpReports.Storage.FilterOptions
         public string StartTimeFormat { get; set; } = "yyyy-MM-dd";
         public string EndTimeFormat { get; set; } = "yyyy-MM-dd";
         public bool IsOrderByField { get; set; } = true;
+ 
+        public string IP { get; set; }
 
-        /// <summary>
-        /// Ip列表
-        /// </summary>
-        public string[] IPs { get; set; }
-
-        /// <summary>
-        /// url列表
-        /// </summary>
-        public string[] Urls { get; set; }
+       
+        public string Url { get; set; }
 
         public int Page
         {

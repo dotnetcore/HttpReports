@@ -413,18 +413,14 @@ namespace HttpReports.Storage.SQLServer
                 whereBuilder.Append("Where 1=1 ");
             }
 
-            if (filterOption.IPs?.Length > 0)
+            if (!filterOption.IP.IsEmpty())
             {
-                whereBuilder.Append($" AND IP = '{string.Join(",", filterOption.IPs.Select(m => $"'{m}'"))}' ");
+                whereBuilder.Append($" AND IP = '{filterOption.IP}' ");
             }
 
-            if (filterOption.Urls?.Length > 0)
+            if (!filterOption.Url.IsEmpty())
             {
-                if (filterOption.Urls.Length > 1)
-                {
-                    throw new ArgumentOutOfRangeException($"{nameof(SQLServerStorage)}暂时只支持单条Url查询");
-                }
-                whereBuilder.Append($" AND  Url like '%{filterOption.Urls[0]}%' ");
+                whereBuilder.Append($" AND  Url like '%{filterOption.Url}%' ");
             }
 
             var where = whereBuilder.ToString();
@@ -631,7 +627,7 @@ namespace HttpReports.Storage.SQLServer
             ) > 0).ConfigureAwait(false);
         }
 
-        public async Task<IMonitorJob> GetMonitorJob(int Id)
+        public async Task<IMonitorJob> GetMonitorJob(string Id)
         {
             string sql = $@"Select * From MonitorJob Where Id = " + Id;
 
@@ -657,7 +653,7 @@ namespace HttpReports.Storage.SQLServer
             ).ToList().Select(x => x as IMonitorJob).ToList()).ConfigureAwait(false);
         }
 
-        public async Task<bool> DeleteMonitorJob(int Id)
+        public async Task<bool> DeleteMonitorJob(string Id)
         {
             string sql = $@"Delete From MonitorJob Where Id = " + Id;
 

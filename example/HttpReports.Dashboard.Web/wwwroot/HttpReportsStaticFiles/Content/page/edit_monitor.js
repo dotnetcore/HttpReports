@@ -116,7 +116,7 @@ function BindMonitorJob() {
 
     var id = $(".id").val();
 
-    if (id == 0) {
+    if (id == "0" || id == "") {
         return;
     }
 

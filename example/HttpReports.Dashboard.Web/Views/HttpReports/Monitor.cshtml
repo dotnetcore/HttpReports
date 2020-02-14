@@ -70,14 +70,14 @@
 
                                             @if (item.Status == 1)
                                             {
-                                                <button style="margin:4px" type="button" onclick="stopJob(@item.Id)" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-off"></span> 停止</button>
+                                                <button style="margin:4px" type="button" onclick="stopJob('@item.Id')" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-off"></span> 停止</button>
                                             }
                                             else
                                             {
-                                                <button style="margin:4px" type="button" onclick="startJob(@item.Id)" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-play-circle"></span> 开启</button>
+                                                <button style="margin:4px" type="button" onclick="startJob('@item.Id')" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-play-circle"></span> 开启</button>
                                             }
 
-                                            <button style="margin:4px" type="button" onclick="delJob(@item.Id)" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove-sign"></span> 删除</button>
+                                            <button style="margin:4px" type="button" onclick="delJob('@item.Id')" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove-sign"></span> 删除</button>
 
                                         </td>
                                     </tr>

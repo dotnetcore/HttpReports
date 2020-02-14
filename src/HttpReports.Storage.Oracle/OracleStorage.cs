@@ -557,7 +557,7 @@ namespace HttpReports.Storage.Oracle
                     break;
 
                 case TimeUnit.Month:
-                    dateFormat = "to_char(sysdate,'mm')";
+                    dateFormat = "to_char(CreateTime,'mm')";
                     break;
 
                 case TimeUnit.Year:
@@ -584,23 +584,14 @@ namespace HttpReports.Storage.Oracle
 
             var sqlBuilder = new StringBuilder("Select * From RequestInfo ", 512);
 
-            if (whereBuilder.Length == 0)
+            if (!filterOption.IP.IsEmpty())
             {
-                whereBuilder.Append("Where 1=1 ");
+                whereBuilder.Append($" AND IP = '{filterOption.IP}' ");
             }
 
-            if (filterOption.IPs?.Length > 0)
+            if (!filterOption.Url.IsEmpty())
             {
-                whereBuilder.Append($" AND IP = '{string.Join(",", filterOption.IPs.Select(m => $"'{m}'"))}' ");
-            }
-
-            if (filterOption.Urls?.Length > 0)
-            {
-                if (filterOption.Urls.Length > 1)
-                {
-                    throw new ArgumentOutOfRangeException($"{nameof(OracleStorage)}暂时只支持单条Url查询");
-                }
-                whereBuilder.Append($" AND  Url like '%{filterOption.Urls[0]}%' ");
+                whereBuilder.Append($" AND  Url like '%{filterOption.Url}%' ");
             }
 
             var where = whereBuilder.ToString();
@@ -711,7 +702,7 @@ namespace HttpReports.Storage.Oracle
             ) > 0).ConfigureAwait(false);
         }
 
-        public async Task<IMonitorJob> GetMonitorJob(int Id)
+        public async Task<IMonitorJob> GetMonitorJob(string Id)
         {
             string sql = $@"Select * From MonitorJob Where Id = " + Id;
 
@@ -737,7 +728,7 @@ namespace HttpReports.Storage.Oracle
             ).ToList().Select(x => x as IMonitorJob).ToList()).ConfigureAwait(false);
         }
 
-        public async Task<bool> DeleteMonitorJob(int Id)
+        public async Task<bool> DeleteMonitorJob(string Id)
         {
             string sql = $@"Delete From MonitorJob Where Id = " + Id;
 

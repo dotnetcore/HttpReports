@@ -3,6 +3,8 @@
     ViewData["Title"] = "EditMonitorRule";
     Layout = "~/Views/HttpReports/HttpReportsTemplate.cshtml";
 
+    string Id = ViewBag.Id as string;
+
     List<string> nodes = ViewBag.nodes;
 }
 
@@ -46,10 +48,10 @@
 
         <ol class="breadcrumb">
             <li><a href="/HttpReports/Monitor">预警监控</a></li>
-            <li><span href="#">@(ViewBag.Id == 0 ? "添加" : "编辑")任务</span></li>
+            <li><span href="#">@( Id == "" || Id == "0"  ? "添加" : "编辑")任务</span></li>
         </ol>
 
-        <h3 style="margin-bottom:20px;">@(ViewBag.Id == 0 ? "添加" : "编辑")监控任务</h3>
+        <h3 style="margin-bottom:20px;">@(Id == "" || Id == "0" ? "添加" : "编辑")监控任务</h3>
 
         <div class="row">
 
@@ -349,7 +351,7 @@
 
                         </div>
 
-                        <input type="hidden" class="id" value="@(ViewBag.Id)">
+                        <input type="hidden" class="id" value="@(Id)">
 
                         <div class="actions" style="margin-top:15px;margin-bottom:8px;">
                             <button onclick="saveMonitorJob()" type="button" class="btn btn-info button-previous" style="width:80px"> 保 存 </button>

@@ -90,7 +90,7 @@ namespace HttpReports.Storage.PostgreSQL
 
         }
 
-        public async Task<bool> DeleteMonitorJob(int Id)
+        public async Task<bool> DeleteMonitorJob(string Id)
         {
             string sql = $@"Delete From ""MonitorJob"" Where Id = " + Id;
 
@@ -393,25 +393,14 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
                 whereBuilder.Append("Where 1=1 ");
             }
 
-            if (filterOption.IPs?.Length > 0)
+            if (!filterOption.IP.IsEmpty())
             {
-                if (filterOption.IPs.Length == 1)
-                {
-                    whereBuilder.Append($" AND IP = '{filterOption.IPs.First()}' ");
-                }
-                else
-                {
-                    whereBuilder.Append($" AND IP IN ({string.Join(",", filterOption.IPs.Select(m => $"'{m}'"))}) ");
-                }
+                whereBuilder.Append($" AND IP = '{filterOption.IP}' ");
             }
 
-            if (filterOption.Urls?.Length > 0)
+            if (!filterOption.Url.IsEmpty())
             {
-                if (filterOption.Urls.Length > 1)
-                {
-                    throw new ArgumentOutOfRangeException($"{nameof(PostgreSQLStorage)}暂时只支持单条Url查询");
-                }
-                whereBuilder.Append($" AND  Url like '%{filterOption.Urls[0]}%' ");
+                whereBuilder.Append($" AND  Url like '%{filterOption.Url}%' ");
             }
 
             var where = whereBuilder.ToString();
@@ -616,7 +605,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
             return dateFormat;
         }
 
-        public async Task<IMonitorJob> GetMonitorJob(int Id)
+        public async Task<IMonitorJob> GetMonitorJob(string Id)
         {
             string sql = $@"Select * From ""MonitorJob"" Where Id = " + Id;
 

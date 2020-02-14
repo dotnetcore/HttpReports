@@ -351,8 +351,8 @@ namespace HttpReports.Dashboard.Controllers
             var result = await _storage.SearchRequestInfoAsync(new RequestInfoSearchFilterOption()
             {
                 Nodes = request.Node.IsEmpty() ? null : request.Node.Split(','),
-                IPs = request.IP?.Split(','),
-                Urls = request.Url?.Split(','),
+                IP = request.IP,
+                Url = request.Url,
                 StartTime = request.Start.ToDateTime(),
                 EndTime = request.End.TryToDateTime(),
                 Page = request.pageNumber,
@@ -371,7 +371,7 @@ namespace HttpReports.Dashboard.Controllers
 
             IMonitorJob model = _monitorService.GetMonitorJob(request);
 
-            if (request.Id == 0)
+            if (request.Id.IsEmpty() || request.Id == "0")
                 await _storage.AddMonitorJob(model).ConfigureAwait(false);
 
             else
@@ -382,9 +382,9 @@ namespace HttpReports.Dashboard.Controllers
             return Json(new HttpResultEntity(1, "ok",null));
         }
 
-        public async Task<IActionResult> GetMonitor(int Id)
+        public async Task<IActionResult> GetMonitor(string Id)
         {
-            if (Id == 0)
+            if (Id.IsEmpty() || Id == "0")
                 return NoContent();
 
             var job = await _storage.GetMonitorJob(Id).ConfigureAwait(false);
@@ -397,7 +397,7 @@ namespace HttpReports.Dashboard.Controllers
             return Json(new HttpResultEntity(1, "ok",request));
         }
 
-        public async Task<IActionResult> DeleteJob(int Id)
+        public async Task<IActionResult> DeleteJob(string Id)
         {
             await _storage.DeleteMonitorJob(Id).ConfigureAwait(false);
 
@@ -406,7 +406,7 @@ namespace HttpReports.Dashboard.Controllers
             return Json(new HttpResultEntity(1, "ok",null));
         }
 
-        public async Task<IActionResult> ChangeJobState(int Id) 
+        public async Task<IActionResult> ChangeJobState(string Id) 
         {
             var model = await _storage.GetMonitorJob(Id).ConfigureAwait(false);
 

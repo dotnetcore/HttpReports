@@ -97,12 +97,12 @@
 
 
 .shadow-box {
-    cursor: pointer;
+   
     box-shadow: 6px 6px 10px #ccc;
 }
 
     .shadow-box:hover {
-        cursor: pointer;
+        
         box-shadow:6px 6px 12px #b3c4e6;
     }
 

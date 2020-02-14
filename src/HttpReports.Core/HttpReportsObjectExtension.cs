@@ -99,7 +99,7 @@ namespace HttpReports
         }
 
         public static bool IsEmpty(this string str)
-        {
+        { 
             if (string.IsNullOrEmpty(str))
             {
                 return true;

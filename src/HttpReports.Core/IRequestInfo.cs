@@ -6,11 +6,14 @@ namespace HttpReports
     /// 请求信息基础类
     /// </summary>
     public interface IRequestInfo
-    {
-        //TODO 看下是否可优化信息、结构等
+    { 
 
         DateTime CreateTime { get; set; }
-        int Id { get; set; }
+
+        /// <summary>
+        /// ES 设置GUID 为ID
+        /// </summary>
+        string Id { get; set; }
         string IP { get; set; }
         string Method { get; set; }
         int Milliseconds { get; set; }

@@ -254,26 +254,15 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
                 whereBuilder.Append("Where 1=1 ");
             }
 
-            if (filterOption.IPs?.Length > 0)
+            if (!filterOption.IP.IsEmpty())
             {
-                if (filterOption.IPs.Length == 1)
-                {
-                    whereBuilder.Append($" AND IP = '{filterOption.IPs.First()}' ");
-                }
-                else
-                {
-                    whereBuilder.Append($" AND IP IN ({string.Join(",", filterOption.IPs.Select(m => $"'{m}'"))}) ");
-                }
+                whereBuilder.Append($" AND IP = '{filterOption.IP}' ");
             }
 
-            if (filterOption.Urls?.Length > 0)
+            if (!filterOption.Url.IsEmpty())
             {
-                if (filterOption.Urls.Length > 1)
-                {
-                    throw new ArgumentOutOfRangeException($"{nameof(MySqlStorage)}暂时只支持单条Url查询");
-                }
-                whereBuilder.Append($" AND  Url like '%{filterOption.Urls[0]}%' ");
-            }
+                whereBuilder.Append($" AND  Url like '%{filterOption.Url}%' ");
+            }  
 
             var where = whereBuilder.ToString();
 
@@ -364,103 +353,6 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
         #region Monitor
 
-        #region Base
-
-        private static async Task UpdateMonitorRuleAppliedAsync(IDbConnection connection, IDbTransaction transaction, int ruleId, IList<string> nodes)
-        {
-            var sql = $"DELETE FROM `MonitorRuleApplied` WHERE `RuleId` = {ruleId};";
-            await connection.ExecuteAsync(sql, transaction: transaction).ConfigureAwait(false);
-
-            if (nodes?.Count > 0)
-            {
-                sql = $"INSERT INTO `MonitorRuleApplied`(`RuleId`, `Node`) VALUES {string.Join(",", nodes.Where(m => !string.IsNullOrWhiteSpace(m)).Select(m => $"({ruleId},'{MySqlHelper.EscapeString(m)}')"))};";
-
-                if (await connection.ExecuteAsync(sql, transaction: transaction).ConfigureAwait(false) <= 0)
-                {
-                    throw new StorageException("更新 MonitorRuleApplied 表失败");
-                }
-            }
-        }
-
-        private static async Task InsertMonitorAsync(IDbConnection connection, IDbTransaction transaction, int ruleId, IList<IMonitor> monitors)
-        {
-            if (monitors?.Count > 0)
-            {
-                var sql = $"INSERT INTO `Monitor`(`RuleId`, `Type`, `Description`, `CronExpression`, `Payload`) VALUES {string.Join(",", monitors.Select(m => $"({ruleId}, {(int)m.Type}, '{MySqlHelper.EscapeString(m.Description)}', '{MySqlHelper.EscapeString(m.CronExpression)}', '{MySqlHelper.EscapeString(JsonConvert.SerializeObject(m))}')"))};";
-
-                if (await connection.ExecuteAsync(sql, transaction: transaction).ConfigureAwait(false) <= 0)
-                {
-                    throw new StorageException("插入 Monitor 表失败");
-                }
-            }
-        }
-
-        private static IMonitor DeserializeMonitor(MonitorType type, string json)
-        {
-            IMonitor monitor = null;
-            switch (type)
-            {
-                case MonitorType.ResponseTimeOut:
-                    monitor = JsonConvert.DeserializeObject<ResponseTimeOutMonitor>(json);
-                    break;
-
-                case MonitorType.ErrorResponse:
-                    monitor = JsonConvert.DeserializeObject<ErrorResponseMonitor>(json);
-                    break;
-
-                case MonitorType.ToManyRequestWithAddress:
-                    monitor = JsonConvert.DeserializeObject<RequestTimesMonitor>(json);
-                    break;
-
-                case MonitorType.ToManyRequestBySingleRemoteAddress:
-                    monitor = JsonConvert.DeserializeObject<RemoteAddressRequestTimesMonitor>(json);
-                    break;
-            }
-
-            if (monitor == null)
-            {
-                throw new HttpReportsException($"未知的监控类型：{type} json: {json}");
-            }
-            return monitor;
-        }
-
-        internal class MonitorRuleApplied
-        {
-            public int RuleId { get; set; }
-            public string Node { get; set; }
-        }
-
-        internal class UnTypedMonitor
-        {
-            public int Id { get; set; }
-            public int RuleId { get; set; }
-            public MonitorType Type { get; set; }
-            public string Payload { get; set; }
-        }
-
-        internal class TempMonitorRule
-        {
-            /// <summary>
-            /// 唯一ID
-            /// </summary>
-            public int Id { get; set; }
-
-            /// <summary>
-            /// 规则标题
-            /// </summary>
-            public string Title { get; set; }
-
-            /// <summary>
-            /// 规则描述
-            /// </summary>
-            public string Description { get; set; }
-
-            public string NotificationEmails { get; set; }
-
-            public string NotificationPhoneNumbers { get; set; }
-        }
-
-        #endregion Base 
        
 
         #region Query
@@ -767,7 +659,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
             ) > 0).ConfigureAwait(false);
         }
 
-        public async Task<IMonitorJob> GetMonitorJob(int Id)
+        public async Task<IMonitorJob> GetMonitorJob(string Id)
         {
             string sql = $@"Select * From MonitorJob Where Id = " + Id;
 
@@ -793,7 +685,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
             ).ToList().Select(x => x as IMonitorJob).ToList()).ConfigureAwait(false);
         }
 
-        public async Task<bool> DeleteMonitorJob(int Id)
+        public async Task<bool> DeleteMonitorJob(string Id)
         {
             string sql = $@"Delete From MonitorJob Where Id = " + Id;
 

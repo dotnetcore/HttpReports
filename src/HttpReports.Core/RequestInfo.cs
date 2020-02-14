@@ -7,7 +7,7 @@ namespace HttpReports
         /// <summary>
         /// Id
         /// </summary>
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// 服务节点

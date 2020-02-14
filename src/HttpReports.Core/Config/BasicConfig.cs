@@ -15,5 +15,8 @@ namespace HttpReports.Core.Config
 
         public const string CurrentControllers = "HttpReports,HttpReportsData";
 
+        public const string ElasticSearchIndexName = "httpreports_index_";
+
+
     }
 }

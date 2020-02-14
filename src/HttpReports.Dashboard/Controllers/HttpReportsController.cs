@@ -34,7 +34,7 @@ namespace HttpReports.Dashboard.Controllers
             return View();
         } 
 
-        public async Task<IActionResult> EditMonitor(int Id = 0)
+        public async Task<IActionResult> EditMonitor(string Id = "")
         { 
             var nodes = (await _storage.GetNodesAsync()).Select(m => m.Name).ToList();
 

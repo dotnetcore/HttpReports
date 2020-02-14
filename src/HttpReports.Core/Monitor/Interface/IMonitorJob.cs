@@ -6,7 +6,7 @@ namespace HttpReports.Monitor
 {
     public interface IMonitorJob
     {
-         int Id { get; set; } 
+        string Id { get; set; } 
 
         string Title { get; set; }
 

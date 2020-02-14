@@ -96,9 +96,9 @@ namespace HttpReports
 
         Task<bool> UpdateMonitorJob(IMonitorJob job);
 
-        Task<bool> DeleteMonitorJob(int Id);
+        Task<bool> DeleteMonitorJob(string Id);
 
-        Task<IMonitorJob> GetMonitorJob(int Id);
+        Task<IMonitorJob> GetMonitorJob(string Id);
 
         Task<List<IMonitorJob>> GetMonitorJobs();  
 
