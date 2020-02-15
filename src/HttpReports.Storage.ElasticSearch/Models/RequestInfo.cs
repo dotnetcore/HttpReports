@@ -26,13 +26,13 @@ namespace HttpReports.Storage.ElasticSearch.Models
         [Nest.Number]
         public int Milliseconds { get; set; }
 
-        [Nest.Number]
+        [Nest.Keyword]
         public int StatusCode { get; set; }
 
-        [Nest.Text]
+        [Nest.Keyword]
         public string IP { get; set; }
 
-        [Nest.Date]
+        [Nest.Keyword]
         public DateTime CreateTime { get; set; }
     }
 }

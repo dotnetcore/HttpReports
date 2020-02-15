@@ -28,16 +28,16 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
        
-        public static IHttpReportsBuilder UseWebApi(this IHttpReportsBuilder builder)
+        public static IHttpReportsBuilder UseAPI(this IHttpReportsBuilder builder)
         {
             builder.Services.AddSingleton<IRequestInfoBuilder, ApiRequestInfoBuilder>();
             return builder;
         }
 
          
-        public static IHttpReportsBuilder UseMVC(this IHttpReportsBuilder builder)
+        public static IHttpReportsBuilder UseWeb(this IHttpReportsBuilder builder)
         {
-            builder.Services.AddSingleton<IRequestInfoBuilder, MVCRequestInfoBuilder>();
+            builder.Services.AddSingleton<IRequestInfoBuilder, WebRequestInfoBuilder>();
             return builder;
         } 
  

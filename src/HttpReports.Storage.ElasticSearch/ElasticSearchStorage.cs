@@ -46,9 +46,9 @@ namespace HttpReports.Storage.ElasticSearch
 
             model.Id = MD5_16(Guid.NewGuid().ToString());
 
-            var response = await Client.IndexAsync<MonitorJob>(model , x => x.Index(GetIndexName<MonitorJob>())).ConfigureAwait(false);
+            var response = await Client.IndexAsync<MonitorJob>(model, x => x.Index(GetIndexName<MonitorJob>())).ConfigureAwait(false);
 
-            return response.IsValid; 
+            return response.IsValid;
         }
 
         private async Task AddRequestInfoAsync(IEnumerable<IRequestInfo> requests, CancellationToken token)
@@ -71,46 +71,46 @@ namespace HttpReports.Storage.ElasticSearch
             }
             else
             {
-                request.Id = MD5_16(Guid.NewGuid().ToString()); 
+                request.Id = MD5_16(Guid.NewGuid().ToString());
 
-                await Client.IndexAsync<RequestInfo>(request as RequestInfo, x => x.Index(GetIndexName<RequestInfo>())).ConfigureAwait(false);
+                var res = await Client.IndexAsync<RequestInfo>(request as RequestInfo, x => x.Index(GetIndexName<RequestInfo>())).ConfigureAwait(false);
             }
         }
 
         public async Task<SysUser> CheckLogin(string Username, string Password)
         {
-            var response = await Client.SearchAsync<SysUser>(a => a.Index(GetIndexName<SysUser>()).Query(b => 
-             
-            b.Term(c => c.UserName,Username) && b.Term(c => c.Password,Password) 
-            
+            var response = await Client.SearchAsync<SysUser>(a => a.Index(GetIndexName<SysUser>()).Query(b =>
+
+            b.Term(c => c.UserName, Username) && b.Term(c => c.Password, Password)
+
             )).ConfigureAwait(false);
 
             if (response != null && response.IsValid)
             {
-                return response.Documents.FirstOrDefault(); 
-            }  
+                return response.Documents.FirstOrDefault();
+            }
 
-            return new SysUser(); 
+            return new SysUser();
         }
 
         public async Task<bool> DeleteMonitorJob(string Id)
         {
-            var response = await Client.DeleteAsync<MonitorJob>(Id,a => a.Index(GetIndexName<MonitorJob>())).ConfigureAwait(false);
+            var response = await Client.DeleteAsync<MonitorJob>(Id, a => a.Index(GetIndexName<MonitorJob>())).ConfigureAwait(false);
 
             if (response != null && response.IsValid)
             {
                 return true;
-            } 
+            }
             else
             {
                 return false;
-            }  
+            }
         }
 
         private Func<AggregationRangeDescriptor, IAggregationRange>[] GetTimeRangeFunc(int[,] group)
         {
             List<Func<AggregationRangeDescriptor, IAggregationRange>> funcs = new List<Func<AggregationRangeDescriptor, IAggregationRange>>();
-             
+
             var groupCount = group.Length / group.Rank;
 
             for (int i = 0; i < groupCount; i++)
@@ -120,13 +120,13 @@ namespace HttpReports.Storage.ElasticSearch
 
                 if (min < max)
                 {
-                    funcs.Add(t => t.From(min).To(max).Key($"{min}-{max}"));  
+                    funcs.Add(t => t.From(min).To(max).Key($"{min}-{max}"));
                 }
                 else
                 {
-                    funcs.Add(t => t.From(min).Key($"{min}以上")); 
+                    funcs.Add(t => t.From(min).Key($"{min}以上"));
                 }
-            }   
+            }
 
             return funcs.ToArray();
         }
@@ -134,11 +134,11 @@ namespace HttpReports.Storage.ElasticSearch
 
         public async Task<List<ResponeTimeGroup>> GetGroupedResponeTimeStatisticsAsync(GroupResponeTimeFilterOption option)
         {
-            List<ResponeTimeGroup> responeTimeGroups = new List<ResponeTimeGroup>(); 
+            List<ResponeTimeGroup> responeTimeGroups = new List<ResponeTimeGroup>();
 
             var response = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>())
 
-            .Query(c => 
+            .Query(c =>
 
              c.HasDateWhere(option.StartTime, option.EndTime)
 
@@ -146,13 +146,13 @@ namespace HttpReports.Storage.ElasticSearch
 
              && c.Terms(f => f.Field(e => e.Node).Terms(option.Nodes))
 
-            ).Aggregations(a => a.Range("timeRange",b => b.Field(c => c.Milliseconds).Ranges(
+            ).Aggregations(a => a.Range("timeRange", b => b.Field(c => c.Milliseconds).Ranges(
 
-                GetTimeRangeFunc(option.TimeGroup)
-                
-             ))).Size(0) 
-            
-            ).ConfigureAwait(false); 
+                 GetTimeRangeFunc(option.TimeGroup)
+
+              ))).Size(0)
+
+            ).ConfigureAwait(false);
 
             if (response != null && response.IsValid)
             {
@@ -164,47 +164,48 @@ namespace HttpReports.Storage.ElasticSearch
                     {
                         var model = item as Nest.RangeBucket;
 
-                        responeTimeGroups.Add(new ResponeTimeGroup { 
-                        
+                        responeTimeGroups.Add(new ResponeTimeGroup
+                        {
+
                             Name = model.Key,
                             Total = Convert.ToInt32(model.DocCount)
-                        
+
                         });
 
                     }
 
-                } 
-            }  
+                }
+            }
 
             return responeTimeGroups;
         }
 
         public async Task<IndexPageData> GetIndexPageDataAsync(IndexPageDataFilterOption option)
-        { 
-            IndexPageData result = new IndexPageData();   
+        {
+            IndexPageData result = new IndexPageData();
 
-            var Total = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>())  
-            .Query(c =>   c.HasDateWhere(option.StartTime, option.EndTime) && c.Terms(f => f.Field(e => e.Node).Terms(option.Nodes))) 
-             .Aggregations(c => c.ValueCount("Id",d => d.Field(e => e.Id))  ).Size(0)   
+            var Total = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>())
+            .Query(c => c.HasDateWhere(option.StartTime, option.EndTime) && c.Terms(f => f.Field(e => e.Node).Terms(option.Nodes)))
+             .Aggregations(c => c.ValueCount("Id", d => d.Field(e => e.Id))).Size(0)
             ).ConfigureAwait(false);
 
             if (Total != null && Total.IsValid)
             {
-                result.Total = Convert.ToInt32(Total.Total); 
-            }   
+                result.Total = Convert.ToInt32(Total.Total);
+            }
 
             var NotFound = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>())
-           .Query(c => c.HasDateWhere(option.StartTime, option.EndTime)  
+           .Query(c => c.HasDateWhere(option.StartTime, option.EndTime)
              && c.Terms(f => f.Field(e => e.Node).Terms(option.Nodes))
-             && c.Term(f => f.StatusCode,404) 
-           )  
+             && c.Term(f => f.StatusCode, 404)
+           )
             .Aggregations(c => c.ValueCount("Id", d => d.Field(e => e.Id))).Size(0)
            ).ConfigureAwait(false);
 
             if (NotFound != null && NotFound.IsValid)
             {
                 result.NotFound = Convert.ToInt32(NotFound.Total);
-            } 
+            }
 
             var ServerError = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>())
           .Query(c => c.HasDateWhere(option.StartTime, option.EndTime)
@@ -217,11 +218,11 @@ namespace HttpReports.Storage.ElasticSearch
             if (ServerError != null && ServerError.IsValid)
             {
                 result.ServerError = Convert.ToInt32(ServerError.Total);
-            } 
-           
+            }
+
             var APICount = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>())
            .Query(c => c.HasDateWhere(option.StartTime, option.EndTime) && c.Terms(f => f.Field(e => e.Node).Terms(option.Nodes)))
-            .Aggregations(c => c.Cardinality("url",t=>t.Field(e=>e.Url)) )
+            .Aggregations(c => c.Cardinality("url", t => t.Field(e => e.Url)))
            .Size(0)
            ).ConfigureAwait(false);
 
@@ -229,21 +230,25 @@ namespace HttpReports.Storage.ElasticSearch
             {
                 if (APICount.Aggregations.Count > 0)
                 {
-                    result.APICount = (APICount.Aggregations.FirstOrDefault().Value as Nest.ValueAggregate).Value.Value.ToInt();
-                } 
-            } 
+                    var model = (APICount.Aggregations.FirstOrDefault().Value as Nest.ValueAggregate);
+
+                    result.APICount = model.Value.HasValue ? model.Value.Value.ToInt() : 0;
+                }
+            }
 
             var Avg = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>())
            .Query(c => c.HasDateWhere(option.StartTime, option.EndTime) && c.Terms(f => f.Field(e => e.Node).Terms(option.Nodes)))
-            .Aggregations(c => c.Average("average",d=> d.Field(e => e.Milliseconds)))
+            .Aggregations(c => c.Average("average", d => d.Field(e => e.Milliseconds)))
             .Size(0)
-           ).ConfigureAwait(false); 
+           ).ConfigureAwait(false);
 
             if (Avg != null && Avg.IsValid)
             {
                 if (Avg.Aggregations.Count > 0)
                 {
-                    result.AvgResponseTime = (Avg.Aggregations.FirstOrDefault().Value as Nest.ValueAggregate).Value.Value; 
+                    var model = (Avg.Aggregations.FirstOrDefault().Value as Nest.ValueAggregate);
+
+                    result.AvgResponseTime = model.Value.HasValue ? model.Value.Value.ToInt() : 0;
                 }
             }
 
@@ -254,7 +259,7 @@ namespace HttpReports.Storage.ElasticSearch
 
         public async Task<IMonitorJob> GetMonitorJob(string Id)
         {
-            var response = await Client.SearchAsync<MonitorJob>(x => x.Index(GetIndexName<MonitorJob>()).Query(a => a.Term(b => b.Id,Id))).ConfigureAwait(false);
+            var response = await Client.SearchAsync<MonitorJob>(x => x.Index(GetIndexName<MonitorJob>()).Query(a => a.Term(b => b.Id, Id))).ConfigureAwait(false);
 
             if (response != null && response.IsValid)
             {
@@ -270,7 +275,7 @@ namespace HttpReports.Storage.ElasticSearch
         {
             List<IMonitorJob> jobs = new List<IMonitorJob>();
 
-            var response = await Client.SearchAsync<MonitorJob>(s => s.Index(GetIndexName<MonitorJob>()).MatchAll()).ConfigureAwait(false);
+            var response = await Client.SearchAsync<MonitorJob>(s => s.Index(GetIndexName<MonitorJob>()).MatchAll().Sort(a => a.Descending(b => b.CreateTime))).ConfigureAwait(false);
 
             if (response != null && response.IsValid)
             {
@@ -307,19 +312,19 @@ namespace HttpReports.Storage.ElasticSearch
             List<RequestAvgResponeTime> requestAvgs = new List<RequestAvgResponeTime>();
 
             var response = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>()).Query(c =>
-          
-            c.HasDateWhere(option.StartTime,option.EndTime)
+
+            c.HasDateWhere(option.StartTime, option.EndTime)
 
             && c.Terms(f => f.Field(e => e.StatusCode).Terms(option.StatusCodes))
 
             && c.Terms(f => f.Field(e => e.Node).Terms(option.Nodes))
 
-            ).Aggregations(c => c.Terms("url",cc => cc.Field("url").Order(d => option.IsAscend ? d.Ascending("Milliseconds") : d.Descending("Milliseconds")).Aggregations(h=>
+            ).Aggregations(c => c.Terms("url", cc => cc.Field("url").Order(d => option.IsAscend ? d.Ascending("Milliseconds") : d.Descending("Milliseconds")).Aggregations(h =>
 
-             h.Average("Milliseconds", d => d.Field(e => e.Milliseconds)) 
+              h.Average("Milliseconds", d => d.Field(e => e.Milliseconds))
 
-             ).Size(option.Take))).Size(0)   
-            
+              ).Size(option.Take))).Size(0)
+
             ).ConfigureAwait(false);
 
             if (response != null && response.IsValid)
@@ -332,12 +337,13 @@ namespace HttpReports.Storage.ElasticSearch
                     {
                         var model = item as Nest.KeyedBucket<object>;
 
-                        requestAvgs.Add(new RequestAvgResponeTime { 
-                        
-                             Url  = model.Key.ToString(),
-                             Time = Convert.ToSingle(model.ValueCount("Milliseconds").Value.Value) 
+                        requestAvgs.Add(new RequestAvgResponeTime
+                        {
 
-                        }); 
+                            Url = model.Key.ToString(),
+                            Time = Convert.ToSingle(model.ValueCount("Milliseconds").Value.Value)
+
+                        });
 
                     }
 
@@ -345,7 +351,7 @@ namespace HttpReports.Storage.ElasticSearch
 
             }
 
-            return requestAvgs; 
+            return requestAvgs;
 
         }
 
@@ -361,31 +367,35 @@ namespace HttpReports.Storage.ElasticSearch
 
            && c.Terms(f => f.Field(e => e.Node).Terms(option.Nodes))
 
-           ).Size(0)).ConfigureAwait(false); 
+           ).Size(0)).ConfigureAwait(false);
 
             if (response != null && response.IsValid)
             {
                 return Convert.ToInt32(response.Total);
             }
 
-            return 0; 
+            return 0;
         }
 
         public async Task<(int Max, int All)> GetRequestCountWithWhiteListAsync(RequestCountWithListFilterOption option)
         {
-            int All = 0; int Max = 0;  
+            int All = 0; int Max = 0; 
 
-           var TotalResponse = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>())
+            var TotalResponse = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>())
 
-          .Query(c => c.HasDateWhere(option.StartTime, option.EndTime)
+           .Query(c => c.HasDateWhere(option.StartTime, option.EndTime)
 
-          && c.Terms(f => f.Field(e => e.StatusCode).Terms(option.StatusCodes))
+           && c.Terms(f => f.Field(e => e.StatusCode).Terms(option.StatusCodes))
 
-          && c.Terms(f => f.Field(e => e.Node).Terms(option.Nodes))
+           && c.Terms(f => f.Field(e => e.Node).Terms(option.Nodes))
 
-          && c.Terms(f => f.Field(e => e.IP).Terms(option.List))
+           && c.Bool(f => f.MustNot( 
 
-          ).Size(0)).ConfigureAwait(false);
+               e => e.Terms(m => m.Field(n => n.IP).Terms(option.List))
+
+             ))
+
+           ).Size(0)).ConfigureAwait(false);
 
             if (TotalResponse != null && TotalResponse.IsValid)
             {
@@ -393,12 +403,12 @@ namespace HttpReports.Storage.ElasticSearch
             }
 
             var MaxResponse = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>())
-           .Query(d => 
+           .Query(d =>
 
                d.HasDateWhere(option.StartTime, option.EndTime)
                && d.Terms(f => f.Field(e => e.Node).Terms(option.Nodes))
                && d.Terms(f => f.Field(e => e.StatusCode).Terms(option.StatusCodes))
-               && d.Terms(f => f.Field(e => e.IP).Terms(option.List))
+               && d.Bool(f => f.MustNot(  e => e.Terms(m => m.Field(n => n.IP).Terms(option.List))  )) 
 
              ).Aggregations(b =>
 
@@ -414,14 +424,14 @@ namespace HttpReports.Storage.ElasticSearch
 
                     Max = Convert.ToInt32(bucket.DocCount.Value);
 
-                } 
-            } 
+                }
+            }
 
-            return (Max, All); 
-        }  
+            return (Max, All);
+        }
 
         public async Task<RequestTimesStatisticsResult> GetRequestTimesStatisticsAsync(TimeSpanStatisticsFilterOption option)
-        { 
+        {
             var response = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>())
 
             .Query(c =>
@@ -434,12 +444,12 @@ namespace HttpReports.Storage.ElasticSearch
 
             )
 
-            .Aggregations(a => a.DateHistogram("date", b => b.Field(c => c.CreateTime).AutoFormatTime(option.Type).MinimumDocumentCount(0) 
-            .ExtendedBounds(option.StartTime.Value,option.EndTime.Value)
-                .TimeZone("+08:00").Order(HistogramOrder.KeyAscending) 
+            .Aggregations(a => a.DateHistogram("date", b => b.Field(c => c.CreateTime).AutoFormatTime(option.Type).MinimumDocumentCount(0)
+            .ExtendedBounds(option.StartTime.Value, option.EndTime.Value)
+             .TimeZone("+08:00").Order(HistogramOrder.KeyAscending)
             )).Size(0)
 
-            ).ConfigureAwait(false); 
+            ).ConfigureAwait(false);
 
             var result = new RequestTimesStatisticsResult()
             {
@@ -455,15 +465,16 @@ namespace HttpReports.Storage.ElasticSearch
 
                     foreach (var item in buckets)
                     {
-                        if (item == buckets.Last()) continue;
+                        var model = item as Nest.DateHistogramBucket;
 
-                        var model = item as Nest.DateHistogramBucket; 
-                        
-                        result.Items.Add(model.KeyAsString.ToInt().ToString(), Convert.ToInt32(model.DocCount.Value));  
-                    } 
+                        if (!result.Items.ContainsKey(model.KeyAsString.ToInt().ToString()))
+                        {
+                            result.Items.Add(model.KeyAsString.ToInt().ToString(), Convert.ToInt32(model.DocCount.Value));
+                        }
+                    }
                 }
 
-            } 
+            }
 
             return result;
         }
@@ -485,18 +496,19 @@ namespace HttpReports.Storage.ElasticSearch
            .Aggregations(a => a.DateHistogram("date", b => b.Field(c => c.CreateTime).AutoFormatTime(option.Type).MinimumDocumentCount(0)
            .ExtendedBounds(option.StartTime.Value, option.EndTime.Value)
                .TimeZone("+08:00").Order(HistogramOrder.KeyAscending)
-               .Aggregations(m => m.Average("Average",n=> n.Field(k => k.Milliseconds)))  
+               .Aggregations(m => m.Average("Average", n => n.Field(k => k.Milliseconds)))
            )).Size(0)
 
            ).ConfigureAwait(false);
 
-            var result = new ResponseTimeStatisticsResult { 
-            
+            var result = new ResponseTimeStatisticsResult
+            {
+
                 Type = option.Type,
                 Items = new Dictionary<string, int>()
-            
+
             };
- 
+
             if (response != null && response.IsValid)
             {
                 if (response.Aggregations.Count > 0)
@@ -505,17 +517,19 @@ namespace HttpReports.Storage.ElasticSearch
 
                     foreach (var item in buckets)
                     {
-                        if (item == buckets.Last()) continue;
-
                         var model = item as Nest.DateHistogramBucket;
 
-                        result.Items.Add(model.KeyAsString.ToInt().ToString(), Convert.ToInt32(model.ValueCount("Average").Value == null ? 0 : model.ValueCount("Average").Value.Value));
+                        if (!result.Items.ContainsKey(model.KeyAsString.ToInt().ToString()))
+                        {
+                            result.Items.Add(model.KeyAsString.ToInt().ToString(), Convert.ToInt32(model.ValueCount("Average").Value == null ? 0 : model.ValueCount("Average").Value.Value));
+                        }
+
                     }
                 }
 
             }
 
-            return result; 
+            return result;
         }
 
         public async Task<List<StatusCodeCount>> GetStatusCodeStatisticsAsync(RequestInfoFilterOption option)
@@ -545,12 +559,13 @@ namespace HttpReports.Storage.ElasticSearch
                     {
                         var model = item as Nest.KeyedBucket<object>;
 
-                        statusCodes.Add(new StatusCodeCount { 
-                        
-                            Code = model.Key.ToString().ToInt(),
-                            Total= Convert.ToInt32(model.DocCount.Value)
+                        statusCodes.Add(new StatusCodeCount
+                        {
 
-                        }); 
+                            Code = model.Key.ToString().ToInt(),
+                            Total = Convert.ToInt32(model.DocCount.Value)
+
+                        });
 
                     }
 
@@ -564,23 +579,24 @@ namespace HttpReports.Storage.ElasticSearch
 
                 if (k == null)
                 {
-                    statusCodes.Add(new StatusCodeCount {  
+                    statusCodes.Add(new StatusCodeCount
+                    {
                         Code = item,
-                        Total = 0  
+                        Total = 0
                     });
-                }  
-            } 
+                }
+            }
 
-            return statusCodes; 
+            return statusCodes;
         }
 
         public async Task<SysUser> GetSysUser(string UserName)
         {
-            var response = await Client.SearchAsync<SysUser>(x => x.Index(GetIndexName<SysUser>()).Query(d => d.Term(e => e.UserName,UserName) )).ConfigureAwait(false);
+            var response = await Client.SearchAsync<SysUser>(x => x.Index(GetIndexName<SysUser>()).Query(d => d.Term(e => e.UserName, UserName))).ConfigureAwait(false);
 
             if (response != null && response.IsValid)
             {
-                return response.Documents.FirstOrDefault(); 
+                return response.Documents.FirstOrDefault();
             }
 
             return new SysUser();
@@ -594,7 +610,7 @@ namespace HttpReports.Storage.ElasticSearch
               d.HasDateWhere(option.StartTime, option.EndTime)
               && d.Terms(f => f.Field(e => e.Node).Terms(option.Nodes))
               && d.Terms(f => f.Field(e => e.StatusCode).Terms(option.StatusCodes))
-              && d.Range(f => f.Field(e => e.Milliseconds).GreaterThanOrEquals(timeoutThreshold) ) 
+              && d.Range(f => f.Field(e => e.Milliseconds).GreaterThanOrEquals(timeoutThreshold))
 
             ).Size(0)).ConfigureAwait(false);
 
@@ -603,7 +619,7 @@ namespace HttpReports.Storage.ElasticSearch
                 return Convert.ToInt32(response.Total);
             }
 
-            return 0; 
+            return 0;
         }
 
         public async Task<List<UrlRequestCount>> GetUrlRequestStatisticsAsync(RequestInfoFilterOption option)
@@ -611,17 +627,17 @@ namespace HttpReports.Storage.ElasticSearch
             List<UrlRequestCount> urlRequests = new List<UrlRequestCount>();
 
             var response = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>())
-            .Query(d => 
+            .Query(d =>
 
-                d.HasDateWhere(option.StartTime,option.EndTime) 
+                d.HasDateWhere(option.StartTime, option.EndTime)
                 && d.Terms(f => f.Field(e => e.Node).Terms(option.Nodes))
-                && d.Terms(f => f.Field(e => e.StatusCode).Terms(option.StatusCodes)) 
+                && d.Terms(f => f.Field(e => e.StatusCode).Terms(option.StatusCodes))
 
               ).Aggregations(b =>
 
                b.Terms("url", c => c.Field("url").Order(d => option.IsAscend ? d.CountAscending() : d.CountDescending()).Size(option.Take))
 
-            ).Size(0)).ConfigureAwait(false); 
+            ).Size(0)).ConfigureAwait(false);
 
             if (response != null && response.IsValid)
             {
@@ -663,9 +679,9 @@ namespace HttpReports.Storage.ElasticSearch
                     Settings = new IndexSettings()
                     {
                         NumberOfReplicas = 1,
-                        NumberOfShards = 5
+                        NumberOfShards = 3
                     }
-                }; 
+                };
 
 
                 await Client.Indices.ExistsAsync(GetIndexName<RequestInfo>()).ContinueWith(async x =>
@@ -673,10 +689,9 @@ namespace HttpReports.Storage.ElasticSearch
 
                     if (!x.Result.Exists)
                     {
-                        await Client.Indices.CreateAsync(GetIndexName<RequestInfo>(),a => a.InitializeUsing(indexState));
+                        await Client.Indices.CreateAsync(GetIndexName<RequestInfo>(), a => a.InitializeUsing(indexState));
 
                         await Client.MapAsync<Models.RequestInfo>(c => c.Index(GetIndexName<RequestInfo>()).AutoMap());
-
                     }
 
                 });
@@ -693,7 +708,7 @@ namespace HttpReports.Storage.ElasticSearch
                 });
 
                 await Client.Indices.ExistsAsync(GetIndexName<SysUser>()).ContinueWith(async x =>
-                { 
+                {
                     if (!x.Result.Exists)
                     {
                         await Client.Indices.CreateAsync(GetIndexName<SysUser>(), a => a.InitializeUsing(indexState));
@@ -713,10 +728,8 @@ namespace HttpReports.Storage.ElasticSearch
                         Password = Core.Config.BasicConfig.DefaultPassword
 
                     }, x => x.Index(GetIndexName<SysUser>()));
-                }
-
-                new MockData().Excute(Client);
-
+                } 
+               
             }
             catch (Exception ex)
             {
@@ -727,27 +740,37 @@ namespace HttpReports.Storage.ElasticSearch
         public async Task<RequestInfoSearchResult> SearchRequestInfoAsync(RequestInfoSearchFilterOption option)
         {
             var response = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>())
-            
-            .Query( d =>
 
-              d.HasDateWhere(option.StartTime, option.EndTime)    
+            .Query(d =>
 
-              && d.Term(e => e.IP ,option.IP)
+             d.HasDateWhere(option.StartTime, option.EndTime)
 
-              && d.QueryString(e=> e.DefaultField(f=>f.Url).Query(option.Url)) 
+             && d.Term(e => e.IP, option.IP)
 
-            ).From(option.Skip).Size(option.Take).Sort(c => c.Descending(e => e.CreateTime)) 
-            
+             && d.QueryString(e => e.DefaultField(f => f.Url).Query(option.Url))
+
+            ).From(option.Skip).Size(option.Take).Sort(c => c.Descending(e => e.CreateTime))
+
             ).ConfigureAwait(false);
 
             RequestInfoSearchResult result = new RequestInfoSearchResult();
 
             if (response != null && response.IsValid)
             {
-                result.List = response.Documents.Select( x => x as IRequestInfo).ToList();
+                result.List = response.Documents.Select(x => x as IRequestInfo).ToList();
+
+                result.List.ForEach(x =>
+                {
+
+                    var k = x.CreateTime;
+
+                    x.CreateTime = new DateTime(k.Year, k.Month, k.Day, k.Hour, k.Minute, k.Second, DateTimeKind.Unspecified);
+
+                });
+
                 result.AllItemCount = Convert.ToInt32(response.Total);
             }
-             
+
             return result;
         }
 
@@ -760,7 +783,7 @@ namespace HttpReports.Storage.ElasticSearch
                 return true;
             }
 
-            return false; 
+            return false;
         }
 
         public async Task<bool> UpdateMonitorJob(IMonitorJob job)
@@ -770,9 +793,9 @@ namespace HttpReports.Storage.ElasticSearch
             if (response != null && response.IsValid)
             {
                 return true;
-            } 
+            }
 
-            return false; 
+            return false;
         }
 
         private string MD5_16(string source)

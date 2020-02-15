@@ -16,8 +16,7 @@ namespace HttpReports.Test
         public abstract T Storage { get; }
 
         [TestInitialize]
-        public abstract Task Init();
-
+        public abstract Task Init();  
       
 
         [TestMethod]

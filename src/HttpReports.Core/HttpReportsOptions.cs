@@ -12,7 +12,11 @@ namespace HttpReports
       
         public string Node { get; set; } = "default"; 
         
-        public bool UseHome { get; set; } = true; 
+
+        public bool UseHome { get; set; } = true;
+
+        public bool FilterStaticFiles { get; set; } = true;
+
 
         public HttpReportsOptions Value => this;
     } 

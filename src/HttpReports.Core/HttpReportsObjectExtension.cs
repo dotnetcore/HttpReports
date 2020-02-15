@@ -134,7 +134,7 @@ namespace HttpReports
         public static DateTime ToDateTime(this string str)
         {
             try
-            {
+            { 
                 return Convert.ToDateTime(str);
             }
             catch (Exception)

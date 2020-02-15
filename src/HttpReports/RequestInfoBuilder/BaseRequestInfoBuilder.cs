@@ -15,14 +15,18 @@ namespace HttpReports
         {
             Options = options.Value;
             ModelCreator = modelCreator;
-        }
-
-        //TODO 此函数是否只需要传path？
+        } 
+        
         protected abstract IRequestInfo Build(IRequestInfo request, string path);
 
         public IRequestInfo Build(HttpContext context, Stopwatch stopwatch)
-        {
-            var path = (context.Request.Path.Value ?? string.Empty).ToLowerInvariant();
+        { 
+            var path = (context.Request.Path.Value ?? string.Empty).ToLowerInvariant(); 
+
+            if (Options.FilterStaticFiles && path.Contains("."))
+            { 
+                return null;
+            }  
 
             // 创建请求信息
             var request = ModelCreator.CreateRequestInfo();
@@ -33,7 +37,7 @@ namespace HttpReports
             request.Milliseconds = ToInt32(stopwatch.ElapsedMilliseconds);
             request.CreateTime = DateTime.Now;
 
-            path = path.Replace(@"///",@"/").Replace(@"//", @"/");
+            path = path.Replace(@"///",@"/").Replace(@"//", @"/"); 
 
             return Build(request, path);
         }

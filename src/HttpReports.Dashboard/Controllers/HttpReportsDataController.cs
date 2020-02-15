@@ -92,14 +92,14 @@ namespace HttpReports.Dashboard.Controllers
                 StartTime = start,
                 EndTime = end,
                 StatusCodes = new[] { 200, 301, 302, 303, 400, 401, 403, 404, 500, 502, 503 },
-            }).ConfigureAwait(false)).Where(m => m.Total > 0).Select(m => new EchartPineDataModel(m.Code.ToString(), m.Total)).ToArray();
+            }).ConfigureAwait(false)).Where(m => true).Select(m => new EchartPineDataModel(m.Code.ToString(), m.Total)).ToArray();
 
             var ResponseTime = (await _storage.GetGroupedResponeTimeStatisticsAsync(new GroupResponeTimeFilterOption()
             {
                 Nodes = nodes,
                 StartTime = start,
                 EndTime = end,
-            }).ConfigureAwait(false)).Where(m => m.Total > 0).Select(m => new EchartPineDataModel(m.Name, m.Total)).ToArray();
+            }).ConfigureAwait(false)).Where(m => true).Select(m => new EchartPineDataModel(m.Name, m.Total)).ToArray();
 
             return Json(new HttpResultEntity(1, "ok", new { StatusCode, ResponseTime, topRequest, topError500, Art }));
         }
@@ -357,7 +357,7 @@ namespace HttpReports.Dashboard.Controllers
                 EndTime = request.End.TryToDateTime(),
                 Page = request.pageNumber,
                 PageSize = request.pageSize,
-            }).ConfigureAwait(false);
+            }).ConfigureAwait(false);  
 
             return Json(new { total = result.AllItemCount, rows = result.List });
         }

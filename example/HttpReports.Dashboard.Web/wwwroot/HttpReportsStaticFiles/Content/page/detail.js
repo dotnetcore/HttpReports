@@ -58,11 +58,7 @@ function InitTable() {
             localStorage.setItem("bootstarpSize", size);
         },
         columns: [
-            {
-                field: 'id',
-                title: '编号',
-                align: 'center'
-            },
+            
             {
                 field: 'node',
                 title: '服务节点',

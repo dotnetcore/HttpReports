@@ -4,15 +4,15 @@ using Microsoft.Extensions.Options;
 
 namespace HttpReports
 {
-    internal class MVCRequestInfoBuilder : BaseRequestInfoBuilder
+    internal class WebRequestInfoBuilder : BaseRequestInfoBuilder
     {
-        public MVCRequestInfoBuilder(IModelCreator modelCreator, IOptions<HttpReportsOptions> options) : base(modelCreator, options)
+        public WebRequestInfoBuilder(IModelCreator modelCreator, IOptions<HttpReportsOptions> options) : base(modelCreator, options)
         { }
 
         protected override IRequestInfo Build(IRequestInfo request, string path)
         {
             request.Node = Options.Node.Substring(0, 1).ToUpper() + Options.Node.Substring(1).ToLower();
-            request.Route = GetRouteForMVC(path);
+            request.Route = GetRouteForWeb(path);
 
             return request;
         }
@@ -21,7 +21,7 @@ namespace HttpReports
         ///通过请求地址 获取路由
         /// </summary>
         /// <returns></returns>
-        private string GetRouteForMVC(string path)
+        private string GetRouteForWeb(string path)
         {
             string route = path;
 

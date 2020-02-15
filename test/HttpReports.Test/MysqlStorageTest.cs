@@ -17,10 +17,11 @@ namespace HttpReports.Test
 
         [TestInitialize]
         public override async Task Init()
-        {
+        { 
             var services = new ServiceCollection();
             services.AddOptions();
-            services.AddLogging();
+            services.AddLogging(); 
+          
             services.Configure<MySqlStorageOptions>(o =>
             {
                 o.ConnectionString = "Data Source=127.0.0.1;Initial Catalog=HttpReports;User ID=test;Password=test;charset=utf8;SslMode=none;";

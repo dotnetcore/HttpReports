@@ -36,7 +36,7 @@ namespace HttpReports.Storage.ElasticSearch.Models
         [Nest.Text]
         public string Payload { get; set; }
 
-        [Nest.Text]
+        [Nest.Keyword]
         public DateTime CreateTime { get; set; }
 
     }

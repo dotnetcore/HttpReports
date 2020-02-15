@@ -23,8 +23,10 @@ namespace HttpReports
         {
             var requestInfo = RequestInfoBuilder.Build(context, stopwatch);
 
-            Task.Run(()=> { Storage.AddRequestInfoAsync(requestInfo).ConfigureAwait(false); }); 
-            
+            if (requestInfo != null)
+            {
+                Task.Run(() => { Storage.AddRequestInfoAsync(requestInfo).ConfigureAwait(false); });
+            }  
         }
     }
 }

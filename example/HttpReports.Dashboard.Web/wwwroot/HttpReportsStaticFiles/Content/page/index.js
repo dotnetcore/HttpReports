@@ -60,11 +60,11 @@ function changeTopCount(item) {
 function InitChart() { 
 
     // 状态码
-    global.StatusCodePie = echarts.init(document.getElementById('StatusCodePie'),httpreports.chart_theme);
+    global.StatusCodePie = echarts.init(document.getElementById('StatusCodePie'), 'macarons');
 
     global.StatusCodePieOption = {
         title: {
-            text: '请求状态码',
+            text: '请求状态码', 
             subtext: "",
             x: "left",
             y: "2%"
@@ -202,7 +202,7 @@ function InitChart() {
             {
                 name: '请求次数',
                 type: 'bar',
-                barWidth: 20,
+                barWidth: 12,
                 itemStyle: {
                     color: httpreports.index_chart_backgroundbar
                 },
@@ -210,7 +210,7 @@ function InitChart() {
                     normal: {
                         color: httpreports.index_chart_color,
                         show: true,
-                        position: [10, '4px'],
+                        position: [8,'0px'],
                         textStyle: {
                             fontSize:12
                         },
@@ -273,7 +273,7 @@ function InitChart() {
             {
                 name: '请求次数',
                 type: 'bar',
-                barWidth:20,
+                barWidth:12,
                 itemStyle: {
                     color: httpreports.index_chart_backgroundbar
                 },
@@ -281,7 +281,7 @@ function InitChart() {
                     normal: {
                         color: httpreports.index_chart_color,
                         show: true, 
-                        position: [10, '4px'],
+                        position: [8, '0px'],
                         textStyle: {
                             fontSize: 12
                         },
@@ -345,12 +345,12 @@ function InitChart() {
             {
                 name: '平均处理时间',
                 type: 'bar',
-                barWidth:20,
+                barWidth:12,
                 label: {
                     normal: {
                         color: httpreports.index_chart_color,
                         show: true,
-                        position: [10, '4px'],
+                        position: [8, '0px'],
                         textStyle: {
                             fontSize: 12
                         },
@@ -415,7 +415,7 @@ function InitChart() {
             {
                 name: '平均处理时间',
                 type: 'bar',
-                barWidth:20,
+                barWidth:12,
                 itemStyle: {
                     color: httpreports.index_chart_backgroundbar
                 },
@@ -423,7 +423,7 @@ function InitChart() {
                     normal: {
                         color: httpreports.index_chart_color,
                         show: true,
-                        position: [10, '4px'],
+                        position: [8, '0px'],
                         textStyle: {
                             fontSize: 12
                         },
