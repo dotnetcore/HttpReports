@@ -684,38 +684,33 @@ namespace HttpReports.Storage.ElasticSearch
                 };
 
 
-                await Client.Indices.ExistsAsync(GetIndexName<RequestInfo>()).ContinueWith(async x =>
+                var RequestInfoIndex = await Client.Indices.ExistsAsync(GetIndexName<RequestInfo>());
+
+                if (!RequestInfoIndex.Exists)
+                { 
+                    await Client.Indices.CreateAsync(GetIndexName<RequestInfo>(), a => a.InitializeUsing(indexState));
+
+                    await Client.MapAsync<Models.RequestInfo>(c => c.Index(GetIndexName<RequestInfo>()).AutoMap());  
+                } 
+
+                var MonitorJobIndex = await Client.Indices.ExistsAsync(GetIndexName<MonitorJob>());
+
+                if (!MonitorJobIndex.Exists)
                 {
+                    await Client.Indices.CreateAsync(GetIndexName<MonitorJob>(), a => a.InitializeUsing(indexState));
 
-                    if (!x.Result.Exists)
-                    {
-                        await Client.Indices.CreateAsync(GetIndexName<RequestInfo>(), a => a.InitializeUsing(indexState));
+                    await Client.MapAsync<Models.MonitorJob>(c => c.Index(GetIndexName<MonitorJob>()).AutoMap());
+                }
 
-                        await Client.MapAsync<Models.RequestInfo>(c => c.Index(GetIndexName<RequestInfo>()).AutoMap());
-                    }
 
-                });
+                var SysUserIndex = await Client.Indices.ExistsAsync(GetIndexName<SysUser>());
 
-                await Client.Indices.ExistsAsync(GetIndexName<MonitorJob>()).ContinueWith(async x =>
+                if (!SysUserIndex.Exists)
                 {
+                    await Client.Indices.CreateAsync(GetIndexName<SysUser>(), a => a.InitializeUsing(indexState));
 
-                    if (!x.Result.Exists)
-                    {
-                        await Client.Indices.CreateAsync(GetIndexName<MonitorJob>(), a => a.InitializeUsing(indexState));
-
-                        await Client.MapAsync<Models.MonitorJob>(c => c.Index(GetIndexName<MonitorJob>()).AutoMap());
-                    }
-                });
-
-                await Client.Indices.ExistsAsync(GetIndexName<SysUser>()).ContinueWith(async x =>
-                {
-                    if (!x.Result.Exists)
-                    {
-                        await Client.Indices.CreateAsync(GetIndexName<SysUser>(), a => a.InitializeUsing(indexState));
-
-                        await Client.MapAsync<Models.SysUser>(c => c.Index(GetIndexName<SysUser>()).AutoMap());
-                    }
-                });
+                    await Client.MapAsync<Models.SysUser>(c => c.Index(GetIndexName<SysUser>()).AutoMap());
+                } 
 
                 var user = await Client.SearchAsync<SysUser>(s => s.Index(GetIndexName<SysUser>()).Query(q => q.MatchAll())).ConfigureAwait(false);
 
@@ -747,7 +742,7 @@ namespace HttpReports.Storage.ElasticSearch
 
              && d.Term(e => e.IP, option.IP)
 
-             && d.QueryString(e => e.DefaultField(f => f.Url).Query(option.Url))
+             && d.Bool(e=>e.Filter(c=>c.Wildcard("url", $"*{option.Url}*")))
 
             ).From(option.Skip).Size(option.Take).Sort(c => c.Descending(e => e.CreateTime))
 

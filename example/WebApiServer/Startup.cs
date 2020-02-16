@@ -26,7 +26,7 @@ namespace WebApiServer
         {
             services.AddControllers();
 
-            services.AddHttpReports().UseAPI().UseElasticSearchStorage(); 
+            services.AddHttpReports().UseAPI().UsePostgreSQLStorage(); 
 
         }
 

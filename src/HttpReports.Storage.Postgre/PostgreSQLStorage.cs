@@ -110,7 +110,7 @@ namespace HttpReports.Storage.PostgreSQL
 Select COUNT(1) AS Total From ""RequestInfo"" {where};
 Select COUNT(1) AS Code404 From ""RequestInfo"" {where} AND StatusCode = 404;
 Select COUNT(1) AS Code500 From ""RequestInfo"" {where} AND StatusCode = 500;
-Select Count(1) AS From ( Select Distinct Url From ""RequestInfo"" ) A;
+Select Count(1)  From ( Select Distinct Url From ""RequestInfo"" ) A;
 Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
             TraceLogSql(sql);
@@ -376,9 +376,9 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
                     }
                 }
             }
-            catch (Exception)
-            { 
-                throw;
+            catch (Exception ex)
+            {
+                throw new Exception("数据库初始化失败：" + ex.Message,ex);
             } 
         }
 
@@ -432,7 +432,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
         public async Task<bool> UpdateLoginUser(SysUser model)
         {
-            string sql = @" Update ""SysUser"" Set UserName = @UserName , Password = @Password  Where Id = @Id ";
+            string sql = $@" Update ""SysUser"" Set UserName = @UserName , Password = @Password  Where Id =  {model.Id} ";
 
             TraceLogSql(sql);
 
@@ -446,11 +446,11 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
         public async Task<bool> UpdateMonitorJob(IMonitorJob job)
         {
-            string sql = $@"Update ""MonitorJob ""
+            string sql = $@"Update ""MonitorJob""
 
                 Set Title = @Title,Description = @Description,CronLike = @CronLike,Emails = @Emails,Mobiles = @Mobiles,Status= @Status,Nodes = @Nodes,PayLoad = @PayLoad 
 
-                Where Id = @Id ";
+                Where Id = {job.Id} " ;
 
             TraceLogSql(sql);
 
