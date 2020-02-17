@@ -132,7 +132,7 @@ namespace HttpReports.Storage.SQLServer
             {
                 await LoggingSqlOperation(async connection =>
                 {
-                    await connection.ExecuteAsync("INSERT INTO [RequestInfo] ([Node],[Route],[Url],[Method],[Milliseconds],[StatusCode],[IP],[CreateTime])  VALUES (@Node, @Route, @Url, @Method, @Milliseconds, @StatusCode, @IP, @CreateTime)", request as HttpReports.RequestInfo).ConfigureAwait(false);
+                    await connection.ExecuteAsync("INSERT INTO [RequestInfo] (Node,Route,Url,Method,Milliseconds,StatusCode,IP,CreateTime)  VALUES (@Node, @Route, @Url, @Method, @Milliseconds, @StatusCode, @IP, @CreateTime)", request).ConfigureAwait(false);
                      
                 }, "请求数据保存失败").ConfigureAwait(false);
 

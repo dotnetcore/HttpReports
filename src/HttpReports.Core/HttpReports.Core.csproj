@@ -3,7 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>HttpReports.Core</PackageId>
-    <Description />
+    <Description>HttpReports 核心类库</Description>
+    <Version>1.1.6</Version>
+    <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
+    <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
+    <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>
+    <Authors>SpringLee</Authors>
   </PropertyGroup>
 
   <ItemGroup>

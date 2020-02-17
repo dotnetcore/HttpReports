@@ -1,12 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>SpringLee</Authors>
-    <Description>HttpReports 是.Net Core 下的Web组件，通过引用中间件的形式使用，使用HttpReports可以快速的搭建.Net Core 下的  统计，分析，图表，监控的站点。
+    <Description>
+      
+HttpReports 是.Net Core下的轻量级APM, 使用HttpReports可以快速搭建统计,分析,图表,监控一体化站点;
+
 支持版本：.Net Core 2.0 或者以上版本；
-支持类型：WebAPI ，Gataway网关，MVC 项目； 
-支持数据库类型：SqlServer, MySql;
+支持类型：WebAPI,MVC,Web项目 
+支持数据库类型：SqlServer,MySql,Oracle,ElasticSearch,PostgreSQL;
+
 github: https://github.com/SpringLeee/HttpReports   
 
 </Description>
@@ -14,9 +18,9 @@ github: https://github.com/SpringLeee/HttpReports
     <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
     <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
     <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>
-    <Version>1.1.2</Version>
+    <Version>1.1.6</Version>
     <PackageLicenseFile></PackageLicenseFile>
-    <PackageId>Hrfdsjhfklsdjklfd</PackageId>
+    <PackageId>HttpReports</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
