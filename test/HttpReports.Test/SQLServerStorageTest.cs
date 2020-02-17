@@ -1,35 +1,35 @@
-using System;
-using System.Threading.Tasks;
-
-using HttpReports.Storage.MySql;
-
+﻿using HttpReports.Storage.SQLServer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace HttpReports.Test
 {
     [TestClass]
-    public class MysqlStorageTest : StorageTest<IHttpReportsStorage>
+    public class SQLServerStorageTest : StorageTest<IHttpReportsStorage>
     {
-        private MySqlStorage _storage;
+        private SQLServerStorage _storage;
 
         public override IHttpReportsStorage Storage => _storage;
 
         [TestInitialize]
         public override async Task Init()
-        { 
+        {
             var services = new ServiceCollection();
             services.AddOptions();
-            services.AddLogging(); 
-          
-            services.Configure<MySqlStorageOptions>(o =>
-            {
-                o.ConnectionString = "DataBase=HttpReports;Data Source=localhost;User Id=root;Password=123456"; 
-            });
-            services.AddTransient<MySqlStorage>();
-            services.AddSingleton<MySqlConnectionFactory>();
+            services.AddLogging();
 
-            _storage = services.BuildServiceProvider().GetRequiredService<MySqlStorage>();
+            services.Configure<SQLServerStorageOptions>(o =>
+            {
+                o.ConnectionString = "Max Pool Size = 512;server=.;uid=sa;pwd=123456;database=HttpReports;";
+            });
+            services.AddTransient<SQLServerStorage>();
+            services.AddSingleton<SQLServerConnectionFactory>();
+
+            _storage = services.BuildServiceProvider().GetRequiredService<SQLServerStorage>();
             await _storage.InitAsync();
         }
 
@@ -41,7 +41,7 @@ namespace HttpReports.Test
             {
                 RequestInfo request = new RequestInfo
                 {
-                    CreateTime = new DateTime(2020, 2, 17, 14, 24, 15, DateTimeKind.Local),
+                    CreateTime = new DateTime(2020, 2, 17, 14, 0, 15, DateTimeKind.Local),
                     IP = "192.168.2.1",
                     Method = "GET",
                     Node = "Log",
@@ -58,7 +58,6 @@ namespace HttpReports.Test
             Assert.IsTrue(true);
 
         }
-
 
     }
 }

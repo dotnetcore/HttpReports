@@ -77,8 +77,8 @@ namespace HttpReports.Dashboard.Services.Quartz
             {
                 if (alarmOption != null)
                 {
-                    item.Emails = job.Emails.Split(',').AsEnumerable();
-                    item.Phones = job.Mobiles.Split(',').AsEnumerable();
+                    item.Emails = job.Emails?.Split(',').AsEnumerable();
+                    item.Phones = job.Mobiles?.Split(',').AsEnumerable();
                     await _alarmService.AlarmAsync(item);
                 }
             }

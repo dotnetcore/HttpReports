@@ -6,7 +6,7 @@ using Oracle.ManagedDataAccess.Client;
 
 namespace HttpReports.Storage.Oracle
 {
-    internal class OracleConnectionFactory
+    public class OracleConnectionFactory
     {
         public OracleStorageOptions Options { get; } 
 

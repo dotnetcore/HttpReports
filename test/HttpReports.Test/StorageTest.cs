@@ -31,14 +31,16 @@ namespace HttpReports.Test
                 }
                 for (int codeIndex = 0; codeIndex < 15; codeIndex++)
                 {
-                    var statusCode = (codeIndex % 13) switch
-                    {
-                        1 => 301,
-                        2 => 500,
-                        3 => 302,
-                        4 => 404,
-                        _ => 200,
-                    };
+                    var statusCode = 200;
+
+                    switch (codeIndex % 13)
+                    { 
+                        case 1:statusCode = 301; break;
+                        case 2: statusCode = 500; break;
+                        case 3: statusCode = 302; break;
+                        case 4: statusCode = 404; break;
+                        default: statusCode = 200; break; 
+                    }   
 
                     for (int timeIndex = 0; timeIndex < 8; timeIndex++)
                     {
@@ -53,14 +55,17 @@ namespace HttpReports.Test
 
                                 for (int urlIndex = 1; urlIndex < 7; urlIndex++)
                                 {
-                                    var url = (urlIndex % 5) switch
+                                    var url = "api/test";
+
+                                    switch (urlIndex % 5)
                                     {
-                                        1 => "api/test1",
-                                        2 => "api/test2",
-                                        3 => "api/test3",
-                                        4 => "api/test4",
-                                        _ => "api/test",
-                                    };
+                                        case 1: url = "api/test1"; break;
+                                        case 2: url = "api/test2"; break;
+                                        case 3: url = "api/test3"; break;
+                                        case 4: url = "api/test4"; break;
+                                        default: url = "api/test"; break;
+                                    } 
+                                   
                                     await Storage.AddRequestInfoAsync(new RequestInfo()
                                     {
                                         CreateTime = createTime,

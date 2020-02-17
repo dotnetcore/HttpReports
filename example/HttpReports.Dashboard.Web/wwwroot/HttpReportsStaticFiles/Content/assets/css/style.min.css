@@ -375,6 +375,13 @@ blockquote.pull-right {
   background : #f4b162;
   background-color : #f4b162;
 }
+
+.red-bg {
+    color: #fff;
+    background: #b13d3d;
+    background-color: #b13d3d;
+}
+
 .purple-bg {
   color : #fff;
   background : #af91e1;

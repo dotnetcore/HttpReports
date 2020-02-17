@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace HttpReports.Storage.Oracle
 {  
-    internal class OracleStorage : IHttpReportsStorage
+    public class OracleStorage : IHttpReportsStorage
     {
         public OracleConnectionFactory ConnectionFactory { get; }
 
@@ -158,7 +158,7 @@ namespace HttpReports.Storage.Oracle
             }
             catch (Exception ex)
             { 
-                throw;
+                throw new Exception("Oracle数据库初始化失败：" + ex.Message,ex);
             } 
          
         } 

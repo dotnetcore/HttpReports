@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using HttpReports.Dashboard.Models;
 
 using MailKit.Net.Smtp;
-
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using MimeKit;
@@ -19,9 +19,12 @@ namespace HttpReports.Dashboard.Services
     {
         public MailOptions MailOptions { get; }
 
-        public AlarmService(IOptions<MailOptions> mailOptions)
+        private ILogger<AlarmService> Logger;
+
+        public AlarmService(IOptions<MailOptions> mailOptions, ILogger<AlarmService> logger)
         {
             MailOptions = mailOptions.Value;
+            Logger = logger;
         }
 
         private async Task SendMessageAsync(MimeMessage message)
@@ -40,9 +43,8 @@ namespace HttpReports.Dashboard.Services
                 }  
             }
             catch (System.Exception ex)
-            {
-
-                throw;
+            { 
+                Logger.LogInformation("预警邮件发送失败：" + ex.Message, ex);
             } 
         }
 
@@ -52,8 +54,15 @@ namespace HttpReports.Dashboard.Services
             {
                 return;
             }
-            if (option.Emails?.Any() == true)
+
+            if (MailOptions.Account.IsEmpty() || MailOptions.Password.IsEmpty())
             {
+                Logger.LogInformation("预警邮件配置不能为空");
+                return;
+            }
+
+            if (option.Emails?.Any() == true)
+            { 
                 var message = new MimeMessage();
                 message.From.Add(new MailboxAddress("HttpReports", MailOptions.Account));
 
@@ -66,6 +75,7 @@ namespace HttpReports.Dashboard.Services
 
                 message.Body = new TextPart(option.IsHtml ? TextFormat.Html : TextFormat.Plain) { Text = option.Content };
                 await SendMessageAsync(message).ConfigureAwait(false);
+                 
             }
         }
     }

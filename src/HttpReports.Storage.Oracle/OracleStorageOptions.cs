@@ -3,7 +3,7 @@ using System;
 
 namespace HttpReports.Storage.Oracle
 {
-    internal class OracleStorageOptions : IOptions<OracleStorageOptions>
+    public class OracleStorageOptions : IOptions<OracleStorageOptions>
     {
         public string ConnectionString { get; set; }
 

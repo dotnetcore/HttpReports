@@ -26,7 +26,7 @@ namespace WebApiServer
         {
             services.AddControllers();
 
-            services.AddHttpReports().UseAPI().UsePostgreSQLStorage(); 
+            services.AddHttpReports().UseSQLServerStorage(); 
 
         }
 

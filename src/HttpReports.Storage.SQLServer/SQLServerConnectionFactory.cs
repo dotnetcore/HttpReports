@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace HttpReports.Storage.SQLServer
 {
-    internal class SQLServerConnectionFactory
+    public class SQLServerConnectionFactory
     {
         public SQLServerStorageOptions Options { get; }
 

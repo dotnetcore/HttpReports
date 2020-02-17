@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace HttpReports.Storage.SQLServer
 {  
-    internal class SQLServerStorage : IHttpReportsStorage
+    public class SQLServerStorage : IHttpReportsStorage
     {
         public SQLServerStorageOptions _options;
 
@@ -106,8 +106,8 @@ namespace HttpReports.Storage.SQLServer
                 } 
             }
             catch (Exception ex)
-            { 
-                throw;
+            {
+                throw new Exception("数据库初始化失败：" + ex.Message,ex);
             } 
         }
          
@@ -132,7 +132,8 @@ namespace HttpReports.Storage.SQLServer
             {
                 await LoggingSqlOperation(async connection =>
                 {
-                    await connection.InsertAsync(request as RequestInfo).ConfigureAwait(false);
+                    await connection.ExecuteAsync("INSERT INTO [RequestInfo] ([Node],[Route],[Url],[Method],[Milliseconds],[StatusCode],[IP],[CreateTime])  VALUES (@Node, @Route, @Url, @Method, @Milliseconds, @StatusCode, @IP, @CreateTime)", request as HttpReports.RequestInfo).ConfigureAwait(false);
+                     
                 }, "请求数据保存失败").ConfigureAwait(false);
 
             } 

@@ -1,7 +1,7 @@
 ﻿using System;
 
 using HttpReports;
-
+using HttpReports.RequestInfoBuilder;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -23,19 +23,20 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSingleton<IModelCreator, DefaultModelCreator>();
             services.AddSingleton<IHttpInvokeProcesser, DefaultHttpInvokeProcesser>();
+            services.AddSingleton<IRequestInfoBuilder, DefaultRequestInfoBuilder>();
 
             return new HttpReportsBuilder(services, configuration);
         }
 
        
-        public static IHttpReportsBuilder UseAPI(this IHttpReportsBuilder builder)
+        private static IHttpReportsBuilder UseAPI(this IHttpReportsBuilder builder)
         {
             builder.Services.AddSingleton<IRequestInfoBuilder, ApiRequestInfoBuilder>();
             return builder;
         }
 
          
-        public static IHttpReportsBuilder UseWeb(this IHttpReportsBuilder builder)
+        private static IHttpReportsBuilder UseWeb(this IHttpReportsBuilder builder)
         {
             builder.Services.AddSingleton<IRequestInfoBuilder, WebRequestInfoBuilder>();
             return builder;

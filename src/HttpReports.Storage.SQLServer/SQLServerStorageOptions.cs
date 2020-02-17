@@ -3,7 +3,7 @@ using System;
 
 namespace HttpReports.Storage.SQLServer
 {
-    internal class SQLServerStorageOptions : IOptions<SQLServerStorageOptions>
+    public class SQLServerStorageOptions : IOptions<SQLServerStorageOptions>
     {
         public string ConnectionString { get; set; }
 

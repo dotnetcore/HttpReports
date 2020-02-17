@@ -17,17 +17,14 @@ namespace HttpReports
             return request;
         }
 
-        /// <summary>
-        ///通过请求地址 获取路由
-        /// </summary>
-        /// <returns></returns>
+     
         protected string GetRouteForAPI(string path)
         {
-            var list = path.Split('/');
+            var list = path.Split('/').ToList();
 
             string route = path.Substring(path.IndexOf(Options.ApiPoint) + Options.ApiPoint.Length);
 
-            if (IsNumber(list.ToList().Last()))
+            if (IsNumber(list.Last()))
             {
                 route = route.Substring(0, route.Length - list.ToList().Last().Length - 1);
             }

@@ -1,35 +1,35 @@
-using System;
-using System.Threading.Tasks;
-
-using HttpReports.Storage.MySql;
-
+﻿using HttpReports.Storage.Oracle;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace HttpReports.Test
 {
     [TestClass]
-    public class MysqlStorageTest : StorageTest<IHttpReportsStorage>
+    public class OracleStorageTest : StorageTest<IHttpReportsStorage>
     {
-        private MySqlStorage _storage;
+        private OracleStorage _storage;
 
         public override IHttpReportsStorage Storage => _storage;
 
         [TestInitialize]
         public override async Task Init()
-        { 
+        {
             var services = new ServiceCollection();
             services.AddOptions();
-            services.AddLogging(); 
-          
-            services.Configure<MySqlStorageOptions>(o =>
-            {
-                o.ConnectionString = "DataBase=HttpReports;Data Source=localhost;User Id=root;Password=123456"; 
-            });
-            services.AddTransient<MySqlStorage>();
-            services.AddSingleton<MySqlConnectionFactory>();
+            services.AddLogging();
 
-            _storage = services.BuildServiceProvider().GetRequiredService<MySqlStorage>();
+            services.Configure<OracleStorageOptions>(o =>
+            {
+                o.ConnectionString = "Password=Mm2717965346;User ID=sa;Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.1)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=ORCL)));";
+            });
+            services.AddTransient<OracleStorage>();
+            services.AddSingleton<OracleConnectionFactory>();
+
+            _storage = services.BuildServiceProvider().GetRequiredService<OracleStorage>();
             await _storage.InitAsync();
         }
 
@@ -41,7 +41,7 @@ namespace HttpReports.Test
             {
                 RequestInfo request = new RequestInfo
                 {
-                    CreateTime = new DateTime(2020, 2, 17, 14, 24, 15, DateTimeKind.Local),
+                    CreateTime = new DateTime(2020, 2, 17, 11, 52, 15, DateTimeKind.Local),
                     IP = "192.168.2.1",
                     Method = "GET",
                     Node = "Log",
@@ -55,10 +55,9 @@ namespace HttpReports.Test
 
             }
 
-            Assert.IsTrue(true);
+            Assert.IsTrue(true); 
 
         }
-
 
     }
 }

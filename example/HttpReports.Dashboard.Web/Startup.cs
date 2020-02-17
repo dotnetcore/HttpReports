@@ -23,7 +23,7 @@ namespace HttpReports.Dashboard.Web
        
         public void ConfigureServices(IServiceCollection services)
         { 
-            services.AddHttpReportsDashborad().UseElasticSearchStorage();
+            services.AddHttpReportsDashborad().UseMySqlStorage();
 
             services.Configure<CookiePolicyOptions>(options =>
             { 

@@ -71,7 +71,10 @@ function InitChart() {
         },
         legend: {
             orient: 'vertical',
-            left: 'right',
+            left: 'right', 
+            textStyle: {
+                color: httpreports.index_chart_color
+            },
             data: []
         },
         tooltip: {
@@ -120,6 +123,9 @@ function InitChart() {
         legend: {
             orient: 'vertical',
             left: 'right',
+            textStyle: {
+                color: httpreports.index_chart_color
+            },
             data: []
         },
         tooltip: {
@@ -232,7 +238,7 @@ function InitChart() {
 
     global.Code500RequestChartOption = {
         title: {
-            text: '请求错误率 TOP' + global.top,
+            text: '请求错误 TOP' + global.top,
             x: "left",
             y: "2%"
         },
@@ -271,7 +277,7 @@ function InitChart() {
         },
         series: [
             {
-                name: '请求次数',
+                name: '500错误次数',
                 type: 'bar',
                 barWidth:12,
                 itemStyle: {

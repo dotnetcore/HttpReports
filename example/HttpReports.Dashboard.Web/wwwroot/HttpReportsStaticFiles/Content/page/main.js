@@ -2,6 +2,7 @@
 var httpreports = {};  
 httpreports.chart_theme = "macarons";
 httpreports.theme = "light";
+httpreports.index_chart_color = "#333333";
 
 initTheme();  
 
