@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>HttpReports.Dashboard</AssemblyName>
     <RootNamespace>HttpReports.Dashboard</RootNamespace>
-    <Version>1.1.6</Version>
+    <Version>1.1.8</Version>
     <PackageId>HttpReports.Dashboard</PackageId>
     <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
     <PackageLicenseFile></PackageLicenseFile>
@@ -32,26 +32,30 @@ github: https://github.com/SpringLeee/HttpReports
     <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
     <PackageReference Include="Quartz" Version="3.0.7" />
-  </ItemGroup> 
-  
-  
+  </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" Version="1.1.5" />
-  </ItemGroup>  
-  
+    <Content Include="Views\**">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>false</PackageCopyToOutput>
+    </Content>
+  </ItemGroup>
+
   <ItemGroup>
-    <None Include="Views\**">
-      <Pack>True</Pack>
-      <PackageCopyToOutput>True</PackageCopyToOutput>
-    </None>
+    <Content Include="wwwroot\">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" Version="1.1.8" />
   </ItemGroup>
 
 
   <ItemGroup>
-    <None Include="wwwroot\">
-      <Pack>True</Pack>
-      <PackageCopyToOutput>True</PackageCopyToOutput>
-    </None>
+    <Folder Include="Views\" />
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 
