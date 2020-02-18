@@ -29,7 +29,7 @@ namespace HttpReports
                 await _next(context);
             }
             finally
-            {
+            {  
                 stopwatch.Stop();
                 if (!string.IsNullOrEmpty(context.Request.Path))
                 {

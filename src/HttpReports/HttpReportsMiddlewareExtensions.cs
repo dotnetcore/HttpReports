@@ -25,6 +25,11 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IHttpInvokeProcesser, DefaultHttpInvokeProcesser>();
             services.AddSingleton<IRequestInfoBuilder, DefaultRequestInfoBuilder>();
 
+            services.AddMvcCore(x => { 
+                x.Filters.Add<GlobalExceptionFilter>();
+            });
+
+
             return new HttpReportsBuilder(services, configuration);
         }
 

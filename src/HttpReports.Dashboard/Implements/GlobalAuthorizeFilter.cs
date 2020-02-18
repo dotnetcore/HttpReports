@@ -12,11 +12,32 @@ namespace HttpReports.Dashboard.Implements
     public class GlobalAuthorizeFilter : IAuthorizationFilter
     {
         public void OnAuthorization(AuthorizationFilterContext context)
-        { 
+        {  
             if (context.Filters.Any(x => x is IAllowAnonymousFilter))
             {
                 return;
+            }
+
+            var ActionDescriptor = context.ActionDescriptor as Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor;
+
+            if (ActionDescriptor != null)
+            {
+                if (ActionDescriptor.MethodInfo.CustomAttributes != null )
+                {
+                    foreach (var item in ActionDescriptor.MethodInfo.CustomAttributes)
+                    {
+                        if (item.AttributeType.Name == "AllowAnonymousAttribute")
+                        {
+                            return;
+                        }
+                       
+                    } 
+
+                } 
+                
             } 
+          
+           
 
             if (context.HttpContext.Request.Path.HasValue)
             { 
