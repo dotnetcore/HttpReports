@@ -40,7 +40,7 @@ github: https://github.com/SpringLeee/HttpReports
     <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" Version="1.2.0" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!--<ItemGroup>
     <Content Include="Views\**">
       <Pack>true</Pack>
       <PackageCopyToOutput>false</PackageCopyToOutput>
@@ -52,7 +52,7 @@ github: https://github.com/SpringLeee/HttpReports
       <Pack>true</Pack>
       <PackageCopyToOutput>true</PackageCopyToOutput>
     </Content>
-  </ItemGroup>
+  </ItemGroup>-->
 
 
   <ItemGroup>
