@@ -346,9 +346,9 @@ blockquote.pull-right {
   background-color : #fff;
 }
 .red-bg {
-  color : #fff;
-  background : #d95043;
-  background-color : #d95043;
+    color: #fff;
+    background: #884f4f;
+    background-color: #884f4f;
 }
 .blue-bg {
   color : #fff;
@@ -378,8 +378,8 @@ blockquote.pull-right {
 
 .red-bg {
     color: #fff;
-    background: #b13d3d;
-    background-color: #b13d3d;
+    background: #884f4f;
+    background-color: #884f4f;
 }
 
 .purple-bg {
