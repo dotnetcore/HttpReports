@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>HttpReports.SQLServer</PackageId>
+    <Version>1.1.6</Version>
+    <Authors>SpringLee</Authors>
+    <Company>SpringLee</Company>
+    <Description>HttpReports.SQLServer 存储</Description>
+    <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
+    <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
+    <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.30" />
+    <PackageReference Include="Dapper.Contrib" Version="2.0.30" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
+  </ItemGroup>
+
+</Project>

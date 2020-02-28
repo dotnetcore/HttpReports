@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>fbd581f9-c60d-4612-b9b5-fe67728e2acb</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\HttpReports.Storage.ElasticSearch\HttpReports.Storage.ElasticSearch.csproj" />
+    <ProjectReference Include="..\..\src\HttpReports.Storage.MySQL\HttpReports.Storage.MySQL.csproj" />
+    <ProjectReference Include="..\..\src\HttpReports.Storage.Oracle\HttpReports.Storage.Oracle.csproj" />
+    <ProjectReference Include="..\..\src\HttpReports.Storage.Postgre\HttpReports.Storage.PostgreSQL.csproj" />
+    <ProjectReference Include="..\..\src\HttpReports.Storage.SQLServer\HttpReports.Storage.SQLServer.csproj" />
+    <ProjectReference Include="..\..\src\HttpReports\HttpReports.csproj" />
+  </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
+
+</Project>

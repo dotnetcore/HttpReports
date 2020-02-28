@@ -1,0 +1,27 @@
+ 
+/* particleground demo */
+
+* { 
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+} 
+
+#particles {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.intro { 
+  position: absolute;
+  left: 0;
+  top:10%;  
+  width: 100%; 
+} 

@@ -1,0 +1,88 @@
+html,body {
+	height: 100%;
+}
+
+	body.my-login-page { 
+		background-color:aliceblue;
+		font-size: 14px;
+	}
+
+.my-login-page .brand {
+	text-align:center;
+	overflow: hidden; 
+	margin:auto;
+	margin-top: 20px;
+	margin-bottom: 20px; 
+}
+
+.hr_title {
+	margin-top:36px;
+	margin-bottom: 70px;
+	font-size: 36px;
+	color: #3788db;
+	text-shadow: 5px 5px 6px #d2dbde;
+}
+
+.my-login-page .brand img { 
+	height:80px;
+	width:80px; 
+}
+
+.my-login-page .card-wrapper {
+	width: 480px;
+}
+
+.my-login-page .card label {
+	color:#000000;
+}
+
+.my-login-page .card { 
+	margin-top:20px; 
+	-moz-filter: inherit;
+	-ms-filter: inherit;
+	-webkit-filter: inherit;
+	filter: glow(color=red,strength=10);
+	border-color: transparent;
+	box-shadow: 6px 6px 30px 10px #b3c4e6;
+}
+
+	.my-login-page .card.fat {
+		border-top: 2px solid #67c2ef;
+		background-color: #fff;
+		padding: 10px;
+		padding-bottom: 30px;
+	}
+
+.my-login-page .card .card-title { 
+	margin-bottom: 30px;
+}
+
+.my-login-page .form-control {
+	border-width: 2.3px;
+}
+
+.my-login-page .form-group label {
+	width: 100%;
+}
+
+.my-login-page .btn.btn-block {
+	padding: 12px 10px;
+	color: #FFF;
+	margin-top: 40px;
+	box-shadow: 6px 6px 10px #b3b3b3;
+	cursor: pointer;
+}
+
+.my-login-page .margin-top20 {
+	margin-top: 20px;
+}
+
+.my-login-page .no-margin {
+	margin: 0;
+}
+
+.my-login-page .footer {
+	margin: 40px 0;
+	color: #888;
+	text-align: center;
+}

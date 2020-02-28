@@ -1,0 +1,66 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>HttpReports.Dashboard</AssemblyName>
+    <RootNamespace>HttpReports.Dashboard</RootNamespace>
+    <Version>1.2.0</Version>
+    <PackageId>HttpReports.Dashboard</PackageId>
+    <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
+    <PackageLicenseFile></PackageLicenseFile>
+    <Description>
+      
+HttpReports 是.Net Core下的轻量级APM, 使用HttpReports可以快速搭建统计,分析,图表,监控一体化站点;
+
+支持版本：.Net Core 2.0 或者以上版本；
+支持类型：WebAPI,MVC,Web项目 
+支持数据库类型：SqlServer,MySql,Oracle,ElasticSearch,PostgreSQL;
+
+github: https://github.com/SpringLeee/HttpReports   
+
+</Description>
+    <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
+    <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
+    <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>
+  </PropertyGroup> 
+   
+  
+  <ItemGroup>
+    <PackageReference Include="MailKit" Version="2.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
+    <PackageReference Include="Quartz" Version="3.0.7" />
+  </ItemGroup>
+
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" Version="1.2.0" />
+  </ItemGroup>
+
+  <!--<ItemGroup>
+    <Content Include="Views\**">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>false</PackageCopyToOutput>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="wwwroot\">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+    </Content>
+  </ItemGroup>-->
+
+
+  <ItemGroup>
+    <Folder Include="Views\" />
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+
+</Project> 
+
+
