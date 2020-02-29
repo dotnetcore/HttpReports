@@ -14,17 +14,21 @@ namespace HttpReports.Test
         private MySqlStorage _storage;
 
         public override IHttpReportsStorage Storage => _storage;
+        protected override TimeSpan? DeferTime { get; set; } = TimeSpan.FromSeconds(3);
 
         [TestInitialize]
         public override async Task Init()
-        { 
+        {
             var services = new ServiceCollection();
             services.AddOptions();
-            services.AddLogging(); 
-          
+            services.AddLogging();
+
             services.Configure<MySqlStorageOptions>(o =>
             {
-                o.ConnectionString = "DataBase=HttpReports;Data Source=localhost;User Id=root;Password=123456"; 
+                o.ConnectionString = "Data Source=127.0.0.1;Initial Catalog=HttpReports;User ID=test;Password=test;charset=utf8;SslMode=none;";
+                o.DeferTime = DeferTime.Value;
+                o.DeferThreshold = 5;
+                o.EnableDefer = true;
             });
             services.AddTransient<MySqlStorage>();
             services.AddSingleton<MySqlConnectionFactory>();
@@ -32,33 +36,5 @@ namespace HttpReports.Test
             _storage = services.BuildServiceProvider().GetRequiredService<MySqlStorage>();
             await _storage.InitAsync();
         }
-
-
-        [TestMethod]
-        public async Task Insert()
-        {
-            for (int i = 0; i < 99; i++)
-            {
-                RequestInfo request = new RequestInfo
-                {
-                    CreateTime = new DateTime(2020, 2, 17, 14, 24, 15, DateTimeKind.Local),
-                    IP = "192.168.2.1",
-                    Method = "GET",
-                    Node = "Log",
-                    Milliseconds = new Random().Next(1, 9999),
-                    Route = "/User/Login",
-                    Url = "/User/Login/AAA",
-                    StatusCode = 200
-                };
-
-                await _storage.AddRequestInfoAsync(request);
-
-            }
-
-            Assert.IsTrue(true);
-
-        }
-
-
     }
 }

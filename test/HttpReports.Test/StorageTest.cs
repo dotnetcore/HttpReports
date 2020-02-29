@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
-using HttpReports.Monitor;
 using HttpReports.Storage.FilterOptions;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -15,13 +12,69 @@ namespace HttpReports.Test
     {
         public abstract T Storage { get; }
 
+        protected virtual TimeSpan? DeferTime { get; set; } = null;
+
         [TestInitialize]
-        public abstract Task Init();  
-      
+        public abstract Task Init();
+
+        [TestMethod]
+        public async Task InsertTestAsync()
+        {
+            var startTime = DateTime.Now.AddSeconds(-1);
+            var count = 500;
+            var random = new Random();
+
+            for (int i = 0; i < count; i++)
+            {
+                RequestInfo request = new RequestInfo
+                {
+                    CreateTime = DateTime.Now,
+                    IP = "192.168.1.1",
+                    Method = "GET",
+                    Node = "Log",
+                    Milliseconds = new Random().Next(1, 9999),
+                    Route = "/User/Login",
+                    Url = "/User/Login/AAA",
+                    StatusCode = 200
+                };
+
+                await Storage.AddRequestInfoAsync(request);
+
+                await Task.Delay(random.Next(1, 5));
+            }
+
+            if (DeferTime.HasValue)
+            {
+                await Task.Delay(DeferTime.Value + TimeSpan.FromSeconds(1));
+            }
+
+            var requests = await Storage.SearchRequestInfoAsync(new RequestInfoSearchFilterOption()
+            {
+                StartTime = startTime,
+                Take = count,
+                EndTime = DateTime.Now.AddSeconds(1),
+                StartTimeFormat = "yyyy-MM-dd HH:mm:ss.fff",
+                EndTimeFormat = "yyyy-MM-dd HH:mm:ss.fff",
+                IsOrderByField = true,
+                Field = RequestInfoFields.Id,
+                IsAscend = true,
+            });
+
+            Assert.AreEqual(count, requests.AllItemCount);
+
+            for (int i = 0; i < requests.AllItemCount - 1; i++)
+            {
+                if (requests.List[i].CreateTime >= requests.List[i + 1].CreateTime)
+                {
+                    Assert.Fail($"Time Error:Index-{i} Id-{requests.List[i].Id}");
+                }
+            }
+        }
 
         [TestMethod]
         public async Task InsertRequestInfoTestAsync()
         {
+            var count = 0;
             for (int day = 30; day >= 0; day = day > 3 ? day - 7 : day - 1)
             {
                 var createTime = DateTime.Now.AddDays(-day);
@@ -34,13 +87,13 @@ namespace HttpReports.Test
                     var statusCode = 200;
 
                     switch (codeIndex % 13)
-                    { 
-                        case 1:statusCode = 301; break;
+                    {
+                        case 1: statusCode = 301; break;
                         case 2: statusCode = 500; break;
                         case 3: statusCode = 302; break;
                         case 4: statusCode = 404; break;
-                        default: statusCode = 200; break; 
-                    }   
+                        default: statusCode = 200; break;
+                    }
 
                     for (int timeIndex = 0; timeIndex < 8; timeIndex++)
                     {
@@ -64,8 +117,10 @@ namespace HttpReports.Test
                                         case 3: url = "api/test3"; break;
                                         case 4: url = "api/test4"; break;
                                         default: url = "api/test"; break;
-                                    } 
-                                   
+                                    }
+
+                                    count++;
+
                                     await Storage.AddRequestInfoAsync(new RequestInfo()
                                     {
                                         CreateTime = createTime,
@@ -84,7 +139,9 @@ namespace HttpReports.Test
                 }
             }
 
-            await Task.Delay(1_500);
+            await Task.Delay(3_500);
+
+            Console.WriteLine(count);
         }
 
         [TestMethod]
