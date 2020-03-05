@@ -9,8 +9,7 @@ namespace HttpReports
     {
         public void OnException(ExceptionContext context)
         {
-            context.HttpContext.Items.Add("Exception",context.Exception);
-
+            context.HttpContext.Items.Add("Exception",context.Exception); 
         }
     }
 }

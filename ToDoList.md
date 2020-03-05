@@ -5,25 +5,17 @@
  
  #### 最近安排
 
-- [ ] 中间件记录数据库，实时入库改成批量延时入库，可以减轻数据库并发写入压力
-- [ ] 考虑支持.Net Framework 版本
-- [ ] 数据库目前固定使用 HttpReports，修改为可灵活配置数据库
-- [ ] 支持Docker
+- [x] 中间件记录数据库，实时入库改成批量延时入库，可以减轻数据库并发写入压力 
+- [x] 数据库目前固定使用 HttpReports，修改为可灵活配置数据库  
 - [x] 支持.Net Core2.1 和 core 2.0
-- [ ] 支持 ES, 支持 Oracle
+- [x] 支持 ES, 支持 Oracle
+
+
+- [ ] 支持Docker
+- [ ] 监控开关，最好是可以在Dashboard控制
+- [ ] 数据自动删除，可以设置一个月，一周...
+- [ ] 详细请求, IsHttps, QueryString, header,cookie,requestBody,responseBody, ErrorMessage, ErrorStack
 
 #### 还在考虑中 
-...
-
-
-
-#### Bug列表
-
-##### 已修复
-
-- 500错误不能记录，已在1.0.9修复  2020.01.09
-
-
-###### 未修复
-
-- 首页TOP图表,如果节点过长，图表会显示变形，这块准备把图表修改为 表格展示
+... 
+ 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
@@ -34,7 +33,7 @@ namespace HttpReports
         /// </summary>
         private readonly CancellationTokenSource _autoFlushCTS = null;
 
-        private ConcurrentBag<T> _list = new ConcurrentBag<T>();
+        private List<T> _list = new List<T>();
 
         /// <summary>
         /// 同步锁对象
@@ -42,7 +41,7 @@ namespace HttpReports
         private readonly object _syncRoot = new object();
 
         /// <summary>
-        /// 内部计数，避免直接访问ConcurrentBag<T>.Count
+        /// 内部计数
         /// </summary>
         private int _count = 0;
 
@@ -95,7 +94,7 @@ namespace HttpReports
             lock (_syncRoot)
             {
                 _list.Add(item);
-                if (++_count > FlushThreshold)
+                if (++_count >= FlushThreshold)
                 {
                     Debug.WriteLine("Out of FlushThreshold");
 
@@ -104,15 +103,15 @@ namespace HttpReports
             }
         }
 
-        private ConcurrentBag<T> SwitchBag()
+        private List<T> SwitchBag()
         {
             Debug.WriteLine("SwitchBag");
 
             lock (_syncRoot)
             {
                 _lastFlushTime = DateTime.Now;
-                _count = 1;
-                return Interlocked.Exchange(ref _list, new ConcurrentBag<T>());
+                _count = 0;
+                return Interlocked.Exchange(ref _list, new List<T>());
             }
         }
 
@@ -123,7 +122,7 @@ namespace HttpReports
             InternalFlush(SwitchBag());
         }
 
-        private void InternalFlush(ConcurrentBag<T> list)
+        private void InternalFlush(ICollection<T> list)
         {
             if (list.Count > 0)
             {

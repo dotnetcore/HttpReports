@@ -357,6 +357,9 @@ namespace HttpReports.Dashboard.Controllers
                 EndTime = request.End.TryToDateTime(),
                 Page = request.pageNumber,
                 PageSize = request.pageSize,
+                IsOrderByField = true,
+                Field = RequestInfoFields.CreateTime,
+                IsAscend = true,
             }).ConfigureAwait(false);  
 
             return Json(new { total = result.AllItemCount, rows = result.List });
