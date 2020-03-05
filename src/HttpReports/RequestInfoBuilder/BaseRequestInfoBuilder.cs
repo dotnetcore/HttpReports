@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
@@ -15,18 +15,30 @@ namespace HttpReports
         {
             Options = options.Value;
             ModelCreator = modelCreator;
-        } 
-        
+        }
+
         protected abstract IRequestInfo Build(IRequestInfo request, string path);
 
         public IRequestInfo Build(HttpContext context, Stopwatch stopwatch)
-        { 
-            var path = (context.Request.Path.Value ?? string.Empty).ToLowerInvariant(); 
+        {
+            // 过滤特定IP
+            var remoteIp = context.Connection.RemoteIpAddress.ToString();
+            if (Options.FilterIPAddress.Any(x => string.Equals(x.Trim(), remoteIp, StringComparison.CurrentCultureIgnoreCase)))
+            {
+                return null;
+            }
+
+            // 过滤特定路径
+            var path = (context.Request.Path.Value ?? string.Empty).ToLowerInvariant();
+            if (Options.FilterUrls.Any(x => string.Equals(x.Trim(), path, StringComparison.CurrentCultureIgnoreCase)))
+            {
+                return null;
+            }
 
             if (Options.FilterStaticFiles && path.Contains("."))
-            { 
+            {
                 return null;
-            }  
+            }
 
             // 创建请求信息
             var request = ModelCreator.CreateRequestInfo();
@@ -37,7 +49,7 @@ namespace HttpReports
             request.Milliseconds = ToInt32(stopwatch.ElapsedMilliseconds);
             request.CreateTime = DateTime.Now;
 
-            path = path.Replace(@"///",@"/").Replace(@"//", @"/"); 
+            path = path.Replace(@"///", @"/").Replace(@"//", @"/");
 
             return Build(request, path);
         }
@@ -59,9 +71,9 @@ namespace HttpReports
         /// <returns></returns>
         protected string GetNode(string path)
         {
-            string Node = Options.Node; 
+            string Node = Options.Node;
 
-            var arr = path.Substring(1).Split('/');   
+            var arr = path.Substring(1).Split('/');
 
             if (arr.Length > 1 && (arr[1] ?? string.Empty).ToLower() == Options.ApiPoint.ToLower())
             {
