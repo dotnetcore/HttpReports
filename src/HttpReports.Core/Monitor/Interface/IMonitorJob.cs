@@ -12,6 +12,8 @@ namespace HttpReports.Monitor
 
          string Description { get; set; }
 
+         string WebHook { get; set; }
+
          string CronLike { get; set; }
 
          string Emails { get; set; }

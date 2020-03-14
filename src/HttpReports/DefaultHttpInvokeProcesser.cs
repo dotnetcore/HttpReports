@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -21,11 +22,11 @@ namespace HttpReports
 
         public void Process(HttpContext context, Stopwatch stopwatch)
         {
-            var requestInfo = RequestInfoBuilder.Build(context, stopwatch);
+            var (requestInfo,requestDetail) = RequestInfoBuilder.Build(context, stopwatch);
 
             if (requestInfo != null)
             {
-                Task.Run(() => { Storage.AddRequestInfoAsync(requestInfo).ConfigureAwait(false); });
+                Task.Run(() => { Storage.AddRequestInfoAsync(requestInfo,requestDetail).ConfigureAwait(false); });
             }  
         }
     }

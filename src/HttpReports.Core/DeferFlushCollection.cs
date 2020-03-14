@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
@@ -10,30 +11,30 @@ namespace HttpReports
     /// 异步回调的延时冲洗集合
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class AsyncCallbackDeferFlushCollection<T> : DeferFlushCollection<T>
+    public class AsyncCallbackDeferFlushCollection<T,K> : DeferFlushCollection<T,K>
     {
-        public Func<IEnumerable<T>, CancellationToken, Task> Callback { get; }
+        public Func<Dictionary<T,K>, CancellationToken, Task> Callback { get; }
 
-        public AsyncCallbackDeferFlushCollection(Func<IEnumerable<T>, CancellationToken, Task> callback, int flushThreshold, TimeSpan flushInterval) : base(flushThreshold, flushInterval)
+        public AsyncCallbackDeferFlushCollection(Func<Dictionary<T,K>, CancellationToken, Task> callback, int flushThreshold, int flushSecond) : base(flushThreshold, flushSecond)
         {
             Callback = callback ?? throw new ArgumentNullException(nameof(callback));
         }
 
-        protected override async Task FlushAsync(IEnumerable<T> list, CancellationToken token) => await Callback(list, token).ConfigureAwait(false);
+        protected override async Task FlushAsync(Dictionary<T,K> list, CancellationToken token) => await Callback(list, token).ConfigureAwait(false);
     }
 
     /// <summary>
     /// 延时冲洗集合
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class DeferFlushCollection<T> : IDisposable
+    public abstract class DeferFlushCollection<T,K> : IDisposable
     {
         /// <summary>
         /// 自动冲洗TokenSource
         /// </summary>
         private readonly CancellationTokenSource _autoFlushCTS = null;
 
-        private List<T> _list = new List<T>();
+        private Dictionary<T, K> _list = new Dictionary<T, K>();
 
         /// <summary>
         /// 同步锁对象
@@ -51,9 +52,9 @@ namespace HttpReports
         private DateTime _lastFlushTime;
 
         /// <summary>
-        /// 定时触发间隔
+        /// 定时触发秒
         /// </summary>
-        public TimeSpan FlushInterval { get; }
+        public int FlushSecond { get; }
 
         /// <summary>
         /// 触发阈值
@@ -70,30 +71,30 @@ namespace HttpReports
         /// </summary>
         /// <param name="flushThreshold">触发阈值</param>
         /// <param name="flushInterval">定时触发间隔</param>
-        public DeferFlushCollection(int flushThreshold, TimeSpan flushInterval)
+        public DeferFlushCollection(int flushThreshold, int flushSecond)
         {
             if (flushThreshold < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(flushThreshold));
             }
 
-            if (flushInterval.TotalMilliseconds < 1)
+            if (flushSecond < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(flushInterval));
+                throw new ArgumentOutOfRangeException(nameof(flushSecond));
             }
 
             FlushThreshold = flushThreshold;
-            FlushInterval = flushInterval;
+            FlushSecond = flushSecond;
 
             _autoFlushCTS = new CancellationTokenSource();
             Task.Run(AutoFlushAsync, _autoFlushCTS.Token).ConfigureAwait(false);
         }
 
-        public void Push(T item)
+        public void Push(T t,K k)
         {
             lock (_syncRoot)
             {
-                _list.Add(item);
+                _list.Add(t,k);
                 if (++_count >= FlushThreshold)
                 {
                     Debug.WriteLine("Out of FlushThreshold");
@@ -103,7 +104,7 @@ namespace HttpReports
             }
         }
 
-        private List<T> SwitchBag()
+        private Dictionary<T,K> SwitchBag()
         {
             Debug.WriteLine("SwitchBag");
 
@@ -111,7 +112,7 @@ namespace HttpReports
             {
                 _lastFlushTime = DateTime.Now;
                 _count = 0;
-                return Interlocked.Exchange(ref _list, new List<T>());
+                return Interlocked.Exchange(ref _list, new Dictionary<T, K>());
             }
         }
 
@@ -122,7 +123,7 @@ namespace HttpReports
             InternalFlush(SwitchBag());
         }
 
-        private void InternalFlush(ICollection<T> list)
+        private void InternalFlush(Dictionary<T,K> list)
         {
             if (list.Count > 0)
             {
@@ -135,7 +136,7 @@ namespace HttpReports
             }
         }
 
-        protected abstract Task FlushAsync(IEnumerable<T> list, CancellationToken token);
+        protected abstract Task FlushAsync(Dictionary<T,K> list, CancellationToken token);
 
         private async Task AutoFlushAsync()
         {
@@ -144,10 +145,10 @@ namespace HttpReports
 
             while (!token.IsCancellationRequested)
             {
-                var interval = DateTime.Now - _lastFlushTime;
-                if (interval < FlushInterval)
+                var interval = (DateTime.Now - _lastFlushTime).Seconds;
+                if (interval < FlushSecond)
                 {
-                    await Task.Delay(FlushInterval - interval, token).ConfigureAwait(false);
+                    await Task.Delay((FlushSecond - interval) * 1000, token).ConfigureAwait(false);
                     continue;
                 }
 
@@ -172,7 +173,7 @@ namespace HttpReports
                     }
                 }
 
-                await Task.Delay(FlushInterval, token).ConfigureAwait(false);
+                await Task.Delay(FlushSecond * 1000, token).ConfigureAwait(false);
             }
         }
 

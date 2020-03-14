@@ -23,7 +23,7 @@ namespace HttpReports.Storage.Oracle
 
         public ILogger<OracleStorage> Logger { get; }
 
-        private readonly AsyncCallbackDeferFlushCollection<IRequestInfo> _deferFlushCollection = null;
+        private readonly AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail> _deferFlushCollection = null;
 
         public OracleStorageOptions _options;
 
@@ -35,7 +35,7 @@ namespace HttpReports.Storage.Oracle
 
             if (_options.EnableDefer)
             {
-                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<IRequestInfo>(AddRequestInfoAsync, _options.DeferThreshold, _options.DeferTime);
+                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail>(AddRequestInfoAsync, _options.DeferThreshold, _options.DeferSecond);
             } 
         }
 
@@ -93,6 +93,7 @@ namespace HttpReports.Storage.Oracle
 	                        Description varchar2(255),
 	                        CronLike varchar2(255),
 	                        Emails varchar2(1000),
+                            WebHook varchar2(1000),
                             Mobiles varchar2(1000),
 	                        Status number(15),
                             Nodes varchar2(255),
@@ -163,7 +164,7 @@ namespace HttpReports.Storage.Oracle
          
         } 
 
-        private async Task AddRequestInfoAsync(IEnumerable<IRequestInfo> requests, CancellationToken token)
+        private async Task AddRequestInfoAsync(Dictionary<IRequestInfo, IRequestDetail> list, CancellationToken token)
         {
             await LoggingSqlOperation(async connection =>
             {
@@ -171,7 +172,7 @@ namespace HttpReports.Storage.Oracle
 
                 sb.AppendLine("begin");
 
-                foreach (var request in requests)
+                foreach (var request in list.Select(x=>x.Key))
                 {
                     sb.AppendLine($@"Insert Into RequestInfo Values (request_seq_id.nextval,'{request.Node}','{request.Route}','{request.Url}','{request.Method}',{request.Milliseconds},{request.StatusCode},'{request.IP}',to_date('{request.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss'));  " );
                 }
@@ -183,11 +184,11 @@ namespace HttpReports.Storage.Oracle
         } 
 
 
-        public async Task AddRequestInfoAsync(IRequestInfo request)
+        public async Task AddRequestInfoAsync(IRequestInfo request, IRequestDetail detail)
         {
             if (_options.EnableDefer)
             {
-                _deferFlushCollection.Push(request);
+                _deferFlushCollection.Push(request,detail);
             }
             else
             {
@@ -778,7 +779,11 @@ namespace HttpReports.Storage.Oracle
               await connection.QueryFirstOrDefaultAsync<SysUser>(sql, new { UserName }).ConfigureAwait(false)
 
             )).ConfigureAwait(false);
-        } 
+        }
 
+        public Task<(IRequestInfo, IRequestDetail)> GetRequestInfoDetail(string Id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

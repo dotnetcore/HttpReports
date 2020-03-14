@@ -300,5 +300,16 @@ body.my-login-page {
     background-color: aliceblue !important;
 }
 
+.request_detail_title {
+    color: #c7c7c7 !important;
+}
+.footer-copyright {
+    color:#d0d0d0;
+}
+
+.request_detail_notfound {
+    color: #c7c7c7 !important;
+}
+
 
  

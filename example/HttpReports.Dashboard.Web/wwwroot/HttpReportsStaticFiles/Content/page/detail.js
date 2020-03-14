@@ -110,6 +110,16 @@ function InitTable() {
                     value = value.replace('T', ' '); 
                     return value;
                 }
+            },
+            {
+                field: 'id',
+                title: '详细信息',
+                align: 'center',
+                formatter: function (value, row, index) {
+
+                    var btn = '<a href="RequestInfoDetail/' + value + '" type="button"  style="width:60px;" class="btn btn-xs btn-primary">详情</a>';
+                    return btn;
+                }
             }
         ]
     });

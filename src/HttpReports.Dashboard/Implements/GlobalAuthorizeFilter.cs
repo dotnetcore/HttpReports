@@ -53,7 +53,7 @@ namespace HttpReports.Dashboard.Implements
             } 
  
 
-            string username = context.HttpContext.Request.Cookies[BasicConfig.Login_Cookie_Id];
+            string username = context.HttpContext.Request.Cookies[BasicConfig.LoginCookieId];
 
             if (string.IsNullOrEmpty(username))
             {

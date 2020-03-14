@@ -130,7 +130,7 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
  public void ConfigureServices(IServiceCollection services)
  {
 	// 添加Daashboard
-	  services.AddHttpReportsDashborad().UseSQLServerStorage();
+	  services.AddHttpReportsDashboard().UseSQLServerStorage();
 
 	  services.AddControllersWithViews();
 }

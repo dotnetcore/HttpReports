@@ -26,25 +26,11 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IRequestInfoBuilder, DefaultRequestInfoBuilder>();
 
             services.AddMvcCore(x => { 
-                x.Filters.Add<GlobalExceptionFilter>();
+                x.Filters.Add<HttpReportsExceptionFilter>();
             });
 
 
             return new HttpReportsBuilder(services, configuration);
-        }
-
-       
-        private static IHttpReportsBuilder UseAPI(this IHttpReportsBuilder builder)
-        {
-            builder.Services.AddSingleton<IRequestInfoBuilder, ApiRequestInfoBuilder>();
-            return builder;
-        }
-
-         
-        private static IHttpReportsBuilder UseWeb(this IHttpReportsBuilder builder)
-        {
-            builder.Services.AddSingleton<IRequestInfoBuilder, WebRequestInfoBuilder>();
-            return builder;
         } 
  
         public static IApplicationBuilder UseHttpReports(this IApplicationBuilder app)

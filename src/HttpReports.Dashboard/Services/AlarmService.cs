@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 using HttpReports.Dashboard.Models;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Options;
 
 using MimeKit;
 using MimeKit.Text;
+using Newtonsoft.Json;
 
 namespace HttpReports.Dashboard.Services
 {
@@ -55,6 +57,50 @@ namespace HttpReports.Dashboard.Services
                 return;
             }
 
+           await NotifyEmailAsync(option);
+
+           await NotifyWebHookAsync(option); 
+
+        }
+
+        private async Task NotifyWebHookAsync(AlarmOption option)
+        {
+            try
+            {
+                if (option.WebHook.IsEmpty())
+                {
+                    return;
+                } 
+                
+                using (var httpClient = new HttpClient())
+                {
+                    string Title = "HttpReports - 预警触发通知";
+
+                    HttpContent content = new StringContent(JsonConvert.SerializeObject(new { Title, option.Content }));
+                    content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+
+                    var httpResponseMessage = await httpClient.PostAsync(option.WebHook, content);
+
+                    if (httpResponseMessage.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        Logger.LogInformation("WebHook推送成功");
+                    }
+                }  
+
+            }
+            catch (System.Exception ex)
+            { 
+                Logger.LogInformation("WebHook推送失败：" + ex.Message, ex);
+            } 
+        }
+
+        private async Task NotifyEmailAsync(AlarmOption option)
+        {
+            if (option.Emails == null || option.Emails.Count() == 0)
+            {
+                return;
+            }
+
             if (MailOptions.Account.IsEmpty() || MailOptions.Password.IsEmpty())
             {
                 Logger.LogInformation("预警邮件配置不能为空");
@@ -62,7 +108,7 @@ namespace HttpReports.Dashboard.Services
             }
 
             if (option.Emails?.Any() == true)
-            { 
+            {
                 var message = new MimeMessage();
                 message.From.Add(new MailboxAddress("HttpReports", MailOptions.Account));
 
@@ -74,9 +120,10 @@ namespace HttpReports.Dashboard.Services
                 message.Subject = "HttpReports - 预警触发通知";
 
                 message.Body = new TextPart(option.IsHtml ? TextFormat.Html : TextFormat.Plain) { Text = option.Content };
-                await SendMessageAsync(message).ConfigureAwait(false);
-                 
-            }
-        }
+                await SendMessageAsync(message).ConfigureAwait(false); 
+
+            } 
+        } 
+
     }
 }

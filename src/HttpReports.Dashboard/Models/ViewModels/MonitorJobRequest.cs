@@ -17,6 +17,8 @@ namespace HttpReports.Dashboard.ViewModels
 
         public string Emails { get; set; }
 
+        public string WebHook { get; set; }
+
         public string Mobiles { get; set; }
 
         public int Interval { get; set; }

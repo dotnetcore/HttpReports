@@ -25,11 +25,16 @@ namespace HttpReports.Dashboard.Services
             if (request.Nodes.IsEmpty())
                 return "至少要选择一个服务节点";
 
-            if (request.Emails.IsEmpty())
-                return "邮箱不能为空";
-
+            if (request.Emails.IsEmpty() || request.WebHook.IsEmpty())
+            {
+                return "邮件推送,推送地址不能都为空"; 
+            }   
+            
             if (request.Emails.Length > 100)
                 return "邮箱过长";
+
+            if (request.WebHook.Length > 100)
+                return "推送地址过长";
 
             if (request.ResponseTimeOutMonitor != null)
             {
@@ -200,6 +205,7 @@ namespace HttpReports.Dashboard.Services
                 Description = (request.Description ?? string.Empty),
                 CronLike = ParseJobRate(request.Interval),
                 Emails = request.Emails.Replace("，", ","),
+                WebHook = request.WebHook,
                 Mobiles = (request.Mobiles ?? string.Empty).Replace("，", ","),
                 Status = request.Status,
                 Nodes = request.Nodes,
@@ -215,8 +221,7 @@ namespace HttpReports.Dashboard.Services
             MonitorJobPayload payload = JsonConvert.DeserializeObject<MonitorJobPayload>(job.Payload);
 
             MonitorJobRequest request = new MonitorJobRequest()
-            {
-
+            { 
                 Id = job.Id,
                 Title = job.Title,
                 Description = job.Description,
@@ -224,7 +229,8 @@ namespace HttpReports.Dashboard.Services
                 Interval = ParseJobCron(job.CronLike),
                 Status = job.Status,
                 Mobiles = job.Mobiles,
-                Nodes = job.Nodes
+                Nodes = job.Nodes,
+                WebHook = job.WebHook
             };
 
             if (payload.ResponseTimeOutMonitor != null)

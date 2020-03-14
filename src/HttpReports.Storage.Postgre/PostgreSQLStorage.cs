@@ -23,7 +23,7 @@ namespace HttpReports.Storage.PostgreSQL
 
         public ILogger<PostgreSQLStorage> Logger { get; }
 
-        private readonly AsyncCallbackDeferFlushCollection<IRequestInfo> _deferFlushCollection = null;
+        private readonly AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail> _deferFlushCollection = null;
 
         public PostgreSQLStorage(IOptions<PostgreStorageOptions> options, PostgreConnectionFactory connectionFactory, ILogger<PostgreSQLStorage> logger)
         {
@@ -32,15 +32,15 @@ namespace HttpReports.Storage.PostgreSQL
             Logger = logger;
             if (Options.EnableDefer)
             {
-                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<IRequestInfo>(AddRequestInfoAsync, Options.DeferThreshold, Options.DeferTime);
+                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail>(AddRequestInfoAsync, Options.DeferThreshold, Options.DeferSecond);
             }
         }
 
-        private async Task AddRequestInfoAsync(IEnumerable<IRequestInfo> requests, System.Threading.CancellationToken token)
+        private async Task AddRequestInfoAsync(Dictionary<IRequestInfo, IRequestDetail> list, System.Threading.CancellationToken token)
         {
             await LoggingSqlOperation(async connection =>
             {
-                var values = string.Join(",", requests.Select(m => $"('{m.Node}','{m.Route}','{m.Url}','{m.Method}',{m.Milliseconds},{m.StatusCode},'{m.IP}','{m.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}')"));
+                var values = string.Join(",", list.Select(x=> x.Key).Select(m => $"('{m.Node}','{m.Route}','{m.Url}','{m.Method}',{m.Milliseconds},{m.StatusCode},'{m.IP}','{m.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}')"));
 
                 await connection.ExecuteAsync($@"INSERT INTO ""RequestInfo"" (Node, Route, Url, Method, Milliseconds, StatusCode, IP, CreateTime) VALUES {values}").ConfigureAwait(false);
             }, "请求数据批量保存失败").ConfigureAwait(false);
@@ -48,8 +48,8 @@ namespace HttpReports.Storage.PostgreSQL
         public async Task<bool> AddMonitorJob(IMonitorJob job)
         {
             string sql = $@"Insert Into ""MonitorJob"" 
-            (Title,Description,CronLike,Emails,Mobiles,Status,Nodes,PayLoad,CreateTime)
-             Values (@Title,@Description,@CronLike,@Emails,@Mobiles,@Status,@Nodes,@PayLoad,@CreateTime)";
+            (Id,Title,Description,CronLike,Emails,WebHook,Mobiles,Status,Nodes,PayLoad,CreateTime)
+             Values (@Title,@Description,@CronLike,@Emails,@WebHook, @Mobiles,@Status,@Nodes,@PayLoad,@CreateTime)";
 
             TraceLogSql(sql);
 
@@ -61,11 +61,11 @@ namespace HttpReports.Storage.PostgreSQL
 
         }
 
-        public async Task AddRequestInfoAsync(IRequestInfo request)
+        public async Task AddRequestInfoAsync(IRequestInfo request, IRequestDetail requestDetail)
         {
             if (Options.EnableDefer)
             {
-                _deferFlushCollection.Push(request);
+                _deferFlushCollection.Push(request,requestDetail);
             }
             else
             {
@@ -92,12 +92,12 @@ namespace HttpReports.Storage.PostgreSQL
 
         public async Task<bool> DeleteMonitorJob(string Id)
         {
-            string sql = $@"Delete From ""MonitorJob"" Where Id = " + Id;
+            string sql = $@"Delete From ""MonitorJob"" Where Id = @Id ";
 
             TraceLogSql(sql);
 
             return await LoggingSqlOperation(async connection =>
-            (await connection.ExecuteAsync(sql).ConfigureAwait(false)) > 0).ConfigureAwait(false);
+            (await connection.ExecuteAsync(sql,new { Id }).ConfigureAwait(false)) > 0).ConfigureAwait(false);
         }
 
 
@@ -350,6 +350,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
                               Description varchar(255),
                               CronLike varchar(255),
                               Emails varchar(1000),
+                              WebHook varchar(1000),
                               Mobiles varchar(1000),
                               Status Int,
                               Nodes varchar(255),
@@ -616,6 +617,11 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
               await connection.QueryFirstOrDefaultAsync<MonitorJob>(sql).ConfigureAwait(false)
 
             )).ConfigureAwait(false);
+        }
+
+        public Task<(IRequestInfo, IRequestDetail)> GetRequestInfoDetail(string Id)
+        {
+            throw new NotImplementedException();
         }
 
         private class KVClass<TKey, TValue>

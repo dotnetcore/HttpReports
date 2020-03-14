@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-
+using System.IO;
 using Microsoft.AspNetCore.Http;
 
 namespace HttpReports

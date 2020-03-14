@@ -374,8 +374,8 @@ namespace HttpReports.Dashboard.Controllers
 
             IMonitorJob model = _monitorService.GetMonitorJob(request);
 
-            if (request.Id.IsEmpty() || request.Id == "0")
-                await _storage.AddMonitorJob(model).ConfigureAwait(false);
+            if (request.Id.IsEmpty() || request.Id == "0") 
+                await _storage.AddMonitorJob(model).ConfigureAwait(false);  
 
             else
                 await _storage.UpdateMonitorJob(model).ConfigureAwait(false);
@@ -431,7 +431,7 @@ namespace HttpReports.Dashboard.Controllers
             if (model == null) 
                 return Json(new HttpResultEntity(-1, "用户名或者密码错误", null)); 
 
-            HttpContext.SetCookie(BasicConfig.Login_Cookie_Id,user.UserName, 60 * 30 * 7); 
+            HttpContext.SetCookie(BasicConfig.LoginCookieId,user.UserName, 60 * 30 * 7); 
 
             return Json(new HttpResultEntity(1, "登录成功",null));  
         }

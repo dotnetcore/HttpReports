@@ -19,7 +19,6 @@
     <ProjectReference Include="..\..\src\HttpReports.Dashboard\HttpReports.Dashboard.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Storage.ElasticSearch\HttpReports.Storage.ElasticSearch.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Storage.MySQL\HttpReports.Storage.MySQL.csproj" />
-    <ProjectReference Include="..\..\src\HttpReports.Storage.Oracle\HttpReports.Storage.Oracle.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Storage.Postgre\HttpReports.Storage.PostgreSQL.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Storage.SQLServer\HttpReports.Storage.SQLServer.csproj" />
   </ItemGroup>
@@ -39,6 +38,10 @@
       <Pack>true</Pack>
     </Content>
     <Content Update="Views\HttpReports\Index.cshtml">
+      <PackageCopyToOutput>false</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="Views\HttpReports\RequestInfoDetail.cshtml">
       <PackageCopyToOutput>false</PackageCopyToOutput>
       <Pack>true</Pack>
     </Content>
@@ -1180,6 +1183,11 @@
       <Pack>true</Pack>
     </Content>
     <Content Update="wwwroot\HttpReportsStaticFiles\Content\page\main.js">
+      <PackageFlatten>true</PackageFlatten>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <Pack>true</Pack>
+    </Content>
+    <Content Update="wwwroot\HttpReportsStaticFiles\Content\page\requestinfo_detail.js">
       <PackageFlatten>true</PackageFlatten>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <Pack>true</Pack>

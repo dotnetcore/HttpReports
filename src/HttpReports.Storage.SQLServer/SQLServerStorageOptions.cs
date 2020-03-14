@@ -13,9 +13,9 @@ namespace HttpReports.Storage.SQLServer
         public bool EnableDefer { get; set; }
 
         /// <summary>
-        /// 延时时间
+        /// 延时秒
         /// </summary>
-        public TimeSpan DeferTime { get; set; }
+        public int DeferSecond { get; set; }
 
         /// <summary>
         /// 延时阈值

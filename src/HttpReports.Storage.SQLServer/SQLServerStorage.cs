@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks; 
@@ -25,7 +26,7 @@ namespace HttpReports.Storage.SQLServer
 
         public ILogger<SQLServerStorage> Logger { get; } 
 
-        private readonly AsyncCallbackDeferFlushCollection<IRequestInfo> _deferFlushCollection = null;
+        private readonly AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail> _deferFlushCollection = null;
 
         public SQLServerStorage(IOptions<SQLServerStorageOptions> options,SQLServerConnectionFactory connectionFactory, ILogger<SQLServerStorage> logger)
         {
@@ -36,7 +37,7 @@ namespace HttpReports.Storage.SQLServer
 
             if (_options.EnableDefer)
             {
-                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<IRequestInfo>(AddRequestInfoAsync,_options.DeferThreshold, _options.DeferTime);
+                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail>(AddRequestInfoAsync,_options.DeferThreshold, _options.DeferSecond);
             }
         }
 
@@ -44,48 +45,58 @@ namespace HttpReports.Storage.SQLServer
         {
             try
             {
-                using (var con = ConnectionFactory.GetConnection())
-                { 
+                using (var con = ConnectionFactory.GetConnection()) 
+                {   
+                     
                     if (con.QueryFirstOrDefault<int>($" Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.RequestInfo') ") == 0)
                     {
                         await con.ExecuteAsync(@"   
-                        CREATE TABLE [dbo].[RequestInfo](
-	                        [Id] [int] IDENTITY(1,1) NOT NULL,
-	                        [Node] [nvarchar](50) NOT NULL,
-	                        [Route] [nvarchar](50) NOT NULL,
-	                        [Url] [nvarchar](200) NOT NULL,
-	                        [Method] [nvarchar](50) NOT NULL,
-	                        [Milliseconds] [int] NOT NULL,
-	                        [StatusCode] [int] NOT NULL,
-	                        [IP] [nvarchar](50) NOT NULL,
-	                        [CreateTime] [datetime] NOT NULL,
-                         CONSTRAINT [PK_RequestInfo] PRIMARY KEY CLUSTERED 
-                        (
-	                        [Id] ASC
-                        )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-                        ) ON [PRIMARY]
+                            CREATE TABLE [dbo].[RequestInfo](
+	                            [Id] [varchar](50) NOT NULL PRIMARY KEY,
+	                            [Node] [nvarchar](50) NULL,
+	                            [Route] [nvarchar](50) NULL,
+	                            [Url] [nvarchar](200) NULL,
+	                            [Method] [nvarchar](50) NULL,
+	                            [Milliseconds] [int] NULL,
+	                            [StatusCode] [int] NULL,
+	                            [IP] [nvarchar](50) NULL,
+	                            [CreateTime] [datetime] NULL)
                     ").ConfigureAwait(false);
                     } 
-                  
+
+                    if (con.QueryFirstOrDefault<int>($" Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.RequestDetail') ") == 0)
+                    {
+                        await con.ExecuteAsync(@"   
+                            CREATE TABLE [dbo].[RequestDetail](
+	                            [Id] [varchar](50) NOT NULL PRIMARY KEY,
+	                            [RequestId] [varchar](50) NOT NULL,
+                                [Scheme] [varchar](10) NULL,
+                                [QueryString] [text] NULL,
+                                [Header] [text] NULL,
+                                [Cookie] [text] NULL,
+                                [RequestBody] [text] NULL,
+                                [ResponseBody] [text] NULL,
+                                [ErrorMessage] [text] NULL,
+                                [ErrorStack] [text] NULL,
+                                [CreateTime] [datetime] NULL )
+                    ").ConfigureAwait(false);
+                    } 
+
                     if (con.QueryFirstOrDefault<int>($"Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.MonitorJob')") == 0)
                     {
                         await con.ExecuteAsync(@"  
                             CREATE TABLE [dbo].[MonitorJob](
-	                            [Id] [int] IDENTITY(1,1) NOT NULL,
-	                            [Title] [nvarchar](255) NOT NULL,
-                                [Description] [nvarchar](255) NOT NULL,
-                                [CronLike] [nvarchar](255) NOT NULL, 
-                                [Emails] [nvarchar](1000) NOT NULL,
-                                [Mobiles] [nvarchar](1000) NOT NULL,
-                                [Status] [int] NOT NULL,
-                                [Nodes] [nvarchar](255) NOT NULL,
-                                [PayLoad] [nvarchar](2000) NOT NULL, 
-	                            [CreateTime] [datetime] NULL, 
-                             CONSTRAINT [PK_MonitorJob] PRIMARY KEY CLUSTERED 
-                            (
-	                            [Id] ASC
-                            )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-                            ) ON [PRIMARY]
+	                            [Id] [varchar](50) NOT NULL PRIMARY KEY,
+	                            [Title] [nvarchar](255) NULL,
+                                [Description] [nvarchar](255) NULL,
+                                [CronLike] [nvarchar](255) NULL, 
+                                [Emails] [nvarchar](1000)  NULL,
+                                [WebHook] [nvarchar](1000) NULL,
+                                [Mobiles] [nvarchar](1000) NULL,
+                                [Status] [int] NULL,
+                                [Nodes] [nvarchar](255) NULL,
+                                [PayLoad] [nvarchar](2000) NULL, 
+	                            [CreateTime] [datetime] NULL )
                       ").ConfigureAwait(false);
                     } 
                    
@@ -94,46 +105,54 @@ namespace HttpReports.Storage.SQLServer
                         await con.ExecuteAsync($@"
 
                            CREATE TABLE [SysUser]( 
-	                            [Id] [int] IDENTITY(1,1) NOT NULL,
+	                            [Id] [varchar](50) NOT NULL PRIMARY KEY,
 	                            [UserName] [nvarchar](100) NOT NULL, 
 	                            [Password] [nvarchar](100) NOT NULL );  
 
-                            Insert Into [SysUser] Values ('{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}'); 
+                            Insert Into [SysUser] Values ('{MD5_16(Guid.NewGuid().ToString())}','{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}'); 
 
                          ").ConfigureAwait(false);
 
                     } 
+
                 } 
             }
             catch (Exception ex)
             {
-                throw new Exception("数据库初始化失败：" + ex.Message,ex);
+                throw new Exception("Database init failed：" + ex.Message,ex);
             } 
         }
          
-        private async Task AddRequestInfoAsync(IEnumerable<IRequestInfo> requests, CancellationToken token)
+        private async Task AddRequestInfoAsync(Dictionary<IRequestInfo, IRequestDetail> list, CancellationToken token)
         {
             await LoggingSqlOperation(async connection =>
             { 
-                string sql = string.Join(",", requests.Select(x => $" ('{x.Node}','{x.Route}','{x.Url}','{x.Method}',{x.Milliseconds},{x.StatusCode},'{x.IP}','{x.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}') ")); 
+                string requestSql = string.Join(",", list.Select(x => x.Key).Select(x => $" ('{x.Id}','{x.Node}','{x.Route}','{x.Url}','{x.Method}',{x.Milliseconds},{x.StatusCode},'{x.IP}','{x.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}') ")); 
               
-                await connection.ExecuteAsync($"Insert into [RequestInfo] ([Node],[Route],[Url],[Method],[Milliseconds],[StatusCode],[IP],[CreateTime]) VALUES {sql}").ConfigureAwait(false);
+                await connection.ExecuteAsync($"Insert into [RequestInfo] ([Id],[Node],[Route],[Url],[Method],[Milliseconds],[StatusCode],[IP],[CreateTime]) VALUES {requestSql}").ConfigureAwait(false);
+
+                string detailSql = string.Join(",", list.Select(x => x.Value).Select(x => $" ('{x.Id}','{x.RequestId}','{x.Scheme}','{x.QueryString}','{x.Header}','{x.Cookie}','{x.RequestBody}','{x.ResponseBody}','{x.ErrorMessage}','{x.ErrorStack}','{x.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}' ) "));
+
+                await connection.ExecuteAsync($"Insert into [RequestDetail] (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime) VALUES {detailSql}").ConfigureAwait(false);
+                  
             }, "请求数据批量保存失败").ConfigureAwait(false);
         }
 
 
-        public async Task AddRequestInfoAsync(IRequestInfo request)
+        public async Task AddRequestInfoAsync(IRequestInfo request, IRequestDetail detail)
         {
             if (_options.EnableDefer)
             {
-                _deferFlushCollection.Push(request);
+                _deferFlushCollection.Push(request,detail);
             }
             else
             {
                 await LoggingSqlOperation(async connection =>
                 {
-                    await connection.ExecuteAsync("INSERT INTO [RequestInfo] (Node,Route,Url,Method,Milliseconds,StatusCode,IP,CreateTime)  VALUES (@Node, @Route, @Url, @Method, @Milliseconds, @StatusCode, @IP, @CreateTime)", request).ConfigureAwait(false);
-                     
+                    await connection.ExecuteAsync("INSERT INTO [RequestInfo] (Id,Node,Route,Url,Method,Milliseconds,StatusCode,IP,CreateTime)  VALUES (@Id,@Node, @Route, @Url, @Method, @Milliseconds, @StatusCode, @IP, @CreateTime)", request).ConfigureAwait(false);
+
+                    await connection.ExecuteAsync("INSERT INTO [RequestDetail] (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime)  VALUES (@Id,@RequestId,@Scheme,@QueryString,@Header,@Cookie,@RequestBody,@ResponseBody,@ErrorMessage,@ErrorStack,@CreateTime)", detail).ConfigureAwait(false);
+
                 }, "请求数据保存失败").ConfigureAwait(false);
 
             } 
@@ -444,7 +463,7 @@ namespace HttpReports.Storage.SQLServer
             { 
                 result.AllItemCount = connection.QueryFirstOrDefault<int>(countSql);
 
-                result.List.AddRange((await connection.GetListBySqlAsync<RequestInfo>(sql,"Id desc",filterOption.PageSize,filterOption.Page,result.AllItemCount).ConfigureAwait(false)).ToArray());
+                result.List.AddRange((await connection.GetListBySqlAsync<RequestInfo>(sql,"CreateTime desc",filterOption.PageSize,filterOption.Page,result.AllItemCount).ConfigureAwait(false)).ToArray());
             }, "查询请求信息列表异常").ConfigureAwait(false);
 
             return result;
@@ -597,9 +616,11 @@ namespace HttpReports.Storage.SQLServer
 
         public async Task<bool> AddMonitorJob(IMonitorJob job)
         {
+            job.Id = MD5_16(Guid.NewGuid().ToString());
+
             string sql = $@"Insert Into MonitorJob 
-            (Title,Description,CronLike,Emails,Mobiles,Status,Nodes,PayLoad,CreateTime)
-             Values (@Title,@Description,@CronLike,@Emails,@Mobiles,@Status,@Nodes,@PayLoad,@CreateTime)";
+            (Id,Title,Description,CronLike,Emails,WebHook,Mobiles,Status,Nodes,PayLoad,CreateTime)
+             Values (@Id,@Title,@Description,@CronLike,@Emails,@WebHook,@Mobiles,@Status,@Nodes,@PayLoad,@CreateTime)";
 
             TraceLogSql(sql);
 
@@ -615,7 +636,7 @@ namespace HttpReports.Storage.SQLServer
         {
             string sql = $@"Update MonitorJob 
 
-                Set Title = @Title,Description = @Description,CronLike = @CronLike,Emails = @Emails,Mobiles = @Mobiles,Status= @Status,Nodes = @Nodes,PayLoad = @PayLoad 
+                Set Title = @Title,Description = @Description,CronLike = @CronLike,Emails = @Emails,WebHook = @WebHook, Mobiles = @Mobiles,Status= @Status,Nodes = @Nodes,PayLoad = @PayLoad 
 
                 Where Id = @Id ";
 
@@ -630,7 +651,7 @@ namespace HttpReports.Storage.SQLServer
 
         public async Task<IMonitorJob> GetMonitorJob(string Id)
         {
-            string sql = $@"Select * From MonitorJob Where Id = " + Id;
+            string sql = $@"Select * From MonitorJob Where Id = '{Id}' " ;
 
             TraceLogSql(sql);
 
@@ -656,7 +677,7 @@ namespace HttpReports.Storage.SQLServer
 
         public async Task<bool> DeleteMonitorJob(string Id)
         {
-            string sql = $@"Delete From MonitorJob Where Id = " + Id;
+            string sql = $@"Delete From MonitorJob Where Id = '{Id}' ";
 
             TraceLogSql(sql);
 
@@ -703,7 +724,39 @@ namespace HttpReports.Storage.SQLServer
               await connection.QueryFirstOrDefaultAsync<SysUser>(sql, new { UserName }).ConfigureAwait(false)
 
             )).ConfigureAwait(false);
-        } 
+        }
 
+        private string MD5_16(string source)
+        {
+            MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
+            string val = BitConverter.ToString(md5.ComputeHash(UTF8Encoding.Default.GetBytes(source)), 4, 8).Replace("-", "").ToLower();
+            return val;
+        }
+
+        public async Task<(IRequestInfo, IRequestDetail)> GetRequestInfoDetail(string Id)
+        {
+            string sql = " Select * From RequestInfo Where Id = @Id";
+
+            TraceLogSql(sql);  
+
+             var requestInfo = await LoggingSqlOperation(async connection => (
+
+              await connection.QueryFirstOrDefaultAsync<RequestInfo>(sql, new { Id }).ConfigureAwait(false)
+
+            )).ConfigureAwait(false);
+
+            string detailSql = " Select * From RequestDetail Where RequestId = @Id";
+
+            TraceLogSql(detailSql);
+
+            var requestDetail = await LoggingSqlOperation(async connection => (
+
+             await connection.QueryFirstOrDefaultAsync<RequestDetail>(detailSql, new { Id }).ConfigureAwait(false)
+
+           )).ConfigureAwait(false);
+
+            return (requestInfo,requestDetail);
+
+        }
     }
 }

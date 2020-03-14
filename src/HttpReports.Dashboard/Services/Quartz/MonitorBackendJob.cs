@@ -75,10 +75,12 @@ namespace HttpReports.Dashboard.Services.Quartz
         {
             foreach (var item in alarmOption)
             {
-                if (alarmOption != null)
+                if (item != null)
                 {
                     item.Emails = job.Emails?.Split(',').AsEnumerable();
                     item.Phones = job.Mobiles?.Split(',').AsEnumerable();
+                    item.WebHook = job.WebHook;
+
                     await _alarmService.AlarmAsync(item);
                 }
             }

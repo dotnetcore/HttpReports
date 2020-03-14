@@ -15,6 +15,8 @@ namespace HttpReports.Models
 
         public string CronLike { get; set; }
 
+        public string WebHook { get; set; }
+
         public string Emails { get; set; }
 
         public string Mobiles { get; set; }

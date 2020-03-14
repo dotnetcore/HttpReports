@@ -4,6 +4,7 @@ using HttpReports.Core.Config;
 using HttpReports.Dashboard.Implements;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace HttpReports.Dashboard.Controllers
 {
@@ -65,6 +66,17 @@ namespace HttpReports.Dashboard.Controllers
             return View();
         }
 
+        public async Task<IActionResult> RequestInfoDetail(string Id = "")
+        {
+            var (requestInfo, requestDetail) = await _storage.GetRequestInfoDetail(Id); 
+
+            ViewBag.Info = requestInfo;
+            ViewBag.Detail = requestDetail;  
+
+            return View();  
+        }
+
+
         private string ParseJobCronString(string cron)
         {
             if (cron == "0 0/1 * * * ?") return "1分钟";
@@ -94,7 +106,7 @@ namespace HttpReports.Dashboard.Controllers
         [AllowAnonymous]
         public IActionResult UserLogout()
         {
-            HttpContext.DeleteCookie(BasicConfig.Login_Cookie_Id);
+            HttpContext.DeleteCookie(BasicConfig.LoginCookieId);
 
             return new RedirectResult("/HttpReports/UserLogin");
         } 

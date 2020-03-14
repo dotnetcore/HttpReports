@@ -26,7 +26,7 @@ namespace HttpReports.Storage.ElasticSearch
 
         public ILogger<ElasticSearchStorage> Logger { get; }
 
-        private readonly AsyncCallbackDeferFlushCollection<IRequestInfo> _deferFlushCollection = null;
+        private readonly AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail> _deferFlushCollection = null;
 
         public ElasticSearchStorage(IOptions<ElasticSearchStorageOptions> options, ILogger<ElasticSearchStorage> logger, ElasticSearchConnectionFactory connectionFactory)
         {
@@ -36,7 +36,7 @@ namespace HttpReports.Storage.ElasticSearch
 
             if (Options.EnableDefer)
             {
-                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<IRequestInfo>(AddRequestInfoAsync, Options.DeferThreshold, Options.DeferTime);
+                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail>(AddRequestInfoAsync, Options.DeferThreshold, Options.DeferSecond);
             }
         }
 
@@ -51,11 +51,11 @@ namespace HttpReports.Storage.ElasticSearch
             return response.IsValid;
         }
 
-        private async Task AddRequestInfoAsync(IEnumerable<IRequestInfo> requests, CancellationToken token)
+        private async Task AddRequestInfoAsync(Dictionary<IRequestInfo, IRequestDetail> list, CancellationToken token)
         {
             BulkDescriptor Descriptor = new BulkDescriptor(GetIndexName<RequestInfo>());
 
-            foreach (var item in requests)
+            foreach (var item in list.Select(x=>x.Key))
             {
                 Descriptor.Create<IRequestInfo>(op => op.Document(item));
             }
@@ -63,11 +63,11 @@ namespace HttpReports.Storage.ElasticSearch
             await Client.BulkAsync(Descriptor).ConfigureAwait(false);
         }
 
-        public async Task AddRequestInfoAsync(IRequestInfo request)
+        public async Task AddRequestInfoAsync(IRequestInfo request, IRequestDetail requestDetail)
         {
             if (Options.EnableDefer)
             {
-                _deferFlushCollection.Push(request);
+                _deferFlushCollection.Push(request,requestDetail);
             }
             else
             {
@@ -798,6 +798,11 @@ namespace HttpReports.Storage.ElasticSearch
             MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
             string val = BitConverter.ToString(md5.ComputeHash(UTF8Encoding.Default.GetBytes(source)), 4, 8).Replace("-", "").ToLower();
             return val;
+        }
+
+        public Task<(IRequestInfo, IRequestDetail)> GetRequestInfoDetail(string Id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

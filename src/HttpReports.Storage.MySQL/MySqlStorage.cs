@@ -26,7 +26,7 @@ namespace HttpReports.Storage.MySql
 
         public ILogger<MySqlStorage> Logger { get; }
 
-        private readonly AsyncCallbackDeferFlushCollection<IRequestInfo> _deferFlushCollection = null;
+        private readonly AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail> _deferFlushCollection = null;
 
         public MySqlStorage(IOptions<MySqlStorageOptions> options, MySqlConnectionFactory connectionFactory, ILogger<MySqlStorage> logger)
         {
@@ -35,7 +35,7 @@ namespace HttpReports.Storage.MySql
             Logger = logger;
             if (Options.EnableDefer)
             {
-                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<IRequestInfo>(AddRequestInfoAsync, Options.DeferThreshold, Options.DeferTime);
+                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail>(AddRequestInfoAsync, Options.DeferThreshold, Options.DeferSecond);
             }
         }
 
@@ -70,6 +70,7 @@ CREATE TABLE IF NOT EXISTS `MonitorJob` (
   `Description` varchar(255) DEFAULT NULL,
   `CronLike` varchar(255) DEFAULT NULL,
   `Emails` varchar(1000) DEFAULT NULL,
+  `WebHook` varchar(1000) DEFAULT NULL,
   `Mobiles` varchar(1000) DEFAULT NULL,
   `Status` int(11) DEFAULT NULL,
   `Nodes` varchar(255) DEFAULT NULL,
@@ -116,21 +117,21 @@ CREATE TABLE IF NOT EXISTS `SysUser` (
 
         #endregion Init
 
-        private async Task AddRequestInfoAsync(IEnumerable<IRequestInfo> requests, CancellationToken token)
+        private async Task AddRequestInfoAsync(Dictionary<IRequestInfo, IRequestDetail> list, CancellationToken token)
         {
             await LoggingSqlOperation(async connection =>
             {
-                var values = string.Join(",", requests.Select(m => $"('{MySqlHelper.EscapeString(m.Node)}','{MySqlHelper.EscapeString(m.Route)}','{MySqlHelper.EscapeString(m.Url)}','{MySqlHelper.EscapeString(m.Method)}',{m.Milliseconds},{m.StatusCode},'{MySqlHelper.EscapeString(m.IP)}','{m.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}')"));
+                var values = string.Join(",", list.Select(x=>x.Key).Select(m => $"('{MySqlHelper.EscapeString(m.Node)}','{MySqlHelper.EscapeString(m.Route)}','{MySqlHelper.EscapeString(m.Url)}','{MySqlHelper.EscapeString(m.Method)}',{m.Milliseconds},{m.StatusCode},'{MySqlHelper.EscapeString(m.IP)}','{m.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}')"));
 
                 await connection.ExecuteAsync($"INSERT INTO `RequestInfo`(`Node`, `Route`, `Url`, `Method`, `Milliseconds`, `StatusCode`, `IP`, `CreateTime`) VALUES {values}").ConfigureAwait(false);
             }, "请求数据批量保存失败").ConfigureAwait(false);
         }
 
-        public async Task AddRequestInfoAsync(IRequestInfo request)
+        public async Task AddRequestInfoAsync(IRequestInfo request, IRequestDetail requestDetail)
         {
             if (Options.EnableDefer)
             { 
-                _deferFlushCollection.Push(request);
+                _deferFlushCollection.Push(request,requestDetail);
             }
             else
             {
@@ -629,8 +630,8 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
         public async Task<bool> AddMonitorJob(IMonitorJob job)
         {
             string sql = $@"Insert Into MonitorJob 
-            (Title,Description,CronLike,Emails,Mobiles,Status,Nodes,PayLoad,CreateTime)
-             Values (@Title,@Description,@CronLike,@Emails,@Mobiles,@Status,@Nodes,@PayLoad,@CreateTime)";
+            (Id,Title,Description,CronLike,Emails,WebHook,Mobiles,Status,Nodes,PayLoad,CreateTime)
+             Values (@Id,@Title,@Description,@CronLike,@Emails,@WebHook,@Mobiles,@Status,@Nodes,@PayLoad,@CreateTime)";
 
             TraceLogSql(sql);
 
@@ -646,7 +647,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
         {
             string sql = $@"Update MonitorJob 
 
-                Set Title = @Title,Description = @Description,CronLike = @CronLike,Emails = @Emails,Mobiles = @Mobiles,Status= @Status,Nodes = @Nodes,PayLoad = @PayLoad 
+                Set Title = @Title,Description = @Description,CronLike = @CronLike,Emails = @Emails,WebHook = @WebHook,Mobiles = @Mobiles,Status= @Status,Nodes = @Nodes,PayLoad = @PayLoad 
 
                 Where Id = @Id ";
 
@@ -661,7 +662,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
         public async Task<IMonitorJob> GetMonitorJob(string Id)
         {
-            string sql = $@"Select * From MonitorJob Where Id = " + Id;
+            string sql = $@"Select * From MonitorJob Where Id = '{Id}' ";
 
             TraceLogSql(sql);
 
@@ -687,7 +688,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
         public async Task<bool> DeleteMonitorJob(string Id)
         {
-            string sql = $@"Delete From MonitorJob Where Id = " + Id;
+            string sql = $@"Delete From MonitorJob Where Id = '{Id}' ";
 
             TraceLogSql(sql);
 
@@ -734,7 +735,12 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
               await connection.QueryFirstOrDefaultAsync<SysUser>(sql, new { UserName }).ConfigureAwait(false)
 
             )).ConfigureAwait(false); 
-        } 
+        }
+
+        public Task<(IRequestInfo, IRequestDetail)> GetRequestInfoDetail(string Id)
+        {
+            throw new NotImplementedException();
+        }
 
 
         #endregion Base

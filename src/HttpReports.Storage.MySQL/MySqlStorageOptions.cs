@@ -16,7 +16,7 @@ namespace HttpReports.Storage.MySql
         /// <summary>
         /// 延时时间
         /// </summary>
-        public TimeSpan DeferTime { get; set; }
+        public int DeferSecond { get; set; }
 
         /// <summary>
         /// 延时阈值

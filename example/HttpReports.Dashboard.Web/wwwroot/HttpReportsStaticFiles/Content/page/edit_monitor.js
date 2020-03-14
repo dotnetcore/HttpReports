@@ -30,6 +30,7 @@ function saveMonitorJob() {
     var title = $(".title").val().trim();
     var description = $(".description").val().trim();
     var emails = $(".email").val().trim();
+    var webhook = $(".webhook").val().trim();
     var mobiles = $(".mobiles").val().trim();
     var interval = $(".interval").val().trim();
     var status = $('.checkbox').eq(0).bootstrapSwitch('state') ? 1 : 0;
@@ -91,7 +92,7 @@ function saveMonitorJob() {
         url: "/HttpReportsData/EditMonitor",
         type: "POST",
         data: {
-            id, title, description, emails, mobiles, nodes, interval, status, responseTimeOutMonitor, errorResponseMonitor, IPMonitor, requestCountMonitor
+            id, title, description, emails, webhook, mobiles, nodes, interval, status, responseTimeOutMonitor, errorResponseMonitor, IPMonitor, requestCountMonitor
         },
         success: function (result) {
 
@@ -129,6 +130,7 @@ function BindMonitorJob() {
             $(".title").val(job.title);
             $(".description").val(job.description);
             $(".email").val(job.emails);
+            $(".webhook").val(job.webHook);
             $(".mobiles").val(job.mobiles);
             $(".interval").val(job.interval);
             $('.checkbox').eq(0).bootstrapSwitch('state', job.status > 0); 
@@ -164,3 +166,5 @@ function BindMonitorJob() {
     }); 
 
 }
+
+ 

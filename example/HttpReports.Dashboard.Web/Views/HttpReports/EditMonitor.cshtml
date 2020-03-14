@@ -27,7 +27,7 @@
     }
 
     @@media screen and (min-width:1170px) {
-        .title, .description,  .email, .mobiles {
+        .title, .description, .email, .mobiles, .webhook {
             width: 75% !important;
         }
     }
@@ -41,14 +41,14 @@
 </style>
 
 
-<div class="panel panel-default"> 
-    
+<div class="panel panel-default">
+
 
     <div class="panel-body  task_content" style="padding-left:30px;padding-right:30px;padding-top:30px;min-height:720px;padding-bottom:30px">
 
         <ol class="breadcrumb">
             <li><a href="/HttpReports/Monitor">预警监控</a></li>
-            <li><span href="#">@( Id == "" || Id == "0"  ? "添加" : "编辑")任务</span></li>
+            <li><span href="#">@(Id == "" || Id == "0" ? "添加" : "编辑")任务</span></li>
         </ol>
 
         <h3 style="margin-bottom:20px;">@(Id == "" || Id == "0" ? "添加" : "编辑")监控任务</h3>
@@ -63,7 +63,7 @@
                         <div class="row" style="margin-left:0;margin-right:0;margin-top:15px">
 
                             <div class="col-lg-9">
-                                <label style="width:80px" class="form-label">任务标题</label>
+                                <label style="width:100px" class="form-label">任务标题</label>
                                 <input type="text" class="form-control title" placeholder="请简单输入任务标题">
                             </div>
 
@@ -72,7 +72,7 @@
                         <div class="row" style="margin-left:0;margin-right:0;margin-top:15px">
 
                             <div class="col-lg-9">
-                                <label style="width:80px" class="form-label">任务描述</label>
+                                <label style="width:100px" class="form-label">任务描述</label>
                                 <input type="text" class="form-control description" placeholder="请输入任务描述">
                             </div>
 
@@ -81,7 +81,7 @@
                         <div class="row" style="margin-left:0;margin-right:0;margin-top:15px;">
 
                             <div class="col-lg-9 node-row">
-                                <label style="width:80px" class="form-label">服务节点</label>
+                                <label style="width:100px" class="form-label">服务节点</label>
 
                                 @foreach (var item in nodes)
                                 {
@@ -95,8 +95,18 @@
                         <div class="row" style="margin-left:0;margin-right:0;margin-top:15px">
 
                             <div class="col-lg-9">
-                                <label style="width:80px" class="form-label">通知邮箱</label>
+                                <label style="width:100px" class="form-label">通知邮箱</label>
                                 <input type="text" class="form-control email" placeholder="告警邮件接收邮箱，支持多邮箱 aa.com,bb.com,cc.com">
+                            </div>
+
+                        </div>
+
+                        <div class="row" style="margin-left:0;margin-right:0;margin-top:15px">
+
+                            <div class="col-lg-9">
+                                <label style="width:100px" class="form-label">推送地址</label>
+                                <input type="text" class="form-control webhook" placeholder="告警信息推送地址Url">
+                                
                             </div>
 
                         </div>
@@ -107,7 +117,7 @@
                         <div class="row" style="margin-left:0;margin-right:0;margin-top:15px;display:none">
 
                             <div class="col-lg-9">
-                                <label style="width:80px" class="form-label">手机号列表</label>
+                                <label style="width:100px" class="form-label">手机号列表</label>
                                 <input type="text" value="" class="form-control mobiles" placeholder="告警接收手机号，支持多手机号 10086,10010...">
                             </div>
 
@@ -116,7 +126,7 @@
                         <div class="row" style="margin-left:0;margin-right:0;margin-top:15px;">
 
                             <div class="col-lg-9">
-                                <label style="width:80px" class="form-label">监控周期</label>
+                                <label style="width:100px" class="form-label">监控周期</label>
                                 <select class="form-control interval">
                                     <option value="1">1分钟</option>
                                     <option value="3">3分钟</option>
@@ -138,7 +148,7 @@
                         <div class="row" style="margin-left:0;margin-right:0;margin-top:15px">
 
                             <div class="col-lg-9">
-                                <label style="width:80px" class="form-label">任务状态</label>
+                                <label style="width:100px" class="form-label">任务状态</label>
                                 <input type="checkbox" checked class="checkbox" data-on-text="开" data-handle-width="30" data-off-text="关" data-size="mini" value="" />
                             </div>
 
@@ -181,8 +191,8 @@
 
                                         </div>
 
-                                    </div> 
-                                   
+                                    </div>
+
 
                                     <div class="col-sm-12" style="margin-top:6px">
 
@@ -200,7 +210,7 @@
 
                                     <div class="col-sm-12" style="margin-top:20px;">
 
-                                        <div style="margin-left:12px;margin-right:12px;margin-bottom:0" class="alert alert-info" role="alert">
+                                        <div style="margin-left:12px; margin-right:12px;margin-bottom:0" class="alert alert-info" role="alert">
 
                                             <p><b>响应超时监控</b>：主要针对一段时间内接口调用超时率过高；</p>
 
@@ -228,7 +238,7 @@
 
                                         </div>
 
-                                    </div> 
+                                    </div>
 
                                     <div class="col-sm-12" style="margin-top:6px">
 
@@ -270,12 +280,12 @@
 
                                             <label class="form-label" style="margin-right:10px">状态</label>
 
-                                            <input  type="checkbox"  class="checkbox" data-on-text="开" data-handle-width="30" data-off-text="关" data-size="mini" value="" />
+                                            <input type="checkbox" class="checkbox" data-on-text="开" data-handle-width="30" data-off-text="关" data-size="mini" value="" />
 
                                         </div>
 
-                                    </div> 
-                                   
+                                    </div>
+
 
                                     <div class="col-sm-12" style="margin-top:6px">
 
@@ -318,11 +328,11 @@
 
                                             <label class="form-label" style="margin-right:10px">状态</label>
 
-                                            <input type="checkbox"  class="checkbox" data-on-text="开" data-handle-width="30" data-off-text="关" data-size="mini" value="" />
+                                            <input type="checkbox" class="checkbox" data-on-text="开" data-handle-width="30" data-off-text="关" data-size="mini" value="" />
 
                                         </div>
 
-                                    </div> 
+                                    </div>
 
                                     <div class="col-sm-12" style="margin-top:6px">
 
@@ -358,7 +368,7 @@
 
                             <a href="/HttpReports/Monitor" type="button" class="btn btn-info button-previous" style="width:120px;margin-left:20px"> 返回上一页 </a>
 
-                        </div> 
+                        </div>
 
 
                     </div>
@@ -370,8 +380,7 @@
 
     </div>
 
-</div>
-
+</div>  
 
 <script src="/HttpReportsStaticFiles/Content/page/edit_monitor.js?ver=1.0.2"></script>
 

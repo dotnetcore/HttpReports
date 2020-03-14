@@ -22,6 +22,9 @@ namespace HttpReports.Storage.ElasticSearch.Models
         public string CronLike { get; set; }
 
         [Nest.Text]
+        public string WebHook { get; set; }
+
+        [Nest.Text]
         public string Emails { get; set; }
 
         [Nest.Text]

@@ -23,7 +23,7 @@ namespace HttpReports
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        Task AddRequestInfoAsync(IRequestInfo request);
+        Task AddRequestInfoAsync(IRequestInfo request,IRequestDetail requestDetail);
 
         /// <summary>
         /// 获取所有节点信息
@@ -135,7 +135,9 @@ namespace HttpReports
 
         Task<SysUser> GetSysUser(string UserName); 
 
-        Task<bool> UpdateLoginUser(SysUser model); 
+        Task<bool> UpdateLoginUser(SysUser model);
+
+        Task<(IRequestInfo,IRequestDetail)> GetRequestInfoDetail(string Id); 
 
     }
 }
