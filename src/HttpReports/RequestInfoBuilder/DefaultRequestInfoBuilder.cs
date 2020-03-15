@@ -118,6 +118,11 @@ namespace HttpReports.RequestInfoBuilder
                 route = route.Substring(0, route.Length - list.ToList().Last().Length - 1);
             }
 
+            if (route.Contains("?"))
+            {
+                route = route.Split('?').FirstOrDefault();
+            } 
+
             return route;
         }
 

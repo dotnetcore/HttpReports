@@ -34,9 +34,14 @@ namespace Microsoft.Extensions.DependencyInjection
         } 
  
         public static IApplicationBuilder UseHttpReports(this IApplicationBuilder app)
-        { 
+        {
+            var options = app.ApplicationServices.GetRequiredService<IOptions<HttpReportsOptions>>();
+
+            if (!options.Value.Open) 
+                return app; 
+
             var storage = app.ApplicationServices.GetRequiredService<IHttpReportsStorage>() ?? throw new ArgumentNullException("Storage Service Not Found");
-            storage.InitAsync().Wait();
+            storage.InitAsync().Wait(); 
 
             return app.UseMiddleware<DefaultHttpReportsMiddleware>();
         }  

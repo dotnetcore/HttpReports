@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -40,16 +41,24 @@ namespace HttpReports.Storage.PostgreSQL
         {
             await LoggingSqlOperation(async connection =>
             {
-                var values = string.Join(",", list.Select(x=> x.Key).Select(m => $"('{m.Node}','{m.Route}','{m.Url}','{m.Method}',{m.Milliseconds},{m.StatusCode},'{m.IP}','{m.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}')"));
+                var request = string.Join(",", list.Select(x=> x.Key).Select(m => $"('{m.Id}','{m.Node}','{m.Route}','{m.Url}','{m.Method}',{m.Milliseconds},{m.StatusCode},'{m.IP}','{m.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}')"));
 
-                await connection.ExecuteAsync($@"INSERT INTO ""RequestInfo"" (Node, Route, Url, Method, Milliseconds, StatusCode, IP, CreateTime) VALUES {values}").ConfigureAwait(false);
+                await connection.ExecuteAsync($@"INSERT INTO ""RequestInfo"" (Id,Node, Route, Url, Method, Milliseconds, StatusCode, IP, CreateTime) VALUES {request}").ConfigureAwait(false);
+
+                string detail = string.Join(",", list.Select(x => x.Value).Select(x => $" ('{x.Id}','{x.RequestId}','{x.Scheme}','{x.QueryString}','{x.Header}','{x.Cookie}','{x.RequestBody}','{x.ResponseBody}','{x.ErrorMessage}','{x.ErrorStack}','{x.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}' ) "));
+
+                await connection.ExecuteAsync($@"Insert into ""RequestDetail"" (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime) VALUES {detail}").ConfigureAwait(false);
+ 
+
             }, "请求数据批量保存失败").ConfigureAwait(false);
         } 
         public async Task<bool> AddMonitorJob(IMonitorJob job)
         {
+            job.Id = MD5_16(Guid.NewGuid().ToString());
+
             string sql = $@"Insert Into ""MonitorJob"" 
             (Id,Title,Description,CronLike,Emails,WebHook,Mobiles,Status,Nodes,PayLoad,CreateTime)
-             Values (@Title,@Description,@CronLike,@Emails,@WebHook, @Mobiles,@Status,@Nodes,@PayLoad,@CreateTime)";
+             Values (@Id,@Title,@Description,@CronLike,@Emails,@WebHook, @Mobiles,@Status,@Nodes,@PayLoad,@CreateTime)";
 
             TraceLogSql(sql);
 
@@ -61,17 +70,20 @@ namespace HttpReports.Storage.PostgreSQL
 
         }
 
-        public async Task AddRequestInfoAsync(IRequestInfo request, IRequestDetail requestDetail)
+        public async Task AddRequestInfoAsync(IRequestInfo request, IRequestDetail detail)
         {
             if (Options.EnableDefer)
             {
-                _deferFlushCollection.Push(request,requestDetail);
+                _deferFlushCollection.Push(request,detail);
             }
             else
             {
                 await LoggingSqlOperation(async connection =>
                 { 
-                    await connection.ExecuteAsync(@"INSERT INTO ""RequestInfo"" (Node, Route, Url, Method, Milliseconds, StatusCode, IP, CreateTime) VALUES (@Node, @Route, @Url, @Method, @Milliseconds, @StatusCode, @IP, @CreateTime)", request).ConfigureAwait(false);
+                    await connection.ExecuteAsync(@"INSERT INTO ""RequestInfo"" (Id, Node, Route, Url, Method, Milliseconds, StatusCode, IP, CreateTime) VALUES (@Id, @Node, @Route, @Url, @Method, @Milliseconds, @StatusCode, @IP, @CreateTime)", request).ConfigureAwait(false);
+
+                    await connection.ExecuteAsync(@"INSERT INTO ""RequestDetail"" (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime)  VALUES (@Id,@RequestId,@Scheme,@QueryString,@Header,@Cookie,@RequestBody,@ResponseBody,@ErrorMessage,@ErrorStack,@CreateTime)",detail).ConfigureAwait(false);
+                     
                 }, "请求数据保存失败").ConfigureAwait(false);
             }
         }
@@ -328,7 +340,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
                     {
                         await con.ExecuteAsync(@"
                             CREATE TABLE ""RequestInfo"" ( 
-                              ID serial,
+                              ID varchar(50) Primary Key,
                               Node varchar(50) ,
                               Route varchar(50),
                               Url varchar(255),
@@ -341,11 +353,31 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
                         "). ConfigureAwait(false); 
                     }
 
+                    if (con.QueryFirstOrDefault<int>("select count(1) from pg_class where relname = 'RequestDetail' ") == 0)
+                    {
+                        await con.ExecuteAsync(@"
+                            CREATE TABLE ""RequestDetail"" ( 
+                                ID varchar(50) Primary Key,
+                                RequestId varchar(50),
+                                Scheme varchar(10),
+                                QueryString text,
+                                Header text,
+                                Cookie text,
+                                RequestBody text,
+                                ResponseBody text,
+                                ErrorMessage text,
+                                ErrorStack text,
+                                CreateTime timestamp(3) without time zone 
+                            ); 
+                        ").ConfigureAwait(false);
+                    }
+
+
                     if (con.QueryFirstOrDefault<int>("select count(1) from pg_class where relname = 'MonitorJob' ") == 0)
                     {
                         await con.ExecuteAsync(@"
                             CREATE TABLE ""MonitorJob"" ( 
-                              ID serial,
+                              ID varchar(50) Primary Key,
                               Title varchar(255) ,
                               Description varchar(255),
                               CronLike varchar(255),
@@ -364,7 +396,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
                     {
                         await con.ExecuteAsync(@"
                             CREATE TABLE ""SysUser"" ( 
-                              ID serial,
+                              ID varchar(50) Primary Key,
                               UserName varchar(255) ,
                               Password varchar(255) 
                             ); 
@@ -373,7 +405,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
                     if (con.QueryFirstOrDefault<int>(@"Select count(1) from ""SysUser"" ") == 0)
                     {
-                        await con.ExecuteAsync($@" Insert Into ""SysUser"" (UserName,Password) Values ('{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ").ConfigureAwait(false);
+                        await con.ExecuteAsync($@" Insert Into ""SysUser"" (Id,UserName,Password) Values ('{MD5_16(Guid.NewGuid().ToString())}', '{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ").ConfigureAwait(false);
                     }
                 }
             }
@@ -433,7 +465,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
         public async Task<bool> UpdateLoginUser(SysUser model)
         {
-            string sql = $@" Update ""SysUser"" Set UserName = @UserName , Password = @Password  Where Id =  {model.Id} ";
+            string sql = $@" Update ""SysUser"" Set UserName = @UserName , Password = @Password  Where Id = @Id ";
 
             TraceLogSql(sql);
 
@@ -449,9 +481,9 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
         {
             string sql = $@"Update ""MonitorJob""
 
-                Set Title = @Title,Description = @Description,CronLike = @CronLike,Emails = @Emails,Mobiles = @Mobiles,Status= @Status,Nodes = @Nodes,PayLoad = @PayLoad 
+                Set Title = @Title,Description = @Description,CronLike = @CronLike,Emails = @Emails,WebHook = @WebHook, Mobiles = @Mobiles,Status= @Status,Nodes = @Nodes,PayLoad = @PayLoad 
 
-                Where Id = {job.Id} " ;
+                Where Id = @Id " ; 
 
             TraceLogSql(sql);
 
@@ -606,23 +638,52 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
             return dateFormat;
         }
 
+        private string MD5_16(string source)
+        {
+            MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
+            string val = BitConverter.ToString(md5.ComputeHash(UTF8Encoding.Default.GetBytes(source)), 4, 8).Replace("-", "").ToLower();
+            return val;
+        }
+
         public async Task<IMonitorJob> GetMonitorJob(string Id)
         {
-            string sql = $@"Select * From ""MonitorJob"" Where Id = " + Id;
+            string sql = $@"Select * From ""MonitorJob"" Where Id = @Id ";
 
             TraceLogSql(sql);
 
             return await LoggingSqlOperation(async connection => (
 
-              await connection.QueryFirstOrDefaultAsync<MonitorJob>(sql).ConfigureAwait(false)
+              await connection.QueryFirstOrDefaultAsync<MonitorJob>(sql,new { Id }).ConfigureAwait(false)
 
             )).ConfigureAwait(false);
         }
 
-        public Task<(IRequestInfo, IRequestDetail)> GetRequestInfoDetail(string Id)
+        public async Task<(IRequestInfo, IRequestDetail)> GetRequestInfoDetail(string Id)
         {
-            throw new NotImplementedException();
+            string sql = $@" Select * From ""RequestInfo"" Where Id = @Id";
+
+            TraceLogSql(sql);
+
+            var requestInfo = await LoggingSqlOperation(async connection => (
+
+             await connection.QueryFirstOrDefaultAsync<RequestInfo>(sql, new { Id }).ConfigureAwait(false)
+
+           )).ConfigureAwait(false);
+
+            string detailSql = $@" Select * From ""RequestDetail"" Where RequestId = @Id";
+
+            TraceLogSql(detailSql);
+
+            var requestDetail = await LoggingSqlOperation(async connection => (
+
+             await connection.QueryFirstOrDefaultAsync<RequestDetail>(detailSql, new { Id }).ConfigureAwait(false)
+
+           )).ConfigureAwait(false);
+
+            return (requestInfo, requestDetail);
         }
+
+        
 
         private class KVClass<TKey, TValue>
         {

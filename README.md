@@ -62,8 +62,7 @@ HttpReports 需要手动创建数据库, 我这里使用 SqlServer 数据库为�
   "HttpReports": {
     "Storage": {
       "ConnectionString": "Max Pool Size = 512;server=.;uid=sa;pwd=123456;database=HttpReports;"
-    },
-    "Node": "TestWebAPI" 
+    } 
   }  
 }
 
@@ -205,7 +204,7 @@ HttpReports 默认是同步入库，有的用户考虑到性能可能要用到 �
 ```
 
 ### css.js等资源文件过滤
-HttpReports 再捕获Http请求时，会过滤掉资源文件，如果你不想这样做，添加或者修改appsetting.json, 设置 
+HttpReports 在捕获Http请求时，会过滤掉资源文件，如果你不想这样做，添加或者修改appsetting.json, 设置 
 `FilterStaticFiles  = false` 即可  
 
 
@@ -257,10 +256,11 @@ HttpReports.Dashboard 集成了预警监控功能，使用的话需要先配置 
     "Storage": {
       "ConnectionString": "Max Pool Size = 512;server=.;uid=sa;pwd=123456;database=HttpReports;",
       "EnableDefer": false, //是否启用延时写入
-      "DeferTime": "00:00:30", //延时写入的时间，超过此时间将进行写入
+      "DeferSecond": 30, //延时入库的时间（秒），超过此时间将进行写入
       "DeferThreshold": 5 //延时写入的阈值，缓存超过此数目时进行写入
     },
     "Node": "Pay", // WebAPI 的服务名称
+	"Open":true, // 开启关闭
     "FilterStaticFiles": true // 是否过滤掉css,js 等资源文件 
   }
 }
@@ -270,10 +270,9 @@ HttpReports.Dashboard 集成了预警监控功能，使用的话需要先配置 
 
 ```csharp
 {
-  "HttpReports": {
+  "HttpReportsDashboard": {
     "Storage": { 
-      "ConnectionString": "Max Pool Size = 512;server=.;uid=sa;pwd=123456;database=HttpReports;",
-      
+      "ConnectionString": "Max Pool Size = 512;server=.;uid=sa;pwd=123456;database=HttpReports;" 
     },
     "UseHome": true, // 默认使用根目录导航
     "Mail": {

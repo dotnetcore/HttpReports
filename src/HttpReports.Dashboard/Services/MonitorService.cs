@@ -25,9 +25,9 @@ namespace HttpReports.Dashboard.Services
             if (request.Nodes.IsEmpty())
                 return "至少要选择一个服务节点";
 
-            if (request.Emails.IsEmpty() || request.WebHook.IsEmpty())
+            if (request.Emails.IsEmpty() && request.WebHook.IsEmpty())
             {
-                return "邮件推送,推送地址不能都为空"; 
+                return "通知邮箱,推送地址不能都为空"; 
             }   
             
             if (request.Emails.Length > 100)

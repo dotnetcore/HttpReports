@@ -161,3 +161,9 @@ function GoTop() {
     }); 
 
 }
+
+function goback() {
+
+    window.history.back();
+
+}

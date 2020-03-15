@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using HttpReports.Core.Config;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 
 namespace HttpReports
 {
@@ -13,13 +14,13 @@ namespace HttpReports
 
         public IRequestInfoBuilder RequestInfoBuilder { get; }
 
-        public IHttpInvokeProcesser InvokeProcesser { get; }
+        public IHttpInvokeProcesser InvokeProcesser { get; } 
 
         public DefaultHttpReportsMiddleware(RequestDelegate next, IRequestInfoBuilder requestInfoBuilder, IHttpInvokeProcesser invokeProcesser)
         {
             _next = next;
             RequestInfoBuilder = requestInfoBuilder;
-            InvokeProcesser = invokeProcesser;
+            InvokeProcesser = invokeProcesser; 
         }
 
         public async Task InvokeAsync(HttpContext context)

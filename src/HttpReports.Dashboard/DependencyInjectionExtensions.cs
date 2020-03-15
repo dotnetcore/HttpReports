@@ -19,7 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IHttpReportsBuilder AddHttpReportsDashborad(this IServiceCollection services)
         {
-            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");
+            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReportsDashboard");
 
             return services.AddHttpReportsDashborad(configuration);
         }
@@ -30,8 +30,7 @@ namespace Microsoft.Extensions.DependencyInjection
             ServiceContainer.provider = services.BuildServiceProvider();
 
             services.AddOptions();
-            services.Configure<HttpReportsOptions>(configuration);
-            services.Configure<MailOptions>(configuration.GetSection("Mail"));
+            services.Configure<DashboardOptions>(configuration); 
 
             services.AddSingleton<IModelCreator, DefaultModelCreator>();
 
@@ -92,7 +91,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="app"></param>
         private static void ConfigRoute(IApplicationBuilder app)
         {
-            var options = app.ApplicationServices.GetRequiredService<IOptions<HttpReportsOptions>>().Value;
+            var options = app.ApplicationServices.GetRequiredService<IOptions<DashboardOptions>>().Value;
 
             app.Use(async (context, next) =>
             {  
@@ -108,7 +107,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             }); 
          
-        }
+        } 
+
 
     }
 }

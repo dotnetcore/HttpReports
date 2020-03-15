@@ -117,7 +117,7 @@ function InitTable() {
                 align: 'center',
                 formatter: function (value, row, index) {
 
-                    var btn = '<a href="RequestInfoDetail/' + value + '" type="button"  style="width:60px;" class="btn btn-xs btn-primary">详情</a>';
+                    var btn = '<a target="_blank" href="RequestInfoDetail/' + value + '" type="button"  style="width:60px;" class="btn btn-xs btn-primary">详情</a>';
                     return btn;
                 }
             }

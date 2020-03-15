@@ -32,7 +32,7 @@ namespace HttpReports.Storage.ElasticSearch.Models
         [Nest.Keyword]
         public string IP { get; set; }
 
-        [Nest.Keyword]
+        [Nest.Date]
         public DateTime CreateTime { get; set; }
     }
 }

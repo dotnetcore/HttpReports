@@ -359,7 +359,7 @@ namespace HttpReports.Dashboard.Controllers
                 PageSize = request.pageSize,
                 IsOrderByField = true,
                 Field = RequestInfoFields.CreateTime,
-                IsAscend = true,
+                IsAscend = false,
             }).ConfigureAwait(false);  
 
             return Json(new { total = result.AllItemCount, rows = result.List });

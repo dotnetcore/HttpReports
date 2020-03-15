@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -44,51 +45,56 @@ namespace HttpReports.Storage.Oracle
             try
             {
                 using (var con = ConnectionFactory.GetConnection())
-                {   
-                    
+                {    
                     if (con.QueryFirstOrDefault<int>($" Select count(*) from user_tables where table_name = upper('RequestInfo') ") == 0)
                     {
                         await con.ExecuteAsync(@"   
 
-                        create table RequestInfo
-                        (
-	                        id NUMBER(15) primary key,
-	                        Node varchar2(50),
-	                        Route varchar2(50),
-	                        Url varchar2(200),
-	                        Method varchar2(50),
-	                        Milliseconds NUMBER(15),
-	                        StatusCode NUMBER(15),
-	                        IP varchar2(50),
-	                        CreateTime date
-                        )
+                            create table RequestInfo
+                            (
+	                            Id varchar2(50),
+	                            Node varchar2(50),
+	                            Route varchar2(50),
+	                            Url varchar2(200),
+	                            Method varchar2(50),
+	                            Milliseconds NUMBER(15),
+	                            StatusCode NUMBER(15),
+	                            IP varchar2(50),
+	                            CreateTime date
+                            )
+
+                     ").ConfigureAwait(false);  
+                    }
+
+                    if (con.QueryFirstOrDefault<int>($" Select count(*) from user_tables where table_name = upper('RequestDetail') ") == 0)
+                    {
+                        await con.ExecuteAsync(@"   
+
+                            create table RequestDetail
+                            (
+                                Id varchar2(50),
+                                RequestId varchar2(50),
+                                Scheme varchar2(10),
+                                QueryString CLOB,
+                                Header CLOB,
+                                Cookie CLOB,
+                                RequestBody CLOB,
+                                ResponseBody CLOB,
+                                ErrorMessage CLOB,
+                                ErrorStack CLOB,
+                                CreateTime date            
+                            )
 
                      ").ConfigureAwait(false);
+                    }  
 
-                        await LoggingSqlOperation(async connection =>
-                        {
-                            await connection.ExecuteAsync(@"   
-
-                        create sequence request_seq_id
-                        increment by 1              
-                        start with 1                
-                        nomaxvalue                      
-                        nocycle                         
-                        nocache
-
-                     ").ConfigureAwait(false);
-
-                        }, "").ConfigureAwait(false);
-
-                    } 
-                   
                     if (con.QueryFirstOrDefault<int>($" Select count(*) from user_tables where table_name = upper('MonitorJob') ") == 0)
                     {
                         await con.ExecuteAsync(@"   
 
                         create table MonitorJob
                         (
-	                        id number(15) primary key,
+	                        id varchar2(50) ,
 	                        Title varchar2(255),
 	                        Description varchar2(255),
 	                        CronLike varchar2(255),
@@ -101,22 +107,7 @@ namespace HttpReports.Storage.Oracle
 	                        CreateTime date
                         )
 
-                     ").ConfigureAwait(false);
-
-                        await LoggingSqlOperation(async connection =>
-                        {
-                            await connection.ExecuteAsync(@"   
-
-                        create sequence monitorjob_seq_id
-                        increment by 1              
-                        start with 1                
-                        nomaxvalue                      
-                        nocycle                         
-                        nocache
-
-                     ").ConfigureAwait(false);
-
-                        }, "").ConfigureAwait(false);
+                     ").ConfigureAwait(false); 
 
                     }
 
@@ -126,33 +117,18 @@ namespace HttpReports.Storage.Oracle
 
                         create table SysUser
                         (
-	                        id number(15) primary key,
+	                        Id varchar2(50),
 	                        UserName varchar2(100),
 	                        Password varchar2(100) 
                         )
 
-                     ").ConfigureAwait(false);
-
-                        await LoggingSqlOperation(async connection =>
-                        {
-                            await connection.ExecuteAsync(@"   
-
-                        create sequence sysuser_seq_id
-                        increment by 1              
-                        start with 1                
-                        nomaxvalue                      
-                        nocycle                         
-                        nocache
-
-                     ").ConfigureAwait(false);
-
-                        }, "").ConfigureAwait(false);
+                     ").ConfigureAwait(false); 
 
                     }
 
                     if (con.QueryFirstOrDefault<int>($" Select count(1) from SysUser ") == 0)
                     {  
-                       await con.ExecuteAsync($" Insert Into SysUser Values (sysuser_seq_id.nextval,'{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ").ConfigureAwait(false);
+                       await con.ExecuteAsync($" Insert Into SysUser Values ('{MD5_16(Guid.NewGuid().ToString())}','{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ").ConfigureAwait(false);
                     }
 
                 } 
@@ -174,7 +150,12 @@ namespace HttpReports.Storage.Oracle
 
                 foreach (var request in list.Select(x=>x.Key))
                 {
-                    sb.AppendLine($@"Insert Into RequestInfo Values (request_seq_id.nextval,'{request.Node}','{request.Route}','{request.Url}','{request.Method}',{request.Milliseconds},{request.StatusCode},'{request.IP}',to_date('{request.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss'));  " );
+                    sb.AppendLine($@"Insert Into RequestInfo Values ('{request.Id}','{request.Node}','{request.Route}','{request.Url}','{request.Method}',{request.Milliseconds},{request.StatusCode},'{request.IP}',to_date('{request.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss'));  " );
+                }
+
+                foreach (var detail in list.Select(x => x.Value))
+                {
+                    sb.AppendLine($@"Insert Into RequestDetail Values ('{detail.Id}','{detail.RequestId}','{detail.Scheme}','{detail.QueryString}','{detail.Header}','{detail.Cookie}','{detail.RequestBody}','{detail.ResponseBody}','{detail.ErrorMessage}','{detail.ErrorStack}' ,to_date('{detail.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss'));  ");
                 }
 
                 sb.AppendLine("end;"); 
@@ -194,10 +175,13 @@ namespace HttpReports.Storage.Oracle
             {
                 await LoggingSqlOperation(async connection =>
                 {
-                    string sql = $@"Insert Into RequestInfo Values (request_seq_id.nextval,'{request.Node}','{request.Route}','{request.Url}','{request.Method}',{request.Milliseconds},{request.StatusCode},'{request.IP}', 
-                 to_date('{request.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss'))";
+                    string requestSql = $@"Insert Into RequestInfo Values ('{request.Id}','{request.Node}','{request.Route}','{request.Url}','{request.Method}',{request.Milliseconds},{request.StatusCode},'{request.IP}',to_date('{request.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss'))";
 
-                    await connection.ExecuteAsync(sql).ConfigureAwait(false);
+                    await connection.ExecuteAsync(requestSql).ConfigureAwait(false);
+
+                    string detailSql = $@"Insert Into RequestDetail Values ('{detail.Id}','{detail.RequestId}','{detail.Scheme}','{detail.QueryString}','{detail.Header}','{detail.Cookie}','{detail.RequestBody}','{detail.ResponseBody}','{detail.ErrorMessage}','{detail.ErrorStack}',to_date('{detail.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss'))  ";
+
+                    await connection.ExecuteAsync(detailSql).ConfigureAwait(false);
 
                 }, "请求数据保存失败").ConfigureAwait(false);
 
@@ -615,7 +599,7 @@ namespace HttpReports.Storage.Oracle
             {
                 result.AllItemCount = connection.QueryFirstOrDefault<int>(countSql); 
 
-                var listSql = GetListSql(sql, "Id Desc",filterOption.Page,filterOption.PageSize);
+                var listSql = GetListSql(sql, "CreateTime Desc",filterOption.Page,filterOption.PageSize);
 
                 result.List.AddRange((await connection.QueryAsync<RequestInfo>(listSql).ConfigureAwait(false)).ToArray());
             }, "查询请求信息列表异常").ConfigureAwait(false);
@@ -676,9 +660,11 @@ namespace HttpReports.Storage.Oracle
 
         public async Task<bool> AddMonitorJob(IMonitorJob job)
         {
+            job.Id = MD5_16(Guid.NewGuid().ToString());
+
             string sql = $@"Insert Into MonitorJob 
-            (Id,Title,Description,CronLike,Emails,Mobiles,Status,Nodes,PayLoad,CreateTime)
-             Values (monitorjob_seq_id.nextval,'{job.Title}','{job.Description}','{job.CronLike}','{job.Emails}','{job.Mobiles}',{job.Status},'{job.Nodes}','{job.Payload}',to_date('{job.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','YYYY-MM-DD HH24:MI:SS'))";
+            (Id,Title,Description,CronLike,Emails,WebHook,Mobiles,Status,Nodes,PayLoad,CreateTime)
+             Values ('{Guid.NewGuid().ToString()}','{job.Title}','{job.Description}','{job.CronLike}','{job.Emails}', '{job.WebHook}', '{job.Mobiles}',{job.Status},'{job.Nodes}','{job.Payload}',to_date('{job.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','YYYY-MM-DD HH24:MI:SS'))";
 
             TraceLogSql(sql);
 
@@ -690,9 +676,9 @@ namespace HttpReports.Storage.Oracle
         {
             string sql = $@"Update MonitorJob 
 
-                Set Title = '{job.Title}' ,Description = '{job.Description}',CronLike = '{job.CronLike}',Emails = '{job.Emails}',Mobiles = '{job.Mobiles}',Status= {job.Status} ,Nodes = '{job.Nodes}',PayLoad = '{job.Payload}' 
+                Set Title = '{job.Title}' ,Description = '{job.Description}',CronLike = '{job.CronLike}',Emails = '{job.Emails}',Mobiles = '{job.Mobiles}', WebHook = '{job.WebHook}', Status= {job.Status} ,Nodes = '{job.Nodes}',PayLoad = '{job.Payload}' 
 
-                Where Id = {job.Id} ";
+                Where Id = '{job.Id}' ";
 
             TraceLogSql(sql);
 
@@ -705,7 +691,7 @@ namespace HttpReports.Storage.Oracle
 
         public async Task<IMonitorJob> GetMonitorJob(string Id)
         {
-            string sql = $@"Select * From MonitorJob Where Id = " + Id;
+            string sql = $@"Select * From MonitorJob Where Id = '{Id}' ";
 
             TraceLogSql(sql);
 
@@ -714,6 +700,13 @@ namespace HttpReports.Storage.Oracle
               await connection.QueryFirstOrDefaultAsync<MonitorJob>(sql).ConfigureAwait(false)
 
             )).ConfigureAwait(false);
+        }
+
+        private string MD5_16(string source)
+        {
+            MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
+            string val = BitConverter.ToString(md5.ComputeHash(UTF8Encoding.Default.GetBytes(source)), 4, 8).Replace("-", "").ToLower();
+            return val;
         }
 
         public async Task<List<IMonitorJob>> GetMonitorJobs()
@@ -731,7 +724,7 @@ namespace HttpReports.Storage.Oracle
 
         public async Task<bool> DeleteMonitorJob(string Id)
         {
-            string sql = $@"Delete From MonitorJob Where Id = " + Id;
+            string sql = $@"Delete From MonitorJob Where Id = '{Id}' ";
 
             TraceLogSql(sql);
 
@@ -755,7 +748,7 @@ namespace HttpReports.Storage.Oracle
 
         public async Task<bool> UpdateLoginUser(SysUser model)
         {
-            string sql = $" Update SysUser Set UserName = '{model.UserName}' , Password = '{model.Password}'  Where Id = {model.Id} ";
+            string sql = $" Update SysUser Set UserName = '{model.UserName}' , Password = '{model.Password}'  Where Id = '{model.Id}' ";
 
             TraceLogSql(sql);
 
@@ -781,9 +774,29 @@ namespace HttpReports.Storage.Oracle
             )).ConfigureAwait(false);
         }
 
-        public Task<(IRequestInfo, IRequestDetail)> GetRequestInfoDetail(string Id)
+        public async Task<(IRequestInfo, IRequestDetail)> GetRequestInfoDetail(string Id)
         {
-            throw new NotImplementedException();
+            string sql = $" Select * From RequestInfo Where Id = '{Id}'";
+
+            TraceLogSql(sql);
+
+            var requestInfo = await LoggingSqlOperation(async connection => (
+
+             await connection.QueryFirstOrDefaultAsync<RequestInfo>(sql, new { Id }).ConfigureAwait(false)
+
+           )).ConfigureAwait(false);
+
+            string detailSql = $" Select * From RequestDetail Where RequestId = '{Id}' ";
+
+            TraceLogSql(detailSql);
+
+            var requestDetail = await LoggingSqlOperation(async connection => (
+
+             await connection.QueryFirstOrDefaultAsync<RequestDetail>(detailSql, new { Id }).ConfigureAwait(false)
+
+           )).ConfigureAwait(false);
+
+            return (requestInfo, requestDetail);
         }
     }
 }

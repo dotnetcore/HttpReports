@@ -19,13 +19,13 @@ namespace HttpReports.Dashboard.Services
     /// </summary>
     public class AlarmService : IAlarmService
     {
-        public MailOptions MailOptions { get; }
+        public DashboardOptions Options { get; }
 
         private ILogger<AlarmService> Logger;
 
-        public AlarmService(IOptions<MailOptions> mailOptions, ILogger<AlarmService> logger)
+        public AlarmService(IOptions<DashboardOptions> options, ILogger<AlarmService> logger)
         {
-            MailOptions = mailOptions.Value;
+            Options = options.Value;
             Logger = logger;
         }
 
@@ -36,8 +36,8 @@ namespace HttpReports.Dashboard.Services
                 using (var client = new SmtpClient())
                 {
                     client.AuthenticationMechanisms.Remove("XOAUTH2");
-                    client.Connect(MailOptions.Server, MailOptions.Port, MailOptions.EnableSsl);
-                    client.Authenticate(MailOptions.Account, MailOptions.Password);
+                    client.Connect(Options.Mail.Server,Options.Mail.Port, Options.Mail.EnableSsl);
+                    client.Authenticate(Options.Mail.Account, Options.Mail.Password);
 
                     await client.SendAsync(message).ConfigureAwait(false);
 
@@ -99,9 +99,10 @@ namespace HttpReports.Dashboard.Services
             if (option.Emails == null || option.Emails.Count() == 0)
             {
                 return;
-            }
+            } 
+            
 
-            if (MailOptions.Account.IsEmpty() || MailOptions.Password.IsEmpty())
+            if (Options.Mail == null || Options.Mail.Account.IsEmpty() || Options.Mail.Password.IsEmpty())
             {
                 Logger.LogInformation("预警邮件配置不能为空");
                 return;
@@ -110,7 +111,7 @@ namespace HttpReports.Dashboard.Services
             if (option.Emails?.Any() == true)
             {
                 var message = new MimeMessage();
-                message.From.Add(new MailboxAddress("HttpReports", MailOptions.Account));
+                message.From.Add(new MailboxAddress("HttpReports", Options.Mail.Account));
 
                 foreach (var to in option.Emails)
                 {

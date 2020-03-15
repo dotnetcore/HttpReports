@@ -53,27 +53,41 @@ namespace HttpReports.Storage.ElasticSearch
 
         private async Task AddRequestInfoAsync(Dictionary<IRequestInfo, IRequestDetail> list, CancellationToken token)
         {
-            BulkDescriptor Descriptor = new BulkDescriptor(GetIndexName<RequestInfo>());
+            BulkDescriptor requestDescriptor = new BulkDescriptor(GetIndexName<RequestInfo>());
 
             foreach (var item in list.Select(x=>x.Key))
             {
-                Descriptor.Create<IRequestInfo>(op => op.Document(item));
+                requestDescriptor.Create<IRequestInfo>(op => op.Document(item));
             }
 
-            await Client.BulkAsync(Descriptor).ConfigureAwait(false);
+            await Client.BulkAsync(requestDescriptor).ConfigureAwait(false);
+
+
+
+            BulkDescriptor detailDescriptor = new BulkDescriptor(GetIndexName<RequestDetail>());
+
+            foreach (var item in list.Select(x => x.Value))
+            {
+                detailDescriptor.Create<IRequestDetail>(op => op.Document(item));
+            }
+
+            await Client.BulkAsync(detailDescriptor).ConfigureAwait(false);  
+
         }
 
-        public async Task AddRequestInfoAsync(IRequestInfo request, IRequestDetail requestDetail)
+        public async Task AddRequestInfoAsync(IRequestInfo request, IRequestDetail detail)
         {
             if (Options.EnableDefer)
             {
-                _deferFlushCollection.Push(request,requestDetail);
+                _deferFlushCollection.Push(request, detail);
             }
             else
-            {
-                request.Id = MD5_16(Guid.NewGuid().ToString());
+            { 
 
-                var res = await Client.IndexAsync<RequestInfo>(request as RequestInfo, x => x.Index(GetIndexName<RequestInfo>())).ConfigureAwait(false);
+                await Client.IndexAsync<RequestInfo>(request as RequestInfo, x => x.Index(GetIndexName<RequestInfo>())).ConfigureAwait(false);
+
+                await Client.IndexAsync<RequestDetail>(detail as RequestDetail, x => x.Index(GetIndexName<RequestDetail>())).ConfigureAwait(false); 
+
             }
         }
 
@@ -691,7 +705,18 @@ namespace HttpReports.Storage.ElasticSearch
                     await Client.Indices.CreateAsync(GetIndexName<RequestInfo>(), a => a.InitializeUsing(indexState));
 
                     await Client.MapAsync<Models.RequestInfo>(c => c.Index(GetIndexName<RequestInfo>()).AutoMap());  
+                }
+
+
+                var RequestDetailIndex = await Client.Indices.ExistsAsync(GetIndexName<RequestDetail>());
+
+                if (!RequestDetailIndex.Exists)
+                {
+                    await Client.Indices.CreateAsync(GetIndexName<RequestDetail>(), a => a.InitializeUsing(indexState));
+
+                    await Client.MapAsync<Models.RequestDetail>(c => c.Index(GetIndexName<RequestDetail>()).AutoMap());
                 } 
+
 
                 var MonitorJobIndex = await Client.Indices.ExistsAsync(GetIndexName<MonitorJob>());
 
@@ -800,9 +825,28 @@ namespace HttpReports.Storage.ElasticSearch
             return val;
         }
 
-        public Task<(IRequestInfo, IRequestDetail)> GetRequestInfoDetail(string Id)
+        public async Task<(IRequestInfo, IRequestDetail)> GetRequestInfoDetail(string Id)
         {
-            throw new NotImplementedException();
+            IRequestInfo request = new RequestInfo();
+            IRequestDetail detail = new RequestDetail();
+
+            var requestResponse = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>()).Query(a => a.Term(b => b.Id, Id))).ConfigureAwait(false);
+
+            if (requestResponse != null && requestResponse.IsValid)
+            {
+                request = requestResponse.Documents.FirstOrDefault();
+            }
+
+
+            var detailResponse = await Client.SearchAsync<RequestDetail>(x => x.Index(GetIndexName<RequestDetail>()).Query(a => a.Term(b => b.RequestId, Id))).ConfigureAwait(false);
+
+            if (detailResponse != null && detailResponse.IsValid)
+            {
+                detail = detailResponse.Documents.FirstOrDefault();
+            } 
+
+            return (request,detail); 
+
         }
     }
 }

@@ -119,27 +119,7 @@ namespace HttpReports
             return (int)value;
         }
 
-        /// <summary>
-        /// 通过请求地址 获取服务节点
-        /// </summary>
-        /// <param name="path"></param>
-        /// <param name="Default"></param>
-        /// <returns></returns>
-        protected string GetNode(string path)
-        {
-            string Node = Options.Node; 
-
-            var arr = path.Substring(1).Split('/');   
-
-            if (arr.Length > 1 && (arr[1] ?? string.Empty).ToLower() == Options.ApiPoint.ToLower())
-            {
-                Node = arr[0];
-            }
-
-            Node = Node.Substring(0, 1).ToUpper() + Node.Substring(1).ToLower();
-
-            return Node;
-        }
+      
 
         protected static bool IsNumber(string str)
         {

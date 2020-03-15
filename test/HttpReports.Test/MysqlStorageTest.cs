@@ -14,7 +14,7 @@ namespace HttpReports.Test
         private MySqlStorage _storage;
 
         public override IHttpReportsStorage Storage => _storage;
-        protected override TimeSpan? DeferTime { get; set; } = TimeSpan.FromSeconds(3);
+         
 
         [TestInitialize]
         public override async Task Init()
@@ -26,7 +26,7 @@ namespace HttpReports.Test
             services.Configure<MySqlStorageOptions>(o =>
             {
                 o.ConnectionString = "Data Source=127.0.0.1;Initial Catalog=HttpReports;User ID=test;Password=test;charset=utf8;SslMode=none;";
-                o.DeferTime = DeferTime.Value;
+                o.DeferSecond = 3;
                 o.DeferThreshold = 5;
                 o.EnableDefer = true;
             });

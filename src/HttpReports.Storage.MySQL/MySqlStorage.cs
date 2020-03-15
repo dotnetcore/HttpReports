@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks; 
@@ -48,7 +49,7 @@ namespace HttpReports.Storage.MySql
                 using (var connection = ConnectionFactory.GetConnection())
                 {
                     await connection.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS `RequestInfo` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `Id` varchar(50) NOT NULL,
   `Node` varchar(50) DEFAULT NULL,
   `Route` varchar(50) DEFAULT NULL,
   `Url` varchar(255) DEFAULT NULL,
@@ -57,15 +58,27 @@ namespace HttpReports.Storage.MySql
   `StatusCode` int(11) DEFAULT NULL,
   `IP` varchar(50) DEFAULT NULL,
   `CreateTime` datetime(3) DEFAULT NULL,
-  PRIMARY KEY (`Id`),
-  KEY `idx_node` (`Node`) USING HASH,
-  KEY `idx_status_code` (`StatusCode`) USING HASH,
-  KEY `idx_create_time` (`CreateTime`) USING BTREE
+  PRIMARY KEY (`Id`) 
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;").ConfigureAwait(false);
+
+                    await connection.ExecuteAsync($@"CREATE TABLE IF NOT EXISTS `RequestDetail` (
+  `Id` varchar(50) NOT NULL,
+  `RequestId` varchar(50) DEFAULT NULL,
+  `Scheme` varchar(10) DEFAULT NULL,
+  `QueryString` varchar(10000) DEFAULT NULL,
+  `Header` text DEFAULT NULL,
+  `Cookie` text DEFAULT NULL,
+  `RequestBody` text DEFAULT NULL,
+  `ResponseBody`text DEFAULT NULL,
+  `ErrorMessage` text DEFAULT NULL,
+  `ErrorStack` text DEFAULT NULL,
+  `CreateTime` datetime(3) DEFAULT NULL ,
+  PRIMARY KEY (`Id`) 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;").ConfigureAwait(false);
 
                     await connection.ExecuteAsync(@"
 CREATE TABLE IF NOT EXISTS `MonitorJob` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `Id` varchar(50) NOT NULL,
   `Title` varchar(255) DEFAULT NULL,
   `Description` varchar(255) DEFAULT NULL,
   `CronLike` varchar(255) DEFAULT NULL,
@@ -75,13 +88,13 @@ CREATE TABLE IF NOT EXISTS `MonitorJob` (
   `Status` int(11) DEFAULT NULL,
   `Nodes` varchar(255) DEFAULT NULL,
   `PayLoad` varchar(2000) DEFAULT NULL,
-  `CreateTime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `CreateTime` datetime(3) DEFAULT NULL,
   PRIMARY KEY (`Id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;").ConfigureAwait(false);
 
                     await connection.ExecuteAsync(@"
 CREATE TABLE IF NOT EXISTS `SysUser` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `Id` varchar(50) NOT NULL,
   `UserName` varchar(255) DEFAULT NULL,
   `Password` varchar(255) DEFAULT NULL, 
   PRIMARY KEY (`Id`)
@@ -89,7 +102,7 @@ CREATE TABLE IF NOT EXISTS `SysUser` (
 
                     if (connection.QueryFirstOrDefault<int>("Select count(1) from `SysUser`") == 0)
                     {
-                        await connection.ExecuteAsync($@" Insert Into `SysUser` (`UserName`,`Password`) Values ('{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ").ConfigureAwait(false);
+                        await connection.ExecuteAsync($@" Insert Into `SysUser` (`Id`,`UserName`,`Password`) Values ('{MD5_16(Guid.NewGuid().ToString())}','{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ").ConfigureAwait(false);
                     }  
                 }   
             }
@@ -121,23 +134,32 @@ CREATE TABLE IF NOT EXISTS `SysUser` (
         {
             await LoggingSqlOperation(async connection =>
             {
-                var values = string.Join(",", list.Select(x=>x.Key).Select(m => $"('{MySqlHelper.EscapeString(m.Node)}','{MySqlHelper.EscapeString(m.Route)}','{MySqlHelper.EscapeString(m.Url)}','{MySqlHelper.EscapeString(m.Method)}',{m.Milliseconds},{m.StatusCode},'{MySqlHelper.EscapeString(m.IP)}','{m.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}')"));
+                string request = string.Join(",", list.Select(x=>x.Key).Select(m => $"('{m.Id}','{m.Node}','{m.Route}','{m.Url}','{m.Method}',{m.Milliseconds},{m.StatusCode},'{m.IP}','{m.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}')"));
 
-                await connection.ExecuteAsync($"INSERT INTO `RequestInfo`(`Node`, `Route`, `Url`, `Method`, `Milliseconds`, `StatusCode`, `IP`, `CreateTime`) VALUES {values}").ConfigureAwait(false);
+                await connection.ExecuteAsync($"INSERT INTO `RequestInfo`(`Id`,`Node`, `Route`, `Url`, `Method`, `Milliseconds`, `StatusCode`, `IP`, `CreateTime`) VALUES {request}").ConfigureAwait(false);
+                 
+                string detail = string.Join(",", list.Select(x => x.Value).Select(x => $" ('{x.Id}','{x.RequestId}','{x.Scheme}','{x.QueryString}','{x.Header}','{x.Cookie}','{x.RequestBody}','{x.ResponseBody}','{x.ErrorMessage}','{x.ErrorStack}','{x.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}' ) "));
+
+                await connection.ExecuteAsync($"Insert into `RequestDetail` (`Id`,`RequestId`,`Scheme`,`QueryString`,`Header`,`Cookie`,`RequestBody`,`ResponseBody`,`ErrorMessage`,`ErrorStack`,`CreateTime`) VALUES {detail}").ConfigureAwait(false);
+
+
             }, "请求数据批量保存失败").ConfigureAwait(false);
         }
 
-        public async Task AddRequestInfoAsync(IRequestInfo request, IRequestDetail requestDetail)
+        public async Task AddRequestInfoAsync(IRequestInfo request, IRequestDetail detail)
         {
             if (Options.EnableDefer)
             { 
-                _deferFlushCollection.Push(request,requestDetail);
+                _deferFlushCollection.Push(request,detail);
             }
             else
             {
                 await LoggingSqlOperation(async connection =>
                 { 
-                    await connection.ExecuteAsync("INSERT INTO `RequestInfo`(`Node`, `Route`, `Url`, `Method`, `Milliseconds`, `StatusCode`, `IP`, `CreateTime`) VALUES (@Node, @Route, @Url, @Method, @Milliseconds, @StatusCode, @IP, @CreateTime)", request).ConfigureAwait(false);
+                    await connection.ExecuteAsync("INSERT INTO `RequestInfo`(`Id`,`Node`, `Route`, `Url`, `Method`, `Milliseconds`, `StatusCode`, `IP`, `CreateTime`) VALUES (@Id,@Node, @Route, @Url, @Method, @Milliseconds, @StatusCode, @IP, @CreateTime)", request).ConfigureAwait(false);
+
+                    await connection.ExecuteAsync("INSERT INTO `RequestDetail` (`Id`,`RequestId`,`Scheme`,`QueryString`,`Header`,`Cookie`,`RequestBody`,`ResponseBody`,`ErrorMessage`,`ErrorStack`,`CreateTime`)  VALUES (@Id,@RequestId,@Scheme,@QueryString,@Header,@Cookie,@RequestBody,@ResponseBody,@ErrorMessage,@ErrorStack,@CreateTime)", detail).ConfigureAwait(false);
+
                 }, "请求数据保存失败").ConfigureAwait(false);
             }
         }
@@ -197,7 +219,7 @@ CREATE TABLE IF NOT EXISTS `SysUser` (
                 }
             }
 
-            var sql = sqlBuilder.Remove(sqlBuilder.Length - 6, 6).Append(")T Order By ID").ToString();
+            var sql = sqlBuilder.Remove(sqlBuilder.Length - 6, 6).Append(")T Order By Id").ToString();
 
             TraceLogSql(sql);
 
@@ -629,6 +651,8 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
         public async Task<bool> AddMonitorJob(IMonitorJob job)
         {
+            job.Id = MD5_16(Guid.NewGuid().ToString());
+
             string sql = $@"Insert Into MonitorJob 
             (Id,Title,Description,CronLike,Emails,WebHook,Mobiles,Status,Nodes,PayLoad,CreateTime)
              Values (@Id,@Title,@Description,@CronLike,@Emails,@WebHook,@Mobiles,@Status,@Nodes,@PayLoad,@CreateTime)";
@@ -662,13 +686,13 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
         public async Task<IMonitorJob> GetMonitorJob(string Id)
         {
-            string sql = $@"Select * From MonitorJob Where Id = '{Id}' ";
+            string sql = $@"Select * From MonitorJob Where Id = @Id ";
 
             TraceLogSql(sql);
 
             return await LoggingSqlOperation(async connection => (
 
-              await connection.QueryFirstOrDefaultAsync<MonitorJob>(sql).ConfigureAwait(false) 
+              await connection.QueryFirstOrDefaultAsync<MonitorJob>(sql,new { Id }).ConfigureAwait(false) 
 
             )).ConfigureAwait(false);
         }
@@ -688,12 +712,12 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
         public async Task<bool> DeleteMonitorJob(string Id)
         {
-            string sql = $@"Delete From MonitorJob Where Id = '{Id}' ";
+            string sql = $@"Delete From MonitorJob Where Id = @Id ";
 
             TraceLogSql(sql);
 
             return await LoggingSqlOperation(async connection =>
-            ( await connection.ExecuteAsync(sql).ConfigureAwait(false)) > 0 ).ConfigureAwait(false);
+            ( await connection.ExecuteAsync(sql,new { Id }).ConfigureAwait(false)) > 0 ).ConfigureAwait(false);
         }
 
         public async Task<SysUser> CheckLogin(string Username, string Password)
@@ -737,9 +761,36 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
             )).ConfigureAwait(false); 
         }
 
-        public Task<(IRequestInfo, IRequestDetail)> GetRequestInfoDetail(string Id)
+        public async Task<(IRequestInfo, IRequestDetail)> GetRequestInfoDetail(string Id)
         {
-            throw new NotImplementedException();
+            string sql = " Select * From RequestInfo Where Id = @Id";
+
+            TraceLogSql(sql);
+
+            var requestInfo = await LoggingSqlOperation(async connection => (
+
+             await connection.QueryFirstOrDefaultAsync<RequestInfo>(sql, new { Id }).ConfigureAwait(false)
+
+           )).ConfigureAwait(false);
+
+            string detailSql = " Select * From RequestDetail Where RequestId = @Id";
+
+            TraceLogSql(detailSql);
+
+            var requestDetail = await LoggingSqlOperation(async connection => (
+
+             await connection.QueryFirstOrDefaultAsync<RequestDetail>(detailSql, new { Id }).ConfigureAwait(false)
+
+           )).ConfigureAwait(false);
+
+            return (requestInfo, requestDetail);
+        }
+
+        private string MD5_16(string source)
+        {
+            MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
+            string val = BitConverter.ToString(md5.ComputeHash(UTF8Encoding.Default.GetBytes(source)), 4, 8).Replace("-", "").ToLower();
+            return val;
         }
 
 

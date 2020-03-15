@@ -26,7 +26,7 @@ namespace WebApiServer
         {
             services.AddControllers();
 
-            services.AddHttpReports().UseSQLServerStorage(); 
+            services.AddHttpReports().UseElasticSearchStorage(); 
 
         }
 
