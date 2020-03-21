@@ -8,7 +8,7 @@ namespace HttpReports
     {  
         public string Node { get; set; } = "Default";
 
-        public bool Open { get; set; } = true;
+        public bool Switch { get; set; } = true;
 
         public bool FilterStaticFiles { get; set; } = true;
 
