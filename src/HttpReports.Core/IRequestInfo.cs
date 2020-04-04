@@ -6,20 +6,23 @@ namespace HttpReports
     /// 请求信息基础类
     /// </summary>
     public interface IRequestInfo
-    { 
+    {   
+        string Id { get; set; } 
+        string ParentId { get; set; } 
+        string IP { get; set; } 
 
-        DateTime CreateTime { get; set; }
+        int Port { get; set; }
 
-        /// <summary>
-        /// ES 设置GUID 为ID
-        /// </summary>
-        string Id { get; set; }
-        string IP { get; set; }
+        string LocalIP { get; set; }
+
+        int LocalPort { get; set; }
+
         string Method { get; set; }
         int Milliseconds { get; set; }
         string Node { get; set; }
         string Route { get; set; }
         int StatusCode { get; set; }
-        string Url { get; set; }
+        string Url { get; set; }    
+        DateTime CreateTime { get; set; }
     }
 }

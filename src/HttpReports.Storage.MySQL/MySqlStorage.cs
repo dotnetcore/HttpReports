@@ -50,6 +50,7 @@ namespace HttpReports.Storage.MySql
                 {
                     await connection.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS `RequestInfo` (
   `Id` varchar(50) NOT NULL,
+  `ParentId` varchar(50) NOT NULL,
   `Node` varchar(50) DEFAULT NULL,
   `Route` varchar(50) DEFAULT NULL,
   `Url` varchar(255) DEFAULT NULL,
@@ -57,6 +58,9 @@ namespace HttpReports.Storage.MySql
   `Milliseconds` int(11) DEFAULT NULL,
   `StatusCode` int(11) DEFAULT NULL,
   `IP` varchar(50) DEFAULT NULL,
+  `Port` int(11) DEFAULT NULL, 
+  `LocalIP` varchar(50) DEFAULT NULL,
+  `LocalPort` int(11) DEFAULT NULL, 
   `CreateTime` datetime(3) DEFAULT NULL,
   PRIMARY KEY (`Id`) 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;").ConfigureAwait(false);
@@ -134,9 +138,9 @@ CREATE TABLE IF NOT EXISTS `SysUser` (
         {
             await LoggingSqlOperation(async connection =>
             {
-                string request = string.Join(",", list.Select(x=>x.Key).Select(m => $"('{m.Id}','{m.Node}','{m.Route}','{m.Url}','{m.Method}',{m.Milliseconds},{m.StatusCode},'{m.IP}','{m.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}')"));
+                string request = string.Join(",", list.Select(x=>x.Key).Select(m => $"('{m.Id}','{m.ParentId}','{m.Node}','{m.Route}','{m.Url}','{m.Method}',{m.Milliseconds},{m.StatusCode},'{m.IP}',{m.Port},'{m.LocalIP}',{m.LocalPort},'{m.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}')"));
 
-                await connection.ExecuteAsync($"INSERT INTO `RequestInfo`(`Id`,`Node`, `Route`, `Url`, `Method`, `Milliseconds`, `StatusCode`, `IP`, `CreateTime`) VALUES {request}").ConfigureAwait(false);
+                await connection.ExecuteAsync($"INSERT INTO `RequestInfo` (`Id`,`ParentId`,`Node`, `Route`, `Url`, `Method`, `Milliseconds`, `StatusCode`, `IP`,`Port`,`LocalIP`,`LocalPort`,`CreateTime`) VALUES {request}").ConfigureAwait(false);
                  
                 string detail = string.Join(",", list.Select(x => x.Value).Select(x => $" ('{x.Id}','{x.RequestId}','{x.Scheme}','{x.QueryString}','{x.Header}','{x.Cookie}','{x.RequestBody}','{x.ResponseBody}','{x.ErrorMessage}','{x.ErrorStack}','{x.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}' ) "));
 
@@ -156,7 +160,7 @@ CREATE TABLE IF NOT EXISTS `SysUser` (
             {
                 await LoggingSqlOperation(async connection =>
                 { 
-                    await connection.ExecuteAsync("INSERT INTO `RequestInfo`(`Id`,`Node`, `Route`, `Url`, `Method`, `Milliseconds`, `StatusCode`, `IP`, `CreateTime`) VALUES (@Id,@Node, @Route, @Url, @Method, @Milliseconds, @StatusCode, @IP, @CreateTime)", request).ConfigureAwait(false);
+                    await connection.ExecuteAsync("INSERT INTO `RequestInfo` (`Id`,`ParentId`,`Node`, `Route`, `Url`, `Method`, `Milliseconds`, `StatusCode`, `IP`,`Port`,`LocalIP`,`LocalPort`,`CreateTime`) VALUES (@Id,@ParentId, @Node, @Route, @Url, @Method, @Milliseconds, @StatusCode, @IP,@Port,@LocalIP,@LocalPort, @CreateTime)", request).ConfigureAwait(false);
 
                     await connection.ExecuteAsync("INSERT INTO `RequestDetail` (`Id`,`RequestId`,`Scheme`,`QueryString`,`Header`,`Cookie`,`RequestBody`,`ResponseBody`,`ErrorMessage`,`ErrorStack`,`CreateTime`)  VALUES (@Id,@RequestId,@Scheme,@QueryString,@Header,@Cookie,@RequestBody,@ResponseBody,@ErrorMessage,@ErrorStack,@CreateTime)", detail).ConfigureAwait(false);
 

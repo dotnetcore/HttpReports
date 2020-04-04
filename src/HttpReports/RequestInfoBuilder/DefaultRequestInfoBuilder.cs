@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -31,7 +32,8 @@ namespace HttpReports.RequestInfoBuilder
 
             IRequestDetail requestDetail = GetRequestDetail(context, request);
 
-            requestDetail.RequestId = request.Id =  MD5_16(Guid.NewGuid().ToString());
+            requestDetail.RequestId = request.Id = System.Diagnostics.Activity.Current.SpanId.ToString();
+            request.ParentId = Activity.Current.GetBaggageItem(BasicConfig.ActiveTraceName) ?? string.Empty;
 
             return (request, requestDetail);
         }

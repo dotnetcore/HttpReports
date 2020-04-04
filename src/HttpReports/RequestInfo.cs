@@ -3,50 +3,31 @@
 namespace HttpReports
 {
     public class RequestInfo : IRequestInfo
-    {
-        /// <summary>
-        /// Id
-        /// </summary>
+    { 
         public string Id { get; set; }
 
-        /// <summary>
-        /// 服务节点
-        /// </summary>
-        public string Node { get; set; }
+        public string ParentId { get; set; }
 
-        /// <summary>
-        /// 路由
-        /// </summary>
-        public string Route { get; set; }
-
-        /// <summary>
-        /// 请求地址
-        /// </summary>
-        public string Url { get; set; }
-
-        /// <summary>
-        /// GET Or Post
-        /// </summary>
-        public string Method { get; set; }
-
-        /// <summary>
-        /// 请求毫秒数
-        /// </summary>
-        public int Milliseconds { get; set; }
-
-        /// <summary>
-        /// HTTP 状态码
-        /// </summary>
-        public int StatusCode { get; set; }
-
-        /// <summary>
-        /// IP
-        /// </summary>
         public string IP { get; set; }
 
-        /// <summary>
-        /// 创建时间
-        /// </summary>
+        public int Port { get; set; }
+
+        public string LocalIP { get; set; }
+
+        public int LocalPort { get; set; }
+
+        public string Node { get; set; }
+
+        public string Route { get; set; }
+
+        public string Method { get; set; }
+
+        public int Milliseconds { get; set; }
+
+        public int StatusCode { get; set; }
+
+        public string Url { get; set; }
+
         public DateTime CreateTime { get; set; }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Diagnostics;
 using HttpReports;
 using HttpReports.RequestInfoBuilder;
 using Microsoft.AspNetCore.Builder;
@@ -35,6 +35,8 @@ namespace Microsoft.Extensions.DependencyInjection
  
         public static IApplicationBuilder UseHttpReports(this IApplicationBuilder app)
         {
+            Activity.DefaultIdFormat = ActivityIdFormat.W3C;
+
             var options = app.ApplicationServices.GetRequiredService<IOptions<HttpReportsOptions>>();
 
             if (!options.Value.Switch) 

@@ -53,6 +53,7 @@ namespace HttpReports.Storage.SQLServer
                         await con.ExecuteAsync(@"   
                             CREATE TABLE [dbo].[RequestInfo](
 	                            [Id] [varchar](50) NOT NULL PRIMARY KEY,
+                                [ParentId] [nvarchar](50) NULL,
 	                            [Node] [nvarchar](50) NULL,
 	                            [Route] [nvarchar](50) NULL,
 	                            [Url] [nvarchar](200) NULL,
@@ -60,6 +61,9 @@ namespace HttpReports.Storage.SQLServer
 	                            [Milliseconds] [int] NULL,
 	                            [StatusCode] [int] NULL,
 	                            [IP] [nvarchar](50) NULL,
+                                [Port] [int] NULL,
+                                [LocalIP] [nvarchar](50) NULL,
+                                [LocalPort] [int] NULL,
 	                            [CreateTime] [datetime] NULL)
                     ").ConfigureAwait(false);
                     } 
@@ -127,9 +131,9 @@ namespace HttpReports.Storage.SQLServer
         {
             await LoggingSqlOperation(async connection =>
             { 
-                string requestSql = string.Join(",", list.Select(x => x.Key).Select(x => $" ('{x.Id}','{x.Node}','{x.Route}','{x.Url}','{x.Method}',{x.Milliseconds},{x.StatusCode},'{x.IP}','{x.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}') ")); 
+                string requestSql = string.Join(",", list.Select(x => x.Key).Select(x => $" ('{x.Id}','{x.ParentId}','{x.Node}','{x.Route}','{x.Url}','{x.Method}',{x.Milliseconds},{x.StatusCode},'{x.IP}',{x.Port},'{x.LocalIP}',{x.LocalPort},'{x.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}') ")); 
               
-                await connection.ExecuteAsync($"Insert into [RequestInfo] ([Id],[Node],[Route],[Url],[Method],[Milliseconds],[StatusCode],[IP],[CreateTime]) VALUES {requestSql}").ConfigureAwait(false);
+                await connection.ExecuteAsync($"Insert into [RequestInfo] ([Id],[ParentId],[Node],[Route],[Url],[Method],[Milliseconds],[StatusCode],[IP],[Port],[LocalIP],[LocalPort],[CreateTime]) VALUES {requestSql}").ConfigureAwait(false);
 
                 string detailSql = string.Join(",", list.Select(x => x.Value).Select(x => $" ('{x.Id}','{x.RequestId}','{x.Scheme}','{x.QueryString}','{x.Header}','{x.Cookie}','{x.RequestBody}','{x.ResponseBody}','{x.ErrorMessage}','{x.ErrorStack}','{x.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}' ) "));
 
@@ -149,7 +153,7 @@ namespace HttpReports.Storage.SQLServer
             {
                 await LoggingSqlOperation(async connection =>
                 {
-                    await connection.ExecuteAsync("INSERT INTO [RequestInfo] (Id,Node,Route,Url,Method,Milliseconds,StatusCode,IP,CreateTime)  VALUES (@Id,@Node, @Route, @Url, @Method, @Milliseconds, @StatusCode, @IP, @CreateTime)", request).ConfigureAwait(false);
+                    await connection.ExecuteAsync("INSERT INTO [RequestInfo] (Id,ParentId,Node,Route,Url,Method,Milliseconds,StatusCode,IP,Port,LocalIP,LocalPort,CreateTime)  VALUES (@Id,@ParentId,@Node, @Route, @Url, @Method, @Milliseconds, @StatusCode, @IP,@Port,@LocalIP,@LocalPort,@CreateTime)", request).ConfigureAwait(false);
 
                     await connection.ExecuteAsync("INSERT INTO [RequestDetail] (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime)  VALUES (@Id,@RequestId,@Scheme,@QueryString,@Header,@Cookie,@RequestBody,@ResponseBody,@ErrorMessage,@ErrorStack,@CreateTime)", detail).ConfigureAwait(false);
 

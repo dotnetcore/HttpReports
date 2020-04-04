@@ -129,7 +129,7 @@ function InitTable() {
                 width:'80px',
                 formatter: function (value, row, index) {
 
-                    var btn = '<a target="_blank" href="Trace/' + value + '" type="button"  style="width:60px;" class="btn btn-xs btn-primary">追踪</a>';
+                    var btn = '<a target="_blank" href="RequestInfoDetail/' + value + '" type="button"  style="width:60px;" class="btn btn-xs btn-primary">追踪</a>';
                     return btn;
                 }
             }

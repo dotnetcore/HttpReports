@@ -24,6 +24,9 @@ namespace HttpReports.Core.Config
 
         public const int HttpReportsFieldMaxLength = 10000;
 
+        public const string ActiveTraceName = "HttpReports.Trace.Context";
+
+        public const string ActiveTraceId = "HttpReports.Trace.Id";
 
     }
 }
