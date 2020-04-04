@@ -37,7 +37,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var options = app.ApplicationServices.GetRequiredService<IOptions<HttpReportsOptions>>();
 
-            if (!options.Value.Open) 
+            if (!options.Value.Switch) 
                 return app; 
 
             var storage = app.ApplicationServices.GetRequiredService<IHttpReportsStorage>() ?? throw new ArgumentNullException("Storage Service Not Found");
