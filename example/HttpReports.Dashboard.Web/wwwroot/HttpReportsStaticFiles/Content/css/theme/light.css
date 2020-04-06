@@ -38,3 +38,19 @@
     background-color: #c57474;
 }
 
+
+.request-tree .expand-icon {
+    color: #428bca;
+}
+
+.request-tree {
+    border-top: 2px solid #428bca;
+}
+
+    .request-tree .list-group-item {
+       
+        border-radius: 0px;
+       
+    }
+
+

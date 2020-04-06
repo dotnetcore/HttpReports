@@ -66,8 +66,10 @@ namespace HttpReports.Dashboard.Controllers
             return View();
         }
 
-        public IActionResult Trace()
-        { 
+        public IActionResult Trace(string Id)
+        {
+            ViewBag.TraceId = Id;
+
             return View();
         }
 

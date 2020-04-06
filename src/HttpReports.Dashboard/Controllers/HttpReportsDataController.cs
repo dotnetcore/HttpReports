@@ -128,7 +128,7 @@ namespace HttpReports.Dashboard.Controllers
                 EndTime = endTime,
                 Nodes = nodes,
                 Type = TimeUnit.Hour,
-            }).ConfigureAwait(false);  
+            }).ConfigureAwait(false);
 
             List<int> timesList = new List<int>();
             List<int> avgList = new List<int>();
@@ -201,7 +201,7 @@ namespace HttpReports.Dashboard.Controllers
 
             for (int i = 0; i < 12; i++)
             {
-                var month = (i + 1).ToString(); 
+                var month = (i + 1).ToString();
 
                 var times = responseTimeStatistics.Items.TryGetValue(month, out var tTimes) ? tTimes : 0;
 
@@ -234,10 +234,10 @@ namespace HttpReports.Dashboard.Controllers
             }
 
             if (Tag == 3)
-            { 
+            {
                 return Json(new HttpResultEntity(1, "ok", new
-                {  
-                    start = DateTime.Now.AddDays(- ((int)DateTime.Now.DayOfWeek == 0 ? 7 : (int)DateTime.Now.DayOfWeek) + 1).ToString("yyyy-MM-dd"),
+                {
+                    start = DateTime.Now.AddDays(-((int)DateTime.Now.DayOfWeek == 0 ? 7 : (int)DateTime.Now.DayOfWeek) + 1).ToString("yyyy-MM-dd"),
                     end = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")
                 }));
             }
@@ -318,12 +318,12 @@ namespace HttpReports.Dashboard.Controllers
 
         public async Task<IActionResult> GetIndexData(GetIndexDataRequest request)
         {
-            var start = ( request.Start.IsEmpty() ? DateTime.Now.ToString("yyyy-MM-dd") : request.Start ).ToDateTime();
-            var end = (request.End.IsEmpty() ? DateTime.Now.AddDays(1).ToString("yyyy-MM-dd") : request.End).ToDateTime(); 
+            var start = (request.Start.IsEmpty() ? DateTime.Now.ToString("yyyy-MM-dd") : request.Start).ToDateTime();
+            var end = (request.End.IsEmpty() ? DateTime.Now.AddDays(1).ToString("yyyy-MM-dd") : request.End).ToDateTime();
 
             var result = await _storage.GetIndexPageDataAsync(new IndexPageDataFilterOption()
             {
-                Nodes = request.Node.IsEmpty() ? null :request.Node.Split(','),
+                Nodes = request.Node.IsEmpty() ? null : request.Node.Split(','),
                 StartTime = start,
                 EndTime = end,
             }).ConfigureAwait(false);
@@ -345,8 +345,8 @@ namespace HttpReports.Dashboard.Controllers
             {
                 request.Start = DateTime.Now.ToString("yyyy-MM-dd");
 
-                request.End = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"); 
-            } 
+                request.End = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd");
+            }
 
             var result = await _storage.SearchRequestInfoAsync(new RequestInfoSearchFilterOption()
             {
@@ -360,7 +360,7 @@ namespace HttpReports.Dashboard.Controllers
                 IsOrderByField = true,
                 Field = RequestInfoFields.CreateTime,
                 IsAscend = false,
-            }).ConfigureAwait(false);  
+            }).ConfigureAwait(false);
 
             return Json(new { total = result.AllItemCount, rows = result.List });
         }
@@ -370,19 +370,19 @@ namespace HttpReports.Dashboard.Controllers
             string vaild = _monitorService.VaildMonitorJob(request);
 
             if (!vaild.IsEmpty())
-               return Json(new HttpResultEntity(-1,vaild,null));
+                return Json(new HttpResultEntity(-1, vaild, null));
 
             IMonitorJob model = _monitorService.GetMonitorJob(request);
 
-            if (request.Id.IsEmpty() || request.Id == "0") 
-                await _storage.AddMonitorJob(model).ConfigureAwait(false);  
+            if (request.Id.IsEmpty() || request.Id == "0")
+                await _storage.AddMonitorJob(model).ConfigureAwait(false);
 
             else
                 await _storage.UpdateMonitorJob(model).ConfigureAwait(false);
 
-            await _scheduleService.UpdateMonitorJobAsync(); 
+            await _scheduleService.UpdateMonitorJobAsync();
 
-            return Json(new HttpResultEntity(1, "ok",null));
+            return Json(new HttpResultEntity(1, "ok", null));
         }
 
         public async Task<IActionResult> GetMonitor(string Id)
@@ -395,9 +395,9 @@ namespace HttpReports.Dashboard.Controllers
             if (job == null)
                 return NoContent();
 
-            var request = _monitorService.GetMonitorJobRequest(job);  
+            var request = _monitorService.GetMonitorJobRequest(job);
 
-            return Json(new HttpResultEntity(1, "ok",request));
+            return Json(new HttpResultEntity(1, "ok", request));
         }
 
         public async Task<IActionResult> DeleteJob(string Id)
@@ -406,10 +406,10 @@ namespace HttpReports.Dashboard.Controllers
 
             await _scheduleService.UpdateMonitorJobAsync();
 
-            return Json(new HttpResultEntity(1, "ok",null));
+            return Json(new HttpResultEntity(1, "ok", null));
         }
 
-        public async Task<IActionResult> ChangeJobState(string Id) 
+        public async Task<IActionResult> ChangeJobState(string Id)
         {
             var model = await _storage.GetMonitorJob(Id).ConfigureAwait(false);
 
@@ -425,15 +425,15 @@ namespace HttpReports.Dashboard.Controllers
 
         [AllowAnonymous]
         public async Task<IActionResult> CheckUserLogin(SysUser user)
-        {  
-            var model = await _storage.CheckLogin(user.UserName.Trim(),user.Password.Trim().MD5()).ConfigureAwait(false);
+        {
+            var model = await _storage.CheckLogin(user.UserName.Trim(), user.Password.Trim().MD5()).ConfigureAwait(false);
 
-            if (model == null) 
-                return Json(new HttpResultEntity(-1, "用户名或者密码错误", null)); 
+            if (model == null)
+                return Json(new HttpResultEntity(-1, "用户名或者密码错误", null));
 
-            HttpContext.SetCookie(BasicConfig.LoginCookieId,user.UserName, 60 * 30 * 7); 
+            HttpContext.SetCookie(BasicConfig.LoginCookieId, user.UserName, 60 * 30 * 7);
 
-            return Json(new HttpResultEntity(1, "登录成功",null));  
+            return Json(new HttpResultEntity(1, "登录成功", null));
         }
 
         public async Task<IActionResult> UpdateAccountInfo(UpdateAccountRequest request)
@@ -442,7 +442,7 @@ namespace HttpReports.Dashboard.Controllers
 
             if (user.Password != request.OldPwd.MD5())
             {
-                return Json(new HttpResultEntity(-1, "旧密码错误", null)); 
+                return Json(new HttpResultEntity(-1, "旧密码错误", null));
             }
 
             if (request.NewUserName.Length <= 2 || request.NewUserName.Length > 20)
@@ -455,15 +455,91 @@ namespace HttpReports.Dashboard.Controllers
                 return Json(new HttpResultEntity(-1, "新密码格式错误", null));
             }
 
-            await _storage.UpdateLoginUser(new SysUser {  
+            await _storage.UpdateLoginUser(new SysUser
+            {
                 Id = user.Id,
                 UserName = request.NewUserName,
-                Password = request.NewPwd.MD5() 
+                Password = request.NewPwd.MD5()
             });
 
-            return Json(new HttpResultEntity(1, "修改成功", null));  
+            return Json(new HttpResultEntity(1, "修改成功", null));
+        }
 
-        } 
+        public async Task<IActionResult> GetTraceList(string Id)
+        {
+            var parent = await GetGrandParentRequestInfo(Id);
+
+            var tree = await GetRequestInfoTrace(parent.Id);
+
+            return Json(new HttpResultEntity(1,"ok", new List<RequestInfoTrace>() { tree }));
+        }
+
+
+        public async Task<IActionResult> GetRequestInfoDetail(string Id)
+        {
+            var (requestInfo, requestDetail) = await _storage.GetRequestInfoDetail(Id); 
+
+            return Json(new HttpResultEntity(1, "ok", new { 
+            
+                Info = requestInfo,
+                Detail = requestDetail  
+
+            }));
+        }
+
+        private async Task<IRequestInfo> GetGrandParentRequestInfo(string Id)
+        {
+            var requestInfo = await _storage.GetRequestInfo(Id);
+
+            if (requestInfo.ParentId.IsEmpty())
+            {
+                return requestInfo;
+            }
+            else
+            {
+                return await GetGrandParentRequestInfo(requestInfo.ParentId);
+            }
+        }
+
+
+        private async Task<RequestInfoTrace> GetRequestInfoTrace(string Id)
+        {
+            var requestInfo = await _storage.GetRequestInfo(Id);
+
+            var requestInfoTrace = MapRequestInfo(requestInfo);
+
+            var childs = await _storage.GetRequestInfoByParentId(requestInfo.Id);
+
+            if (childs != null && childs.Count > 0 )
+            {
+                requestInfoTrace.Nodes = new List<RequestInfoTrace>();
+            }
+
+
+            foreach (var item in childs)
+            { 
+                var child = MapRequestInfo(item);
+
+                var trace = await GetRequestInfoTrace(item.Id);
+
+                requestInfoTrace.Nodes.Add(trace);
+            }
+
+            return requestInfoTrace; 
+        }
+
+        private RequestInfoTrace MapRequestInfo(IRequestInfo requestInfo)
+        {
+            return new RequestInfoTrace { 
+
+                 Id = requestInfo.Id, 
+                 Text = requestInfo.Id,
+                 Node = requestInfo.Node,
+                 Url = requestInfo.Url
+
+            }; 
+
+        }
          
     }
 }

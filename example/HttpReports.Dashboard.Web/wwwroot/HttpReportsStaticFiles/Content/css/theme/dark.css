@@ -311,5 +311,36 @@ body.my-login-page {
     color: #c7c7c7 !important;
 }
 
+.request-tree .expand-icon {
+    color: rgb(103, 194, 239);
+}
+
+.request-tree {
+    border-top: 2px solid rgb(103, 194, 239); 
+}
+
+    .request-tree .list-group-item {
+        background-color: initial !important;
+        border-radius: 0px;
+        color: #a0a0a0;
+        border: 1px solid #525151 !important; 
+
+    }
+
+
+.mSlider-inner {
+    background-color: rgb(40, 42, 43) !important;
+}
+
+.contextBox .table th {
+    background-color: rgba(255, 255, 255, 0.00) !important;
+}
+
+
+.contextBox .table td {
+    background-color:rgba(255, 255, 255, 0.00) !important;
+}
+
+
 
  

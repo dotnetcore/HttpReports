@@ -762,5 +762,26 @@ namespace HttpReports.Storage.SQLServer
             return (requestInfo,requestDetail);
 
         }
+
+        public async Task<IRequestInfo> GetRequestInfo(string Id)
+        {
+            string sql = " Select * From RequestInfo Where Id = @Id";
+
+            TraceLogSql(sql);
+
+            var requestInfo = await LoggingSqlOperation(async connection => (
+
+             await connection.QueryFirstOrDefaultAsync<RequestInfo>(sql, new { Id }).ConfigureAwait(false)
+
+           )).ConfigureAwait(false); 
+
+            return requestInfo;
+
+        }
+
+        public Task<List<IRequestInfo>> GetRequestInfoByParentId(string ParentId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

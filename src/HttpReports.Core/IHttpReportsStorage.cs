@@ -139,5 +139,9 @@ namespace HttpReports
 
         Task<(IRequestInfo,IRequestDetail)> GetRequestInfoDetail(string Id); 
 
+        Task<IRequestInfo> GetRequestInfo(string Id);
+
+        Task<List<IRequestInfo>> GetRequestInfoByParentId(string ParentId);
+
     }
 }

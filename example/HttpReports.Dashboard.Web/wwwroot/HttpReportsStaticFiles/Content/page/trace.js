@@ -1,267 +1,133 @@
-﻿
-GoTop();
+﻿  
+InitTree();   
+ 
 
-laydate.render({ elem: '.start',  theme: '#67c2ef' });
-laydate.render({ elem: '.end',  theme: '#67c2ef' }); 
+function InitTree() { 
 
-InitTable();
-
-ReSetTag();
-
-function GetNodes() {
+    var id = $(".trace_id").val();  
 
     $.ajax({
-        url: "/HttpReportsData/GetNodes",
+
+        url: "/HttpReportsData/GetTraceList/" + id,
+        type: "POST",
         success: function (result) {
 
-            $(".node-row").html("");
+            var tree = result.data;  
 
-            $.each(result.data, function (i, item) {
+            BuildTree(tree); 
 
-                $(".node-row").append(' <button onclick="check_node(this)" style="width:120px;margin-left:20px;" class="btn btn-info">' + item + '</button>');
-
-            });
         }
-    })
+
+    });  
+}   
+
+function BuildTree(tree) {  
+
+    var newTree = ParseTree(tree);  
+
+    $('.request-tree').treeview({
+        data: newTree,
+        levels: 9999,
+        showTags: true
+    });  
 }
 
+function ParseTree(tree) {   
 
-// 初始化Table
-function InitTable() {
+    var k = $.isArray(tree) ? tree[0] : tree; 
 
-    var url = "/HttpReportsData/GetRequestList";
+    k = AppendTree(k); 
 
-    var size = localStorage.getItem("bootstarpSize") == null ? 20 : localStorage.getItem("bootstarpSize");
+    if (k.nodes != null && k.nodes != undefined && k.nodes.length > 0) {
 
-    console.log()
+        $.each(k.nodes, function (index, item) {
 
-    $('#TableData').bootstrapTable({
-        pageNumber: 1,
-        pageSize: size,
-        pageList: [10, 15, 20, 30, 50],
-        url: url,
-        queryParamsType: '',
-        sidePagination: "server",
-        pagination: true, 
-        onLoadSuccess: function (data) { 
-            $("#TableData").busyLoad("hide"); 
-        },
-        onPreBody: function (data) {
+            ParseTree(item);
 
-            $("#TableData").busyLoad("show", {
-                color: "#000080",  
-                fontawesome: "fa fa-spinner fa-spin fa-3x fa-fw",
-                background: "rgba(0,0,0,0)",
-            }); 
-        },
-        onPageChange: function (number, size) {   
-            localStorage.setItem("bootstarpSize", size);
-        },
-        columns: [
-            
-            {
-                field: 'node',
-                title: '服务节点',
-                align: 'center'
-            },
-            {
-                field: 'route',
-                title: '路径',
-                align: 'center'
-
-            },
-            {
-                field: 'url',
-                title: '请求地址',
-                align: 'center'
-
-            },
-            {
-                field: 'method',
-                title: '请求方法',
-                align: 'center'
-
-            },
-            {
-                field: 'milliseconds',
-                title: '处理时间',
-                align: 'center'
-
-            },
-            {
-                field: 'statusCode',
-                title: '状态码',
-                align: 'center'
-
-            },
-            {
-                field: 'ip',
-                title: 'IP地址',
-                align: 'center'
-
-            },
-
-            {
-                field: 'createTime',
-                title: '请求时间',
-                align: 'center',
-                formatter: function (value, row, index) {
-
-                    value = value.replace('T', ' '); 
-                    return value;
-                }
-            },
-            {
-                field: 'id',
-                title: '详细信息',
-                align: 'center',
-                width: '80px',
-                formatter: function (value, row, index) {
-
-                    var btn = '<a target="_blank" href="RequestInfoDetail/' + value + '" type="button"  style="width:60px;" class="btn btn-xs btn-primary">详情</a>';
-                    return btn;
-                }
-            },
-            {
-                field: 'id',
-                title: '追踪',
-                align: 'center', 
-                width:'80px',
-                formatter: function (value, row, index) {
-
-                    var btn = '<a target="_blank" href="RequestInfoDetail/' + value + '" type="button"  style="width:60px;" class="btn btn-xs btn-primary">追踪</a>';
-                    return btn;
-                }
-            }
-        ]
-    });
-
-}
-
-//选择服务节点
-function check_node(item) {
-
-    if ($(item).hasClass("btn-info")) {
-        $(item).removeClass("btn-info");
-        $(item).addClass("btn-default");
+        });
     }
     else {
-        $(item).removeClass("btn-default");
-        $(item).addClass("btn-info");
-    }
-}
+        delete k["nodes"];
+    }   
+   
 
-//全选
-function select_all(item) {
+    return tree;  
+} 
 
-    $(item).parent().next().find("button").each(function (i, k) {
+function AppendTree(k) {  
 
-        if ($(k).hasClass("btn-default")) {
-            $(k).removeClass("btn-default");
-            $(k).addClass("btn-info");
-        }
-    });
-}
+    k.text = `<span class="service">${k.node}<span>` + `<span class="url">${k.url}<span>` + `<i onclick="bind_context('${k.id}')" class="glyphicon glyphicon-info-sign info"></i>`
 
-//反选
-function select_reverse(item) {
+    return k;
+}   
 
-    $(item).parent().next().find("button").each(function (i, k) {
-
-        if ($(k).hasClass("btn-info")) {
-            $(k).removeClass("btn-info");
-            $(k).addClass("btn-default");
-        }
-        else {
-            $(k).removeClass("btn-default");
-            $(k).addClass("btn-info");
-        }
-
-    });
-}
-
-function RefreshTable() {   
-
-
-    var url = "/HttpReportsData/GetRequestList";
-
-    var start = $(".start").val().trim();
-    var end = $(".end").val().trim();
-    var requestUrl = $(".url").val().trim();
-    var ip = $(".ipadress").val().trim();
-
-    var nodes = [];
-
-    $(".node-row").find(".btn-info").each(function (i, item) {
-        nodes.push($(item).text());
-    });
-
-    var node = nodes.join(",");
-
-    url = url + `?start=${start}&end=${end}&url=${requestUrl}&ip=${ip}&node=${node}`;
-
-    $('#TableData').bootstrapTable('refresh', { 
-        url: url  
-    });
-}
-
-
-function ReSetTag() { 
-
-    var start = $(".start").val();
-    var end = $(".end").val(); 
-     
-    var tagId = $(".timeSelect").find(".btn-info").attr("data-id");
-
-    var tagValue = tagId == undefined ? 0 : tagId;
+function bind_context(Id) { 
 
     $.ajax({
-        url: "/HttpReportsData/GetTimeTag",
-        type: "POST",
-        data: {
-            start: start,
-            end: end,
-            tagValue: tagValue
-        },
-        success: function (result) {
+        url: "/HttpReportsData/GetRequestInfoDetail/" + Id,
+        success: function (result) {   
 
-            if (result.data == -1) {
-                return;
-            }
+            var info = result.data.info;
+            var detail = result.data.detail;  
 
-            $(".timeSelect").find("button").each(function (i, item) {
+            $(".context_requestId").text(info.id);
+            $(".context_node").text(info.node);
+            $(".context_route").text(info.route);
+            $(".context_url").text(info.url);
+            $(".context_method").text(info.method);
+            $(".context_milliseconds").text(info.milliseconds);
+            $(".context_statusCode").text(info.statusCode);
+            $(".context_ip").text(info.ip);
+            $(".context_port").text(info.port);
+            $(".context_localIp").text(info.localIP);
+            $(".context_localPort").text(info.localPort);
+            $(".context_createTime").text(info.createTime);   
 
-                var tag = $(item).attr("data-id");
+            $(".context_queryString").text(detail.queryString);
+            $(".context_header").text(detail.header);
+            $(".context_cookie").text(detail.cookie);
+            $(".context_requestBody").text(detail.requestBody);
+            $(".context_responseBody").text(detail.responseBody);
+            $(".context_error").text(detail.errorMessage);
+            $(".context_errorStack").text(detail.errorStack);
 
-                if (tag == result.data) {
+          
+            show_modal(); 
+        } 
+    }); 
 
-                    if ($(item).hasClass("btn-default")) {
-
-                        $(item).removeClass("btn-default");
-                        $(item).addClass("btn-info");
-                    }
-                }
-                else {
-
-                    if ($(item).hasClass("btn-info")) {
-
-                        $(item).removeClass("btn-info");
-                        $(item).addClass("btn-default");
-                    }
-                }
-
-            });
-
-        }
-    });
 }
 
+function show_modal() { 
 
-function QueryClick() {
+    //$('.contextBox').niceScroll({
+    //    cursorcolor: "#ccc",//#CC0071 光标颜色
+    //    cursoropacitymax: 1, //改变不透明度非常光标处于活动状态（scrollabar“可见”状态），范围从1到0
+    //    touchbehavior: false, //使光标拖动滚动像在台式电脑触摸设备
+    //    cursorwidth: "5px", //像素光标的宽度
+    //    cursorborder: "0", // 游标边框css定义
+    //    cursorborderradius: "5px",//以像素为光标边界半径
+    //    autohidemode: false //是否隐藏滚动条
+    //}); 
 
-    ReSetTag();
+ 
+    $(document.body).css({  "overflow-y": "hidden"  });
+     
+    $(".contextBox").show();
+    new mSlider({
+        dom: ".contextBox",
+        distance: "40%",
+        direction: "right",
+        callback: function () {
+            $(".contextBox").hide(); 
+            $(document.body).css({  "overflow-y": "auto" });
+        }
+    }).open(); 
 
-    RefreshTable();
+}
 
-}  
+ 
+
+
+ 
  

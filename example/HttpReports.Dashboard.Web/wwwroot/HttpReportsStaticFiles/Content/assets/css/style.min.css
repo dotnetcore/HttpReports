@@ -2777,6 +2777,37 @@ ul.profile-details li div i {
   
 }
 
-.btn-primary {
-
+.request-tree .list-group-item {
+    font-size: 16px;
+    padding: 12px 20px !important;
 }
+
+.request-tree .service {
+    font-weight: bolder;
+    margin-left: 12px;
+    padding: 2px 10px;
+    color: #b9b9b9;
+}
+
+.request-tree .url {
+    margin-left: 20px;
+    font-weight: bolder;
+    font-size: 12px;
+    margin-left: 12px;
+    padding: 2px 10px;
+    color: #a29a9a;
+}
+
+.request-tree .info {
+    font-size: 16px;
+    text-align: center;
+    margin-left: 30px;
+    color: #67c2ef;
+}
+
+.mSlider-inner {
+    padding:20px 30px !important;
+}
+
+ 
+
