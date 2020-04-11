@@ -85,7 +85,12 @@ function InitTable() {
             {
                 field: 'milliseconds',
                 title: '处理时间',
-                align: 'center'
+                align: 'center',
+                formatter: function (value, row, index) {
+
+                    var btn = `<span>${value}ms</span>`;
+                    return btn;
+                }
 
             },
             {
