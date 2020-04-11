@@ -14,6 +14,10 @@ namespace HttpReports.Dashboard.DTO
 
         public string Url { get; set; }
 
+        public int Milliseconds { get; set; }
+
+        public int StatusCode { get; set; }
+
         public List<RequestInfoTrace> Nodes { get; set; }
 
     }

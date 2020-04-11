@@ -53,9 +53,13 @@ function ParseTree(tree) {
     return tree;  
 } 
 
-function AppendTree(k) {  
+function AppendTree(k) {    
 
-    k.text = `<span class="service">${k.node}<span>` + `<span class="url">${k.url}<span>` + `<i onclick="bind_context('${k.id}')" class="glyphicon glyphicon-info-sign info"></i>`
+    k.text = `<span class="service">${k.node}<span>`
+        + `<span class="url">${k.url}<span>`
+        + `<span class="label label-${(k.statusCode == 200 ? "success" :"danger")} statusCode">${k.statusCode}</span>`
+        + `<span class="milliseconds">${k.milliseconds}ms</span>` 
+        + `<i onclick="bind_context('${k.id}')" class="glyphicon glyphicon-info-sign info"></i>` 
 
     return k;
 }   
@@ -98,18 +102,16 @@ function bind_context(Id) {
 }
 
 function show_modal() {   
- 
-    $(document.body).css({  "overflow-y": "hidden"  });
+  
      
     $(".contextBox").show();
-    new mSlider({
+     new mSlider({
         dom: ".contextBox",
         distance: "40%",
-        direction: "right",
+        direction: "left",
         callback: function () {
             $(".contextBox").hide(); 
-            $(".contextBox").getNiceScroll().remove();
-            $(document.body).css({  "overflow-y": "auto" });
+            $(".contextBox").getNiceScroll().remove(); 
         }
     }).open();  
 

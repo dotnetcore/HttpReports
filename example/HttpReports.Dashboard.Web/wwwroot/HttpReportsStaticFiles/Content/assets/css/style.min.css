@@ -2805,14 +2805,50 @@ ul.profile-details li div i {
     color: #67c2ef;
 }
 
-.mSlider-inner {
-    padding:36px 0px !important;
+.request-tree .milliseconds {
+    font-size: 12px;
+    text-align: center;
+    margin-left: 20px;
+    color: #b9b9b9;
+    font-weight: initial;
 }
+
+.request-tree .statusCode {
+    font-size: 12px;
+    text-align: center;
+    margin-left: 20px;
+    padding: 2px 2px;
+    color: #eeeeee;
+    padding: 1px 6px;
+    border-radius: 0;
+    font-weight: initial;
+}
+
+.request-tree .label-success {
+    background-color: #548832;
+}
+
+.request-tree .label-danger {
+    background-color: #944040;
+}
+
+
+    .mSlider-inner {
+        padding: 36px 0px !important;
+    }
 
 .contextBox {
     max-height: 100%;
    padding:0 24px;
     margin-right:10px;
+}
+
+#TableData .request-info {
+    font-size:16px;
+}
+
+#TableData .request-trace {
+    font-size: 16px;
 }
  
 

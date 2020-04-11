@@ -115,10 +115,10 @@ function InitTable() {
                 field: 'id',
                 title: '详细信息',
                 align: 'center',
-                width: '80px',
+                width: '60px',
                 formatter: function (value, row, index) {
 
-                    var btn = '<a target="_blank" href="RequestInfoDetail/' + value + '" type="button"  style="width:60px;" class="btn btn-xs btn-primary">详情</a>';
+                    var btn = `<a href="#"> <i onclick="bind_context('${value}')" class="request-info fa fa-exchange" ></i></a>`;
                     return btn;
                 }
             },
@@ -126,10 +126,10 @@ function InitTable() {
                 field: 'id',
                 title: '追踪',
                 align: 'center', 
-                width:'80px',
+                width:'60px',
                 formatter: function (value, row, index) {
 
-                    var btn = '<a target="_blank" href="Trace/' + value + '" type="button"  style="width:60px;" class="btn btn-xs btn-primary">追踪</a>';
+                    var btn = ' <a href="Trace/' + value + '" ><i class="request-trace  fa fa-space-shuttle" ></i> </a>';
                     return btn;
                 }
             }
@@ -256,6 +256,70 @@ function ReSetTag() {
     });
 }
 
+
+function bind_context(Id) {
+
+    $.ajax({
+        url: "/HttpReportsData/GetRequestInfoDetail/" + Id,
+        success: function (result) {
+
+            var info = result.data.info;
+            var detail = result.data.detail;
+
+            $(".context_requestId").text(info.id);
+            $(".context_node").text(info.node);
+            $(".context_route").text(info.route);
+            $(".context_url").text(info.url);
+            $(".context_method").text(info.method);
+            $(".context_milliseconds").text(info.milliseconds);
+            $(".context_statusCode").text(info.statusCode);
+            $(".context_ip").text(info.ip);
+            $(".context_port").text(info.port);
+            $(".context_localIp").text(info.localIP);
+            $(".context_localPort").text(info.localPort);
+            $(".context_createTime").text(info.createTime);
+
+            $(".context_queryString").text(detail.queryString);
+            $(".context_header").text(detail.header);
+            $(".context_cookie").text(detail.cookie);
+            $(".context_requestBody").text(detail.requestBody);
+            $(".context_responseBody").text(detail.responseBody);
+            $(".context_error").text(detail.errorMessage);
+            $(".context_errorStack").text(detail.errorStack);
+
+
+            show_modal();
+        }
+    });
+
+} 
+
+function show_modal() {
+
+  
+    $(".contextBox").show();
+    new mSlider({
+        dom: ".contextBox",
+        distance: "40%",
+        direction: "left",
+        callback: function () {
+            $(".contextBox").hide();
+            $(".contextBox").getNiceScroll().remove();
+            
+        }
+    }).open();
+
+
+    $('.contextBox').niceScroll({
+        cursorcolor: "#ccc",
+        cursoropacitymax: 1,
+        touchbehavior: false,
+        cursorwidth: "3px",
+        cursorborder: "0",
+        cursorborderradius: "5px",
+        autohidemode: false
+    });
+}
 
 function QueryClick() {
 
