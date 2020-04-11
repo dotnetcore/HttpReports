@@ -1,5 +1,7 @@
-﻿using HttpReports.Dashboard.Services.Quartz;
+﻿using HttpReports.Core.Config;
+using HttpReports.Dashboard.Services.Quartz;
 using HttpReports.Monitor;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Quartz;
 using Quartz.Impl;
@@ -18,19 +20,27 @@ namespace HttpReports.Dashboard.Services
 
         public IScheduler scheduler;
 
-        private IHttpReportsStorage _storage; 
+        private IHttpReportsStorage _storage;
+
+        private DashboardOptions _options;
 
 
-        public ScheduleService(IHttpReportsStorage storage)
+        public ScheduleService(IHttpReportsStorage storage, IOptions<DashboardOptions> options)
         {
             _storage = storage;
+
+            _options = options.Value;
 
             scheduler = scheduler ?? new StdSchedulerFactory().GetScheduler().Result;  
         }
 
         public async Task InitAsync()
         {
-            await InitMonitorJobAsync(); 
+            await ClearDataJobAsync();
+
+            await InitMonitorJobAsync();
+
+            await scheduler.Start();
         } 
        
 
@@ -48,9 +58,8 @@ namespace HttpReports.Dashboard.Services
             foreach (var item in list)
             {
                 await ScheduleJobAsync(item);
-            }
-
-            await scheduler.Start();  
+            } 
+          
         }
 
         private async Task ScheduleJobAsync(IMonitorJob model)
@@ -111,6 +120,16 @@ namespace HttpReports.Dashboard.Services
                     }  
                 }  
             }  
-        } 
+        }
+
+        public async Task ClearDataJobAsync()
+        {
+            var job = JobBuilder.Create<ClearReportsDataJob>().Build();
+
+            var trigger = TriggerBuilder.Create().WithCronSchedule(BasicConfig.ClearDataCornLike).Build();
+
+            await scheduler.ScheduleJob(job, trigger);
+        }
+
     }
 }

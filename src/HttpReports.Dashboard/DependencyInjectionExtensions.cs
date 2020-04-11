@@ -19,35 +19,46 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IHttpReportsBuilder AddHttpReportsDashborad(this IServiceCollection services)
         {
-            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReportsDashboard");
+            ServiceContainer.provider = services.BuildServiceProvider();
 
-            return services.AddHttpReportsDashborad(configuration);
+            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReportsDashboard"); 
+
+            services.AddOptions();
+            services.Configure<DashboardOptions>(configuration);
+
+            return services.UseHttpReportsDashboradService(configuration);
         }
 
 
-        private static IHttpReportsBuilder AddHttpReportsDashborad(this IServiceCollection services, IConfiguration configuration)
+        public static IHttpReportsBuilder AddHttpReportsDashborad(this IServiceCollection services,Action<DashboardOptions> options)
         {
             ServiceContainer.provider = services.BuildServiceProvider();
 
-            services.AddOptions();
-            services.Configure<DashboardOptions>(configuration); 
+            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReportsDashboard");
 
+            services.AddOptions();
+            services.Configure<DashboardOptions>(options);
+
+            return services.UseHttpReportsDashboradService(configuration);
+        }
+
+
+        private static IHttpReportsBuilder UseHttpReportsDashboradService(this IServiceCollection services, IConfiguration configuration)
+        { 
             services.AddSingleton<IModelCreator, DefaultModelCreator>();
 
             services.AddSingleton<IAlarmService, AlarmService>();
 
             services.AddSingleton<MonitorService>();
 
-            services.AddSingleton<ScheduleService>(); 
+            services.AddSingleton<ScheduleService>();
 
-            services.AddMvcCore(x=>{
-                x.Filters.Add<GlobalAuthorizeFilter>(); 
-            }); 
+            services.AddMvcCore(x => {
+                x.Filters.Add<GlobalAuthorizeFilter>();
+            });
 
             return new HttpReportsBuilder(services, configuration);
-        }
-
-
+        }  
 
         public static IApplicationBuilder UseHttpReportsDashboard(this IApplicationBuilder app)
         {

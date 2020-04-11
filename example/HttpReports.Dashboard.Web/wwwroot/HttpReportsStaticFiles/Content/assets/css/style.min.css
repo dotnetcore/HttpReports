@@ -2806,8 +2806,13 @@ ul.profile-details li div i {
 }
 
 .mSlider-inner {
-    padding:20px 30px !important;
+    padding:36px 0px !important;
 }
 
+.contextBox {
+    max-height: 100%;
+   padding:0 24px;
+    margin-right:10px;
+}
  
 

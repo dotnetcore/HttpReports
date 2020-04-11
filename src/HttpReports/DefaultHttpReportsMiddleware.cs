@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,9 +26,16 @@ namespace HttpReports
 
         public async Task InvokeAsync(HttpContext context)
         {
-            var stopwatch = Stopwatch.StartNew();
+            if (context.Request.Method.ToUpper() == "OPTIONS")
+            {
+                await _next(context);
+                return; 
+            } 
 
-            ContextTrace();
+            var stopwatch = Stopwatch.StartNew();
+            stopwatch.Start();
+
+            ConfigTrace();
 
             string requestBody = await GetRequestBodyAsync(context);
 
@@ -97,20 +105,20 @@ namespace HttpReports
 
         }
 
-        private void ContextTrace()
+        private void ConfigTrace()
         {
             var parentId = Activity.Current.GetBaggageItem(BasicConfig.ActiveTraceName);
 
             if (string.IsNullOrEmpty(parentId))
             {
-                Activity activity = new Activity(BasicConfig.ActiveTraceName);
-                activity.Start();
+                Activity activity = new Activity(BasicConfig.ActiveTraceName); 
+                activity.Start(); 
                 activity.AddBaggage(BasicConfig.ActiveTraceId, activity.Id); 
             }
             else
             {
                 Activity activity = new Activity(BasicConfig.ActiveTraceName);
-                activity.SetParentId(parentId);
+                activity.SetParentId(parentId); 
                 activity.Start();
                 activity.AddBaggage(BasicConfig.ActiveTraceId, activity.Id);  
             }

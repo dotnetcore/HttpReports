@@ -12,10 +12,25 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.Services.AddOptions();
             builder.Services.Configure<PostgreStorageOptions>(builder.Configuration.GetSection("Storage"));
-            builder.Services.AddSingleton<IHttpReportsStorage,PostgreSQLStorage>();
+
+            return builder.UsePostgreSQLStorageService();
+        }
+
+        public static IHttpReportsBuilder UsePostgreSQLStorage(this IHttpReportsBuilder builder,Action<PostgreStorageOptions> options)
+        {
+            builder.Services.AddOptions();
+            builder.Services.Configure<PostgreStorageOptions>(options); 
+
+            return builder.UsePostgreSQLStorageService();
+        }
+
+        public static IHttpReportsBuilder UsePostgreSQLStorageService(this IHttpReportsBuilder builder)
+        { 
+            builder.Services.AddSingleton<IHttpReportsStorage, PostgreSQLStorage>();
             builder.Services.AddSingleton<PostgreConnectionFactory>();
 
             return builder;
         }
+
     }
 }

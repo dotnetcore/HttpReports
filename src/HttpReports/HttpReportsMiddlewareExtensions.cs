@@ -13,26 +13,36 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services)
         {
             IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");
-            return services.AddHttpReports(configuration);
-        } 
-        
-        public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services, IConfiguration configuration)
-        {  
             services.AddOptions();
-            services.Configure<HttpReportsOptions>(configuration); 
+            services.Configure<HttpReportsOptions>(configuration);
 
+            return services.UseHttpReportsService(configuration);
+        }
+
+        public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services, Action<HttpReportsOptions> options)
+        {
+            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");
+            services.AddOptions();
+            services.Configure<HttpReportsOptions>(options); 
+
+            return services.UseHttpReportsService(configuration); 
+        }   
+
+        private static IHttpReportsBuilder UseHttpReportsService(this IServiceCollection services, IConfiguration configuration)
+        {
             services.AddSingleton<IModelCreator, DefaultModelCreator>();
             services.AddSingleton<IHttpInvokeProcesser, DefaultHttpInvokeProcesser>();
             services.AddSingleton<IRequestInfoBuilder, DefaultRequestInfoBuilder>();
 
-            services.AddMvcCore(x => { 
+            services.AddMvcCore(x => {
                 x.Filters.Add<HttpReportsExceptionFilter>();
             });
 
+            return new HttpReportsBuilder(services,configuration); 
 
-            return new HttpReportsBuilder(services, configuration);
         } 
- 
+
+
         public static IApplicationBuilder UseHttpReports(this IApplicationBuilder app)
         {
             Activity.DefaultIdFormat = ActivityIdFormat.W3C;

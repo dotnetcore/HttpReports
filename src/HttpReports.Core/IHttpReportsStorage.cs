@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using HttpReports.Core.Models;
 using HttpReports.Models;
@@ -142,6 +143,8 @@ namespace HttpReports
         Task<IRequestInfo> GetRequestInfo(string Id);
 
         Task<List<IRequestInfo>> GetRequestInfoByParentId(string ParentId);
+
+        Task ClearData(string StartTime);  
 
     }
 }

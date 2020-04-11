@@ -818,9 +818,32 @@ namespace HttpReports.Storage.Oracle
             return requestInfo;
         }
 
-        public Task<List<IRequestInfo>> GetRequestInfoByParentId(string ParentId)
+        public async Task<List<IRequestInfo>> GetRequestInfoByParentId(string ParentId)
         {
-            throw new NotImplementedException();
+            string sql = $" Select * From RequestInfo Where ParentId = '{ParentId}' Order By CreateTime ";
+
+            TraceLogSql(sql);
+
+            var requestInfo = await LoggingSqlOperation(async connection => (
+
+             await connection.QueryAsync<RequestInfo>(sql).ConfigureAwait(false)
+
+           )).ConfigureAwait(false);
+
+            return requestInfo.Select(x => x as IRequestInfo).ToList();
+        }
+
+        public async Task ClearData(string StartTime)
+        {
+            string sql = $"Delete From RequestInfo Where CreateTime <= to_date('{StartTime}','YYYY-MM-DD') ";
+
+            TraceLogSql(sql);
+
+            var result = await LoggingSqlOperation(async connection => (
+
+             await connection.ExecuteAsync(sql).ConfigureAwait(false)
+
+           )).ConfigureAwait(false);
         }
     }
 }

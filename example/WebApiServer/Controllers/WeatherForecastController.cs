@@ -27,6 +27,7 @@ namespace WebApiServer.Controllers
         [HttpPost]
         public IEnumerable<WeatherForecast> Get()
         {
+           
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
@@ -38,10 +39,10 @@ namespace WebApiServer.Controllers
         }
 
 
-        [HttpGet]
-        [HttpPost]
+        [HttpGet] 
         public IActionResult Test(Entity entity)
         { 
+
             return Ok(new
             { 
                 user = entity.User,

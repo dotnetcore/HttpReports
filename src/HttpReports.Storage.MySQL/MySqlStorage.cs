@@ -827,6 +827,19 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
             return requestInfo.Select(x => x as IRequestInfo).ToList();
         }
 
+        public async Task ClearData(string StartTime)
+        { 
+            string sql = "Delete From RequestInfo Where CreateTime <= @StartTime ";
+
+            TraceLogSql(sql);
+
+            var result = await LoggingSqlOperation(async connection => (
+
+             await connection.ExecuteAsync(sql, new { StartTime }).ConfigureAwait(false)
+
+           )).ConfigureAwait(false);
+        }
+
 
         #endregion Base
     }
