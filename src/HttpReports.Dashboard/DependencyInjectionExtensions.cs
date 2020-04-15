@@ -51,7 +51,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSingleton<MonitorService>();
 
-            services.AddSingleton<ScheduleService>();
+            services.AddSingleton<ScheduleService>(); 
 
             services.AddMvcCore(x => {
                 x.Filters.Add<GlobalAuthorizeFilter>();

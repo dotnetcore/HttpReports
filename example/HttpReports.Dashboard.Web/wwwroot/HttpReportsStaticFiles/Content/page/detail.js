@@ -1,13 +1,19 @@
 ﻿
 GoTop();
 
-laydate.render({ elem: '.start',  theme: '#67c2ef' });
-laydate.render({ elem: '.end',  theme: '#67c2ef' }); 
+function InitPage() {
 
-InitTable();
+    laydate.render({ elem: '.start', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange() });
+    laydate.render({ elem: '.end', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange() }); 
 
-ReSetTag();
+}  
 
+InitPage();
+
+InitTimeRange();
+
+InitTable(); 
+ 
 function GetNodes() {
 
     $.ajax({
@@ -23,17 +29,18 @@ function GetNodes() {
             });
         }
     })
-}
-
+} 
 
 // 初始化Table
 function InitTable() {
 
-    var url = "/HttpReportsData/GetRequestList";
+    var start = $(".start").val().trim();
+    var end = $(".end").val().trim();
 
-    var size = localStorage.getItem("bootstarpSize") == null ? 20 : localStorage.getItem("bootstarpSize");
+    var url = "/HttpReportsData/GetRequestList?"
+        + "start=" + start + "&end=" + end;
 
-    console.log()
+    var size = localStorage.getItem("bootstarpSize") == null ? 20 : localStorage.getItem("bootstarpSize");  
 
     $('#TableData').bootstrapTable({
         pageNumber: 1,
@@ -120,7 +127,7 @@ function InitTable() {
                 field: 'id',
                 title: '详细信息',
                 align: 'center',
-                width: '60px',
+                width: '80px',
                 formatter: function (value, row, index) {
 
                     var btn = `<a href="#"> <i onclick="bind_context('${value}')" class="request-info fa fa-exchange" ></i></a>`;
@@ -131,7 +138,7 @@ function InitTable() {
                 field: 'id',
                 title: '追踪',
                 align: 'center', 
-                width:'60px',
+                width:'80px',
                 formatter: function (value, row, index) {
 
                     var btn = ' <a href="Trace/' + value + '" ><i class="request-trace  fa fa-space-shuttle" ></i> </a>';
@@ -208,58 +215,7 @@ function RefreshTable() {
     $('#TableData').bootstrapTable('refresh', { 
         url: url  
     });
-}
-
-
-function ReSetTag() { 
-
-    var start = $(".start").val();
-    var end = $(".end").val(); 
-     
-    var tagId = $(".timeSelect").find(".btn-info").attr("data-id");
-
-    var tagValue = tagId == undefined ? 0 : tagId;
-
-    $.ajax({
-        url: "/HttpReportsData/GetTimeTag",
-        type: "POST",
-        data: {
-            start: start,
-            end: end,
-            tagValue: tagValue
-        },
-        success: function (result) {
-
-            if (result.data == -1) {
-                return;
-            }
-
-            $(".timeSelect").find("button").each(function (i, item) {
-
-                var tag = $(item).attr("data-id");
-
-                if (tag == result.data) {
-
-                    if ($(item).hasClass("btn-default")) {
-
-                        $(item).removeClass("btn-default");
-                        $(item).addClass("btn-info");
-                    }
-                }
-                else {
-
-                    if ($(item).hasClass("btn-info")) {
-
-                        $(item).removeClass("btn-info");
-                        $(item).addClass("btn-default");
-                    }
-                }
-
-            });
-
-        }
-    });
-}
+}  
 
 
 function bind_context(Id) {
@@ -328,7 +284,12 @@ function show_modal() {
 
 function QueryClick() {
 
-    ReSetTag();
+    if ($(".start").val().trim().length == 0 || $(".end").val().trim().length == 0) {
+
+        alertWarn("开始时间结束时间不能为空");
+        return;
+
+    } 
 
     RefreshTable();
 

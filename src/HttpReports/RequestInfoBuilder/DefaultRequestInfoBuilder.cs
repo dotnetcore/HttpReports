@@ -32,8 +32,9 @@ namespace HttpReports.RequestInfoBuilder
 
             IRequestDetail requestDetail = GetRequestDetail(context, request);
 
-            requestDetail.RequestId = request.Id = System.Diagnostics.Activity.Current.SpanId.ToString();
-            request.ParentId = Activity.Current.GetBaggageItem(BasicConfig.ActiveTraceName) ?? string.Empty;
+            requestDetail.RequestId = request.Id = Activity.Current.SpanId.ToHexString();
+
+            request.ParentId = Activity.Current.ParentId == null ? string.Empty : Activity.Current.ParentSpanId.ToHexString();
 
             return (request, requestDetail);
         }
@@ -98,7 +99,7 @@ namespace HttpReports.RequestInfoBuilder
                     context.Items.Remove(BasicConfig.HttpReportsResponseBody);
                 }
 
-                model.CreateTime = DateTime.Now;
+                model.CreateTime = context.Items[BasicConfig.ActiveTraceCreateTime].ToDateTime();
 
                 model.Scheme = context.Request.Scheme;
                 model.QueryString = context.Request.QueryString.Value;

@@ -24,6 +24,7 @@ namespace HttpReports.Dashboard.Web
         {
             services.AddHttpReportsDashborad().UseMySqlStorage();
 
+           
             services.AddControllersWithViews();
         }
 

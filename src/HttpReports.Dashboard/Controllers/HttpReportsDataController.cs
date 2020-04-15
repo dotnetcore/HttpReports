@@ -36,7 +36,7 @@ namespace HttpReports.Dashboard.Controllers
             _scheduleService = scheduleService;
         }
 
-        public async Task<IActionResult> GetIndexChartA(GetIndexDataRequest request)
+        public async Task<IActionResult> GetIndexChartData(GetIndexDataRequest request)
         {
             var start = (request.Start.IsEmpty() ? DateTime.Now.ToString("yyyy-MM-dd") : request.Start).ToDateTime();
             var end = (request.End.IsEmpty() ? DateTime.Now.AddDays(1).ToString("yyyy-MM-dd") : request.End).ToDateTime();
@@ -50,6 +50,8 @@ namespace HttpReports.Dashboard.Controllers
                 EndTime = end,
                 IsAscend = false,
                 Take = request.TOP,
+                StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
+                EndTimeFormat = "yyyy-MM-dd HH:mm:ss" 
             }).ConfigureAwait(false);
 
             var topError500 = await _storage.GetUrlRequestStatisticsAsync(new RequestInfoFilterOption()
@@ -60,6 +62,8 @@ namespace HttpReports.Dashboard.Controllers
                 IsAscend = false,
                 Take = request.TOP,
                 StatusCodes = new[] { 500 },
+                StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
+                EndTimeFormat = "yyyy-MM-dd HH:mm:ss"
             }).ConfigureAwait(false);
 
             var fast = await _storage.GetRequestAvgResponeTimeStatisticsAsync(new RequestInfoFilterOption()
@@ -69,6 +73,8 @@ namespace HttpReports.Dashboard.Controllers
                 EndTime = end,
                 IsAscend = true,
                 Take = request.TOP,
+                StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
+                EndTimeFormat = "yyyy-MM-dd HH:mm:ss"
             }).ConfigureAwait(false);
 
             var slow = await _storage.GetRequestAvgResponeTimeStatisticsAsync(new RequestInfoFilterOption()
@@ -78,6 +84,9 @@ namespace HttpReports.Dashboard.Controllers
                 EndTime = end,
                 IsAscend = false,
                 Take = request.TOP,
+                StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
+                EndTimeFormat = "yyyy-MM-dd HH:mm:ss"
+
             }).ConfigureAwait(false);
 
             var Art = new
@@ -92,6 +101,8 @@ namespace HttpReports.Dashboard.Controllers
                 StartTime = start,
                 EndTime = end,
                 StatusCodes = new[] { 200, 301, 302, 303, 400, 401, 403, 404, 500, 502, 503 },
+                StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
+                EndTimeFormat = "yyyy-MM-dd HH:mm:ss"
             }).ConfigureAwait(false)).Where(m => true).Select(m => new EchartPineDataModel(m.Code.ToString(), m.Total)).ToArray();
 
             var ResponseTime = (await _storage.GetGroupedResponeTimeStatisticsAsync(new GroupResponeTimeFilterOption()
@@ -99,6 +110,8 @@ namespace HttpReports.Dashboard.Controllers
                 Nodes = nodes,
                 StartTime = start,
                 EndTime = end,
+                StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
+                EndTimeFormat = "yyyy-MM-dd HH:mm:ss"
             }).ConfigureAwait(false)).Where(m => true).Select(m => new EchartPineDataModel(m.Name, m.Total)).ToArray();
 
             return Json(new HttpResultEntity(1, "ok", new { StatusCode, ResponseTime, topRequest, topError500, Art }));
@@ -318,14 +331,16 @@ namespace HttpReports.Dashboard.Controllers
 
         public async Task<IActionResult> GetIndexData(GetIndexDataRequest request)
         {
-            var start = (request.Start.IsEmpty() ? DateTime.Now.ToString("yyyy-MM-dd") : request.Start).ToDateTime();
-            var end = (request.End.IsEmpty() ? DateTime.Now.AddDays(1).ToString("yyyy-MM-dd") : request.End).ToDateTime();
+            var start = request.Start.ToDateTime();
+            var end = request.End.ToDateTime();
 
             var result = await _storage.GetIndexPageDataAsync(new IndexPageDataFilterOption()
             {
                 Nodes = request.Node.IsEmpty() ? null : request.Node.Split(','),
                 StartTime = start,
                 EndTime = end,
+                StartTimeFormat= "yyyy-MM-dd HH:mm:ss",
+                EndTimeFormat = "yyyy-MM-dd HH:mm:ss"
             }).ConfigureAwait(false);
 
             return Json(new HttpResultEntity(1, "ok", new
@@ -340,14 +355,7 @@ namespace HttpReports.Dashboard.Controllers
         }
 
         public async Task<IActionResult> GetRequestList(GetRequestListRequest request)
-        {
-            if (request.Start.IsEmpty() && request.End.IsEmpty())
-            {
-                request.Start = DateTime.Now.ToString("yyyy-MM-dd");
-
-                request.End = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd");
-            }
-
+        {  
             var result = await _storage.SearchRequestInfoAsync(new RequestInfoSearchFilterOption()
             {
                 Nodes = request.Node.IsEmpty() ? null : request.Node.Split(','),
@@ -360,6 +368,9 @@ namespace HttpReports.Dashboard.Controllers
                 IsOrderByField = true,
                 Field = RequestInfoFields.CreateTime,
                 IsAscend = false,
+                StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
+                EndTimeFormat = "yyyy-MM-dd HH:mm:ss"
+
             }).ConfigureAwait(false);
 
             return Json(new { total = result.AllItemCount, rows = result.List });

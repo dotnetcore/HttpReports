@@ -14,19 +14,14 @@ namespace HttpReports.Dashboard.DTO
         /// 消息
         /// </summary>
         [JsonProperty("msg", NullValueHandling = NullValueHandling.Ignore)]
-        public string Message { get; set; }
+        public string Msg { get; set; }
 
         /// <summary>
         /// 状态码 1成功
         /// </summary>
         [JsonProperty("code")]
-        public int Code { get; set; }
-
-        /// <summary>
-        /// 追踪信息
-        /// </summary>
-        [JsonProperty("trace", NullValueHandling = NullValueHandling.Ignore)]
-        public object Trace { get; set; }
+        public int Code { get; set; } 
+        
 
         #endregion 属性
 
@@ -45,7 +40,7 @@ namespace HttpReports.Dashboard.DTO
         public HttpResult(int code, string message)
         {
             Code = code;
-            Message = message;
+            Msg = message;
         }
     }
 
@@ -63,7 +58,7 @@ namespace HttpReports.Dashboard.DTO
         public HttpResultEntity(int code, string message, object data)
         {
             Code = code;
-            Message = message;
+            Msg = message;
             Data = data;
         }
     }
@@ -93,7 +88,7 @@ namespace HttpReports.Dashboard.DTO
         public HttpResultEntity(int code, string message, T data)
         {
             Code = code;
-            Message = message;
+            Msg = message;
             Data = data;
         }
 

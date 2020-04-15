@@ -39,24 +39,30 @@
 
                         <div class="col-sm-3">
                             <label class="form-label">开始时间</label>
-                            <input type="text" class="form-control laydate start">
+                            <input onfocus="ClearTimeRange()" type="text" class="form-control laydate start">
                         </div>
 
                         <div class="col-sm-3">
                             <label class="form-label">结束时间</label>
-                            <input type="text" class="form-control laydate end">
-                        </div>
+                            <input onfocus="ClearTimeRange()" type="text" class="form-control laydate end">
+                        </div> 
+
                     </div>
 
                     <div class="col-sm-12 timeSelect" style="margin-top:20px">
 
-                        <button type="button" onclick="timeChange(this)" data-id="1" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">今天</button>
+                        <button type="button" onclick="timeChange(this,15)" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">15分钟</button>
 
-                        <button type="button" onclick="timeChange(this)" data-id="2" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">昨天</button>
+                        <button type="button" onclick="timeChange(this,30)" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">30分钟</button>
 
-                        <button type="button" onclick="timeChange(this)" data-id="3" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">本周</button>
+                        <button type="button" onclick="timeChange(this,60)" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">1小时</button>
 
-                        <button type="button" onclick="timeChange(this)" data-id="4" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">本月</button>
+                        <button type="button" onclick="timeChange(this,60*4)" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">4小时</button>
+
+                        <button type="button" onclick="timeChange(this,60*12)" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">12小时</button>
+
+                        <button type="button" onclick="timeChange(this,60*24)" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">24小时</button>
+
                     </div>
 
                     <div class="col-sm-12" style="">

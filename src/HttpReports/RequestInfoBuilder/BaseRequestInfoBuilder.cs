@@ -39,7 +39,7 @@ namespace HttpReports
             request.Method = context.Request.Method;
             request.Url = context.Request.Path; 
             request.Milliseconds = ToInt32(stopwatch.ElapsedMilliseconds);
-            request.CreateTime = DateTime.Now;
+            request.CreateTime = context.Items[BasicConfig.ActiveTraceCreateTime].ToDateTime();
 
             path = path.Replace(@"///",@"/").Replace(@"//", @"/");  
 

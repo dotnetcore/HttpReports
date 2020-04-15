@@ -104,7 +104,7 @@ function saveMonitorJob() {
 
                 });
             }
-            else {
+            else { 
                 alertError(result.msg)
             }
         }

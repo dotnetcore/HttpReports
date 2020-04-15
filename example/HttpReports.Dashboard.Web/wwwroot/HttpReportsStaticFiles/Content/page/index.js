@@ -14,14 +14,16 @@ function changeChartHeight() {
 
 function InitPage() {
 
-    laydate.render({ elem: '.start', theme: '#67c2ef' });
-    laydate.render({ elem: '.end', theme: '#67c2ef' });
+    laydate.render({ elem: '.start', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange() });
+    laydate.render({ elem: '.end', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange() });
     laydate.render({ elem: '.day', theme: '#67c2ef' });   
   
-}  
+}    
 
-InitPage();
 
+InitPage();   
+
+InitTimeRange();
 
 var global = {};
 
@@ -31,10 +33,9 @@ changeChartHeight();
 
 InitChart();
 
-getTopCount(); 
+getTopCount();  
 
-QueryClick();
-
+QueryClick(); 
  
 
 function getTopCount() {
@@ -518,7 +519,7 @@ function Loading(item) {
 }
 
 
-function GetIndexChartA() { 
+function GetIndexChartData() { 
 
     var start = $(".start").val();
     var end = $(".end").val();
@@ -538,7 +539,7 @@ function GetIndexChartA() {
     Loading(global.SlowARTChart); 
 
     $.ajax({
-        url: "/HttpReportsData/GetIndexChartA",
+        url: "/HttpReportsData/GetIndexChartData",
         type: "POST",
         data: {
             start: start,
@@ -882,100 +883,26 @@ function GetARTChart() {
             global.SlowARTChart.setOption(global.SlowARTChartOption);
 
         }
-    });
-
-
-
+    }); 
 
 }
 
 
 // 查询按钮点击
-function QueryClick() {   
+function QueryClick() {  
 
-    ReSetTag();
+    if ($(".start").val().trim().length == 0 || $(".end").val().trim().length == 0) {
 
+        alertWarn("开始时间结束时间不能为空");
+        return;
+
+    } 
+     
     GetBoardData();  
 
-    GetIndexChartA();   
-
-    //ReSetTag();  
-    ////GetStatusCodePie();
-    ////GetResponseTimePie();
-
-    //GetBoardData();  
-
-    //GetARTChart(); 
-
-    ////GetTopCode500Chart();
-    ////GetTOPRequestChart();
-
-    ////GetLatelyChart(); 
-
+    GetIndexChartData();   
 }
-
-function ReSetTag() {  
-
-
-    var start = $(".start").val();
-    var end = $(".end").val();
-
-    var tag = $(".board-row").find("p").find("b");
-
-    if (start.length == 0 && end.length == 0) { 
-        tag.text('今天');
-    }
-    else {
-        tag.text((start.length > 0 ? start.substr(0, 10) : "null") + " - " + (end.length > 0 ? end.substr(0, 10) : "null"));
-    } 
-
-    var tagId = $(".timeSelect").find(".btn-info").attr("data-id");   
-
-    var tagValue = tagId == undefined ? 0 : tagId;   
-
-    $.ajax({
-        url: "/HttpReportsData/GetTimeTag",
-        type: "POST",
-        data: {
-            start: start,
-            end: end,
-            tagValue: tagValue
-        },
-        success: function (result) {  
-
-            if (result.data == -1) {
-                return;
-            }   
-
-            $(".timeSelect").find("button").each(function (i, item) { 
-
-                var tag = $(item).attr("data-id"); 
-
-                if (tag == result.data) {
-
-                    if ($(item).hasClass("btn-default")) {  
-
-                        $(item).removeClass("btn-default");
-                        $(item).addClass("btn-info");
-                    }   
-                }
-                else {
-
-                    if ($(item).hasClass("btn-info")) {
-
-                        $(item).removeClass("btn-info");
-                        $(item).addClass("btn-default");
-                    }  
-                }  
-
-            }); 
-
-        }     
-    });  
-}
-
-
-
+  
 
 //全选
 function select_all(item) {

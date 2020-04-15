@@ -4,9 +4,23 @@ httpreports.chart_theme = "macarons";
 httpreports.theme = "light";
 httpreports.index_chart_color = "#333333";
 
-initTheme();  
+initTheme();   
 
-function timeChange(k) {
+function InitTimeRange() {
+
+    var btn = $(".timeSelect").find(".btn").eq(0);
+
+    timeChange(btn, 15);
+} 
+
+
+function timeChange(k, minute) {  
+
+    var start = FormatDateToString(new Date(new Date().setMinutes(new Date().getMinutes() - minute)));
+    var end = FormatDateToString(new Date());  
+
+    $(".start").val(start);
+    $(".end").val(end); 
 
     $(k).parent().find("button").each(function (i, item) {
 
@@ -25,24 +39,26 @@ function timeChange(k) {
 
         $(k).addClass("btn-info");
 
-    }
-
-    var tag = $(k).attr("data-id");
-
-    $.ajax({
-        url: "/HttpReportsData/GetTimeRange?Tag=" + tag,
-        success: function (result) {
-
-            $(".start").val(result.data.start);
-
-            $(".end").val(result.data.end);
-
-            QueryClick();
-
-        }
-    });
+    } 
 
 }  
+
+function FormatDateToString(d) {
+
+    var dateStr = PrefixInteger((d.getFullYear()),4) + "-" +
+        PrefixInteger((d.getMonth() + 1),2) + "-" +
+        PrefixInteger((d.getDate()),2) + " " +
+        PrefixInteger((d.getHours()),2) + ":" +
+        PrefixInteger((d.getMinutes()),2) + ":" +
+        PrefixInteger((d.getSeconds()),2); 
+
+    return dateStr;
+}
+
+function PrefixInteger(num,length) {
+    return (Array(length).join('0') + num).slice(-length);
+}
+
 
 //选择服务节点
 function check_node(item) {
@@ -55,6 +71,21 @@ function check_node(item) {
         $(item).removeClass("btn-default");
         $(item).addClass("btn-info");
     }
+}
+
+function ClearTimeRange() {
+
+    $(".timeSelect").find(".btn").each(function (k, item) {
+
+        if ($(item).hasClass("btn-info")) {
+
+            $(item).removeClass("btn-info");
+
+            $(item).addClass("btn-default");
+        }
+
+    });
+
 }
 
 

@@ -143,5 +143,17 @@ namespace HttpReports
             }
         }
 
+        public static DateTime ToDateTime(this object str)
+        {
+            try
+            {
+                return Convert.ToDateTime(str);
+            }
+            catch (Exception)
+            {
+                return DateTime.Now;
+            }
+        }
+
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using HttpReports.Core.Config;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace HttpReports
@@ -17,9 +18,12 @@ namespace HttpReports
 
         public IHttpInvokeProcesser InvokeProcesser { get; }
 
-        public DefaultHttpReportsMiddleware(RequestDelegate next, IRequestInfoBuilder requestInfoBuilder, IHttpInvokeProcesser invokeProcesser)
+        public ILogger<DefaultHttpReportsMiddleware> Logger { get; }
+
+        public DefaultHttpReportsMiddleware(RequestDelegate next, IRequestInfoBuilder requestInfoBuilder, IHttpInvokeProcesser invokeProcesser, ILogger<DefaultHttpReportsMiddleware> logger)
         {
             _next = next;
+            Logger = logger;
             RequestInfoBuilder = requestInfoBuilder;
             InvokeProcesser = invokeProcesser;
         }
@@ -35,7 +39,7 @@ namespace HttpReports
             var stopwatch = Stopwatch.StartNew();
             stopwatch.Start();
 
-            ConfigTrace();
+            ConfigTrace(context);
 
             string requestBody = await GetRequestBodyAsync(context);
 
@@ -105,24 +109,35 @@ namespace HttpReports
 
         }
 
-        private void ConfigTrace()
-        {
-            var parentId = Activity.Current.GetBaggageItem(BasicConfig.ActiveTraceName);
-
-            if (string.IsNullOrEmpty(parentId))
-            {
+        private void ConfigTrace(HttpContext context)
+        {   
+            if (Activity.Current == null)
+            { 
                 Activity activity = new Activity(BasicConfig.ActiveTraceName); 
                 activity.Start(); 
                 activity.AddBaggage(BasicConfig.ActiveTraceId, activity.Id); 
+                context.Items.Add(BasicConfig.ActiveTraceCreateTime,DateTime.Now);
+                return; 
+            } 
+
+            var parentId = Activity.Current.GetBaggageItem(BasicConfig.ActiveTraceId); 
+
+            if (string.IsNullOrEmpty(parentId))
+            {
+                Activity.Current = null; 
+                Activity activity = new Activity(BasicConfig.ActiveTraceName); 
+                activity.Start(); 
+                activity.AddBaggage(BasicConfig.ActiveTraceId, activity.Id);
+                context.Items.Add(BasicConfig.ActiveTraceCreateTime, DateTime.Now);
             }
             else
             {
-                Activity activity = new Activity(BasicConfig.ActiveTraceName);
+                Activity activity = new Activity(BasicConfig.ActiveTraceName); 
                 activity.SetParentId(parentId); 
                 activity.Start();
-                activity.AddBaggage(BasicConfig.ActiveTraceId, activity.Id);  
+                activity.AddBaggage(BasicConfig.ActiveTraceId, activity.Id);
+                context.Items.Add(BasicConfig.ActiveTraceCreateTime, DateTime.Now);
             }
-        }
-
+        } 
     }
 }

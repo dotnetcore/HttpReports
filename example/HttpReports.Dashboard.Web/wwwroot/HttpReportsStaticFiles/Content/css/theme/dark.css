@@ -342,5 +342,17 @@ body.my-login-page {
 }
 
 
+.layui-laydate-list {
+    background-color:black !important;
+}
+
+
+.layui-laydate-content td {
+    color: #bdbdbd !important;
+}
+
+.laydate-time-list ol li {
+    color: #bdbdbd !important;
+}
 
  

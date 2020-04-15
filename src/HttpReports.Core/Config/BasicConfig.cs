@@ -30,6 +30,8 @@ namespace HttpReports.Core.Config
 
         public const string ActiveTraceId = "HttpReports.Trace.Id";
 
+        public const string ActiveTraceCreateTime = "HttpReports.Trace.CreateTime";
+
         public const string ClearDataCornLike = "0 0 0 * * ? "; 
     }
 }
