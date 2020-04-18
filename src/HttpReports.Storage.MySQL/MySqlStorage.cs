@@ -336,10 +336,12 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             await LoggingSqlOperation(async connection =>
             {
-                result.Items = new Dictionary<string, int>();
+                result.Items = new Dictionary<string, int>(); 
+
                 (await connection.QueryAsync<KVClass<string, int>>(sql).ConfigureAwait(false)).ToList().ForEach(m =>
                 {
-                    result.Items.Add(m.KeyField.Split('-').Last().ToInt().ToString(), m.ValueField);
+                    result.Items.Add(m.KeyField, m.ValueField);
+
                 });
             }, "获取请求次数统计异常").ConfigureAwait(false);
 
@@ -371,7 +373,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
                 result.Items = new Dictionary<string, int>();
                 (await connection.QueryAsync<KVClass<string, int>>(sql).ConfigureAwait(false)).ToList().ForEach(m =>
                 {
-                    result.Items.Add(m.KeyField.ToInt().ToString(), m.ValueField);
+                    result.Items.Add(m.KeyField.ToString(), m.ValueField);
                 });
             }, "获取响应时间统计异常").ConfigureAwait(false);
 
@@ -440,8 +442,12 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
             string dateFormat;
             switch (filterOption.Type)
             {
+                case TimeUnit.Minute:
+                    dateFormat = "DATE_FORMAT(CreateTime,'%H-%i')";
+                    break;
+
                 case TimeUnit.Hour:
-                    dateFormat = "Hour(CreateTime)";
+                    dateFormat = "DATE_FORMAT(CreateTime,'%d-%H')";
                     break;
 
                 case TimeUnit.Month:

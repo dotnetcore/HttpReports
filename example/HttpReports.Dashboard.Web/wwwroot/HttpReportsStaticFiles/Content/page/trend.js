@@ -1,7 +1,13 @@
-﻿
-laydate.render({ elem: '.month', type: 'month' });
-laydate.render({ elem: '.year', type: 'year' });
-laydate.render({ elem: '.day' });
+﻿ 
+var global = {};
+
+InitChart(); 
+
+GetDayChart(); 
+
+GetMinuteChart();
+
+GetLatelyChart(); 
 
 function QueryClick(item) {
 
@@ -9,31 +15,121 @@ function QueryClick(item) {
 
     GetLatelyChart();
 
-    GetLatelyMonthChart();
+    GetLatelyChart(); 
+}
+
+function GetMinuteChart() {
+
+    var node = [];
+
+    $(".node-row").find(".btn-info").each(function (i, item) {
+        node.push($(item).text());
+    });
+
+    Loading(global.MinuteStateTimesBar);
+    Loading(global.MinuteStateAvgBar);
+
+    $.ajax({
+        url: "/HttpReportsData/GetMinuteStateBar",
+        type: "POST",
+        data: {
+            node: node.join(",")
+        },
+        success: function (result) {
+
+            // 24 小时请求次数
+            global.MinuteStateTimesBar.hideLoading();
+            global.MinuteStateTimesBarOption.xAxis.data = result.data.hours;
+            global.MinuteStateTimesBarOption.series[0].data = result.data.timesList;
+            global.MinuteStateTimesBar.setOption(global.MinuteStateTimesBarOption);
+
+            global.MinuteStateTimesBar.hideLoading();
+
+
+            // 24小时请求平均时长
+            global.MinuteStateAvgBar.hideLoading();
+            global.MinuteStateAvgBarOption.xAxis.data = result.data.hours;
+            global.MinuteStateAvgBarOption.series[0].data = result.data.avgList;
+            global.MinuteStateAvgBar.setOption(global.MinuteStateAvgBarOption);
+
+            global.MinuteStateAvgBar.hideLoading();
+        }
+    })
 
 }
 
-
-var global = {};
-
-InitChart(); 
-
-GetDayChart(); 
-
-GetLatelyChart(); 
-
-GetLatelyMonthChart();
-
 function InitChart() { 
+     
+    // Minute
+    global.MinuteStateTimesBar = echarts.init(document.getElementById('MinuteStateTimesBar'), 'macarons');
 
-    // 24小时请求次数
+    global.MinuteStateTimesBarOption = {
+        tooltip: {},
+        color: "#67c2ef",
+        legend: {
+            data: []
+        },
+        grid: {
+            left: '7%',
+            right: '3%'
+        },
+        title: {
+            text: '每分钟请求次数 ',
+            x: "left",
+            y: "2%"
+        },
+        xAxis: {
+            data: []
+        },
+        yAxis: {},
+        series: [{
+            type: 'line',
+            name: "请求次数",
+            data: []
+        }]
+    };
+
+    global.MinuteStateTimesBar.setOption(global.MinuteStateTimesBarOption); 
+  
+    global.MinuteStateAvgBar = echarts.init(document.getElementById('MinuteStateAvgBar'), 'macarons');
+
+    global.MinuteStateAvgBarOption =  {
+        color: ['#af91e1'],
+        tooltip: {},
+        legend: {
+            data: []
+        },
+        grid: {
+            left: '7%',
+            right: '3%'
+        },
+        title: {
+            text: '每分钟平均处理时间  ms',
+            x: "left",
+            y: "2%"
+        },
+        xAxis: {
+            data: []
+        },
+        yAxis: {},
+        series: [{
+            type: 'line',
+            name: "处理时间",
+            data: []
+        }]
+    };
+
+    global.MinuteStateAvgBar.setOption(global.MinuteStateAvgBarOption);   
+
+     
+    // Hour
     global.DayStateTimesBar = echarts.init(document.getElementById('DayStateTimesBar'), 'macarons');
 
     global.DayStateTimesBarOption = {
         tooltip: {},
         color:"#67c2ef",
         legend: {
-            data: ['请求次数']
+            data: []
         },
         grid: {
             left: '7%',
@@ -57,14 +153,14 @@ function InitChart() {
 
     global.DayStateTimesBar.setOption(global.DayStateTimesBarOption); 
    
-    // 24小时平均处理时间 ms
+  
     global.DayStateAvgBar = echarts.init(document.getElementById('DayStateAvgBar'), 'macarons');
 
     global.DayStateAvgBarOption = {
         color: ['#af91e1'],
         tooltip: {},
         legend: {
-            data: ['处理时间']
+            data: []
         },
         grid: {
             left: '7%',
@@ -86,10 +182,9 @@ function InitChart() {
         }]
     };
 
-    global.DayStateAvgBar.setOption(global.DayStateAvgBarOption); 
+    global.DayStateAvgBar.setOption(global.DayStateAvgBarOption);  
 
-
-    // 每天请求数量
+    // Day
     global.LatelyDayChart = echarts.init(document.getElementById('LatelyDayChart'), 'macarons');
 
     global.LatelyDayChartOption = {
@@ -119,47 +214,11 @@ function InitChart() {
         }]
     };
 
-    global.LatelyDayChart.setOption(global.LatelyDayChartOption);  
-
-    // 每月请求数量
-    global.LatelyMonthChart = echarts.init(document.getElementById('LatelyMonthChart'), 'macarons');
-
-    global.LatelyMonthChartOption = {
-        color:"#af91e1",
-        tooltip: {},
-        legend: {
-            data: ['请求次数（月）']
-        },
-        grid: {
-            left: '7%',
-            top: '20%',
-            right: '3%'
-        },
-        title: {
-            text: '请求次数（月） ',
-            x: "left",
-            y: "2%",
-            subtext: ""
-        },
-        xAxis: {
-            data: []
-        },
-        yAxis: {},
-        series: [{
-            type: 'line',
-            name: "请求次数",
-            data: []
-        }]
-    };
-
-    global.LatelyMonthChart.setOption(global.LatelyMonthChartOption);   
+    global.LatelyDayChart.setOption(global.LatelyDayChartOption);   
 
 } 
 
-function GetLatelyChart() {
-
-    var month = $(".month").val();
-
+function GetLatelyChart() { 
     var node = []; 
 
     $(".node-row").find(".btn-info").each(function (i, item) {
@@ -171,13 +230,11 @@ function GetLatelyChart() {
     $.ajax({
         url: "/HttpReportsData/GetLatelyDayChart",
         type: "POST",
-        data: {
-            month: month,
+        data: { 
             node: node.join(",")
         },
         success: function (result) {
-
-            global.LatelyDayChartOption.title.subtext = result.data.range;
+             
             global.LatelyDayChartOption.xAxis.data = result.data.time;
             global.LatelyDayChartOption.series[0].data = result.data.value;
             global.LatelyDayChart.setOption(global.LatelyDayChartOption);
@@ -187,45 +244,11 @@ function GetLatelyChart() {
         }
     })
 
-}
-
-function GetLatelyMonthChart() {
-
-    var year = $(".year").val();
-
-    var node = [];
-
-    $(".node-row").find(".btn-info").each(function (i, item) {
-        node.push($(item).text());
-    });
-
-    Loading(global.LatelyMonthChart);
-
-    $.ajax({
-        url: "/HttpReportsData/GetMonthDataByYear",
-        type: "POST",
-        data: {
-            year: year,
-            node: node.join(",")
-        },
-        success: function (result) {   
-
-            global.LatelyMonthChartOption.title.subtext = result.data.range;
-            global.LatelyMonthChartOption.xAxis.data = result.data.time;
-            global.LatelyMonthChartOption.series[0].data = result.data.value;
-            global.LatelyMonthChart.setOption(global.LatelyMonthChartOption);
-
-            global.LatelyMonthChart.hideLoading(); 
-        }
-    })
-
 } 
 
 function GetDayChart() {
 
-    var node = [];
-
-    var day = $(".day").val();
+    var node = []; 
 
     $(".node-row").find(".btn-info").each(function (i, item) {
         node.push($(item).text());
@@ -237,8 +260,7 @@ function GetDayChart() {
     $.ajax({
         url: "/HttpReportsData/GetDayStateBar",
         type: "POST",
-        data: {
-            day: day,
+        data: { 
             node: node.join(",")
         },
         success: function (result) {
