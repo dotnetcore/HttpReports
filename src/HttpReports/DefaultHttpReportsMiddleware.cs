@@ -7,6 +7,7 @@ using HttpReports.Core.Config;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace HttpReports
 {
@@ -30,11 +31,31 @@ namespace HttpReports
 
         public async Task InvokeAsync(HttpContext context)
         {
+            if (context.Request.Path.HasValue && context.Request.Path.Value == "/")
+            {
+                await _next(context);
+                return;
+            } 
+
+
+            if (context.Request.ContentType == "application/grpc")
+            {
+                await InvokeGrpcAsync(context);
+            }
+            else
+            {
+               await InvokeHttpAsync(context);
+            } 
+        }
+
+
+        private async Task InvokeHttpAsync(HttpContext context)
+        {
             if (context.Request.Method.ToUpper() == "OPTIONS")
             {
                 await _next(context);
-                return; 
-            } 
+                return;
+            }
 
             var stopwatch = Stopwatch.StartNew();
             stopwatch.Start();
@@ -45,37 +66,76 @@ namespace HttpReports
 
             var originalBodyStream = context.Response.Body;
 
-            using (var responseMemoryStream = new MemoryStream())
+            var responseMemoryStream = new MemoryStream();
+
+            try
             {
-                try
+                context.Response.Body = responseMemoryStream;
+
+                await _next(context);
+
+            }
+            finally
+            {
+                stopwatch.Stop();
+
+                string responseBody = await GetResponseBodyAsync(context);
+
+                context.Items.Add(BasicConfig.HttpReportsRequestBody, requestBody);
+                context.Items.Add(BasicConfig.HttpReportsResponseBody, responseBody);
+
+                await responseMemoryStream.CopyToAsync(originalBodyStream); 
+
+                responseMemoryStream.Dispose();
+
+                if (!string.IsNullOrEmpty(context.Request.Path))
                 {
-                    context.Response.Body = responseMemoryStream;
-
-                    await _next(context);
-
+                    InvokeProcesser.Process(context, stopwatch);
                 }
-                finally
-                {
-                    stopwatch.Stop();
 
-                    string responseBody = await GetResponseBodyAsync(context);
-
-                    context.Items.Add(BasicConfig.HttpReportsRequestBody, requestBody);
-                    context.Items.Add(BasicConfig.HttpReportsResponseBody, responseBody);
-
-                    await responseMemoryStream.CopyToAsync(originalBodyStream);
-
-                    originalBodyStream.Dispose();
-
-                    if (!string.IsNullOrEmpty(context.Request.Path))
-                    {
-                        InvokeProcesser.Process(context, stopwatch);
-                    }
-
-                }  
             }
 
         }
+
+        private async Task InvokeGrpcAsync(HttpContext context)
+        { 
+            var stopwatch = Stopwatch.StartNew();
+            stopwatch.Start();
+
+            ConfigTrace(context); 
+
+            try
+            { 
+                await _next(context);
+
+            }
+            finally
+            {
+                stopwatch.Stop();
+
+                string requestBody = string.Empty;
+                string responseBody = string.Empty;
+
+                if (context.Items.ContainsKey(BasicConfig.HttpReportsGrpcRequest))
+                {
+                    requestBody = JsonConvert.SerializeObject(context.Items[BasicConfig.HttpReportsGrpcRequest]); 
+                }
+
+                if (context.Items.ContainsKey(BasicConfig.HttpReportsGrpcResponse))
+                {
+                    responseBody = JsonConvert.SerializeObject(context.Items[BasicConfig.HttpReportsGrpcResponse]);
+                } 
+
+                context.Items.Add(BasicConfig.HttpReportsRequestBody, requestBody);
+                context.Items.Add(BasicConfig.HttpReportsResponseBody,responseBody); 
+
+                if (!string.IsNullOrEmpty(context.Request.Path))
+                {
+                    InvokeProcesser.Process(context, stopwatch);
+                } 
+            } 
+        } 
+
 
         private async Task<string> GetRequestBodyAsync(HttpContext context)
         {
@@ -110,34 +170,34 @@ namespace HttpReports
         }
 
         private void ConfigTrace(HttpContext context)
-        {   
+        {
             if (Activity.Current == null)
-            { 
-                Activity activity = new Activity(BasicConfig.ActiveTraceName); 
-                activity.Start(); 
-                activity.AddBaggage(BasicConfig.ActiveTraceId, activity.Id); 
-                context.Items.Add(BasicConfig.ActiveTraceCreateTime,DateTime.Now);
-                return; 
-            } 
+            {
+                Activity activity = new Activity(BasicConfig.ActiveTraceName);
+                activity.Start();
+                activity.AddBaggage(BasicConfig.ActiveTraceId, activity.Id);
+                context.Items.Add(BasicConfig.ActiveTraceCreateTime, DateTime.Now);
+                return;
+            }
 
-            var parentId = Activity.Current.GetBaggageItem(BasicConfig.ActiveTraceId); 
+            var parentId = Activity.Current.GetBaggageItem(BasicConfig.ActiveTraceId);
 
             if (string.IsNullOrEmpty(parentId))
             {
-                Activity.Current = null; 
-                Activity activity = new Activity(BasicConfig.ActiveTraceName); 
-                activity.Start(); 
+                Activity.Current = null;
+                Activity activity = new Activity(BasicConfig.ActiveTraceName);
+                activity.Start();
                 activity.AddBaggage(BasicConfig.ActiveTraceId, activity.Id);
                 context.Items.Add(BasicConfig.ActiveTraceCreateTime, DateTime.Now);
             }
             else
             {
-                Activity activity = new Activity(BasicConfig.ActiveTraceName); 
-                activity.SetParentId(parentId); 
+                Activity activity = new Activity(BasicConfig.ActiveTraceName);
+                activity.SetParentId(parentId);
                 activity.Start();
                 activity.AddBaggage(BasicConfig.ActiveTraceId, activity.Id);
                 context.Items.Add(BasicConfig.ActiveTraceCreateTime, DateTime.Now);
             }
-        } 
+        }
     }
 }

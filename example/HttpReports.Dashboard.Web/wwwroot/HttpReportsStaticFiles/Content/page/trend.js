@@ -15,7 +15,7 @@ function QueryClick(item) {
 
     GetLatelyChart();
 
-    GetLatelyChart(); 
+    GetMinuteChart();
 }
 
 function GetMinuteChart() {
@@ -37,18 +37,18 @@ function GetMinuteChart() {
         },
         success: function (result) {
 
-            // 24 小时请求次数
+         
             global.MinuteStateTimesBar.hideLoading();
-            global.MinuteStateTimesBarOption.xAxis.data = result.data.hours;
+            global.MinuteStateTimesBarOption.xAxis.data = result.data.time;
             global.MinuteStateTimesBarOption.series[0].data = result.data.timesList;
             global.MinuteStateTimesBar.setOption(global.MinuteStateTimesBarOption);
 
             global.MinuteStateTimesBar.hideLoading();
 
 
-            // 24小时请求平均时长
+           
             global.MinuteStateAvgBar.hideLoading();
-            global.MinuteStateAvgBarOption.xAxis.data = result.data.hours;
+            global.MinuteStateAvgBarOption.xAxis.data = result.data.time;
             global.MinuteStateAvgBarOption.series[0].data = result.data.avgList;
             global.MinuteStateAvgBar.setOption(global.MinuteStateAvgBarOption);
 

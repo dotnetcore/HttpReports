@@ -41,9 +41,9 @@ namespace HttpReports.Storage.PostgreSQL
         {
             await LoggingSqlOperation(async connection =>
             {
-                var request = string.Join(",", list.Select(x=> x.Key).Select(m => $"('{m.Id}','{m.ParentId}','{m.Node}','{m.Route}','{m.Url}','{m.Method}',{m.Milliseconds},{m.StatusCode},'{m.IP}',{m.Port},'{m.LocalIP}',{m.LocalPort},'{m.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}')"));
+                var request = string.Join(",", list.Select(x=> x.Key).Select(m => $"('{m.Id}','{m.ParentId}','{m.Node}','{m.Route}','{m.Url}','{m.RequestType}','{m.Method}',{m.Milliseconds},{m.StatusCode},'{m.IP}',{m.Port},'{m.LocalIP}',{m.LocalPort},'{m.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}')"));
 
-                await connection.ExecuteAsync($@"INSERT INTO ""RequestInfo"" (Id,ParentId,Node, Route, Url, Method, Milliseconds, StatusCode, IP,Port,LocalIP,LocalPort,CreateTime) VALUES {request}").ConfigureAwait(false);
+                await connection.ExecuteAsync($@"INSERT INTO ""RequestInfo"" (Id,ParentId,Node, Route, Url,RequestType,Method, Milliseconds, StatusCode, IP,Port,LocalIP,LocalPort,CreateTime) VALUES {request}").ConfigureAwait(false);
 
                 string detail = string.Join(",", list.Select(x => x.Value).Select(x => $" ('{x.Id}','{x.RequestId}','{x.Scheme}','{x.QueryString}','{x.Header}','{x.Cookie}','{x.RequestBody}','{x.ResponseBody}','{x.ErrorMessage}','{x.ErrorStack}','{x.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}' ) "));
 
@@ -80,7 +80,7 @@ namespace HttpReports.Storage.PostgreSQL
             {
                 await LoggingSqlOperation(async connection =>
                 { 
-                    await connection.ExecuteAsync(@"INSERT INTO ""RequestInfo"" (Id,ParentId,Node, Route, Url, Method, Milliseconds, StatusCode, IP,Port,LocalIP,LocalPort,CreateTime) VALUES (@Id,@ParentId,@Node, @Route, @Url, @Method, @Milliseconds, @StatusCode, @IP,@Port,@LocalIP,@LocalPort,@CreateTime)", request).ConfigureAwait(false);
+                    await connection.ExecuteAsync(@"INSERT INTO ""RequestInfo"" (Id,ParentId,Node, Route,Url,RequestType, Method, Milliseconds, StatusCode, IP,Port,LocalIP,LocalPort,CreateTime) VALUES (@Id,@ParentId,@Node, @Route, @Url,@RequestType, @Method, @Milliseconds, @StatusCode, @IP,@Port,@LocalIP,@LocalPort,@CreateTime)", request).ConfigureAwait(false);
 
                     await connection.ExecuteAsync(@"INSERT INTO ""RequestDetail"" (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime)  VALUES (@Id,@RequestId,@Scheme,@QueryString,@Header,@Cookie,@RequestBody,@ResponseBody,@ErrorMessage,@ErrorStack,@CreateTime)",detail).ConfigureAwait(false);
                      
@@ -222,7 +222,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
                 result.Items = new Dictionary<string, int>();
                 (await connection.QueryAsync<KVClass<string, int>>(sql).ConfigureAwait(false)).ToList().ForEach(m =>
                 {
-                    result.Items.Add(m.KeyField.Split('-').Last().ToInt().ToString(), m.ValueField);
+                    result.Items.Add(m.KeyField, m.ValueField);
                 });
             }, "获取请求次数统计异常").ConfigureAwait(false);
 
@@ -249,7 +249,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
                 result.Items = new Dictionary<string, int>();
                 (await connection.QueryAsync<KVClass<string, int>>(sql).ConfigureAwait(false)).ToList().ForEach(m =>
                 {
-                    result.Items.Add(m.KeyField.ToInt().ToString(), m.ValueField);
+                    result.Items.Add(m.KeyField, m.ValueField);
                 });
             }, "获取响应时间统计异常").ConfigureAwait(false);
 
@@ -345,6 +345,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
                               Node varchar(50) ,
                               Route varchar(50),
                               Url varchar(255),
+                              RequestType varchar(50),
                               Method varchar(10), 
                               Milliseconds Int,
                               StatusCode Int,
@@ -621,21 +622,17 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
             string dateFormat;
             switch (filterOption.Type)
             {
+                case TimeUnit.Minute:
+                    dateFormat = "to_char(CreateTime,'hh24-mi')";
+                    break;
+
                 case TimeUnit.Hour:
-                    dateFormat = "Date_Part('Hour',CreateTime)";
-                    break;
-
-                case TimeUnit.Month:
-                    dateFormat = "Date_Part('Month',CreateTime)";
-                    break;
-
-                case TimeUnit.Year:
-                    dateFormat = "Date_Part('Year',CreateTime)";
-                    break;
+                    dateFormat = "to_char(CreateTime,'DD-hh24')";
+                    break; 
 
                 case TimeUnit.Day:
                 default:
-                    dateFormat = "Date_Part('Day',CreateTime)";
+                    dateFormat = "to_char(CreateTime,'YYYY-MM-DD')";
                     break;
             }
 

@@ -18,6 +18,8 @@ namespace HttpReports.Dashboard.DTO
 
         public int StatusCode { get; set; }
 
+        public string RequestType { get; set; }
+
         public List<RequestInfoTrace> Nodes { get; set; }
 
     }

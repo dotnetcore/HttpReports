@@ -9,7 +9,7 @@ namespace HttpReports
     public class HttpReportsExceptionFilter : IExceptionFilter
     {
         public void OnException(ExceptionContext context)
-        {
+        { 
             if (context.Exception != null)
             {
                context.HttpContext.Items.Add(BasicConfig.HttpReportsGlobalException, context.Exception);

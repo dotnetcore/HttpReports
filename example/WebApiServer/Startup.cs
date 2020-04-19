@@ -23,10 +23,10 @@ namespace WebApiServer
 
         
         public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddControllers();
+        { 
+            services.AddHttpReports().UseMySqlStorage();
 
-            services.AddHttpReports().UseMySqlStorage();  
+            services.AddControllers();
 
         }
 

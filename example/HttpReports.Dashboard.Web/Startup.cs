@@ -22,8 +22,7 @@ namespace HttpReports.Dashboard.Web
        
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpReportsDashborad().UseMySqlStorage();
-
+            services.AddHttpReportsDashborad().UsePostgreSQLStorage();
            
             services.AddControllersWithViews();
         }

@@ -2795,28 +2795,42 @@ ul.profile-details li div i {
     font-size: 12px;
     margin-left: 12px;
     padding: 2px 10px;
-    color: #a29a9a;
+    color: #9e9e9e;
 }
 
 .request-tree .info {
     font-size: 16px;
     text-align: center;
-    margin-left: 30px;
+    margin-left:10px;
+    vertical-align: middle;
     color: #67c2ef;
+}
+
+.request-trace .bar {
+    max-width:300px;
+    width: 200px;
+    height: 2px;
+    margin-top:10px;
+    display: inline-block;
+    vertical-align:bottom;
+    background-color: #67c2ef;
+    float: right;
 }
 
 .request-tree .milliseconds {
     font-size: 12px;
     text-align: center;
-    margin-left: 20px;
-    color: #b9b9b9;
+    margin-left: 8px;
+    color: #eeeeee;
     font-weight: initial;
+    float:right;
+    margin-right:10px;
 }
 
 .request-tree .statusCode {
     font-size: 12px;
     text-align: center;
-    margin-left: 20px;
+    margin-left: 8px;
     padding: 2px 2px;
     color: #eeeeee;
     padding: 1px 6px;
@@ -2831,6 +2845,18 @@ ul.profile-details li div i {
 .request-tree .label-danger {
     background-color: #944040;
 }
+
+.request-tree .requestType {
+    font-size: 12px;
+    text-align: center;
+    margin-left: 8px;
+    padding: 2px 2px;
+    color: #eeeeee;
+    padding: 1px 6px;
+    border-radius: 0;
+    font-weight: initial;
+}
+
 
 
     .mSlider-inner {

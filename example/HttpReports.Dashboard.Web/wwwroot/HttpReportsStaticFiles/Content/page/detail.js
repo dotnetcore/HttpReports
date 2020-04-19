@@ -72,6 +72,11 @@ function InitTable() {
                 align: 'center'
             },
             {
+                field: 'requestType',
+                title: '通信方式',
+                align: 'center'
+            },
+            {
                 field: 'route',
                 title: '路径',
                 align: 'center'
@@ -95,7 +100,7 @@ function InitTable() {
                 align: 'center',
                 formatter: function (value, row, index) {
 
-                    var btn = `<span>${value}ms</span>`;
+                    var btn = `<span>${value}</span>`;
                     return btn;
                 }
 
@@ -232,6 +237,7 @@ function bind_context(Id) {
             $(".context_route").text(info.route);
             $(".context_url").text(info.url);
             $(".context_method").text(info.method);
+            $(".context_requestType").text(info.requestType); 
             $(".context_milliseconds").text(info.milliseconds);
             $(".context_statusCode").text(info.statusCode);
             $(".context_ip").text(info.ip);

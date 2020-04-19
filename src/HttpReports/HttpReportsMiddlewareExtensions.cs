@@ -36,7 +36,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddMvcCore(x => {
                 x.Filters.Add<HttpReportsExceptionFilter>();
-            });
+            }); 
+            
 
             return new HttpReportsBuilder(services,configuration); 
 

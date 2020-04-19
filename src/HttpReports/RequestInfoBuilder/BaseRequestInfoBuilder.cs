@@ -37,7 +37,8 @@ namespace HttpReports
             request.LocalPort = context.Connection.LocalPort;
             request.StatusCode = context.Response.StatusCode;
             request.Method = context.Request.Method;
-            request.Url = context.Request.Path; 
+            request.Url = context.Request.Path;
+            request.RequestType = context.Request.ContentType == "application/grpc" ? "grpc" : "http";
             request.Milliseconds = ToInt32(stopwatch.ElapsedMilliseconds);
             request.CreateTime = context.Items[BasicConfig.ActiveTraceCreateTime].ToDateTime();
 

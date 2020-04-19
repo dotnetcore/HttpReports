@@ -57,6 +57,7 @@ namespace HttpReports.Storage.SQLServer
 	                            [Node] [nvarchar](50) NULL,
 	                            [Route] [nvarchar](50) NULL,
 	                            [Url] [nvarchar](200) NULL,
+                                [RequestType] [nvarchar](50) NULL,
 	                            [Method] [nvarchar](50) NULL,
 	                            [Milliseconds] [int] NULL,
 	                            [StatusCode] [int] NULL,
@@ -131,9 +132,9 @@ namespace HttpReports.Storage.SQLServer
         {
             await LoggingSqlOperation(async connection =>
             { 
-                string requestSql = string.Join(",", list.Select(x => x.Key).Select(x => $" ('{x.Id}','{x.ParentId}','{x.Node}','{x.Route}','{x.Url}','{x.Method}',{x.Milliseconds},{x.StatusCode},'{x.IP}',{x.Port},'{x.LocalIP}',{x.LocalPort},'{x.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}') ")); 
+                string requestSql = string.Join(",", list.Select(x => x.Key).Select(x => $" ('{x.Id}','{x.ParentId}','{x.Node}','{x.Route}','{x.Url}','{x.RequestType}','{x.Method}',{x.Milliseconds},{x.StatusCode},'{x.IP}',{x.Port},'{x.LocalIP}',{x.LocalPort},'{x.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}') ")); 
               
-                await connection.ExecuteAsync($"Insert into [RequestInfo] ([Id],[ParentId],[Node],[Route],[Url],[Method],[Milliseconds],[StatusCode],[IP],[Port],[LocalIP],[LocalPort],[CreateTime]) VALUES {requestSql}").ConfigureAwait(false);
+                await connection.ExecuteAsync($"Insert into [RequestInfo] ([Id],[ParentId],[Node],[Route],[Url],[RequestType],[Method],[Milliseconds],[StatusCode],[IP],[Port],[LocalIP],[LocalPort],[CreateTime]) VALUES {requestSql}").ConfigureAwait(false);
 
                 string detailSql = string.Join(",", list.Select(x => x.Value).Select(x => $" ('{x.Id}','{x.RequestId}','{x.Scheme}','{x.QueryString}','{x.Header}','{x.Cookie}','{x.RequestBody}','{x.ResponseBody}','{x.ErrorMessage}','{x.ErrorStack}','{x.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}' ) "));
 
@@ -153,7 +154,7 @@ namespace HttpReports.Storage.SQLServer
             {
                 await LoggingSqlOperation(async connection =>
                 {
-                    await connection.ExecuteAsync("INSERT INTO [RequestInfo] (Id,ParentId,Node,Route,Url,Method,Milliseconds,StatusCode,IP,Port,LocalIP,LocalPort,CreateTime)  VALUES (@Id,@ParentId,@Node, @Route, @Url, @Method, @Milliseconds, @StatusCode, @IP,@Port,@LocalIP,@LocalPort,@CreateTime)", request).ConfigureAwait(false);
+                    await connection.ExecuteAsync("INSERT INTO [RequestInfo] (Id,ParentId,Node,Route,Url,RequestType,Method,Milliseconds,StatusCode,IP,Port,LocalIP,LocalPort,CreateTime)  VALUES (@Id,@ParentId,@Node, @Route, @Url,@RequestType, @Method, @Milliseconds, @StatusCode, @IP,@Port,@LocalIP,@LocalPort,@CreateTime)", request).ConfigureAwait(false);
 
                     await connection.ExecuteAsync("INSERT INTO [RequestDetail] (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime)  VALUES (@Id,@RequestId,@Scheme,@QueryString,@Header,@Cookie,@RequestBody,@ResponseBody,@ErrorMessage,@ErrorStack,@CreateTime)", detail).ConfigureAwait(false);
 
@@ -496,10 +497,34 @@ namespace HttpReports.Storage.SQLServer
             await LoggingSqlOperation(async connection =>
             {
                 result.Items = new Dictionary<string, int>();
-                (await connection.QueryAsync<KVClass<string, int>>(sql).ConfigureAwait(false)).ToList().ForEach(m =>
+                var list = (await connection.QueryAsync<KVClass<string, int>>(sql).ConfigureAwait(false)).ToList();
+
+                if (filterOption.Type == TimeUnit.Minute)
                 {
-                    result.Items.Add(m.KeyField.Split('-').Last().ToInt().ToString(), m.ValueField);
-                });
+                    foreach (var item in list)
+                    { 
+                        result.Items.Add(item.KeyField.Substring(11).Replace(":", "-"), item.ValueField);
+                    } 
+                }
+
+                if (filterOption.Type == TimeUnit.Hour)
+                {
+                    foreach (var item in list)
+                    { 
+                        result.Items.Add(item.KeyField.Substring(8).Replace(" ", "-"), item.ValueField);
+                    }  
+                }
+
+
+                if (filterOption.Type == TimeUnit.Day)
+                {
+                    foreach (var item in list)
+                    {
+                        result.Items.Add(item.KeyField, item.ValueField);
+                    }
+                }
+
+
             }, "获取请求次数统计异常").ConfigureAwait(false);
 
             return result;
@@ -528,13 +553,35 @@ namespace HttpReports.Storage.SQLServer
             await LoggingSqlOperation(async connection =>
             {
                 result.Items = new Dictionary<string, int>();
-                (await connection.QueryAsync<KVClass<string, int>>(sql).ConfigureAwait(false)).ToList().ForEach(m =>
+                var list = (await connection.QueryAsync<KVClass<string, int>>(sql).ConfigureAwait(false)).ToList();
+
+                if (filterOption.Type == TimeUnit.Minute)
                 {
-                    result.Items.Add(m.KeyField.ToInt().ToString(), m.ValueField);
-                });
+                    foreach (var item in list)
+                    {
+                        result.Items.Add(item.KeyField.Substring(11).Replace(":", "-"), item.ValueField);
+                    }
+                }
+
+                if (filterOption.Type == TimeUnit.Hour)
+                {
+                    foreach (var item in list)
+                    {
+                        result.Items.Add(item.KeyField.Substring(8).Replace(" ", "-"), item.ValueField);
+                    }
+                }
+
+                if (filterOption.Type == TimeUnit.Day)
+                {
+                    foreach (var item in list)
+                    {
+                        result.Items.Add(item.KeyField, item.ValueField);
+                    }
+                }
+
             }, "获取响应时间统计异常").ConfigureAwait(false);
 
-            return result;
+            return result; 
         }
 
 
@@ -548,22 +595,22 @@ namespace HttpReports.Storage.SQLServer
         {
             string dateFormat;
             switch (filterOption.Type)
-            {
+            { 
+                case TimeUnit.Minute:
+                    dateFormat = "CONVERT(varchar(16),CreateTime,120)";
+                    break;
+
                 case TimeUnit.Hour:
-                    dateFormat = "DATENAME(HOUR, CreateTime)";
+                    dateFormat = "CONVERT(varchar(13),CreateTime,120)";
                     break;
 
                 case TimeUnit.Month:
                     dateFormat = "CONVERT(varchar(7),CreateTime, 120)";
-                    break;
-
-                case TimeUnit.Year:
-                    dateFormat = "";
-                    break;
-
+                    break; 
+             
                 case TimeUnit.Day:
                 default:
-                    dateFormat = "CONVERT(varchar(100),CreateTime, 23)";
+                    dateFormat = "CONVERT(varchar(10),CreateTime,120)";
                     break;
             }
 

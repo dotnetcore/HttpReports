@@ -21,7 +21,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder.UseOracleStorageService();
         }
 
-        public static IHttpReportsBuilder UseOracleStorageService(this IHttpReportsBuilder builder)
+        internal static IHttpReportsBuilder UseOracleStorageService(this IHttpReportsBuilder builder)
         { 
             builder.Services.AddTransient<IHttpReportsStorage, OracleStorage>();
             builder.Services.AddSingleton<OracleConnectionFactory>();

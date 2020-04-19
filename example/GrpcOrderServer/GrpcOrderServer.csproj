@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore" Version="2.28.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\HttpReports.Core\HttpReports.Core.csproj" />
+    <ProjectReference Include="..\..\src\HttpReports.Grpc\HttpReports.Grpc.csproj" />
+    <ProjectReference Include="..\..\src\HttpReports.Storage.MySQL\HttpReports.Storage.MySQL.csproj" />
+    <ProjectReference Include="..\..\src\HttpReports.Storage.Oracle\HttpReports.Storage.Oracle.csproj" />
+    <ProjectReference Include="..\..\src\HttpReports.Storage.Postgre\HttpReports.Storage.PostgreSQL.csproj" />
+    <ProjectReference Include="..\..\src\HttpReports.Storage.SQLServer\HttpReports.Storage.SQLServer.csproj" />
+    <ProjectReference Include="..\..\src\HttpReports\HttpReports.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="Protos\User.proto" GrpcServices="Both" />
+  </ItemGroup>
+
+</Project>

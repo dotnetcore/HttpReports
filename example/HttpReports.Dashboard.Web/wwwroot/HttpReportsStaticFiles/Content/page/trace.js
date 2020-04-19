@@ -31,6 +31,8 @@ function BuildTree(tree) {
     });  
 }
 
+var toptree = null;
+
 function ParseTree(tree) {   
 
     var k = $.isArray(tree) ? tree[0] : tree; 
@@ -55,11 +57,23 @@ function ParseTree(tree) {
 
 function AppendTree(k) {    
 
-    k.text = `<span class="service">${k.node}<span>`
-        + `<span class="url">${k.url}<span>`
-        + `<span class="label label-${(k.statusCode == 200 ? "success" :"danger")} statusCode">${k.statusCode}</span>`
+    if (toptree == null) {
+        toptree = k; 
+    }  
+
+    var barWidth = 300;
+    if (toptree != k) {
+        barWidth = parseInt( barWidth * (k.milliseconds / toptree.milliseconds));
+    } 
+
+
+    k.text = `<span class="service">${k.node}</span>`
+        + `<span class="url">${k.url}</span>` 
+        + `<span class="label label-${(k.statusCode == 200 ? "success" : "danger")} statusCode">${k.statusCode}</span>` 
+        + `<span class="requestType">${k.requestType}</span>`
+        + `<i onclick="bind_context('${k.id}')" class="glyphicon glyphicon-info-sign info"></i>`
+        + `<span class="bar" style="width:${barWidth}px"></span>`  
         + `<span class="milliseconds">${k.milliseconds}ms</span>` 
-        + `<i onclick="bind_context('${k.id}')" class="glyphicon glyphicon-info-sign info"></i>` 
 
     return k;
 }   
@@ -78,6 +92,7 @@ function bind_context(Id) {
             $(".context_route").text(info.route);
             $(".context_url").text(info.url);
             $(".context_method").text(info.method);
+            $(".context_requestType").text(info.requestType); 
             $(".context_milliseconds").text(info.milliseconds);
             $(".context_statusCode").text(info.statusCode);
             $(".context_ip").text(info.ip);

@@ -22,7 +22,8 @@ namespace HttpReports
         string Node { get; set; }
         string Route { get; set; }
         int StatusCode { get; set; }
-        string Url { get; set; }    
+        string Url { get; set; }     
+        string RequestType { get; set; }
         DateTime CreateTime { get; set; }
     }
 }

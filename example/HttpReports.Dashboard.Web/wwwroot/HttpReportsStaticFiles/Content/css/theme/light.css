@@ -44,7 +44,7 @@
 }
 
 .request-tree {
-    border-top: 2px solid #428bca;
+     
 }
 
     .request-tree .list-group-item {
@@ -52,5 +52,43 @@
         border-radius: 0px;
        
     }
+
+
+.request-tree .service { 
+    color: #000000;
+}
+
+.request-tree .url {
+    color: #000000;
+}
+
+    .request-tree .label-success {
+        background-color: #548832;
+    }
+
+    .request-tree .label-danger {
+        background-color: #bd4a4a;
+    }
+
+
+    .request-tree .requestType {
+        color: #000000;
+    }
+
+    .request-tree .milliseconds {
+        color: #000000;
+    }
+
+.request-trace .bar {
+    background-color: #506ba7;
+}
+
+.node-selected {
+    background-color: #edf5f7 !important;
+}
+
+.request-tree .list-group-item:hover {
+    background-color: #edf5f7 !important;
+}
 
 

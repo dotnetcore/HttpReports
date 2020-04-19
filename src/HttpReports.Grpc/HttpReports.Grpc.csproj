@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <PackageId>HttpReports.Grpc</PackageId>
+    <Version>1.2.4</Version>
+    <Authors>SpringLee</Authors>
+    <Description>HttpReports.Grpc</Description>
+    <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
+    <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
+    <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore" Version="2.28.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HttpReports\HttpReports.csproj" />
+  </ItemGroup>
+
+</Project>

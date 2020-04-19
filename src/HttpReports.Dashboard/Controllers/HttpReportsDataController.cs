@@ -615,7 +615,8 @@ namespace HttpReports.Dashboard.Controllers
                  Node = requestInfo.Node,
                  Url = requestInfo.Url,
                  Milliseconds = requestInfo.Milliseconds,
-                 StatusCode = requestInfo.StatusCode
+                 StatusCode = requestInfo.StatusCode,
+                 RequestType = requestInfo.RequestType
 
             }; 
 

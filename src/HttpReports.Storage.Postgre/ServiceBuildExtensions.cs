@@ -24,7 +24,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder.UsePostgreSQLStorageService();
         }
 
-        public static IHttpReportsBuilder UsePostgreSQLStorageService(this IHttpReportsBuilder builder)
+        internal static IHttpReportsBuilder UsePostgreSQLStorageService(this IHttpReportsBuilder builder)
         { 
             builder.Services.AddSingleton<IHttpReportsStorage, PostgreSQLStorage>();
             builder.Services.AddSingleton<PostgreConnectionFactory>();

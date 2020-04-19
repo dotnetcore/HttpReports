@@ -57,6 +57,7 @@ namespace HttpReports.Storage.Oracle
 	                            Node varchar2(50),
 	                            Route varchar2(50),
 	                            Url varchar2(200),
+                                RequestType varchar2(50),
 	                            Method varchar2(50),
 	                            Milliseconds number(15),
 	                            StatusCode number(15),
@@ -154,7 +155,7 @@ namespace HttpReports.Storage.Oracle
 
                 foreach (var request in list.Select(x=>x.Key))
                 {
-                    sb.AppendLine($@"Insert Into RequestInfo Values ('{request.Id}','{request.ParentId}','{request.Node}','{request.Route}','{request.Url}','{request.Method}',{request.Milliseconds},{request.StatusCode},'{request.IP}',{request.Port},'{request.LocalIP}',{request.LocalPort},to_date('{request.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss')); ");
+                    sb.AppendLine($@"Insert Into RequestInfo Values ('{request.Id}','{request.ParentId}','{request.Node}','{request.Route}','{request.Url}','{request.RequestType}', '{request.Method}',{request.Milliseconds},{request.StatusCode},'{request.IP}',{request.Port},'{request.LocalIP}',{request.LocalPort},to_date('{request.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss')); ");
                 }
 
                 foreach (var detail in list.Select(x => x.Value))
@@ -179,7 +180,7 @@ namespace HttpReports.Storage.Oracle
             {
                 await LoggingSqlOperation(async connection =>
                 {
-                    string requestSql = $@"Insert Into RequestInfo Values ('{request.Id}','{request.ParentId}','{request.Node}','{request.Route}','{request.Url}','{request.Method}',{request.Milliseconds},{request.StatusCode},'{request.IP}',{request.Port},'{request.LocalIP}',{request.LocalPort},to_date('{request.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss')) ";
+                    string requestSql = $@"Insert Into RequestInfo Values ('{request.Id}','{request.ParentId}','{request.Node}','{request.Route}','{request.Url}','{request.RequestType}','{request.Method}',{request.Milliseconds},{request.StatusCode},'{request.IP}',{request.Port},'{request.LocalIP}',{request.LocalPort},to_date('{request.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss')) ";
 
                     await connection.ExecuteAsync(requestSql).ConfigureAwait(false);
 
@@ -483,10 +484,14 @@ namespace HttpReports.Storage.Oracle
             await LoggingSqlOperation(async connection =>
             {
                 result.Items = new Dictionary<string, int>();
-                (await connection.QueryAsync<KVClass<string, int>>(sql).ConfigureAwait(false)).ToList().ForEach(m =>
+
+                var list = (await connection.QueryAsync<KVClass<string, int>>(sql).ConfigureAwait(false)).ToList(); 
+
+                foreach (var item in list)
                 {
-                    result.Items.Add(m.KeyField.ToInt().ToString(), m.ValueField);
-                });
+                    result.Items.Add(item.KeyField, item.ValueField);
+                } 
+                 
             }, "获取请求次数统计异常").ConfigureAwait(false);
 
             return result;
@@ -517,7 +522,7 @@ namespace HttpReports.Storage.Oracle
                 result.Items = new Dictionary<string, int>();
                 (await connection.QueryAsync<KVClass<string, int>>(sql).ConfigureAwait(false)).ToList().ForEach(m =>
                 {
-                    result.Items.Add(m.KeyField.ToInt().ToString(), m.ValueField);
+                    result.Items.Add(m.KeyField, m.ValueField);
                 });
             }, "获取响应时间统计异常").ConfigureAwait(false);
 
@@ -541,21 +546,17 @@ namespace HttpReports.Storage.Oracle
             string dateFormat;
             switch (filterOption.Type)
             {
+                case TimeUnit.Minute:
+                    dateFormat = "to_char(CreateTime,'hh24-mm')";
+                    break;
+
                 case TimeUnit.Hour:
-                    dateFormat = "to_char(CreateTime,'hh24')";
-                    break;
-
-                case TimeUnit.Month:
-                    dateFormat = "to_char(CreateTime,'mm')";
-                    break;
-
-                case TimeUnit.Year:
-                    dateFormat = "";
-                    break;
+                    dateFormat = "to_char(CreateTime,'dd-hh24')";
+                    break; 
 
                 case TimeUnit.Day:
                 default:
-                    dateFormat = "to_char(CreateTime,'dd')";
+                    dateFormat = "to_char(CreateTime,'yyyy-MM-dd')";
                     break;
             }
 

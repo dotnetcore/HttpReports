@@ -22,7 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder.UseSQLServerStorageService();
         }
 
-        public static IHttpReportsBuilder UseSQLServerStorageService(this IHttpReportsBuilder builder)
+        private static IHttpReportsBuilder UseSQLServerStorageService(this IHttpReportsBuilder builder)
         { 
             builder.Services.AddTransient<IHttpReportsStorage, SQLServerStorage>();
             builder.Services.AddSingleton<SQLServerConnectionFactory>();

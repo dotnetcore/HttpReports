@@ -28,6 +28,8 @@ namespace HttpReports
 
         public string Url { get; set; }
 
+        public string RequestType { get; set; }
+
         public DateTime CreateTime { get; set; }
     }
 }
