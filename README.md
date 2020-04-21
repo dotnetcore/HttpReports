@@ -76,8 +76,7 @@ HttpReports 需要手动创建数据库, 我这里使用 SqlServer 数据库为�
 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
-{
-	//添加HttpReports
+{ 
 	services.AddHttpReports().UseSQLServerStorage();
 
 	services.AddControllers();
@@ -86,7 +85,7 @@ public void ConfigureServices(IServiceCollection services)
  
 public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 {
-	//使用HttpReports
+ 
 	app.UseHttpReports();
 
 	if (env.IsDevelopment())
