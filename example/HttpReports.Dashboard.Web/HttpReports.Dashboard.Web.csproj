@@ -5,13 +5,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\HttpReports.Core\HttpReports.Core.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Dashboard\HttpReports.Dashboard.csproj" />
+    <ProjectReference Include="..\..\src\HttpReports.Grpc\HttpReports.Grpc.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Storage.MySQL\HttpReports.Storage.MySQL.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Storage.Oracle\HttpReports.Storage.Oracle.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Storage.Postgre\HttpReports.Storage.PostgreSQL.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Storage.SQLServer\HttpReports.Storage.SQLServer.csproj" />
+    <ProjectReference Include="..\..\src\HttpReports\HttpReports.csproj" />
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
 
 

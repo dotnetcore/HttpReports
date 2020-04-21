@@ -3,8 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>HttpReports.Core</PackageId>
-    <Description>HttpReports 核心类库</Description>
-    <Version>1.2.3</Version>
+    <Description>HttpReports is an lightweight APM system for microservice in .Net Core 
+
+github: https://github.com/SpringLeee/HttpReports   
+
+</Description>
+    <Version>1.2.4</Version>
     <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
     <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
     <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>

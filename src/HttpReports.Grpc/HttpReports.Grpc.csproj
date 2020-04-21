@@ -5,7 +5,10 @@
     <PackageId>HttpReports.Grpc</PackageId>
     <Version>1.2.4</Version>
     <Authors>SpringLee</Authors>
-    <Description>HttpReports.Grpc</Description>
+    <Description>HttpReports is an lightweight APM system for microservice in .Net Core 
+
+github: https://github.com/SpringLeee/HttpReports   
+</Description>
     <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
     <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
     <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>

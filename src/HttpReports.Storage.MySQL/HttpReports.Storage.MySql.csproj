@@ -3,9 +3,9 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>HttpReports.MySQL</PackageId>
-    <Version>1.2.3</Version>
+    <Version>1.2.4</Version>
     <Authors>SpringLee</Authors>
-    <Description>HttpReports.MySQL 存储</Description>
+    <Description>HttpReports.MySQL Storage</Description>
     <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
     <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
     <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>

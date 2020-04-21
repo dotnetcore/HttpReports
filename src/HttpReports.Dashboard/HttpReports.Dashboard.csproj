@@ -4,17 +4,11 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>HttpReports.Dashboard</AssemblyName>
     <RootNamespace>HttpReports.Dashboard</RootNamespace>
-    <Version>1.2.3</Version>
+    <Version>1.2.4</Version>
     <PackageId>HttpReports.Dashboard</PackageId>
     <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
     <PackageLicenseFile></PackageLicenseFile>
-    <Description>
-      
-HttpReports 是.Net Core下的轻量级APM, 使用HttpReports可以快速搭建统计,分析,图表,监控一体化站点;
-
-支持版本：.Net Core 2.0 或者以上版本；
-支持类型：WebAPI,MVC,Web项目 
-支持数据库类型：SqlServer,MySql,Oracle,ElasticSearch,PostgreSQL;
+    <Description>HttpReports is an lightweight APM system for microservice in .Net Core 
 
 github: https://github.com/SpringLeee/HttpReports   
 

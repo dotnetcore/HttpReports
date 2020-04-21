@@ -3,9 +3,9 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>HttpReports.PostgreSQL</PackageId>
-    <Version>1.2.3</Version>
+    <Version>1.2.4</Version>
     <Authors>SpringLee</Authors>
-    <Description>HttpReports.PostgreSQL 存储</Description>
+    <Description>HttpReports.PostgreSQL Storage</Description>
     <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
     <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>
     <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>

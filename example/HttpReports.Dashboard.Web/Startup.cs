@@ -22,7 +22,9 @@ namespace HttpReports.Dashboard.Web
        
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpReportsDashborad().UsePostgreSQLStorage();
+            services.AddHttpReports().UseSQLServerStorage().UseGrpc(); 
+
+            services.AddHttpReportsDashborad().UseSQLServerStorage();
            
             services.AddControllersWithViews();
         }
@@ -30,6 +32,8 @@ namespace HttpReports.Dashboard.Web
    
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseHttpReports();
+
             app.UseHttpReportsDashboard();
 
             if (env.IsDevelopment())

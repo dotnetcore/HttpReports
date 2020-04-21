@@ -3,10 +3,10 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>HttpReports.SQLServer</PackageId>
-    <Version>1.2.3</Version>
+    <Version>1.2.4</Version>
     <Authors>SpringLee</Authors>
     <Company>SpringLee</Company>
-    <Description>HttpReports.SQLServer 存储</Description>
+    <Description>HttpReports.SQLServer Storage</Description>
     <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
     <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
     <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>
