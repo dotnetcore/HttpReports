@@ -1,4 +1,9 @@
 ﻿
+
+<p align="center">
+    <span>中文</span> |  <a href="README.en.md">English</a>
+</p>
+
 ## 前言介绍 
 
  **HttpReports** 是针对.Net Core 开发的轻量级APM系统，基于MIT开源协议, 使用HttpReports可以快速搭建.Net Core环境下统计,分析,图表,监控，分布式追踪一体化的站点， 适应.Net Core WebAPI,MVC，Web项目, 通过引用Nuget构建Dashboard面板，上手简单，适合在微服务架构中使用。
