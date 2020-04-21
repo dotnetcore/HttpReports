@@ -1,5 +1,7 @@
-﻿ 
-**HttpReports** 是针对.Net Core 开发的轻量级APM系统，基于MIT开源协议, 使用HttpReports可以快速搭建.Net Core环境下统计,分析,图表,监控，分布式追踪一体化的站点， 适应.Net Core WebAPI,MVC，Web项目, 通过引用Nuget构建Dashboard面板，上手简单，适合在微服务架构中使用。
+﻿
+## 前言介绍 
+
+ **HttpReports** 是针对.Net Core 开发的轻量级APM系统，基于MIT开源协议, 使用HttpReports可以快速搭建.Net Core环境下统计,分析,图表,监控，分布式追踪一体化的站点， 适应.Net Core WebAPI,MVC，Web项目, 通过引用Nuget构建Dashboard面板，上手简单，适合在微服务架构中使用。
 
 
 Github地址：**https://github.com/SpringLeee/HttpReports**   
@@ -10,7 +12,7 @@ Github地址：**https://github.com/SpringLeee/HttpReports**
 
 开源不易，感兴趣的同学欢迎 Github Star 一波...
 
-### 主要功能
+## 主要功能
 
 - 接口调用指标分析
 - 多服务节点数据聚合分析
@@ -23,7 +25,7 @@ Github地址：**https://github.com/SpringLeee/HttpReports**
 - 分布式追踪
 - 多数据库支持，集成方便
 
-### 数据库支持 
+## 数据库支持 
  数据库 | Nuget包名称
 ---|---
 **SqlServer** | HttpReports.SqlServer
@@ -33,7 +35,7 @@ Github地址：**https://github.com/SpringLeee/HttpReports**
 
 
 
-### HttpReports Dashboard-UI
+## HttpReports Dashboard-UI
 ![](https://lee-1259586045.cos.ap-shanghai.myqcloud.com/index_bg.png)
 
 ![](https://lee-1259586045.cos.ap-shanghai.myqcloud.com/chart1.png)
@@ -41,13 +43,13 @@ Github地址：**https://github.com/SpringLeee/HttpReports**
 ![](https://lee-1259586045.cos.ap-shanghai.myqcloud.com/tracePage.png)
 
 ---
-### 快速开始 😆 
+## 快速开始 😆 
  
-#### Step1: 初始化数据库
+### Step1: 初始化数据库
 
 HttpReports 需要手动创建数据库, 我这里使用 SqlServer 数据库为例，创建数据库 HttpReports, 当然数据库名称可以自由定义, 后边程序要和这个数据库名字对应。
 
-#### Step2: 集成到WebAPI应用
+### Step2: 集成到WebAPI应用
 打开VS开发工具，新建一个 WebAPI 应用，这里 .Net Core 版本只要是2.0 以上即可，我这里用的是3.1版本,创建完成后，Nuget 包引用 **HttpReports** 
 
 ![](https://lee-1259586045.cos.ap-shanghai.myqcloud.com/useHttpReports.png)
@@ -76,7 +78,8 @@ HttpReports 需要手动创建数据库, 我这里使用 SqlServer 数据库为�
 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
-{ 
+{
+	 
 	services.AddHttpReports().UseSQLServerStorage();
 
 	services.AddControllers();
@@ -85,7 +88,7 @@ public void ConfigureServices(IServiceCollection services)
  
 public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 {
- 
+	 
 	app.UseHttpReports();
 
 	if (env.IsDevelopment())
@@ -105,7 +108,7 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 ```
 一切准备就绪后，我们启动 WebAPi，并且刷新几次页面，到这里为止，WebAPI的部分我们已经完成了 😛
 
-#### Step3: 集成可视化 Dashboard
+### Step3: 集成可视化 Dashboard
 使用VS新建一个 .Net Core MVC 应用, 新建完成后，通过Nuget包我们分别安装 **HttpReports.Dashboard** ，**HttpReports.SqlServer**
 
 ![](https://lee-1259586045.cos.ap-shanghai.myqcloud.com/useDashboard.png)
@@ -150,7 +153,7 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 
 例子中我用的是SqlServer 数据库，其他的数据库也是类似的，我只创建了一个WebAPI，当然HttpRrports 也支持多个WebAPI，我们只要修改appsetting.json 的 Node，你可以设置 Node 为 UserService, OrderService... ，到这里一个最简单集成 HttpReports 的例子已经完成了, 请尽情使用吧 😆
 
-### Grpc 支持
+## Grpc 支持
 微服务Grpc的流行，我们也做了Grpc的适配，如果您的项目中使用Grpc通信的话，需要在你的api项目中，Nuget包引用 **HttpReports.Grpc**，注意这里是api项目引用，不是Dashboard 项目引用
 
 ![](https://lee-1259586045.cos.ap-shanghai.myqcloud.com/usegrpc.png)
@@ -166,7 +169,7 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-### 预警监控
+## 预警监控
 
 HttpReports.Dashboard 集成了预警监控功能，使用的话需要先配置 Smtp 邮箱，否则接收不到预警邮件哦，
 
@@ -214,7 +217,7 @@ HttpReports.Dashboard 集成了预警监控功能，使用的话需要先配置 
 
 最后，贴上两个完整的配置文件供大家参考
 
-#### WebAPI端
+### WebAPI端
 
 ```csharp
 {
@@ -241,7 +244,7 @@ HttpReports.Dashboard 集成了预警监控功能，使用的话需要先配置 
 **Switch** 是否开始数据收集，默认true
 **FilterStaticFiles** 收集数据是否过滤静态文件，默认true
 
-#### Dashboard端
+### Dashboard端
 
 ```csharp
 {
@@ -266,7 +269,7 @@ HttpReports.Dashboard 集成了预警监控功能，使用的话需要先配置 
 **ExpireDay** 收集数据的有效期，默认30天 
 
 
-### 总结
+## 总结
 
 **HttpReports** 是 .Net Core环境下开源的APM系统，非常适合微服务环境中使用，如果是中小型项目的话，那么使用 HttpReports 是一个不错的选择, 开源不易，如果能帮助到您的话，还请希望给个Star 支持下， 感谢 😆
 
@@ -274,15 +277,20 @@ Github: https://github.com/SpringLeee/HttpReports
 
 [MIT协议](https://github.com/SpringLeee/HttpReports/blob/master/LICENSE "MIT") 
 
-### 交流反馈
+## 交流反馈
  
-如果您在项目中使用了HttpReports，或者感兴趣的可以加入QQ群，大家一起沟通，有更新也会第一时间通知，也可以添加我的微信，希望可以帮助到您
+如果您在项目中使用了HttpReports，或者感兴趣的可以加入QQ群 897216102， 大家一起沟通，有更新也会第一时间通知，也可以添加我的微信，希望可以帮助到您
 
-![](https://images.cnblogs.com/cnblogs_com/myshowtime/1627540/o_a15.png)  
+![](https://lee-1259586045.cos.ap-shanghai.myqcloud.com/mywechat3.jpg)   
 
+## 捐赠
+ 
+如您觉得 **HttpReports** 对您有帮助，可以请作者媳妇儿喝一杯柠檬茶~
 
+![](https://lee-1259586045.cos.ap-shanghai.myqcloud.com/juanzheng.jpg)
+  
 
  
 
-
+  
  
