@@ -30,10 +30,10 @@ namespace HttpReports.Dashboard.Services
                 return "通知邮箱,推送地址不能都为空"; 
             }   
             
-            if (request.Emails.Length > 100)
-                return "邮箱过长";
+            if (!request.Emails.IsEmpty() && request.Emails.Length > 100)
+                return "邮箱过长"; 
 
-            if (request.WebHook.Length > 100)
+            if (!request.WebHook.IsEmpty() && request.WebHook.Length > 100)
                 return "推送地址过长";
 
             if (request.ResponseTimeOutMonitor != null)

@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>HttpReports.Dashboard</AssemblyName>
     <RootNamespace>HttpReports.Dashboard</RootNamespace>
-    <Version>1.2.4</Version>
+    <Version>1.2.5</Version>
     <PackageId>HttpReports.Dashboard</PackageId>
     <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
     <PackageLicenseFile></PackageLicenseFile>
