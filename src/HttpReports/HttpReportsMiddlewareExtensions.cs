@@ -14,8 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");
             services.AddOptions();
-            services.Configure<HttpReportsOptions>(configuration);
-
+            services.Configure<HttpReportsOptions>(configuration); 
             return services.UseHttpReportsService(configuration);
         }
 

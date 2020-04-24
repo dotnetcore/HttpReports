@@ -15,9 +15,8 @@ using Quartz.Spi;
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class DependencyInjectionExtensions
-    {
-
-        public static IHttpReportsBuilder AddHttpReportsDashborad(this IServiceCollection services)
+    { 
+        public static IHttpReportsBuilder AddHttpReportsDashboard(this IServiceCollection services)
         {
             ServiceContainer.provider = services.BuildServiceProvider();
 
@@ -27,10 +26,11 @@ namespace Microsoft.Extensions.DependencyInjection
             services.Configure<DashboardOptions>(configuration);
 
             return services.UseHttpReportsDashboradService(configuration);
-        }
+        } 
 
 
-        public static IHttpReportsBuilder AddHttpReportsDashborad(this IServiceCollection services,Action<DashboardOptions> options)
+
+        public static IHttpReportsBuilder AddHttpReportsDashboard(this IServiceCollection services,Action<DashboardOptions> options)
         {
             ServiceContainer.provider = services.BuildServiceProvider();
 
