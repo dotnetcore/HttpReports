@@ -55,7 +55,7 @@ namespace HttpReports.Storage.Oracle
 	                            Id varchar2(50),
                                 ParentId varchar2(50),
 	                            Node varchar2(50),
-	                            Route varchar2(50),
+	                            Route varchar2(120),
 	                            Url varchar2(200),
                                 RequestType varchar2(50),
 	                            Method varchar2(50),
@@ -134,7 +134,7 @@ namespace HttpReports.Storage.Oracle
                     if (con.QueryFirstOrDefault<int>($" Select count(1) from SysUser ") == 0)
                     {  
                        await con.ExecuteAsync($" Insert Into SysUser Values ('{MD5_16(Guid.NewGuid().ToString())}','{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ").ConfigureAwait(false);
-                    }
+                    } 
 
                 } 
             }

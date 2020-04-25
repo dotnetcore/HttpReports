@@ -343,7 +343,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
                               ID varchar(50) Primary Key,
                               ParentId varchar(50),
                               Node varchar(50) ,
-                              Route varchar(50),
+                              Route varchar(120),
                               Url varchar(255),
                               RequestType varchar(50),
                               Method varchar(10), 

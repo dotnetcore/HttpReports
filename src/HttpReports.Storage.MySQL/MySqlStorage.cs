@@ -52,7 +52,7 @@ namespace HttpReports.Storage.MySql
   `Id` varchar(50) NOT NULL,
   `ParentId` varchar(50) NOT NULL,
   `Node` varchar(50) DEFAULT NULL,
-  `Route` varchar(50) DEFAULT NULL,
+  `Route` varchar(200) DEFAULT NULL,
   `Url` varchar(255) DEFAULT NULL,
   `RequestType` varchar(50) DEFAULT NULL,
   `Method` varchar(16) DEFAULT NULL,
@@ -108,11 +108,18 @@ CREATE TABLE IF NOT EXISTS `SysUser` (
                     if (connection.QueryFirstOrDefault<int>("Select count(1) from `SysUser`") == 0)
                     {
                         await connection.ExecuteAsync($@" Insert Into `SysUser` (`Id`,`UserName`,`Password`) Values ('{MD5_16(Guid.NewGuid().ToString())}','{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ").ConfigureAwait(false);
-                    }
+                    } 
+
+                    if (connection.QueryFirstOrDefault<string>($" SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS where table_schema ='{ConnectionFactory.DataBase}' AND table_name  = 'RequestInfo'  AND COLUMN_NAME = 'Route'") != "varchar(120)")
+                    {
+                        await connection.ExecuteAsync($" Alter Table `RequestInfo` modify column `Route` varchar(120)");
+                    }   
                 }
             }
             catch (Exception ex)
             {
+                Logger.LogWarning(ex,$"Init Error:{ex.Message}");
+
                 throw ex;
             }
         }

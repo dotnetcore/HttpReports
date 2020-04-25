@@ -22,6 +22,17 @@ namespace HttpReports.Dashboard.Web
        
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCap(x =>
+            {  
+                x.UseMySql("DataBase=HttpReports;Data Source=localhost;User Id=root;Password=123456;");    
+                
+                x.UseRabbitMQ("localhost");
+
+                x.UseDashboard();
+
+            });
+
+
             services.AddHttpReports().UseMySqlStorage().UseGrpc(); 
 
             services.AddHttpReportsDashboard().UseMySqlStorage();

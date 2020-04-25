@@ -139,34 +139,49 @@ namespace HttpReports
 
         private async Task<string> GetRequestBodyAsync(HttpContext context)
         {
-            string result = string.Empty;
+            try
+            {
+                string result = string.Empty;
 
-            context.Request.EnableBuffering();
+                context.Request.EnableBuffering();
 
-            var requestReader = new StreamReader(context.Request.Body);
+                var requestReader = new StreamReader(context.Request.Body);
 
-            result = await requestReader.ReadToEndAsync();
+                result = await requestReader.ReadToEndAsync();
 
-            context.Request.Body.Position = 0;
+                context.Request.Body.Position = 0;
 
-            return result;
-
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex.ToString());
+                return string.Empty; 
+            }  
         }
 
         private async Task<string> GetResponseBodyAsync(HttpContext context)
         {
-            string result = string.Empty;
+            try
+            { 
+                string result = string.Empty;
 
-            context.Response.Body.Seek(0, SeekOrigin.Begin);
+                context.Response.Body.Seek(0, SeekOrigin.Begin);
 
-            var responseReader = new StreamReader(context.Response.Body);
+                var responseReader = new StreamReader(context.Response.Body);
 
-            result = await responseReader.ReadToEndAsync();
+                result = await responseReader.ReadToEndAsync();
 
-            context.Response.Body.Seek(0, SeekOrigin.Begin);
+                context.Response.Body.Seek(0, SeekOrigin.Begin);
 
-            return result;
+                return result;
 
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex.ToString());
+                return string.Empty;
+            }  
         }
 
         private void ConfigTrace(HttpContext context)

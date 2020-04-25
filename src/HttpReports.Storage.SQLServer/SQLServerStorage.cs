@@ -55,7 +55,7 @@ namespace HttpReports.Storage.SQLServer
 	                            [Id] [varchar](50) NOT NULL PRIMARY KEY,
                                 [ParentId] [nvarchar](50) NULL,
 	                            [Node] [nvarchar](50) NULL,
-	                            [Route] [nvarchar](50) NULL,
+	                            [Route] [nvarchar](120) NULL,
 	                            [Url] [nvarchar](200) NULL,
                                 [RequestType] [nvarchar](50) NULL,
 	                            [Method] [nvarchar](50) NULL,
