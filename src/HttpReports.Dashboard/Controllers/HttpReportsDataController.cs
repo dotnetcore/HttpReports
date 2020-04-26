@@ -16,6 +16,7 @@ using HttpReports.Storage.FilterOptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace HttpReports.Dashboard.Controllers
 {
@@ -563,6 +564,14 @@ namespace HttpReports.Dashboard.Controllers
                 Detail = requestDetail  
 
             }));
+        }
+
+        public IActionResult Json(object data)
+        {
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+
+            return Content(JsonConvert.SerializeObject(data,settings));
         }
 
         private async Task<IRequestInfo> GetGrandParentRequestInfo(string Id)

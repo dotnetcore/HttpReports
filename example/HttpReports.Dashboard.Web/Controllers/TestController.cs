@@ -2,36 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
-using DotNetCore.CAP;
+using System.Threading.Tasks; 
 using Microsoft.AspNetCore.Mvc;
 
 namespace HttpReports.Dashboard.Web.Controllers
 {
     [Route("api/[controller]/[action]")]
     public class TestController : Controller
-    {
-        private readonly ICapPublisher _capBus;
-        public TestController(ICapPublisher capPublisher)
-        { 
-            _capBus = capPublisher;
-        }
-
-
-        [HttpGet]
-        public async Task<IActionResult> CAPPublish()
-        {
-            _capBus.Publish("xxx.services.show.time", DateTime.Now);
-
-            return await Task.FromResult(Ok());
-        }  
-
-        [CapSubscribe("xxx.services.show.time")]
-        public void CheckReceivedMessage(DateTime datetime)
-        {
-            Console.WriteLine(datetime);
-        }
-
+    {  
 
         [HttpGet]
         public async Task<IActionResult> Index()
