@@ -140,7 +140,7 @@ namespace HttpReports
         private async Task<string> GetRequestBodyAsync(HttpContext context)
         {
             try
-            {
+            { 
                 string result = string.Empty;
 
                 context.Request.EnableBuffering();
@@ -163,7 +163,9 @@ namespace HttpReports
         private async Task<string> GetResponseBodyAsync(HttpContext context)
         {
             try
-            { 
+            {
+                if (!context.Response.Body.CanSeek || !context.Request.Body.CanRead)   return string.Empty; 
+
                 string result = string.Empty;
 
                 context.Response.Body.Seek(0, SeekOrigin.Begin);
