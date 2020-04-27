@@ -4,6 +4,7 @@ using HttpReports.Core.Config;
 using HttpReports.Dashboard.Implements;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace HttpReports.Dashboard.Controllers
@@ -11,10 +12,12 @@ namespace HttpReports.Dashboard.Controllers
     public class HttpReportsController : Controller
     {
         private readonly IHttpReportsStorage _storage;
+        private readonly IOptions<DashboardOptions> _options;
 
-        public HttpReportsController(IHttpReportsStorage storage)
+        public HttpReportsController(IHttpReportsStorage storage, IOptions<DashboardOptions> options)
         {
             _storage = storage;
+            _options = options;
         }
 
         public async Task<IActionResult> Index()
@@ -106,6 +109,10 @@ namespace HttpReports.Dashboard.Controllers
         [AllowAnonymous]
         public IActionResult UserLogin()
         {
+            if (_options.Value.AllowAnonymous) {
+                HttpContext.SetCookie (BasicConfig.LoginCookieId, "admin", 60 * 30 * 7);
+                return Redirect ("/HttpReports");
+            }
             return View(); 
         }
 
