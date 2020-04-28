@@ -55,7 +55,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddMvcCore(x => {
                 x.Filters.Add<GlobalAuthorizeFilter>();
-            });
+            }).AddViews(); 
+         
 
             return new HttpReportsBuilder(services, configuration);
         }  

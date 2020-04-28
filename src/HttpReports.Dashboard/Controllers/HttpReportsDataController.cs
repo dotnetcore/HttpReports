@@ -555,7 +555,7 @@ namespace HttpReports.Dashboard.Controllers
 
 
         public async Task<IActionResult> GetRequestInfoDetail(string Id)
-        {
+        { 
             var (requestInfo, requestDetail) = await _storage.GetRequestInfoDetail(Id); 
 
             return Json(new HttpResultEntity(1, "ok", new { 
@@ -568,10 +568,9 @@ namespace HttpReports.Dashboard.Controllers
 
         public IActionResult Json(object data)
         {
-            JsonSerializerSettings settings = new JsonSerializerSettings();
-            settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            HttpContext.Response.ContentType = "application/json;charset=utf-8";
 
-            return Content(JsonConvert.SerializeObject(data,settings));
+            return Content(JsonConvert.SerializeObject(data,new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }));
         }
 
         private async Task<IRequestInfo> GetGrandParentRequestInfo(string Id)

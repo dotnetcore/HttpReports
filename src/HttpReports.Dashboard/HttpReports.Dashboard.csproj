@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish> 
     <AssemblyName>HttpReports.Dashboard</AssemblyName>
     <RootNamespace>HttpReports.Dashboard</RootNamespace>
     <Version>1.2.5</Version>
@@ -33,6 +34,10 @@ github: https://github.com/SpringLeee/HttpReports
   <ItemGroup>
     <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
   </ItemGroup>
+
+
+
+
 
   <!--<ItemGroup>
     <Content Include="Views\**">
