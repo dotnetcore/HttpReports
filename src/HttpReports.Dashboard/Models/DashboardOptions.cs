@@ -9,6 +9,7 @@ namespace HttpReports.Dashboard
     public class DashboardOptions : IOptions<DashboardOptions>
     {
         public bool UseHome { get; set; } = true;
+        public bool AllowAnonymous { get; set; } = false;
 
         public MailOptions Mail { get; set; } = new MailOptions();
 
