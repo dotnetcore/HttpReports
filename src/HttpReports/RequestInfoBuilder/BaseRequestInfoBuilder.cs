@@ -121,8 +121,7 @@ namespace HttpReports
                 return -1;
             }
             return (int)value == 0 ? 1:(int)value;
-        }
-
+        } 
       
 
         protected static bool IsNumber(string str)

@@ -24,14 +24,18 @@ namespace HttpReports.Grpc
 
             try
             {
-                 response = await continuation(request, context);
+                response = await continuation(request, context);
             }
-            finally 
+            catch (Exception ex)
+            {
+                _logger.LogError("UnaryServerHandler Error:" + ex.ToString());
+            }
+            finally
             {
                 var httpContext = context.GetHttpContext();
 
-                httpContext.Items.Add(BasicConfig.HttpReportsGrpcRequest,request);
-                httpContext.Items.Add(BasicConfig.HttpReportsGrpcResponse,response);  
+                httpContext.Items.Add(BasicConfig.HttpReportsGrpcRequest, request);
+                httpContext.Items.Add(BasicConfig.HttpReportsGrpcResponse, response);
             }
 
             return response; 

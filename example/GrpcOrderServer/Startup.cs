@@ -16,7 +16,7 @@ namespace GrpcOrderServer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
-            services.AddHttpReports().UseSQLServerStorage().UseGrpc();
+            services.AddHttpReports().UseMySqlStorage().UseGrpc();
             services.AddControllers();
         }
 

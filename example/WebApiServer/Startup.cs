@@ -24,15 +24,7 @@ namespace WebApiServer
         
         public void ConfigureServices(IServiceCollection services)
         { 
-            services.AddHttpReports(options => { 
-                
-                options.Node = "UserService";  
-            
-            }).UseSQLServerStorage(options => { 
-
-                options.ConnectionString = "DataBase=HttpReports;Data Source=localhost;User Id=root;Password=123456;";
-            
-            });
+            services.AddHttpReports().UseOracleStorage();
 
             services.AddControllers(); 
         }

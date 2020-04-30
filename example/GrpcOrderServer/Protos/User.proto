@@ -2,6 +2,8 @@ syntax = "proto3";
 
 option csharp_namespace = "GrpcUserServer.Protos"; 
 
+package User;
+
 service UserService{  
   rpc GetUserInfo(GetUserInfoRequest) returns (GetUserInfoResponse);
 }

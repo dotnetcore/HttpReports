@@ -11,10 +11,7 @@ namespace GrpcUserServer.Service
     public class GrpcUserService:UserServiceBase
     {
         public override async Task<GetUserInfoResponse> GetUserInfo(GetUserInfoRequest request, ServerCallContext context)
-        {
-
-            var a = Convert.ToInt32("ccc");
-
+        { 
             var user = new GetUserInfoResponse
             { 
                 Id = request.Id,

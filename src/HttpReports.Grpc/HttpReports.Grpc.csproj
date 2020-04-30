@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <PackageId>HttpReports.Grpc</PackageId>
-    <Version>1.2.4</Version>
+    <Version>1.2.5</Version>
     <Authors>SpringLee</Authors>
     <Description>HttpReports is an lightweight APM system for microservice in .Net Core 
 
