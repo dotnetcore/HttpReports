@@ -21,7 +21,7 @@ namespace HttpReports.Dashboard.Web
 
        
         public void ConfigureServices(IServiceCollection services)
-        { 
+        {   
             services.AddHttpReports().UseMySqlStorage().UseGrpc(); 
 
             services.AddHttpReportsDashboard().UseMySqlStorage();
