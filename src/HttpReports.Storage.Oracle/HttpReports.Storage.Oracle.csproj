@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>HttpReports.Oracle</PackageId>
-    <Version>1.2.4</Version>
+    <Version>1.2.8</Version>
     <Authors>SpringLee</Authors>
     <Company>SpringLee</Company>
     <Description>HttpReports.Oracle Storage</Description>

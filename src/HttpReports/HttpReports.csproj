@@ -12,7 +12,7 @@ github: https://github.com/SpringLeee/HttpReports
     <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
     <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
     <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>
-    <Version>1.2.4</Version>
+    <Version>1.2.8</Version>
     <PackageLicenseFile></PackageLicenseFile>
     <PackageId>HttpReports</PackageId>
   </PropertyGroup>

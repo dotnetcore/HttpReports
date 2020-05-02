@@ -5,7 +5,7 @@
     <MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish> 
     <AssemblyName>HttpReports.Dashboard</AssemblyName>
     <RootNamespace>HttpReports.Dashboard</RootNamespace>
-    <Version>1.2.7</Version>
+    <Version>1.2.8</Version>
     <PackageId>HttpReports.Dashboard</PackageId>
     <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
     <PackageLicenseFile></PackageLicenseFile>
