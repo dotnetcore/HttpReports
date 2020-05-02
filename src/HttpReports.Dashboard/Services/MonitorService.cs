@@ -1,4 +1,5 @@
-﻿using HttpReports.Dashboard.ViewModels;
+﻿using HttpReports.Dashboard.Services.Language;
+using HttpReports.Dashboard.ViewModels;
 using HttpReports.Models;
 using HttpReports.Monitor;
 using Newtonsoft.Json;
@@ -11,72 +12,80 @@ namespace HttpReports.Dashboard.Services
 {
     public class MonitorService
     {
+        private readonly ILanguage _lang;
+
+        public MonitorService(LanguageService languageService)
+        {
+            _lang = languageService.GetLanguage().Result;
+        }
+
+
         public string VaildMonitorJob(MonitorJobRequest request)
         {
             if (request.Title.IsEmpty())
-                return "标题不能为空";
+                return _lang.Monitor_TitleNotNull;
 
             if (request.Title.Length > 30)
-                return "标题过长";
+                return _lang.Monitor_TitleTooLong;
 
             if (!request.Description.IsEmpty() && request.Description.Length > 100)
-                return "描述过长";
+                return _lang.Monitor_DescTooLong;
 
             if (request.Nodes.IsEmpty())
-                return "至少要选择一个服务节点";
+                return _lang.Monitor_MustSelectNode;
 
             if (request.Emails.IsEmpty() && request.WebHook.IsEmpty())
             {
-                return "通知邮箱,推送地址不能都为空"; 
+                return _lang.Monitor_EmailOrWebHookNotNull; 
             }   
             
             if (!request.Emails.IsEmpty() && request.Emails.Length > 100)
-                return "邮箱过长"; 
+                return _lang.Monitor_EmailTooLong; 
 
             if (!request.WebHook.IsEmpty() && request.WebHook.Length > 100)
-                return "推送地址过长";
+                return _lang.Monitor_WebHookTooLong;
 
             if (request.ResponseTimeOutMonitor != null)
             {
                 if (!request.ResponseTimeOutMonitor.TimeOutMs.IsInt() || request.ResponseTimeOutMonitor.TimeOutMs.ToInt() <= 0 || request.ResponseTimeOutMonitor.TimeOutMs.ToInt() > 1000000)
-                    return "响应超时监控-超时时间格式错误";
+                    return _lang.Monitor_TimeOut_TimeFormatError;
 
                 if (!VaildPercentage(request.ResponseTimeOutMonitor.Percentage))
-                    return "响应超时监控-百分比格式错误";
+                    return _lang.Monitor_TimeOut_PercnetError;
             }
 
             if (request.ErrorResponseMonitor != null)
             {
                 if (request.ErrorResponseMonitor.HttpCodeStatus.IsEmpty())
-                    return "请求错误监控-HTTP状态码不能为空";
+                    return _lang.Monitor_Error_StatusCodeNotNull;
 
                 if (request.ErrorResponseMonitor.HttpCodeStatus.Length > 100)
-                    return "请求错误监控-HTTP状态码过长";
+                    return _lang.Monitor_Error_StatusCodeTooLong;
 
                 if (!VaildPercentage(request.ErrorResponseMonitor.Percentage))
-                    return "请求错误监控-百分比格式错误";
+                    return _lang.Monitor_Error_PercnetError;
 
             }
 
             if (request.IPMonitor != null)
             {
                 if (!request.IPMonitor.WhileList.IsEmpty() && request.IPMonitor.WhileList.Length > 100)
-                    return "IP监控-白名单过长";
+                    return _lang.Monitor_IP_WhileListTooLong;
 
                 if (!VaildPercentage(request.IPMonitor.Percentage))
-                    return "IP监控-百分比格式错误";
+                    return _lang.Monitor_IP_PercentError;
 
             }
 
             if (request.RequestCountMonitor != null)
             {
                 if (request.RequestCountMonitor.Max.ToInt() <= 0)
-                    return "请求量监控-最大请求数格式错误";
+                    return _lang.Monitor_Request_FormatError;
             }
 
             if (request.ResponseTimeOutMonitor == null && request.ErrorResponseMonitor == null && request.IPMonitor == null && request.RequestCountMonitor == null)
             {
-                return "至少要开启一项监控类型";
+                return _lang.Monitor_MustSelectType;
             }
 
             return null;
@@ -136,20 +145,20 @@ namespace HttpReports.Dashboard.Services
 
         public string ParseJobCronString(string cron)
         {
-            if (cron == "0 0/1 * * * ?") return "1分钟";
-            if (cron == "0 0/3 * * * ?") return "3分钟";
-            if (cron == "0 0/5 * * * ?") return "5分钟";
-            if (cron == "0 0/10 * * * ?") return "10分钟";
-            if (cron == "0 0/30 * * * ?") return "30分钟";
-            if (cron == "0 0 0/1 * * ?") return "1小时";
-            if (cron == "0 0 0/2 * * ?") return "2小时";
-            if (cron == "0 0 0/4 * * ?") return "4小时";
-            if (cron == "0 0 0/6 * * ?") return "6小时";
-            if (cron == "0 0 0/8 * * ?") return "8小时";
-            if (cron == "0 0 0/12 * * ?") return "12小时";
-            if (cron == "0 0 0 1/1 * ?") return "1天";
+            if (cron == "0 0/1 * * * ?") return _lang.Monitor_Time1Min;
+            if (cron == "0 0/3 * * * ?") return _lang.Monitor_Time3Min;
+            if (cron == "0 0/5 * * * ?") return _lang.Monitor_Time5Min;
+            if (cron == "0 0/10 * * * ?") return _lang.Monitor_Time10Min;
+            if (cron == "0 0/30 * * * ?") return _lang.Monitor_Time30Min ;
+            if (cron == "0 0 0/1 * * ?") return _lang.Monitor_Time1Hour;
+            if (cron == "0 0 0/2 * * ?") return _lang.Monitor_Time2Hour;
+            if (cron == "0 0 0/4 * * ?") return _lang.Monitor_Time4Hour;
+            if (cron == "0 0 0/6 * * ?") return _lang.Monitor_Time6Hour;
+            if (cron == "0 0 0/8 * * ?") return _lang.Monitor_Time8Hour;
+            if (cron == "0 0 0/12 * * ?") return _lang.Monitor_Time12Hour;
+            if (cron == "0 0 0 1/1 * ?") return _lang.Monitor_Time1Day;
 
-            return "1分钟";
+            return _lang.Monitor_Time1Min;
         }
 
         public MonitorJob GetMonitorJob(MonitorJobRequest request)

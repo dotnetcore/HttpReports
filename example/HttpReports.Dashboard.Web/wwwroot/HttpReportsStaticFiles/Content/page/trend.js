@@ -74,7 +74,7 @@ function InitChart() {
             right: '3%'
         },
         title: {
-            text: '每分钟请求次数 ',
+            text: lang.Trend_MinuteTotalCount,
             x: "left",
             y: "2%"
         },
@@ -84,7 +84,7 @@ function InitChart() {
         yAxis: {},
         series: [{
             type: 'line',
-            name: "请求次数",
+            name: lang.Index_RequestCount,
             data: []
         }]
     };
@@ -104,7 +104,7 @@ function InitChart() {
             right: '3%'
         },
         title: {
-            text: '每分钟平均处理时间  ms',
+            text: lang.Trend_MinuteAvgTime,
             x: "left",
             y: "2%"
         },
@@ -114,7 +114,7 @@ function InitChart() {
         yAxis: {},
         series: [{
             type: 'line',
-            name: "处理时间",
+            name: lang.ProcessingTime2,
             data: []
         }]
     };
@@ -136,7 +136,7 @@ function InitChart() {
             right: '3%'
         },
         title: {
-            text: '每小时请求次数 ',
+            text: lang.Trend_HourTotalCount,
             x: "left",
             y: "2%"
         },
@@ -146,7 +146,7 @@ function InitChart() {
         yAxis: {},
         series: [{
             type: 'line',
-            name: "请求次数",
+            name: lang.Index_RequestCount,
             data: []
         }]
     };
@@ -167,7 +167,7 @@ function InitChart() {
             right: '3%'
         },
         title: {
-            text: '每小时平均处理时间  ms',
+            text: lang.Trend_HourAvgTime,
             x: "left",
             y: "2%"
         },
@@ -177,7 +177,7 @@ function InitChart() {
         yAxis: {},
         series: [{
             type: 'line',
-            name: "处理时间",
+            name: lang.ProcessingTime2,
             data: []
         }]
     };
@@ -190,7 +190,7 @@ function InitChart() {
     global.LatelyDayChartOption = {
         tooltip: {},
         legend: {
-            data: ['请求次数（天）']
+            data: [lang.Trend_DayTotalCount]
         },
         grid: {
             left: '7%',
@@ -198,7 +198,7 @@ function InitChart() {
             right: '3%'
         },
         title: {
-            text: '请求次数（天） ',
+            text: lang.Trend_DayTotalCount,
             x: "left",
             y: "2%",
             subtext: ""
@@ -209,7 +209,7 @@ function InitChart() {
         yAxis: {},
         series: [{
             type: 'bar',
-            name: "请求次数",
+            name: lang.Index_RequestCount,
             data: []
         }]
     };

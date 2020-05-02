@@ -2,7 +2,11 @@
     Layout = "~/Views/HttpReports/HttpReportsTemplate.cshtml";
 
     List<string> nodes = ViewBag.nodes;
+
+    var lang = ViewBag.Language as HttpReports.Dashboard.Services.Language.ILanguage;
 }
+
+
 
 <div class="panel panel-default">
 
@@ -17,9 +21,9 @@
 
                         <div class="col-sm-12" style="margin-top:10px">
 
-                            <b><i class="glyphicon glyphicon-signal"></i> 服务节点</b>
+                            <b><i class="glyphicon glyphicon-signal" style="margin-right:10px"></i>@lang.Index_ServiceNode</b>
 
-                            <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="服务节点是WebAPI请求的服务节点，点击选中和取消节点" style="font-size:20px;top:0.2em;cursor:pointer;"></span>
+                            <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="@lang.Index_ServiceNodeTip" style="font-size:20px;top:0.2em;cursor:pointer;"></span>
 
                             @*<button type="button" onclick="select_all(this)" style="width:60px;margin-right:8px;margin-left:8px" class="btn btn-success btn-xs">全选</button>
 
@@ -38,12 +42,12 @@
                     <div class="form-inline form" style="margin-bottom:30px;">
 
                         <div class="col-sm-3">
-                            <label class="form-label">开始时间</label>
+                            <label class="form-label">@lang.StartTime</label>
                             <input onfocus="ClearTimeRange()" type="text" class="form-control laydate start">
                         </div>
 
                         <div class="col-sm-3">
-                            <label class="form-label">结束时间</label>
+                            <label class="form-label">@lang.EndTime</label>
                             <input onfocus="ClearTimeRange()" type="text" class="form-control laydate end">
                         </div> 
 
@@ -51,17 +55,17 @@
 
                     <div class="col-sm-12 timeSelect" style="margin-top:20px">
 
-                        <button type="button" onclick="timeChange(this,15)" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">15分钟</button>
+                        <button type="button" onclick="timeChange(this,15)" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">@lang.Time_15m</button>
 
-                        <button type="button" onclick="timeChange(this,30)" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">30分钟</button>
+                        <button type="button" onclick="timeChange(this,30)" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">@lang.Time_30m</button>
 
-                        <button type="button" onclick="timeChange(this,60)" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">1小时</button>
+                        <button type="button" onclick="timeChange(this,60)" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">@lang.Time_1h</button>
 
-                        <button type="button" onclick="timeChange(this,60*4)" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">4小时</button>
+                        <button type="button" onclick="timeChange(this,60*4)" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">@lang.Time_4h</button>
 
-                        <button type="button" onclick="timeChange(this,60*12)" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">12小时</button>
+                        <button type="button" onclick="timeChange(this,60*12)" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">@lang.Time_12h</button>
 
-                        <button type="button" onclick="timeChange(this,60*24)" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">24小时</button>
+                        <button type="button" onclick="timeChange(this,60*24)" style="width:60px;margin-right:8px;" class="btn btn-default btn-xs">@lang.Time_24h</button>
 
                     </div>
 
@@ -69,7 +73,7 @@
 
                         <div class="col-sm-3" style="padding-left:0">
 
-                            <button style="min-width:120px;" onclick="QueryClick(this)" class="btn btn-info btn-search">查询</button>
+                            <button style="min-width:120px;" onclick="QueryClick(this)" class="btn btn-info btn-search">@lang.Query</button>
                         </div>
                     </div>
                 </div>
@@ -78,30 +82,21 @@
 
         <div class="row" style="margin-top:30px;padding-left:13px;padding-right:13px">
 
-            <div class="board-row panel panel-default panel-body shadow-box">
-
-                <p class="index_time_range" style="padding-left:20px;color:#3c763d">
-                    时间：<b></b>
-                </p>
-
+            <div class="board-row panel panel-default panel-body shadow-box"> 
+                
                 <div class="col-lg-2 col-sm-6 col-xs-6 col-xxs-12">
 
-                    <div class="smallstat teal-bg">
-
-                        <b class="glyphicon glyphicon-info-sign badgeIcon" data-toggle="tooltip" data-placement="auto" title="请求次数是所有的接口请求次数,包括404,500等"></b>
-
+                    <div class="smallstat teal-bg">  
                         <b><span class="value">0</span></b>
-                        <h4>请求次数</h4>
+                        <h4>@lang.Index_RequestCount</h4>
                     </div>
                 </div>
 
                 <div class="col-lg-2 col-sm-6 col-xs-6 col-xxs-12">
-                    <div class="smallstat blue-bg">
-
-                        <b class="glyphicon glyphicon-info-sign badgeIcon" data-placement="auto" data-toggle="tooltip" title="处理时间是接口处理的时间，不能看做处理时间"></b>
-
+                    <div class="smallstat blue-bg"> 
+                      
                         <b><span class="value">0</span></b>
-                        <h4>平均处理时间 (ms)</h4>
+                        <h4>@lang.Index_ART (ms)</h4>
                     </div>
                 </div>
 
@@ -124,14 +119,14 @@
                 <div class="col-lg-2 col-sm-6 col-xs-6 col-xxs-12">
                     <div class="smallstat blue-bg">
                         <b><span class="value">0</span></b>
-                        <h4>错误率占比</h4>
+                        <h4>@lang.Index_ErrorPercent</h4>
                     </div>
                 </div>
 
                 <div class="col-lg-2 col-sm-6 col-xs-6 col-xxs-12">
                     <div class="smallstat purple-bg">
                         <b><span class="value">0</span></b>
-                        <h4>接口总数 (已请求)</h4>
+                        <h4>@lang.Index_APICount</h4>
                     </div>
                 </div>
             </div>
@@ -169,7 +164,7 @@
 
                             <div class="row form-inline">
 
-                                <label class="form-label">选择数量</label>
+                                <label class="form-label">@lang.Index_SelectCount</label>
                                 <select onchange="changeTopCount(this)" class="form-control topCount" style="min-width:120px">
                                     <option value="10">10</option>
                                     <option value="15">15</option>
@@ -234,4 +229,4 @@
     </div>
 </div>
 
-<script src="/HttpReportsStaticFiles/Content/page/index.js?ver=1.0.3"></script>
+<script src="/HttpReportsStaticFiles/Content/page/index.js?ver=1.0.4"></script>

@@ -8,6 +8,7 @@ using HttpReports.Dashboard.DTO;
 using HttpReports.Dashboard.Implements;
 using HttpReports.Dashboard.Models;
 using HttpReports.Dashboard.Services;
+using HttpReports.Dashboard.Services.Language;
 using HttpReports.Dashboard.Services.Quartz;
 using HttpReports.Dashboard.ViewModels;
 using HttpReports.Models;
@@ -17,6 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Org.BouncyCastle.Ocsp;
 
 namespace HttpReports.Dashboard.Controllers
 {
@@ -26,13 +28,16 @@ namespace HttpReports.Dashboard.Controllers
 
         private readonly MonitorService _monitorService;
 
-        private readonly ScheduleService _scheduleService; 
+        private readonly ScheduleService _scheduleService;
 
-        public HttpReportsDataController(IHttpReportsStorage storage, MonitorService monitorService, ScheduleService scheduleService)
+        private readonly ILanguage _lang;
+
+        public HttpReportsDataController(IHttpReportsStorage storage, MonitorService monitorService, ScheduleService scheduleService,LanguageService languageService)
         {
             _storage = storage;
             _monitorService = monitorService;
             _scheduleService = scheduleService;
+            _lang = languageService.GetLanguage().Result;
         }
 
         public async Task<IActionResult> GetIndexChartData(GetIndexDataRequest request)
@@ -51,7 +56,7 @@ namespace HttpReports.Dashboard.Controllers
                 Take = request.TOP,
                 StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
                 EndTimeFormat = "yyyy-MM-dd HH:mm:ss" 
-            }).ConfigureAwait(false);
+            });
 
             var topError500 = await _storage.GetUrlRequestStatisticsAsync(new RequestInfoFilterOption()
             {
@@ -63,7 +68,7 @@ namespace HttpReports.Dashboard.Controllers
                 StatusCodes = new[] { 500 },
                 StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
                 EndTimeFormat = "yyyy-MM-dd HH:mm:ss"
-            }).ConfigureAwait(false);
+            });
 
             var fast = await _storage.GetRequestAvgResponeTimeStatisticsAsync(new RequestInfoFilterOption()
             {
@@ -74,7 +79,7 @@ namespace HttpReports.Dashboard.Controllers
                 Take = request.TOP,
                 StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
                 EndTimeFormat = "yyyy-MM-dd HH:mm:ss"
-            }).ConfigureAwait(false);
+            });
 
             var slow = await _storage.GetRequestAvgResponeTimeStatisticsAsync(new RequestInfoFilterOption()
             {
@@ -86,7 +91,7 @@ namespace HttpReports.Dashboard.Controllers
                 StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
                 EndTimeFormat = "yyyy-MM-dd HH:mm:ss"
 
-            }).ConfigureAwait(false);
+            });
 
             var Art = new
             {
@@ -102,7 +107,7 @@ namespace HttpReports.Dashboard.Controllers
                 StatusCodes = new[] { 200, 301, 302, 303, 400, 401, 403, 404, 500, 502, 503 },
                 StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
                 EndTimeFormat = "yyyy-MM-dd HH:mm:ss"
-            }).ConfigureAwait(false)).Where(m => true).Select(m => new EchartPineDataModel(m.Code.ToString(), m.Total)).ToArray();
+            })).Where(m => true).Select(m => new EchartPineDataModel(m.Code.ToString(), m.Total)).ToArray();
 
             var ResponseTime = (await _storage.GetGroupedResponeTimeStatisticsAsync(new GroupResponeTimeFilterOption()
             {
@@ -111,7 +116,7 @@ namespace HttpReports.Dashboard.Controllers
                 EndTime = end,
                 StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
                 EndTimeFormat = "yyyy-MM-dd HH:mm:ss"
-            }).ConfigureAwait(false)).Where(m => true).Select(m => new EchartPineDataModel(m.Name, m.Total)).ToArray();
+            })).Where(m => true).Select(m => new EchartPineDataModel(m.Name, m.Total)).ToArray();
 
             return Json(new HttpResultEntity(1, "ok", new { StatusCode, ResponseTime, topRequest, topError500, Art }));
         }
@@ -132,7 +137,7 @@ namespace HttpReports.Dashboard.Controllers
                 EndTimeFormat = "yyyy-MM-dd HH:mm:ss",
                 Nodes = nodes,
                 Type = TimeUnit.Hour,
-            }).ConfigureAwait(false);
+            });
 
             //每小时平均处理时间
             var responseTimeStatistics = await _storage.GetResponseTimeStatisticsAsync(new TimeSpanStatisticsFilterOption()
@@ -143,7 +148,7 @@ namespace HttpReports.Dashboard.Controllers
                 EndTimeFormat = "yyyy-MM-dd HH:mm:ss",
                 Nodes = nodes,
                 Type = TimeUnit.Hour,
-            }).ConfigureAwait(false);
+            });
 
             List<int> timesList = new List<int>();
             List<int> avgList = new List<int>();
@@ -188,7 +193,7 @@ namespace HttpReports.Dashboard.Controllers
                 EndTimeFormat = "yyyy-MM-dd HH:mm:ss",
                 Nodes = nodes,
                 Type = TimeUnit.Minute,
-            }).ConfigureAwait(false);
+            });
 
             //每小时平均处理时间
             var responseTimeStatistics = await _storage.GetResponseTimeStatisticsAsync(new TimeSpanStatisticsFilterOption()
@@ -199,7 +204,7 @@ namespace HttpReports.Dashboard.Controllers
                 EndTimeFormat = "yyyy-MM-dd HH:mm:ss",
                 Nodes = nodes,
                 Type = TimeUnit.Minute,
-            }).ConfigureAwait(false);
+            });
 
             List<int> timesList = new List<int>();
             List<int> avgList = new List<int>();
@@ -241,7 +246,7 @@ namespace HttpReports.Dashboard.Controllers
                 EndTimeFormat = "yyyy-MM-dd HH:mm:ss",
                 Nodes = nodes,
                 Type = TimeUnit.Day,
-            }).ConfigureAwait(false);
+            });
 
             List<string> time = new List<string>();
             List<int> value = new List<int>();
@@ -273,7 +278,7 @@ namespace HttpReports.Dashboard.Controllers
                 EndTime = endTime,
                 Nodes = nodes,
                 Type = TimeUnit.Month,
-            }).ConfigureAwait(false);
+            });
 
             List<string> time = new List<string>();
             List<int> value = new List<int>();
@@ -293,109 +298,12 @@ namespace HttpReports.Dashboard.Controllers
             return Json(new HttpResultEntity(1, "ok", new { time, value, Range }));
         }
 
-        public IActionResult GetTimeRange(int Tag)
+        public async Task<IActionResult> ChangeLanguage(string Language)
         {
-            //TODO 将此函数放到前端直接获取
-            if (Tag == 1)
-            {
-                return Json(new HttpResultEntity(1, "ok", new
-                {
-                    start = DateTime.Now.ToString("yyyy-MM-dd"),
-                    end = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")
-                }));
-            }
+            await _storage.SetLanguage(Language);
 
-            if (Tag == 2)
-            {
-                return Json(new HttpResultEntity(1, "ok", new
-                {
-                    start = DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd"),
-                    end = DateTime.Now.ToString("yyyy-MM-dd")
-                }));
-            }
-
-            if (Tag == 3)
-            {
-                return Json(new HttpResultEntity(1, "ok", new
-                {
-                    start = DateTime.Now.AddDays(-((int)DateTime.Now.DayOfWeek == 0 ? 7 : (int)DateTime.Now.DayOfWeek) + 1).ToString("yyyy-MM-dd"),
-                    end = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")
-                }));
-            }
-
-            if (Tag == 4)
-            {
-                return Json(new HttpResultEntity(1, "ok", new
-                {
-                    start = DateTime.Now.AddDays(-DateTime.Now.Day + 1).ToString("yyyy-MM-dd"),
-                    end = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")
-                }));
-            }
-
-            return NoContent();
-        }
-
-        public IActionResult GetTimeTag(string start, string end, int TagValue)
-        {
-            //TODO 将此函数放到前端直接获取
-            var result = new HttpResultEntity<int>(1, "ok", 0);
-            if (TagValue > 0)
-            {
-                if (TagValue == 1 && start == DateTime.Now.ToString("yyyy-MM-dd") && end == DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"))
-                {
-                    return Json(new HttpResultEntity<int>(1, "ok", -1));
-                }
-
-                if (TagValue == 2 && start == DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd") && end == DateTime.Now.ToString("yyyy-MM-dd"))
-                {
-                    return Json(new HttpResultEntity<int>(1, "ok", -1));
-                }
-
-                if (TagValue == 3 && start == DateTime.Now.AddDays(-((int)DateTime.Now.DayOfWeek == 0 ? 7 : (int)DateTime.Now.DayOfWeek) + 1).ToString("yyyy-MM-dd") && end == DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"))
-                {
-                    return Json(new HttpResultEntity<int>(1, "ok", -1));
-                }
-
-                if (TagValue == 4 && start == DateTime.Now.AddDays(-DateTime.Now.Day + 1).ToString("yyyy-MM-dd") && end == DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"))
-                {
-                    return Json(new HttpResultEntity<int>(1, "ok", -1));
-                }
-            }
-
-            if (start.IsEmpty() && end.IsEmpty())
-            {
-                result = new HttpResultEntity<int>(1, "ok", 1);
-
-                return Json(result);
-            }
-
-            if (start == DateTime.Now.ToString("yyyy-MM-dd") && end == DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"))
-            {
-                result = new HttpResultEntity<int>(1, "ok", 1);
-
-                return Json(result);
-            }
-
-            if (start == DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd") && end == DateTime.Now.ToString("yyyy-MM-dd"))
-            {
-                result = new HttpResultEntity<int>(1, "ok", 2);
-                return Json(result);
-            }
-
-            if (start == DateTime.Now.AddDays(-(int)DateTime.Now.DayOfWeek + 1).ToString("yyyy-MM-dd") && end == DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"))
-            {
-                result = new HttpResultEntity<int>(1, "ok", 3);
-                return Json(result);
-            }
-
-            if (start == DateTime.Now.AddDays(-DateTime.Now.Day + 1).ToString("yyyy-MM-dd") && end == DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"))
-            {
-                result = new HttpResultEntity<int>(1, "ok", 4);
-                return Json(result);
-            }
-
-            return Json(result);
-        }
+            return Json(new HttpResultEntity(1,"ok", null));  
+        } 
 
         public async Task<IActionResult> GetIndexData(GetIndexDataRequest request)
         {
@@ -409,7 +317,7 @@ namespace HttpReports.Dashboard.Controllers
                 EndTime = end,
                 StartTimeFormat= "yyyy-MM-dd HH:mm:ss",
                 EndTimeFormat = "yyyy-MM-dd HH:mm:ss"
-            }).ConfigureAwait(false);
+            });
 
             return Json(new HttpResultEntity(1, "ok", new
             {
@@ -426,6 +334,8 @@ namespace HttpReports.Dashboard.Controllers
         {  
             var result = await _storage.SearchRequestInfoAsync(new RequestInfoSearchFilterOption()
             {
+                TraceId = request.TraceId,
+                StatusCodes = request.StatusCode.IsEmpty() ? null: request.StatusCode.Split(',').Select(x=>x.ToInt()).ToArray(),
                 Nodes = request.Node.IsEmpty() ? null : request.Node.Split(','),
                 IP = request.IP,
                 Url = request.Url,
@@ -439,7 +349,7 @@ namespace HttpReports.Dashboard.Controllers
                 StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
                 EndTimeFormat = "yyyy-MM-dd HH:mm:ss"
 
-            }).ConfigureAwait(false);
+            });
 
             return Json(new { total = result.AllItemCount, rows = result.List });
         }
@@ -454,10 +364,10 @@ namespace HttpReports.Dashboard.Controllers
             IMonitorJob model = _monitorService.GetMonitorJob(request);
 
             if (request.Id.IsEmpty() || request.Id == "0")
-                await _storage.AddMonitorJob(model).ConfigureAwait(false);
+                await _storage.AddMonitorJob(model);
 
             else
-                await _storage.UpdateMonitorJob(model).ConfigureAwait(false);
+                await _storage.UpdateMonitorJob(model);
 
             await _scheduleService.UpdateMonitorJobAsync();
 
@@ -469,7 +379,7 @@ namespace HttpReports.Dashboard.Controllers
             if (Id.IsEmpty() || Id == "0")
                 return NoContent();
 
-            var job = await _storage.GetMonitorJob(Id).ConfigureAwait(false);
+            var job = await _storage.GetMonitorJob(Id);
 
             if (job == null)
                 return NoContent();
@@ -481,7 +391,7 @@ namespace HttpReports.Dashboard.Controllers
 
         public async Task<IActionResult> DeleteJob(string Id)
         {
-            await _storage.DeleteMonitorJob(Id).ConfigureAwait(false);
+            await _storage.DeleteMonitorJob(Id);
 
             await _scheduleService.UpdateMonitorJobAsync();
 
@@ -490,11 +400,11 @@ namespace HttpReports.Dashboard.Controllers
 
         public async Task<IActionResult> ChangeJobState(string Id)
         {
-            var model = await _storage.GetMonitorJob(Id).ConfigureAwait(false);
+            var model = await _storage.GetMonitorJob(Id);
 
             model.Status = model.Status == 1 ? 0 : 1;
 
-            await _storage.UpdateMonitorJob(model).ConfigureAwait(false);
+            await _storage.UpdateMonitorJob(model);
 
             await _scheduleService.UpdateMonitorJobAsync();
 
@@ -505,33 +415,33 @@ namespace HttpReports.Dashboard.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> CheckUserLogin(SysUser user)
         {
-            var model = await _storage.CheckLogin(user.UserName.Trim(), user.Password.Trim().MD5()).ConfigureAwait(false);
+            var model = await _storage.CheckLogin(user.UserName.Trim(), user.Password.Trim().MD5());
 
             if (model == null)
-                return Json(new HttpResultEntity(-1, "用户名或者密码错误", null));
+                return Json(new HttpResultEntity(-1,_lang.Login_UserOrPassError, null));
 
             HttpContext.SetCookie(BasicConfig.LoginCookieId, user.UserName, 60 * 30 * 7);
 
-            return Json(new HttpResultEntity(1, "登录成功", null));
+            return Json(new HttpResultEntity(1, _lang.Login_Success, null));
         }
 
         public async Task<IActionResult> UpdateAccountInfo(UpdateAccountRequest request)
         {
-            var user = await _storage.GetSysUser(request.Username).ConfigureAwait(false);
+            var user = await _storage.GetSysUser(request.Username);
 
             if (user.Password != request.OldPwd.MD5())
             {
-                return Json(new HttpResultEntity(-1, "旧密码错误", null));
+                return Json(new HttpResultEntity(-1, _lang.User_OldPasswordError, null));
             }
 
             if (request.NewUserName.Length <= 2 || request.NewUserName.Length > 20)
             {
-                return Json(new HttpResultEntity(-1, "用户名格式错误", null));
+                return Json(new HttpResultEntity(-1,_lang.User_AccountFormatError, null));
             }
 
             if (request.OldPwd.Length <= 5 || request.OldPwd.Length > 20)
             {
-                return Json(new HttpResultEntity(-1, "新密码格式错误", null));
+                return Json(new HttpResultEntity(-1,_lang.User_NewPassFormatError, null));
             }
 
             await _storage.UpdateLoginUser(new SysUser
@@ -541,7 +451,7 @@ namespace HttpReports.Dashboard.Controllers
                 Password = request.NewPwd.MD5()
             });
 
-            return Json(new HttpResultEntity(1, "修改成功", null));
+            return Json(new HttpResultEntity(1,_lang.UpdateSuccess, null));
         }
 
         public async Task<IActionResult> GetTraceList(string Id)
@@ -568,7 +478,7 @@ namespace HttpReports.Dashboard.Controllers
 
         public IActionResult Json(object data)
         {
-            HttpContext.Response.ContentType = "application/json;charset=utf-8";
+            HttpContext.Response.ContentType = "application/json;charset=utf-8"; 
 
             return Content(JsonConvert.SerializeObject(data,new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }));
         }

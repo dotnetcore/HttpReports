@@ -15,5 +15,10 @@
         public int pageNumber { get; set; }
 
         public int pageSize { get; set; }
+
+        public string TraceId { get; set; }
+
+        public string StatusCode { get; set; }
+
     }
 }

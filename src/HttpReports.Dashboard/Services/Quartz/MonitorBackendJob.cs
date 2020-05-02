@@ -1,5 +1,6 @@
 ﻿using HttpReports.Dashboard.Implements;
 using HttpReports.Dashboard.Models;
+using HttpReports.Dashboard.Services.Language;
 using HttpReports.Models;
 using HttpReports.Monitor;
 using HttpReports.Storage.FilterOptions;
@@ -25,6 +26,9 @@ namespace HttpReports.Dashboard.Services.Quartz
 
         private ILogger<MonitorBackendJob> _logger;
 
+        private ILanguage _lang;
+
+
         public MonitorBackendJob()
         {
 
@@ -37,6 +41,7 @@ namespace HttpReports.Dashboard.Services.Quartz
             _alarmService = _alarmService ?? ServiceContainer.provider.GetService(typeof(IAlarmService)) as IAlarmService;
             _monitorService = _monitorService ?? ServiceContainer.provider.GetService(typeof(MonitorService)) as MonitorService;
             _logger = _logger ?? ServiceContainer.provider.GetService(typeof(ILogger<MonitorBackendJob>)) as ILogger<MonitorBackendJob>;
+            _lang = _lang ?? (ServiceContainer.provider.GetService(typeof(LanguageService)) as LanguageService).GetLanguage().Result;
 
 
             IMonitorJob job = context.JobDetail.JobDataMap.Get("job") as IMonitorJob;
@@ -101,21 +106,21 @@ namespace HttpReports.Dashboard.Services.Quartz
 
             var (now, start, end) = GetNowTimes(_monitorService.ParseJobCron(job.CronLike));
 
-            _logger.LogInformation("检查超时监控开始 " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            _logger.LogInformation("CheckResponseTimeOutMonitor Start " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
             var timeoutCount = await _storage.GetTimeoutResponeCountAsync(new RequestCountFilterOption()
             {
                 Nodes = job.Nodes.Split(','),
                 StartTime = start,
                 EndTime = end,
-            }, payload.ResponseTimeOutMonitor.TimeOutMs).ConfigureAwait(false);
+            }, payload.ResponseTimeOutMonitor.TimeOutMs);
 
             var count = await _storage.GetRequestCountAsync(new RequestCountFilterOption()
             {
                 Nodes = job.Nodes.Split(','),
                 StartTime = start,
                 EndTime = end,
-            }).ConfigureAwait(false);
+            });
 
             if (count == 0)
             {
@@ -124,7 +129,7 @@ namespace HttpReports.Dashboard.Services.Quartz
 
             var percent = timeoutCount * 100.0 / count; 
 
-            _logger.LogInformation("检查超时监控结束  " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + $"  检查结果 {(percent > payload.ResponseTimeOutMonitor.Percentage ? "预警":"正常")}");
+            _logger.LogInformation("CheckResponseTimeOutMonitor End  " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + $"  Result {(percent > payload.ResponseTimeOutMonitor.Percentage ? "预警":"正常")}");
 
             if (percent > payload.ResponseTimeOutMonitor.Percentage)
             { 
@@ -134,17 +139,17 @@ namespace HttpReports.Dashboard.Services.Quartz
                     Content = $@"
 
                           <br>
-                          <b>【响应超时】触发预警 </b>
+                          <b>【{_lang.Monitor_Type_Timeout}】 </b>
 
-                          <p>超时率预警值：{payload.ResponseTimeOutMonitor.Percentage.ToString("F2")}%  当前值：{percent.ToString("F2")}% </p>
+                          <p> {_lang.Warning_Threshold}：{payload.ResponseTimeOutMonitor.Percentage.ToString("F2")}%  {_lang.Warning_Current}：{percent.ToString("F2")}% </p>
 
-                          <p>任务标题：{job.Title}</p>
+                          <p>{_lang.Monitor_Title}：{job.Title}</p>
 
-                          <p>监控节点：{job.Nodes}</p>
+                          <p>{_lang.Monitor_ServiceNode}：{job.Nodes}</p>
 
-                          <p>监控频率：{_monitorService.ParseJobCron(job.CronLike)} 分钟</p>
+                          <p>{_lang.Monitor_Frequency}：{_monitorService.ParseJobCronString(job.CronLike)} </p>
 
-                          <p>时间段：{start.ToStandardTime()}-{end.ToStandardTime()} </p>"
+                          <p>{_lang.Warning_TimeRange}：{start.ToStandardTime()}-{end.ToStandardTime()} </p>"
                 };
             }
 
@@ -168,7 +173,7 @@ namespace HttpReports.Dashboard.Services.Quartz
 
             var (now, start, end) = GetNowTimes(_monitorService.ParseJobCron(job.CronLike));
 
-            _logger.LogInformation("检查请求错误监控开始 " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            _logger.LogInformation("CheckErrorResponseMonitor Start " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
             var errorCount = await _storage.GetRequestCountAsync(new RequestCountFilterOption()
             {
@@ -176,14 +181,14 @@ namespace HttpReports.Dashboard.Services.Quartz
                 StartTime = start,
                 EndTime = end,
                 StatusCodes = payload.ErrorResponseMonitor.HttpCodeStatus.Split(',').Select(x => x.ToInt()).ToArray()
-            }).ConfigureAwait(false);
+            });
 
             var count = await _storage.GetRequestCountAsync(new RequestCountFilterOption()
             {
                 Nodes = job.Nodes.Split(','),
                 StartTime = start,
                 EndTime = end,
-            }).ConfigureAwait(false);
+            });
 
             if (count == 0)
             {
@@ -191,7 +196,7 @@ namespace HttpReports.Dashboard.Services.Quartz
             }
             var percent = errorCount * 100.0 / count;
 
-            _logger.LogInformation("检查请求错误监控结束  " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + $"  检查结果 {(percent > payload.ErrorResponseMonitor.Percentage ? "预警" : "正常")}");
+            _logger.LogInformation("CheckErrorResponseMonitor End  " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + $"  Result {(percent > payload.ErrorResponseMonitor.Percentage ? "预警" : "正常")}");
 
             if (percent > payload.ErrorResponseMonitor.Percentage)
             {
@@ -201,31 +206,28 @@ namespace HttpReports.Dashboard.Services.Quartz
                     Content = $@"
 
                           <br>
-                          <b>【请求错误】触发预警 </b>
+                          <b>【{_lang.Monitor_Type_RequestError}】 </b>
 
-                          <p>命中率预警值：{payload.ErrorResponseMonitor.Percentage.ToString("F2")}%  当前值：{percent.ToString("F2")}% </p>
+                          <p>{_lang.Warning_Threshold}：{payload.ErrorResponseMonitor.Percentage.ToString("F2")}%  {_lang.Warning_Current}：{percent.ToString("F2")}% </p>
 
-                          <p>任务标题：{job.Title}</p>
+                          <p>{_lang.Warning_Title}：{job.Title}</p>
 
-                          <p>监控节点：{job.Nodes}</p>
+                          <p>{_lang.Monitor_ServiceNode}：{job.Nodes}</p>
 
-                          <p>监控频率：{_monitorService.ParseJobCron(job.CronLike)} 分钟</p>
+                          <p>{_lang.Monitor_Frequency}：{_monitorService.ParseJobCronString(job.CronLike)} </p>
 
-                          <p>设定Http状态码：{payload.ErrorResponseMonitor.HttpCodeStatus}</p>
+                          <p>{_lang.Monitor_HttpStatusCode}：{payload.ErrorResponseMonitor.HttpCodeStatus}</p>
 
-                          <p>时间段：{start.ToStandardTime()}-{end.ToStandardTime()} </p>"
+                          <p>{_lang.Warning_TimeRange}：{start.ToStandardTime()}-{end.ToStandardTime()} </p>"
+
+
                 };
             }
             return null;
         }
 
 
-        /// <summary>
-        /// 检查IP异常监控
-        /// </summary>
-        /// <param name="job"></param>
-        /// <param name="payload"></param>
-        /// <returns></returns>
+       
         private async Task<AlarmOption> CheckIPMonitor(IMonitorJob job, MonitorJobPayload payload)
         {
             if (payload.IPMonitor == null)
@@ -233,7 +235,7 @@ namespace HttpReports.Dashboard.Services.Quartz
                 return null;
             }
 
-            _logger.LogInformation("检查IP异常监控开始 " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            _logger.LogInformation("CheckIPMonitor Start " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
             var (now, start, end) = GetNowTimes(_monitorService.ParseJobCron(job.CronLike));
 
@@ -244,7 +246,7 @@ namespace HttpReports.Dashboard.Services.Quartz
                 EndTime = end,
                 InList = false,
                 List = payload.IPMonitor.WhileList.Split(',').ToArray(),
-            }).ConfigureAwait(false);
+            });
 
             if (count == 0)
             {
@@ -252,7 +254,7 @@ namespace HttpReports.Dashboard.Services.Quartz
             }
             var percent = max * 100.0 / count;
 
-            _logger.LogInformation("检查IP异常监控结束  " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + $"  检查结果 {(percent > payload.IPMonitor.Percentage ? "预警" : "正常")}");
+            _logger.LogInformation("CheckIPMonitor End  " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + $"  Result {(percent > payload.IPMonitor.Percentage ? "预警" : "正常")}");
 
             if (percent > payload.IPMonitor.Percentage)
             {
@@ -262,19 +264,19 @@ namespace HttpReports.Dashboard.Services.Quartz
                     Content = $@"
 
                           <br>
-                          <b>【IP异常】触发预警 </b>
+                          <b>【{_lang.Monitor_Type_IP}】 </b>
 
-                          <p>IP重复率预警值：{payload.IPMonitor.Percentage.ToString("F2")}%  当前值：{percent.ToString("F2")}% </p>
+                          <p>{_lang.Warning_Threshold}：{payload.IPMonitor.Percentage.ToString("F2")}% {_lang.Warning_Current}：{percent.ToString("F2")}% </p>
 
-                          <p>任务标题：{job.Title}</p>
+                          <p>{_lang.Warning_Title}：{job.Title}</p>
 
-                          <p>监控节点：{job.Nodes}</p>
+                          <p>{_lang.Monitor_ServiceNode}：{job.Nodes}</p>
 
-                          <p>监控频率：{_monitorService.ParseJobCron(job.CronLike)} 分钟</p>
+                          <p>{_lang.Monitor_Frequency}：{_monitorService.ParseJobCronString(job.CronLike)} </p>
 
-                          <p>IP白名单：{payload.IPMonitor.WhileList}</p>
+                          <p>{_lang.Monitor_IPWhileList}：{payload.IPMonitor.WhileList}</p>
 
-                          <p>时间段：{start.ToStandardTime()}-{end.ToStandardTime()} </p>"
+                          <p>{_lang.Warning_TimeRange}：{start.ToStandardTime()}-{end.ToStandardTime()} </p>"
                 };
             }
             return null;
@@ -282,13 +284,7 @@ namespace HttpReports.Dashboard.Services.Quartz
 
         }
 
-
-        /// <summary>
-        /// 请求量监控
-        /// </summary>
-        /// <param name="job"></param>
-        /// <param name="payload"></param>
-        /// <returns></returns>
+ 
         private async Task<AlarmOption> CheckRequestCountMonitor(IMonitorJob job, MonitorJobPayload payload)
         {
             if (payload.RequestCountMonitor == null)
@@ -296,7 +292,7 @@ namespace HttpReports.Dashboard.Services.Quartz
                 return null;
             }
 
-            _logger.LogInformation("检查请求量监控开始 " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            _logger.LogInformation("CheckRequestCountMonitor Start " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
             var (now, start, end) = GetNowTimes(_monitorService.ParseJobCron(job.CronLike));
             var count = await _storage.GetRequestCountAsync(new RequestCountFilterOption()
@@ -304,9 +300,9 @@ namespace HttpReports.Dashboard.Services.Quartz
                 Nodes = job.Nodes.Split(','),
                 StartTime = start,
                 EndTime = end,
-            }).ConfigureAwait(false);
+            });
 
-            _logger.LogInformation("检查请求量监控结束  " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + $"  检查结果 {(count > payload.RequestCountMonitor.Max ? "预警" : "正常")}");
+            _logger.LogInformation("CheckRequestCountMonitor End  " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + $"  Result {(count > payload.RequestCountMonitor.Max ? "预警" : "正常")}");
 
             if (count > payload.RequestCountMonitor.Max)
             {
@@ -316,17 +312,17 @@ namespace HttpReports.Dashboard.Services.Quartz
                     Content = $@"
 
                           <br>
-                          <b>【请求量监控】触发预警 </b>
+                          <b>【{_lang.Monitor_Type_RequestCount}】 </b>
 
-                          <p>请求量最大预警值：{payload.RequestCountMonitor.Max}  当前值：{count} </p>
+                          <p>{_lang.Warning_Threshold}：{payload.RequestCountMonitor.Max}  {_lang.Warning_Current}：{count} </p>
 
-                          <p>任务标题：{job.Title}</p>
+                          <p>{_lang.Warning_Title}：{job.Title}</p>
 
-                          <p>监控节点：{job.Nodes}</p>
+                          <p>{_lang.Monitor_ServiceNode}：{job.Nodes}</p>
 
-                          <p>监控频率：{_monitorService.ParseJobCron(job.CronLike)} 分钟</p>
+                          <p>{_lang.Monitor_Frequency}：{_monitorService.ParseJobCronString(job.CronLike)} </p>
 
-                          <p>时间段：{start.ToStandardTime()}-{end.ToStandardTime()} </p>"
+                          <p>{_lang.Warning_TimeRange}：{start.ToStandardTime()}-{end.ToStandardTime()} </p>"
                 };
             }
 

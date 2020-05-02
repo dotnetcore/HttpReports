@@ -4,6 +4,7 @@ using HttpReports;
 using HttpReports.Dashboard;
 using HttpReports.Dashboard.Implements;
 using HttpReports.Dashboard.Services;
+using HttpReports.Dashboard.Services.Language;
 using HttpReports.Dashboard.Services.Quartz;
 
 using Microsoft.AspNetCore.Builder;
@@ -17,53 +18,55 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class DependencyInjectionExtensions
     { 
         public static IHttpReportsBuilder AddHttpReportsDashboard(this IServiceCollection services)
-        {
-            ServiceContainer.provider = services.BuildServiceProvider();
-
+        {  
             IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReportsDashboard"); 
 
             services.AddOptions();
             services.Configure<DashboardOptions>(configuration);
 
-            return services.UseHttpReportsDashboradService(configuration);
+            return services.UseHttpReportsDashboardService(configuration);
         } 
 
 
 
         public static IHttpReportsBuilder AddHttpReportsDashboard(this IServiceCollection services,Action<DashboardOptions> options)
-        {
-            ServiceContainer.provider = services.BuildServiceProvider();
+        { 
 
             IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReportsDashboard");
 
             services.AddOptions();
             services.Configure<DashboardOptions>(options);
 
-            return services.UseHttpReportsDashboradService(configuration);
+            return services.UseHttpReportsDashboardService(configuration);
         }
 
 
-        private static IHttpReportsBuilder UseHttpReportsDashboradService(this IServiceCollection services, IConfiguration configuration)
-        { 
+        private static IHttpReportsBuilder UseHttpReportsDashboardService(this IServiceCollection services, IConfiguration configuration)
+        {  
             services.AddSingleton<IModelCreator, DefaultModelCreator>();
 
             services.AddSingleton<IAlarmService, AlarmService>();
 
             services.AddSingleton<MonitorService>();
 
-            services.AddSingleton<ScheduleService>(); 
+            services.AddSingleton<ScheduleService>();
+
+            services.AddSingleton<ChineseLanguage>();
+            services.AddSingleton<EnglishLanguage>(); 
+            services.AddSingleton<LanguageService>(); 
 
             services.AddMvcCore(x => {
                 x.Filters.Add<GlobalAuthorizeFilter>();
             }).AddViews(); 
-         
+
+            ServiceContainer.provider = services.BuildServiceProvider(); 
 
             return new HttpReportsBuilder(services, configuration);
         }  
 
         public static IApplicationBuilder UseHttpReportsDashboard(this IApplicationBuilder app)
         {
-            ServiceContainer.provider = app.ApplicationServices as ServiceProvider; 
+            //ServiceContainer.provider = app.ApplicationServices as ServiceProvider; 
 
             ConfigRoute(app);
 

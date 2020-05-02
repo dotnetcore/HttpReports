@@ -14,9 +14,23 @@ function changeChartHeight() {
 
 function InitPage() {
 
-    laydate.render({ elem: '.start', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange() });
-    laydate.render({ elem: '.end', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange() });
-    laydate.render({ elem: '.day', theme: '#67c2ef' });   
+    if (lang.Language == "English") {
+
+        laydate.render({ elem: '.start', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange(), lang: 'en' });
+        laydate.render({ elem: '.end', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange(), lang: 'en' });
+        laydate.render({ elem: '.day', theme: '#67c2ef', lang: 'en' });   
+
+    } 
+
+
+    if (lang.Language == "Chinese") {
+
+        laydate.render({ elem: '.start', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange() });
+        laydate.render({ elem: '.end', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange() });
+        laydate.render({ elem: '.day', theme: '#67c2ef' });
+
+    } 
+   
   
 }    
 
@@ -65,7 +79,7 @@ function InitChart() {
 
     global.StatusCodePieOption = {
         title: {
-            text: '请求状态码', 
+            text: lang.StatusCode, 
             subtext: "",
             x: "left",
             y: "2%"
@@ -84,7 +98,7 @@ function InitChart() {
         },
         series: [
             {
-                name: '状态码',
+                name:lang.StatusCode,
                 type: 'pie',
                 radius: '55%',
                 center: ['50%', '60%'],
@@ -117,7 +131,7 @@ function InitChart() {
 
     global.ResponseTimePieOption = {
         title: {
-            text: '请求处理时间(ms)',
+            text: lang.ProcessingTime,
             x: "left",
             y: "2%"
         },
@@ -135,7 +149,7 @@ function InitChart() {
         },
         series: [
             {
-                name: '处理时间',
+                name: lang.ProcessingTime,
                 type: 'pie',
                 radius: '55%',
                 center: ['50%', '60%'],
@@ -169,7 +183,7 @@ function InitChart() {
 
     global.MostRequestChartOption = {
         title: {
-            text: '最多请求 TOP' + global.top,
+            text: lang.Mostrequests + ' TOP' + global.top,
             x: "left",
             y: "2%"
         },
@@ -207,7 +221,7 @@ function InitChart() {
         },
         series: [
             {
-                name: '请求次数',
+                name: lang.Index_RequestCount,
                 type: 'bar',
                 barWidth: 12,
                 itemStyle: {
@@ -239,7 +253,7 @@ function InitChart() {
 
     global.Code500RequestChartOption = {
         title: {
-            text: '请求错误 TOP' + global.top,
+            text: lang.RequestError + ' TOP' + global.top,
             x: "left",
             y: "2%"
         },
@@ -278,7 +292,7 @@ function InitChart() {
         },
         series: [
             {
-                name: '500错误次数',
+                name: lang.RequestError,
                 type: 'bar',
                 barWidth:12,
                 itemStyle: {
@@ -311,7 +325,7 @@ function InitChart() {
 
     global.FastARTChartOption = {
         title: {
-            text: '平均处理时间最快 TOP' + global.top,
+            text: lang.Index_Fast + ' TOP' + global.top,
             x: "left",
             y: "2%"
         },
@@ -350,7 +364,7 @@ function InitChart() {
         },
         series: [
             {
-                name: '平均处理时间',
+                name: lang.AvgProcessingTime,
                 type: 'bar',
                 barWidth:12,
                 label: {
@@ -381,7 +395,7 @@ function InitChart() {
 
     global.SlowARTChartOption = {
         title: {
-            text: '平均处理时间最慢 TOP' + global.top,
+            text: lang.Index_Slow + ' TOP' + global.top,
             x: "left",
             y: "2%"
         },
@@ -420,7 +434,7 @@ function InitChart() {
         },
         series: [
             {
-                name: '平均处理时间',
+                name: lang.AvgProcessingTime,
                 type: 'bar',
                 barWidth:12,
                 itemStyle: {
@@ -893,7 +907,7 @@ function QueryClick() {
 
     if ($(".start").val().trim().length == 0 || $(".end").val().trim().length == 0) {
 
-        alertWarn("开始时间结束时间不能为空");
+        alertWarn(lang.TimeNotNull);
         return;
 
     } 

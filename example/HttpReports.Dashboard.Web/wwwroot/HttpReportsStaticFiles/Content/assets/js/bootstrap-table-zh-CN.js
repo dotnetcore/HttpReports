@@ -22,11 +22,27 @@
             formatLoadingMessage: function formatLoadingMessage() {
                 return '';
             },
-            formatRecordsPerPage: function formatRecordsPerPage(pageNumber) {
-                return '\u6BCF\u9875\u663E\u793A ' + pageNumber + ' \u6761\u8BB0\u5F55';
+            formatRecordsPerPage: function formatRecordsPerPage(pageNumber) { 
+
+                if (lang.Language == "English") {
+                    return ' ' + pageNumber + '  ';
+                }
+
+                if (lang.Language == "Chinese") {
+                    return '\u6BCF\u9875\u663E\u793A ' + pageNumber + ' \u6761\u8BB0\u5F55';
+                }  
+               
             },
             formatShowingRows: function formatShowingRows(pageFrom, pageTo, totalRows) {
-                return '\u663E\u793A\u7B2C ' + pageFrom + ' \u5230\u7B2C ' + pageTo + ' \u6761\u8BB0\u5F55\uFF0C\u603B\u5171 ' + totalRows + ' \u6761\u8BB0\u5F55';
+
+                if (lang.Language == "English") {
+                    return 'from ' + pageFrom + ' to ' + pageTo + ' , total ' + totalRows + ' ';
+                }
+
+                if (lang.Language == "Chinese") {
+                    return '\u663E\u793A\u7B2C ' + pageFrom + ' \u5230\u7B2C ' + pageTo + ' \u6761\u8BB0\u5F55\uFF0C\u603B\u5171 ' + totalRows + ' \u6761\u8BB0\u5F55';
+                } 
+              
             },
             formatDetailPagination: function formatDetailPagination(totalRows) {
                 return '\u603B\u5171 ' + totalRows + ' \u6761\u8BB0\u5F55';

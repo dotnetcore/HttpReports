@@ -98,7 +98,7 @@ function saveMonitorJob() {
 
             if (result.code == 1) {
 
-                alertOk("保存成功",1200,function () {
+                alertOk(lang.Save_Success, 1200, function () {
 
                     location.href = "/HttpReports/Monitor";
 

@@ -5,6 +5,8 @@
 
     var RequestDetail = ViewBag.Detail as HttpReports.IRequestDetail;
 
+    var lang = ViewBag.Language as HttpReports.Dashboard.Services.Language.ILanguage;
+
 }
 
     <style type="text/css">
@@ -28,7 +30,7 @@
 
                         @if (RequestInfo == null || RequestDetail == null)
                         {
-                            <h3 class="request_detail_notfound">未知错误，没有找到相关信息</h3>
+                            <h3 class="request_detail_notfound">@lang.Request_NotFound</h3>
                         }
                         else
                         {
@@ -47,41 +49,41 @@
                                         <td style="text-align:left;font-size:12px;padding-left:8px">@RequestInfo.Id</td>
                                     </tr>
                                     <tr>
-                                        <td>服务节点</td>
+                                        <td>@lang.Index_ServiceNode</td>
                                         <td style="text-align:left;font-size:12px;padding-left:8px">@RequestInfo.Node</td>
                                     </tr>
                                     <tr>
-                                        <td>请求路由</td>
+                                        <td>@lang.Request_Route</td>
                                         <td style="text-align:left;font-size:12px;padding-left:8px">@RequestInfo.Route</td>
                                     </tr>
 
                                     <tr>
-                                        <td>请求地址</td>
+                                        <td>@lang.Request_Url</td>
                                         <td style="text-align:left;font-size:12px;padding-left:8px">@RequestInfo.Url</td>
                                     </tr>
 
                                     <tr>
-                                        <td>请求方式</td>
+                                        <td>@lang.Request_Type</td>
                                         <td style="text-align:left;font-size:12px;padding-left:8px">@RequestInfo.Method</td>
                                     </tr>
 
                                     <tr>
-                                        <td>请求耗时</td>
+                                        <td>@lang.Request_Time</td>
                                         <td style="text-align:left;font-size:12px;padding-left:8px">@RequestInfo.Milliseconds</td>
                                     </tr>
 
                                     <tr>
-                                        <td>响应状态码</td>
+                                        <td>@lang.Request_StatusCode</td>
                                         <td style="text-align:left;font-size:12px;padding-left:6px">@RequestInfo.StatusCode</td>
                                     </tr>
 
                                     <tr>
-                                        <td>请求IP</td>
+                                        <td>@lang.Request_RemoteIP</td>
                                         <td style="text-align:left;font-size:12px;padding-left:6px">@RequestInfo.IP</td>
                                     </tr>
 
                                     <tr>
-                                        <td>请求时间</td>
+                                        <td>@lang.Request_CreateTime</td>
                                         <td style="text-align:left;font-size:12px;padding-left:6px">@RequestInfo.CreateTime.ToString("yyyy-MM-dd HH:mm:ss fff")</td>
                                     </tr>
 
@@ -154,4 +156,4 @@
     </div>  
 
 
-    <script src="/HttpReportsStaticFiles/Content/page/requestinfo_detail.js?ver=1.0.3"></script>
+    <script src="/HttpReportsStaticFiles/Content/page/requestinfo_detail.js?ver=1.0.4"></script>

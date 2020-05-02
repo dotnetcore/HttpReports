@@ -6,6 +6,8 @@
     string Id = ViewBag.Id as string;
 
     List<string> nodes = ViewBag.nodes;
+
+    var lang = ViewBag.Language as HttpReports.Dashboard.Services.Language.ILanguage;
 }
 
 
@@ -47,11 +49,11 @@
     <div class="panel-body  task_content" style="padding-left:30px;padding-right:30px;padding-top:30px;min-height:720px;padding-bottom:30px">
 
         <ol class="breadcrumb">
-            <li><a href="/HttpReports/Monitor">预警监控</a></li>
-            <li><span href="#">@(Id == "" || Id == "0" ? "添加" : "编辑")任务</span></li>
+            <li><a href="/HttpReports/Monitor">@lang.Monitor_NavTitle</a></li>
+            <li><span href="#">@(Id == "" || Id == "0" ? lang.Monitor_Add :lang.Monitor_Edit) @lang.Task</span></li>
         </ol>
 
-        <h3 style="margin-bottom:20px;">@(Id == "" || Id == "0" ? "添加" : "编辑")监控任务</h3>
+        <h3 style="margin-bottom:20px;">@(Id == "" || Id == "0" ? lang.Monitor_Add : lang.Monitor_Edit) @lang.Monitor_Task</h3>
 
         <div class="row">
 
@@ -63,8 +65,8 @@
                         <div class="row" style="margin-left:0;margin-right:0;margin-top:15px">
 
                             <div class="col-lg-9">
-                                <label style="width:100px" class="form-label">任务标题</label>
-                                <input type="text" class="form-control title" placeholder="请简单输入任务标题">
+                                <label style="width:100px" class="form-label">@lang.Monitor_Title</label>
+                                <input type="text" class="form-control title" placeholder="@lang.Monitor_Title_Placeholder">
                             </div>
 
                         </div>
@@ -72,8 +74,8 @@
                         <div class="row" style="margin-left:0;margin-right:0;margin-top:15px">
 
                             <div class="col-lg-9">
-                                <label style="width:100px" class="form-label">任务描述</label>
-                                <input type="text" class="form-control description" placeholder="请输入任务描述">
+                                <label style="width:100px" class="form-label">@lang.Monitor_Description</label>
+                                <input type="text" class="form-control description" placeholder="@lang.Monitor_Desc_Placeholder">
                             </div>
 
                         </div>
@@ -81,7 +83,7 @@
                         <div class="row" style="margin-left:0;margin-right:0;margin-top:15px;">
 
                             <div class="col-lg-9 node-row">
-                                <label style="width:100px" class="form-label">服务节点</label>
+                                <label style="width:100px" class="form-label">@lang.Monitor_ServiceNode</label>
 
                                 @foreach (var item in nodes)
                                 {
@@ -95,8 +97,8 @@
                         <div class="row" style="margin-left:0;margin-right:0;margin-top:15px">
 
                             <div class="col-lg-9">
-                                <label style="width:100px" class="form-label">通知邮箱</label>
-                                <input type="text" class="form-control email" placeholder="告警邮件接收邮箱，支持多邮箱 aa.com,bb.com,cc.com">
+                                <label style="width:100px" class="form-label">@lang.Monitor_Email</label>
+                                <input type="text" class="form-control email" placeholder="@lang.Monitor_Email_Placeholder">
                             </div>
 
                         </div>
@@ -104,8 +106,8 @@
                         <div class="row" style="margin-left:0;margin-right:0;margin-top:15px">
 
                             <div class="col-lg-9">
-                                <label style="width:100px" class="form-label">推送地址</label>
-                                <input type="text" class="form-control webhook" placeholder="告警信息推送地址Url">
+                                <label style="width:100px" class="form-label">@lang.Monitor_PushUrl</label>
+                                <input type="text" class="form-control webhook" placeholder="@lang.Monitor_Push_Placeholder">
                                 
                             </div>
 
@@ -126,20 +128,20 @@
                         <div class="row" style="margin-left:0;margin-right:0;margin-top:15px;">
 
                             <div class="col-lg-9">
-                                <label style="width:100px" class="form-label">监控周期</label>
+                                <label style="width:100px" class="form-label">@lang.Monitor_Frequency</label>
                                 <select class="form-control interval">
-                                    <option value="1">1分钟</option>
-                                    <option value="3">3分钟</option>
-                                    <option value="5">5分钟</option>
-                                    <option value="10">10分钟</option>
-                                    <option value="30">30分钟</option>
-                                    <option value="60" selected>1小时</option>
-                                    <option value="120">2小时</option>
-                                    <option value="240">4小时</option>
-                                    <option value="360">6小时</option>
-                                    <option value="480">8小时</option>
-                                    <option value="720">12小时</option>
-                                    <option value="1440">1天</option>
+                                    <option value="1">@lang.Monitor_Time1Min</option>
+                                    <option value="3">@lang.Monitor_Time3Min</option>
+                                    <option value="5">@lang.Monitor_Time5Min</option>
+                                    <option value="10">@lang.Monitor_Time10Min</option>
+                                    <option value="30">@lang.Monitor_Time30Min</option>
+                                    <option value="60" selected>@lang.Monitor_Time1Hour</option>
+                                    <option value="120">@lang.Monitor_Time2Hour</option>
+                                    <option value="240">@lang.Monitor_Time4Hour</option>
+                                    <option value="360">@lang.Monitor_Time6Hour</option>
+                                    <option value="480">@lang.Monitor_Time8Hour</option>
+                                    <option value="720">@lang.Monitor_Time12Hour</option>
+                                    <option value="1440">@lang.Monitor_Time1Day</option>
                                 </select>
                             </div>
 
@@ -148,8 +150,8 @@
                         <div class="row" style="margin-left:0;margin-right:0;margin-top:15px">
 
                             <div class="col-lg-9">
-                                <label style="width:100px" class="form-label">任务状态</label>
-                                <input type="checkbox" checked class="checkbox" data-on-text="开" data-handle-width="30" data-off-text="关" data-size="mini" value="" />
+                                <label style="width:100px" class="form-label">@lang.Monitor_State</label>
+                                <input type="checkbox" checked class="checkbox" data-on-text="@lang.Monitor_CheckBox_Open" data-handle-width="30" data-off-text="@lang.Monitor_CheckBox_Close" data-size="mini" value="" />
                             </div>
 
                         </div>
@@ -166,10 +168,10 @@
                         <div>
 
                             <ul class="steps nav nav-pills">
-                                <li class="active"><a href="#tab11" data-toggle="tab"><span class="badge badge-info"><i class="fa fa-star"></i></span> 响应超时监控</a></li>
-                                <li class=""><a href="#tab12" data-toggle="tab"><span class="badge badge-info"><i class="fa fa-credit-card"></i></span> 请求错误监控</a></li>
-                                <li class=""><a href="#tab13" data-toggle="tab"><span class="badge badge-info"><i class="fa fa-building"></i></span> IP异常监控 </a></li>
-                                <li class=""><a href="#tab14" data-toggle="tab"><span class="badge badge-info"><i class="fa fa-rocket"></i></span>请求量监控</a></li>
+                                <li class="active"><a href="#tab11" data-toggle="tab"><span class="badge badge-info"><i class="fa fa-star"></i></span> @lang.Monitor_Type_Timeout</a></li>
+                                <li class=""><a href="#tab12" data-toggle="tab"><span class="badge badge-info"><i class="fa fa-credit-card"></i></span> @lang.Monitor_Type_RequestError</a></li>
+                                <li class=""><a href="#tab13" data-toggle="tab"><span class="badge badge-info"><i class="fa fa-building"></i></span> @lang.Monitor_Type_IP </a></li>
+                                <li class=""><a href="#tab14" data-toggle="tab"><span class="badge badge-info"><i class="fa fa-rocket"></i></span> @lang.Monitor_Type_RequestCount</a></li>
                             </ul>
 
 
@@ -185,9 +187,9 @@
 
                                         <div class="col-lg-12">
 
-                                            <label class="form-label" style="margin-right:10px">状态</label>
+                                            <label class="form-label" style="margin-right:10px">@lang.Monitor_State</label>
 
-                                            <input data-id="0" type="checkbox" class="checkbox" data-on-text="开" data-handle-width="30" data-off-text="关" data-size="mini" value="" />
+                                            <input data-id="0" type="checkbox" class="checkbox" data-on-text="@lang.Monitor_CheckBox_Open" data-handle-width="30" data-off-text="@lang.Monitor_CheckBox_Close" data-size="mini" value="" />
 
                                         </div>
 
@@ -197,13 +199,13 @@
                                     <div class="col-sm-12" style="margin-top:6px">
 
                                         <div class="col-sm-3">
-                                            <label class="form-label" style="width:80px">超时时间</label>
+                                            <label class="form-label" style="width:80px">@lang.Monitor_Timeout</label>
                                             <input type="text" class="form-control RtTime" placeholder="">
                                         </div>
 
                                         <div class="col-sm-3" style="padding:0">
-                                            <label class="form-label">百分比</label>
-                                            <input type="text" value="0.00%" class="form-control RtPercent" placeholder="格式 0.01% 15% ... ">
+                                            <label class="form-label">@lang.Monitor_Timeout_Percentage</label>
+                                            <input type="text" value="0.00%" class="form-control RtPercent" placeholder="0.01% 15% ... ">
                                         </div>
 
                                     </div>
@@ -212,9 +214,9 @@
 
                                         <div style="margin-left:12px; margin-right:12px;margin-bottom:0" class="alert alert-info" role="alert">
 
-                                            <p><b>响应超时监控</b>：主要针对一段时间内接口调用超时率过高；</p>
+                                            <p><b>@lang.Monitor_Type_Timeout</b>：@lang.Monitor_Timeout_Description </p>
 
-                                            <p>1.设定接口超时时间(毫秒)；  2.设置接口超时百分比，支持 两位小数点，5%,0.03%,30%等,超时率达到或大于设定值时会触发预警；</p>
+                                            <p>@lang.Monitor_Timeout_Info</p>
 
                                         </div>
 
@@ -232,9 +234,9 @@
 
                                         <div class="col-lg-12">
 
-                                            <label class="form-label" style="margin-right:10px">状态</label>
+                                            <label class="form-label" style="margin-right:10px">@lang.Monitor_State</label>
 
-                                            <input type="checkbox" class="checkbox" data-on-text="开" data-handle-width="30" data-off-text="关" data-size="mini" value="" />
+                                            <input type="checkbox" class="checkbox" data-on-text="@lang.Monitor_CheckBox_Open" data-handle-width="30" data-off-text="@lang.Monitor_CheckBox_Close" data-size="mini" value="" />
 
                                         </div>
 
@@ -243,13 +245,13 @@
                                     <div class="col-sm-12" style="margin-top:6px">
 
                                         <div class="col-sm-3">
-                                            <label class="form-label">HTTP状态码</label>
-                                            <input type="text" class="form-control HttpCodes" placeholder="多个用逗号隔开">
+                                            <label class="form-label">@lang.Monitor_HttpStatusCode</label>
+                                            <input type="text" class="form-control HttpCodes" placeholder="@lang.Monitor_HttpStatusCode_Desc">
                                         </div>
 
                                         <div class="col-sm-3">
-                                            <label class="form-label">百分比</label>
-                                            <input type="text" value="0.00%" class="form-control HttpPercent" placeholder="格式 0.01% 15% ... ">
+                                            <label class="form-label">@lang.Monitor_Timeout_Percentage</label>
+                                            <input type="text" value="0.00%" class="form-control HttpPercent" placeholder=" 0.01% 15% ... ">
                                         </div>
 
                                     </div>
@@ -258,9 +260,9 @@
 
                                         <div style="margin-left:12px;margin-right:12px;margin-bottom:0" class="alert alert-info" role="alert">
 
-                                            <p><b>请求错误监控</b>：主要针对一段时间内接口调用错误率过高；</p>
+                                            <p><b>@lang.Monitor_Type_RequestError</b>：@lang.Monitor_Type_RequestError_Desc </p>
 
-                                            <p>1.设定Http状态码,500,503,404,多个状态码用英文逗号隔开； 2.设置命中率,支持 两位小数点，5%,0.03%,30%等，命中率达到或大于设定值时会触发预警；</p>
+                                            <p>@lang.Monitor_Type_RequestError_Info</p>
 
                                         </div>
 
@@ -278,9 +280,9 @@
 
                                         <div class="col-lg-12">
 
-                                            <label class="form-label" style="margin-right:10px">状态</label>
+                                            <label class="form-label" style="margin-right:10px">@lang.Monitor_State</label>
 
-                                            <input type="checkbox" class="checkbox" data-on-text="开" data-handle-width="30" data-off-text="关" data-size="mini" value="" />
+                                            <input type="checkbox" class="checkbox" data-on-text="@lang.Monitor_CheckBox_Open" data-handle-width="30" data-off-text="@lang.Monitor_CheckBox_Close" data-size="mini" value="" />
 
                                         </div>
 
@@ -290,13 +292,13 @@
                                     <div class="col-sm-12" style="margin-top:6px">
 
                                         <div class="col-sm-3">
-                                            <label class="form-label">IP白名单</label>
-                                            <input type="text" class="form-control IPWhiteList" placeholder="多个用逗号隔开">
+                                            <label class="form-label">@lang.Monitor_IPWhileList</label>
+                                            <input type="text" class="form-control IPWhiteList" placeholder="@lang.Monitor_IPWhileList_Placeholder">
                                         </div>
 
                                         <div class="col-sm-3">
-                                            <label class="form-label">百分比</label>
-                                            <input value="0.00%" type="text" class="form-control IPPercent" placeholder="格式 0.01% 15% ... ">
+                                            <label class="form-label">@lang.Monitor_Timeout_Percentage</label>
+                                            <input value="0.00%" type="text" class="form-control IPPercent" placeholder="0.01% 15% ... ">
                                         </div>
 
                                     </div>
@@ -305,9 +307,9 @@
 
                                         <div style="margin-left:12px;margin-right:12px;margin-bottom:0" class="alert alert-info" role="alert">
 
-                                            <p><b>IP异常监控</b>：主要针对一段时间内大量固定IP请求，类似机器人请求;</p>
+                                            <p><b>@lang.Monitor_Type_IP</b>：@lang.Monitor_IP_Desc</p>
 
-                                            <p> 1.设置IP白名单(可不填),多个IP地址中间用英文逗号分开；  2.设置重复率，支持 两位小数点，5%,0.03%,30%等,当IP重复率达到或大于设定值时,触发预警； </p>
+                                            <p> @lang.Monitor_IP_Info </p>
 
                                         </div>
 
@@ -326,9 +328,9 @@
 
                                         <div class="col-lg-12">
 
-                                            <label class="form-label" style="margin-right:10px">状态</label>
+                                            <label class="form-label" style="margin-right:10px">@lang.Monitor_State</label>
 
-                                            <input type="checkbox" class="checkbox" data-on-text="开" data-handle-width="30" data-off-text="关" data-size="mini" value="" />
+                                            <input type="checkbox" class="checkbox" data-on-text="@lang.Monitor_CheckBox_Open" data-handle-width="30" data-off-text="@lang.Monitor_CheckBox_Close" data-size="mini" value="" />
 
                                         </div>
 
@@ -337,7 +339,7 @@
                                     <div class="col-sm-12" style="margin-top:6px">
 
                                         <div class="col-sm-3">
-                                            <label class="form-label">最大请求数量</label>
+                                            <label class="form-label">@lang.Monitor_Max_Request</label>
                                             <input type="text" class="form-control RequestCount">
                                         </div>
 
@@ -347,9 +349,9 @@
 
                                         <div style="margin-left:12px;margin-right:12px;margin-bottom:0" class="alert alert-info" role="alert">
 
-                                            <p><b>请求量监控</b>：主要针对一段时间内接口大量请求；</p>
+                                            <p><b>@lang.Monitor_Type_RequestCount</b>：@lang.Monitor_Type_RequestCount_Desc </p>
 
-                                            <p> 1.设置单位时间内接口最大请求量,当请求量达到或者大于设定时触发预警 </p>
+                                            <p> @lang.Monitor_Type_RequestCount_Info </p>
 
                                         </div>
 
@@ -364,9 +366,9 @@
                         <input type="hidden" class="id" value="@(Id)">
 
                         <div class="actions" style="margin-top:15px;margin-bottom:8px;">
-                            <button onclick="saveMonitorJob()" type="button" class="btn btn-info button-previous" style="width:80px"> 保 存 </button>
+                            <button onclick="saveMonitorJob()" type="button" class="btn btn-info button-previous" style="width:80px"> @lang.Save </button>
 
-                            <a href="/HttpReports/Monitor" type="button" class="btn btn-info button-previous" style="width:120px;margin-left:20px"> 返回上一页 </a>
+                            <a href="/HttpReports/Monitor" type="button" class="btn btn-info button-previous" style="width:120px;margin-left:20px"> @lang.Back </a>
 
                         </div>
 
@@ -382,6 +384,6 @@
 
 </div>  
 
-<script src="/HttpReportsStaticFiles/Content/page/edit_monitor.js?ver=1.0.3"></script>
+<script src="/HttpReportsStaticFiles/Content/page/edit_monitor.js?ver=1.0.4"></script>
 
 

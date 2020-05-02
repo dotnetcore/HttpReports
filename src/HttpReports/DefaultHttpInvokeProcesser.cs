@@ -26,7 +26,7 @@ namespace HttpReports
 
             if (requestInfo != null)
             {
-                Task.Run(() => { Storage.AddRequestInfoAsync(requestInfo,requestDetail).ConfigureAwait(false); });
+                Task.Run(() => { Storage.AddRequestInfoAsync(requestInfo,requestDetail); });
             }  
         }
     }

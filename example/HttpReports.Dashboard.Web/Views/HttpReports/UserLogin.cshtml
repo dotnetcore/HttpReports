@@ -1,6 +1,8 @@
 ﻿
 @{
     Layout = null;
+
+    var lang = ViewBag.Language as HttpReports.Dashboard.Services.Language.ILanguage;
 }
 
 <!DOCTYPE html>
@@ -11,8 +13,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>HttpReports</title>
 
-    <link class="theme" id="theme_light" href="/HttpReportsStaticFiles/Content/css/theme/light.css?ver=1.0.3" rel="stylesheet" />
-    <link class="theme" id="theme_dark" href="/HttpReportsStaticFiles/Content/css/theme/dark.css?ver=1.0.3" rel="stylesheet" />
+    <link class="theme" id="theme_light" href="/HttpReportsStaticFiles/Content/css/theme/light.css?ver=1.0.4" rel="stylesheet" />
+    <link class="theme" id="theme_dark" href="/HttpReportsStaticFiles/Content/css/theme/dark.css?ver=1.0.4" rel="stylesheet" />
 
     <link href="~/HttpReportsStaticFiles/Content/login/bootstrap/css/bootstrap.css" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="/HttpReportsStaticFiles/Content/login/css/my-login.css">
@@ -21,16 +23,18 @@
 
 
     <script src="/HttpReportsStaticFiles/Content/login/js/jquery.min.js"></script>
-    <script src="/HttpReportsStaticFiles/Content/login/js/jquery.particleground.js"></script>
+    <script src="/HttpReportsStaticFiles/Content/login/js/jquery.particleground.js"></script> 
 
-    <script src="/HttpReportsStaticFiles/Content/page/user_login.js"></script>
-    <script src="/HttpReportsStaticFiles/Content/page/main.js"></script>
-    <link href="/HttpReportsStaticFiles/Content/alert/alert.css?ver=1.0.3" rel="stylesheet" />
-    <script src="/HttpReportsStaticFiles/Content/alert/alert.js?ver=1.0.3"></script>
+    <script>  var lang = JSON.parse('@(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(lang)))');   </script> 
+
+    <script src="/HttpReportsStaticFiles/Content/page/user_login.js?v=1.0.3"></script>
+    <script src="/HttpReportsStaticFiles/Content/page/main.js?ver=1.0.4"></script>
+    <link href="/HttpReportsStaticFiles/Content/alert/alert.css?ver=1.0.4" rel="stylesheet" />
+    <script src="/HttpReportsStaticFiles/Content/alert/alert.js?ver=1.0.4"></script>
 
     <link href="/HttpReportsStaticFiles/Content/message/message.css" rel="stylesheet" />
     <script src="/HttpReportsStaticFiles/Content/message/message.js"></script>
-    <script src="/HttpReportsStaticFiles/Content/common/basic.js?ver=1.0.3"></script>
+    <script src="/HttpReportsStaticFiles/Content/common/basic.js?ver=1.0.4"></script>
     <link rel="icon" href="/HttpReportsStaticFiles/Content/assets/img/img.ico" type="image/x-icon" />
 
 
@@ -55,14 +59,14 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="email">用户名</label>
+                            <label for="email">@lang.Login_UserName</label>
 
                             <input  type="text" class="form-control username" name="email" value="" required autofocus>
                         </div>
 
                         <div class="form-group">
                             <label for="password">
-                                密码
+                                @lang.Login_Password
 
                             </label>
                             <input    type="password" class="form-control password" name="password" required data-eye>
@@ -70,7 +74,7 @@
 
                         <div class="form-group">
                             <button onclick="login()" type="submit" class="btn btn-primary btn-block">
-                                登 录
+                                @lang.Login_Button
                             </button>
                         </div>
                     </div>

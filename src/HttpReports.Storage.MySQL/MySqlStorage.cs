@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
+using HttpReports.Core.Config;
 using HttpReports.Core.Models;
 using HttpReports.Models;
 using HttpReports.Monitor;
@@ -64,7 +65,7 @@ namespace HttpReports.Storage.MySql
   `LocalPort` int(11) DEFAULT NULL, 
   `CreateTime` datetime(3) DEFAULT NULL,
   PRIMARY KEY (`Id`) 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;").ConfigureAwait(false);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
                     await connection.ExecuteAsync($@"CREATE TABLE IF NOT EXISTS `RequestDetail` (
   `Id` varchar(50) NOT NULL,
@@ -79,7 +80,7 @@ namespace HttpReports.Storage.MySql
   `ErrorStack` text DEFAULT NULL,
   `CreateTime` datetime(3) DEFAULT NULL ,
   PRIMARY KEY (`Id`) 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;").ConfigureAwait(false);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
                     await connection.ExecuteAsync(@"
 CREATE TABLE IF NOT EXISTS `MonitorJob` (
@@ -95,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `MonitorJob` (
   `PayLoad` varchar(2000) DEFAULT NULL,
   `CreateTime` datetime(3) DEFAULT NULL,
   PRIMARY KEY (`Id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;").ConfigureAwait(false);
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
 
                     await connection.ExecuteAsync(@"
 CREATE TABLE IF NOT EXISTS `SysUser` (
@@ -103,22 +104,36 @@ CREATE TABLE IF NOT EXISTS `SysUser` (
   `UserName` varchar(255) DEFAULT NULL,
   `Password` varchar(255) DEFAULT NULL, 
   PRIMARY KEY (`Id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;").ConfigureAwait(false);
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
 
-                    if (connection.QueryFirstOrDefault<int>("Select count(1) from `SysUser`") == 0)
+
+                    await connection.ExecuteAsync(@"
+CREATE TABLE IF NOT EXISTS `SysConfig` (
+  `Id` varchar(50) NOT NULL,
+  `Key` varchar(255) DEFAULT NULL,
+  `Value` varchar(255) DEFAULT NULL, 
+  PRIMARY KEY (`Id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
+
+                    if (await connection.QueryFirstOrDefaultAsync<int>("Select count(1) from `SysUser`") == 0)
                     {
-                        await connection.ExecuteAsync($@" Insert Into `SysUser` (`Id`,`UserName`,`Password`) Values ('{MD5_16(Guid.NewGuid().ToString())}','{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ").ConfigureAwait(false);
-                    } 
+                        await connection.ExecuteAsync($@" Insert Into `SysUser` (`Id`,`UserName`,`Password`) Values ('{MD5_16(Guid.NewGuid().ToString())}','{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ");
+                    }
 
-                    if (connection.QueryFirstOrDefault<string>($" SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS where table_schema ='{ConnectionFactory.DataBase}' AND table_name  = 'RequestInfo'  AND COLUMN_NAME = 'Route'") != "varchar(120)")
+                    if (await connection.QueryFirstOrDefaultAsync<int>($"Select count(1) from `SysConfig` Where `Key` =  '{BasicConfig.Language}' ") == 0)
+                    {
+                        await connection.ExecuteAsync($@" Insert Into `SysConfig` (`Id`,`Key`,`Value`) Values ('{MD5_16(Guid.NewGuid().ToString())}','{BasicConfig.Language}','English') ");
+                    }
+
+                    if (await connection.QueryFirstOrDefaultAsync<string>($" SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS where table_schema ='{ConnectionFactory.DataBase}' AND table_name  = 'RequestInfo'  AND COLUMN_NAME = 'Route'") != "varchar(120)")
                     {
                         await connection.ExecuteAsync($" Alter Table `RequestInfo` modify column `Route` varchar(120)");
-                    }   
+                    }
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogWarning(ex,$"Init Error:{ex.Message}");
+                Logger.LogWarning(ex, $"Init Error:{ex.Message}");
 
                 throw ex;
             }
@@ -128,7 +143,7 @@ CREATE TABLE IF NOT EXISTS `SysUser` (
         {
             using (var ccon = ConnectionFactory.GetConnectionWithoutDefaultDatabase())
             {
-                var num = await ccon.ExecuteAsync($"CREATE DATABASE IF NOT EXISTS `{ConnectionFactory.DataBase}` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;").ConfigureAwait(false);
+                var num = await ccon.ExecuteAsync($"CREATE DATABASE IF NOT EXISTS `{ConnectionFactory.DataBase}` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;");
                 if (num == 1)
                 {
                     Logger.LogWarning($"自动创建了数据库: {ConnectionFactory.DataBase}");
@@ -148,14 +163,14 @@ CREATE TABLE IF NOT EXISTS `SysUser` (
             {
                 string request = string.Join(",", list.Select(x => x.Key).Select(m => $"('{m.Id}','{m.ParentId}','{m.Node}','{m.Route}','{m.Url}','{m.RequestType}', '{m.Method}',{m.Milliseconds},{m.StatusCode},'{m.IP}',{m.Port},'{m.LocalIP}',{m.LocalPort},'{m.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}')"));
 
-                await connection.ExecuteAsync($"INSERT INTO `RequestInfo` (`Id`,`ParentId`,`Node`, `Route`, `Url`,`RequestType`,`Method`, `Milliseconds`, `StatusCode`, `IP`,`Port`,`LocalIP`,`LocalPort`,`CreateTime`) VALUES {request}").ConfigureAwait(false);
+                await connection.ExecuteAsync($"INSERT INTO `RequestInfo` (`Id`,`ParentId`,`Node`, `Route`, `Url`,`RequestType`,`Method`, `Milliseconds`, `StatusCode`, `IP`,`Port`,`LocalIP`,`LocalPort`,`CreateTime`) VALUES {request}");
 
                 string detail = string.Join(",", list.Select(x => x.Value).Select(x => $" ('{x.Id}','{x.RequestId}','{x.Scheme}','{x.QueryString}','{x.Header}','{x.Cookie}','{x.RequestBody}','{x.ResponseBody}','{x.ErrorMessage}','{x.ErrorStack}','{x.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}' ) "));
 
-                await connection.ExecuteAsync($"Insert into `RequestDetail` (`Id`,`RequestId`,`Scheme`,`QueryString`,`Header`,`Cookie`,`RequestBody`,`ResponseBody`,`ErrorMessage`,`ErrorStack`,`CreateTime`) VALUES {detail}").ConfigureAwait(false);
+                await connection.ExecuteAsync($"Insert into `RequestDetail` (`Id`,`RequestId`,`Scheme`,`QueryString`,`Header`,`Cookie`,`RequestBody`,`ResponseBody`,`ErrorMessage`,`ErrorStack`,`CreateTime`) VALUES {detail}");
 
 
-            }, "请求数据批量保存失败").ConfigureAwait(false);
+            }, "请求数据批量保存失败");
         }
 
         public async Task AddRequestInfoAsync(IRequestInfo request, IRequestDetail detail)
@@ -168,11 +183,11 @@ CREATE TABLE IF NOT EXISTS `SysUser` (
             {
                 await LoggingSqlOperation(async connection =>
                 {
-                    await connection.ExecuteAsync("INSERT INTO `RequestInfo` (`Id`,`ParentId`,`Node`, `Route`, `Url`, `RequestType`, `Method`, `Milliseconds`, `StatusCode`, `IP`,`Port`,`LocalIP`,`LocalPort`,`CreateTime`) VALUES (@Id,@ParentId, @Node, @Route, @Url,@RequestType, @Method, @Milliseconds, @StatusCode, @IP,@Port,@LocalIP,@LocalPort, @CreateTime)", request).ConfigureAwait(false);
+                    await connection.ExecuteAsync("INSERT INTO `RequestInfo` (`Id`,`ParentId`,`Node`, `Route`, `Url`, `RequestType`, `Method`, `Milliseconds`, `StatusCode`, `IP`,`Port`,`LocalIP`,`LocalPort`,`CreateTime`) VALUES (@Id,@ParentId, @Node, @Route, @Url,@RequestType, @Method, @Milliseconds, @StatusCode, @IP,@Port,@LocalIP,@LocalPort, @CreateTime)", request);
 
-                    await connection.ExecuteAsync("INSERT INTO `RequestDetail` (`Id`,`RequestId`,`Scheme`,`QueryString`,`Header`,`Cookie`,`RequestBody`,`ResponseBody`,`ErrorMessage`,`ErrorStack`,`CreateTime`)  VALUES (@Id,@RequestId,@Scheme,@QueryString,@Header,@Cookie,@RequestBody,@ResponseBody,@ErrorMessage,@ErrorStack,@CreateTime)", detail).ConfigureAwait(false);
+                    await connection.ExecuteAsync("INSERT INTO `RequestDetail` (`Id`,`RequestId`,`Scheme`,`QueryString`,`Header`,`Cookie`,`RequestBody`,`ResponseBody`,`ErrorMessage`,`ErrorStack`,`CreateTime`)  VALUES (@Id,@RequestId,@Scheme,@QueryString,@Header,@Cookie,@RequestBody,@ResponseBody,@ErrorMessage,@ErrorStack,@CreateTime)", detail);
 
-                }, "请求数据保存失败").ConfigureAwait(false);
+                }, "请求数据保存失败");
             }
         }
 
@@ -182,11 +197,11 @@ CREATE TABLE IF NOT EXISTS `SysUser` (
 
             TraceLogSql(sql);
 
-            return await LoggingSqlOperation(async connection => (await connection.QueryAsync<UrlRequestCount>(sql).ConfigureAwait(false)).ToList()).ConfigureAwait(false);
+            return await LoggingSqlOperation(async connection => (await connection.QueryAsync<UrlRequestCount>(sql)).ToList());
         }
 
         public async Task<List<NodeInfo>> GetNodesAsync() =>
-            await LoggingSqlOperation(async connection => (await connection.QueryAsync<string>("Select Distinct Node FROM RequestInfo;").ConfigureAwait(false)).Select(m => new NodeInfo { Name = m }).ToList(), "获取所有节点信息失败").ConfigureAwait(false);
+            await LoggingSqlOperation(async connection => (await connection.QueryAsync<string>("Select Distinct Node FROM RequestInfo;")).Select(m => new NodeInfo { Name = m }).ToList(), "获取所有节点信息失败");
 
 
         public async Task<List<RequestAvgResponeTime>> GetRequestAvgResponeTimeStatisticsAsync(RequestInfoFilterOption filterOption)
@@ -195,7 +210,7 @@ CREATE TABLE IF NOT EXISTS `SysUser` (
 
             TraceLogSql(sql);
 
-            return await LoggingSqlOperation(async connection => (await connection.QueryAsync<RequestAvgResponeTime>(sql).ConfigureAwait(false)).ToList(), "获取Url的平均请求处理时间统计异常").ConfigureAwait(false);
+            return await LoggingSqlOperation(async connection => (await connection.QueryAsync<RequestAvgResponeTime>(sql)).ToList(), "获取Url的平均请求处理时间统计异常");
         }
 
         public async Task<List<StatusCodeCount>> GetStatusCodeStatisticsAsync(RequestInfoFilterOption filterOption)
@@ -206,7 +221,7 @@ CREATE TABLE IF NOT EXISTS `SysUser` (
 
             TraceLogSql(sql);
 
-            return await LoggingSqlOperation(async connection => (await connection.QueryAsync<StatusCodeCount>(sql).ConfigureAwait(false)).ToList(), "获取http状态码数量统计异常").ConfigureAwait(false);
+            return await LoggingSqlOperation(async connection => (await connection.QueryAsync<StatusCodeCount>(sql)).ToList(), "获取http状态码数量统计异常");
         }
 
         public async Task<List<ResponeTimeGroup>> GetGroupedResponeTimeStatisticsAsync(GroupResponeTimeFilterOption filterOption)
@@ -235,7 +250,7 @@ CREATE TABLE IF NOT EXISTS `SysUser` (
 
             TraceLogSql(sql);
 
-            return await LoggingSqlOperation(async connection => (await connection.QueryAsync<ResponeTimeGroup>(sql).ConfigureAwait(false)).ToList(), "获取http状态码分组统计异常").ConfigureAwait(false);
+            return await LoggingSqlOperation(async connection => (await connection.QueryAsync<ResponeTimeGroup>(sql)).ToList(), "获取http状态码分组统计异常");
         }
 
         /// <summary>
@@ -259,7 +274,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             await LoggingSqlOperation(async connection =>
             {
-                using (var resultReader = await connection.QueryMultipleAsync(sql).ConfigureAwait(false))
+                using (var resultReader = await connection.QueryMultipleAsync(sql))
                 {
                     result.Total = resultReader.ReadFirstOrDefault<int>();
                     result.NotFound = resultReader.ReadFirstOrDefault<int>();
@@ -268,7 +283,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
                     result.ErrorPercent = result.Total == 0 ? 0 : Convert.ToDouble(result.ServerError) / Convert.ToDouble(result.Total);
                     result.AvgResponseTime = double.TryParse(resultReader.ReadFirstOrDefault<string>(), out var avg) ? avg : 0;
                 }
-            }, "获取首页数据异常").ConfigureAwait(false);
+            }, "获取首页数据异常");
 
             return result;
         }
@@ -299,6 +314,26 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
                 whereBuilder.Append($" AND  Url like '%{filterOption.Url}%' ");
             }
 
+
+            if (!filterOption.TraceId.IsEmpty())
+            {
+                whereBuilder.Append($" AND ID = '{filterOption.TraceId}' ");
+            }
+
+
+            if (filterOption.StatusCodes != null)
+            {
+                if (filterOption.StatusCodes.Length == 1)
+                {
+                    whereBuilder.Append($" AND StatusCode = {filterOption.StatusCodes[0]} ");
+                }
+                else
+                {
+                    whereBuilder.Append($" AND StatusCode in ({string.Join(",", filterOption.StatusCodes)}) ");
+                } 
+            } 
+
+
             var where = whereBuilder.ToString();
 
             sqlBuilder.Append(where);
@@ -320,8 +355,8 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
             {
                 result.AllItemCount = connection.QueryFirstOrDefault<int>(countSql);
 
-                result.List.AddRange((await connection.QueryAsync<RequestInfo>(sql).ConfigureAwait(false)).ToArray());
-            }, "查询请求信息列表异常").ConfigureAwait(false);
+                result.List.AddRange((await connection.QueryAsync<RequestInfo>(sql)).ToArray());
+            }, "查询请求信息列表异常");
 
             return result;
         }
@@ -344,14 +379,14 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             await LoggingSqlOperation(async connection =>
             {
-                result.Items = new Dictionary<string, int>(); 
+                result.Items = new Dictionary<string, int>();
 
-                (await connection.QueryAsync<KVClass<string, int>>(sql).ConfigureAwait(false)).ToList().ForEach(m =>
+                (await connection.QueryAsync<KVClass<string, int>>(sql)).ToList().ForEach(m =>
                 {
                     result.Items.Add(m.KeyField, m.ValueField);
 
                 });
-            }, "获取请求次数统计异常").ConfigureAwait(false);
+            }, "获取请求次数统计异常");
 
             return result;
         }
@@ -379,11 +414,11 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
             await LoggingSqlOperation(async connection =>
             {
                 result.Items = new Dictionary<string, int>();
-                (await connection.QueryAsync<KVClass<string, int>>(sql).ConfigureAwait(false)).ToList().ForEach(m =>
+                (await connection.QueryAsync<KVClass<string, int>>(sql)).ToList().ForEach(m =>
                 {
                     result.Items.Add(m.KeyField.ToString(), m.ValueField);
                 });
-            }, "获取响应时间统计异常").ConfigureAwait(false);
+            }, "获取响应时间统计异常");
 
             return result;
         }
@@ -400,7 +435,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             TraceLogSql(sql);
 
-            return await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql).ConfigureAwait(false));
+            return await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql));
         }
 
         /// <summary>
@@ -422,10 +457,10 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             var sql = $"SELECT COUNT(1) TOTAL FROM RequestInfo {BuildSqlFilter(filterOption)} AND {ipFilter} GROUP BY IP ORDER BY TOTAL DESC LIMIT 1";
             TraceLogSql(sql);
-            var max = await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql).ConfigureAwait(false));
+            var max = await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql));
             sql = $"SELECT COUNT(1) TOTAL FROM RequestInfo {BuildSqlFilter(filterOption)} AND {ipFilter}";
             TraceLogSql(sql);
-            var all = await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql).ConfigureAwait(false));
+            var all = await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql));
             return (max, all);
         }
 
@@ -436,7 +471,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             TraceLogSql(sql);
 
-            return await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql).ConfigureAwait(false));
+            return await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql));
         }
 
         #endregion Query
@@ -492,7 +527,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
             {
                 using (var connection = ConnectionFactory.GetConnection())
                 {
-                    await func(connection).ConfigureAwait(false);
+                    await func(connection);
                 }
             }
             catch (Exception ex)
@@ -507,7 +542,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
             {
                 using (var connection = ConnectionFactory.GetConnection())
                 {
-                    return await func(connection).ConfigureAwait(false);
+                    return await func(connection);
                 }
             }
             catch (Exception ex)
@@ -527,7 +562,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
                     var succeed = true;
                     try
                     {
-                        await func(connection, transaction).ConfigureAwait(false);
+                        await func(connection, transaction);
                     }
                     catch (Exception ex)
                     {
@@ -557,7 +592,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
                     var succeed = true;
                     try
                     {
-                        return await func(connection, transaction).ConfigureAwait(false);
+                        return await func(connection, transaction);
                     }
                     catch (Exception ex)
                     {
@@ -679,9 +714,9 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             return await LoggingSqlOperation(async connection => (
 
-            await connection.ExecuteAsync(sql, job).ConfigureAwait(false)
+            await connection.ExecuteAsync(sql, job)
 
-            ) > 0).ConfigureAwait(false);
+            ) > 0);
 
         }
 
@@ -697,9 +732,9 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             return await LoggingSqlOperation(async connection => (
 
-            await connection.ExecuteAsync(sql, job).ConfigureAwait(false)
+            await connection.ExecuteAsync(sql, job)
 
-            ) > 0).ConfigureAwait(false);
+            ) > 0);
         }
 
         public async Task<IMonitorJob> GetMonitorJob(string Id)
@@ -710,9 +745,9 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             return await LoggingSqlOperation(async connection => (
 
-              await connection.QueryFirstOrDefaultAsync<MonitorJob>(sql, new { Id }).ConfigureAwait(false)
+              await connection.QueryFirstOrDefaultAsync<MonitorJob>(sql, new { Id })
 
-            )).ConfigureAwait(false);
+            ));
         }
 
         public async Task<List<IMonitorJob>> GetMonitorJobs()
@@ -723,9 +758,9 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             return await LoggingSqlOperation(async connection => (
 
-            await connection.QueryAsync<MonitorJob>(sql).ConfigureAwait(false)
+            await connection.QueryAsync<MonitorJob>(sql)
 
-            ).ToList().Select(x => x as IMonitorJob).ToList()).ConfigureAwait(false);
+            ).ToList().Select(x => x as IMonitorJob).ToList());
         }
 
         public async Task<bool> DeleteMonitorJob(string Id)
@@ -735,7 +770,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
             TraceLogSql(sql);
 
             return await LoggingSqlOperation(async connection =>
-            (await connection.ExecuteAsync(sql, new { Id }).ConfigureAwait(false)) > 0).ConfigureAwait(false);
+            (await connection.ExecuteAsync(sql, new { Id })) > 0);
         }
 
         public async Task<SysUser> CheckLogin(string Username, string Password)
@@ -746,9 +781,9 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             return await LoggingSqlOperation(async connection => (
 
-              await connection.QueryFirstOrDefaultAsync<SysUser>(sql, new { Username, Password }).ConfigureAwait(false)
+              await connection.QueryFirstOrDefaultAsync<SysUser>(sql, new { Username, Password })
 
-            )).ConfigureAwait(false);
+            ));
 
         }
 
@@ -760,9 +795,9 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             return await LoggingSqlOperation(async connection => (
 
-              await connection.ExecuteAsync(sql, model).ConfigureAwait(false)
+              await connection.ExecuteAsync(sql, model)
 
-             ) > 0).ConfigureAwait(false);
+             ) > 0);
 
         }
 
@@ -774,9 +809,9 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             return await LoggingSqlOperation(async connection => (
 
-              await connection.QueryFirstOrDefaultAsync<SysUser>(sql, new { UserName }).ConfigureAwait(false)
+              await connection.QueryFirstOrDefaultAsync<SysUser>(sql, new { UserName })
 
-            )).ConfigureAwait(false);
+            ));
         }
 
         public async Task<(IRequestInfo, IRequestDetail)> GetRequestInfoDetail(string Id)
@@ -787,9 +822,9 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             var requestInfo = await LoggingSqlOperation(async connection => (
 
-             await connection.QueryFirstOrDefaultAsync<RequestInfo>(sql, new { Id }).ConfigureAwait(false)
+             await connection.QueryFirstOrDefaultAsync<RequestInfo>(sql, new { Id })
 
-           )).ConfigureAwait(false);
+           ));
 
             string detailSql = " Select * From RequestDetail Where RequestId = @Id";
 
@@ -797,9 +832,9 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             var requestDetail = await LoggingSqlOperation(async connection => (
 
-             await connection.QueryFirstOrDefaultAsync<RequestDetail>(detailSql, new { Id }).ConfigureAwait(false)
+             await connection.QueryFirstOrDefaultAsync<RequestDetail>(detailSql, new { Id })
 
-           )).ConfigureAwait(false);
+           ));
 
             return (requestInfo, requestDetail);
         }
@@ -819,9 +854,9 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             var requestInfo = await LoggingSqlOperation(async connection => (
 
-             await connection.QueryFirstOrDefaultAsync<RequestInfo>(sql, new { Id }).ConfigureAwait(false)
+             await connection.QueryFirstOrDefaultAsync<RequestInfo>(sql, new { Id })
 
-           )).ConfigureAwait(false);
+           ));
 
             return requestInfo;
         }
@@ -834,25 +869,53 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             var requestInfo = await LoggingSqlOperation(async connection => (
 
-             await connection.QueryAsync<RequestInfo>(sql, new { ParentId }).ConfigureAwait(false)
+             await connection.QueryAsync<RequestInfo>(sql, new { ParentId })
 
-           )).ConfigureAwait(false);
+           ));
 
             return requestInfo.Select(x => x as IRequestInfo).ToList();
         }
 
         public async Task ClearData(string StartTime)
-        { 
+        {
             string sql = "Delete From RequestInfo Where CreateTime <= @StartTime ";
 
             TraceLogSql(sql);
 
             var result = await LoggingSqlOperation(async connection => (
 
-             await connection.ExecuteAsync(sql, new { StartTime }).ConfigureAwait(false)
+             await connection.ExecuteAsync(sql, new { StartTime })
 
-           )).ConfigureAwait(false);
+           ));
         }
+
+        public async Task SetLanguage(string Language)
+        {
+            string sql = $"Update `SysConfig` Set `Value` = @Language Where `Key` = '{BasicConfig.Language}' ";
+
+            TraceLogSql(sql);
+
+            var result = await LoggingSqlOperation(async connection => (
+
+               await connection.ExecuteAsync(sql, new { Language })
+
+           ));
+        }
+
+        public async Task<string> GetSysConfig(string Key)
+        {
+            string sql = $"Select `Value` From `SysConfig` Where `Key` = @Key ";
+
+            TraceLogSql(sql);
+
+            var result = await LoggingSqlOperation(async connection => (
+
+               await connection.QueryFirstOrDefaultAsync<string>(sql, new { Key })
+
+           ));
+
+            return result;
+        } 
 
 
         #endregion Base

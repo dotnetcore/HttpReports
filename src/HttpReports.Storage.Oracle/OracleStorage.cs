@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Dapper.Contrib.Extensions;
+using HttpReports.Core.Config;
 using HttpReports.Core.Models;
 using HttpReports.Models;
 using HttpReports.Monitor;
@@ -46,7 +47,7 @@ namespace HttpReports.Storage.Oracle
             {
                 using (var con = ConnectionFactory.GetConnection())
                 {    
-                    if (con.QueryFirstOrDefault<int>($" Select count(*) from user_tables where table_name = upper('RequestInfo') ") == 0)
+                    if (await con.QueryFirstOrDefaultAsync<int>($" Select count(*) from user_tables where table_name = upper('RequestInfo') ") == 0)
                     {
                         await con.ExecuteAsync(@"   
 
@@ -68,10 +69,10 @@ namespace HttpReports.Storage.Oracle
 	                            CreateTime date
                             )
 
-                     ").ConfigureAwait(false);  
+                     ");  
                     }
 
-                    if (con.QueryFirstOrDefault<int>($" Select count(*) from user_tables where table_name = upper('RequestDetail') ") == 0)
+                    if (await con.QueryFirstOrDefaultAsync<int>($" Select count(*) from user_tables where table_name = upper('RequestDetail') ") == 0)
                     {
                         await con.ExecuteAsync(@"   
 
@@ -90,10 +91,10 @@ namespace HttpReports.Storage.Oracle
                                 CreateTime date            
                             )
 
-                     ").ConfigureAwait(false);
+                     ");
                     }  
 
-                    if (con.QueryFirstOrDefault<int>($" Select count(*) from user_tables where table_name = upper('MonitorJob') ") == 0)
+                    if (await con.QueryFirstOrDefaultAsync<int>($" Select count(*) from user_tables where table_name = upper('MonitorJob') ") == 0)
                     {
                         await con.ExecuteAsync(@"   
 
@@ -112,11 +113,11 @@ namespace HttpReports.Storage.Oracle
 	                        CreateTime date
                         )
 
-                     ").ConfigureAwait(false); 
+                     "); 
 
                     }
 
-                    if (con.QueryFirstOrDefault<int>($" Select count(*) from user_tables where table_name = upper('SysUser') ") == 0)
+                    if (await con.QueryFirstAsync<int>($" Select count(*) from user_tables where table_name = upper('SysUser') ") == 0)
                     {
                         await con.ExecuteAsync(@"   
 
@@ -127,15 +128,37 @@ namespace HttpReports.Storage.Oracle
 	                        Password varchar2(100) 
                         )
 
-                     ").ConfigureAwait(false); 
+                     "); 
 
                     }
 
-                    if (con.QueryFirstOrDefault<int>($" Select count(1) from SysUser ") == 0)
-                    {  
-                       await con.ExecuteAsync($" Insert Into SysUser Values ('{MD5_16(Guid.NewGuid().ToString())}','{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ").ConfigureAwait(false);
-                    } 
 
+                    if (await con.QueryFirstAsync<int>($" Select count(*) from user_tables where table_name = upper('SysConfig') ") == 0)
+                    {
+                        await con.ExecuteAsync(@"   
+
+                        create table SysConfig
+                        (
+	                        Id varchar2(50),
+	                        Key varchar2(255),
+	                        Value varchar2(255) 
+                        )
+
+                     ");
+
+                    }
+
+
+                    if (await con.QueryFirstOrDefaultAsync<int>($" Select count(1) from SysUser ") == 0)
+                    {  
+                       await con.ExecuteAsync($" Insert Into SysUser Values ('{MD5_16(Guid.NewGuid().ToString())}','{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ");
+                    }
+                     
+
+                    if (await con.QueryFirstOrDefaultAsync<int>($"Select count(1) from SysConfig Where Key =  '{BasicConfig.Language}' ") == 0)
+                    {
+                        await con.ExecuteAsync($@" Insert Into SysConfig Values ('{MD5_16(Guid.NewGuid().ToString())}','{BasicConfig.Language}','English') ");
+                    }  
                 } 
             }
             catch (Exception ex)
@@ -165,8 +188,8 @@ namespace HttpReports.Storage.Oracle
 
                 sb.AppendLine("end;"); 
               
-                await connection.ExecuteAsync(sb.ToString()).ConfigureAwait(false);
-            }, "请求数据批量保存失败").ConfigureAwait(false);
+                await connection.ExecuteAsync(sb.ToString());
+            }, "请求数据批量保存失败");
         } 
 
 
@@ -182,13 +205,13 @@ namespace HttpReports.Storage.Oracle
                 {
                     string requestSql = $@"Insert Into RequestInfo Values ('{request.Id}','{request.ParentId}','{request.Node}','{request.Route}','{request.Url}','{request.RequestType}','{request.Method}',{request.Milliseconds},{request.StatusCode},'{request.IP}',{request.Port},'{request.LocalIP}',{request.LocalPort},to_date('{request.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss')) ";
 
-                    await connection.ExecuteAsync(requestSql).ConfigureAwait(false);
+                    await connection.ExecuteAsync(requestSql);
 
                     string detailSql = $@"Insert Into RequestDetail Values ('{detail.Id}','{detail.RequestId}','{detail.Scheme}','{detail.QueryString}','{detail.Header}','{detail.Cookie}','{detail.RequestBody}','{detail.ResponseBody}','{detail.ErrorMessage}','{detail.ErrorStack}',to_date('{detail.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss'))  ";
 
-                    await connection.ExecuteAsync(detailSql).ConfigureAwait(false);
+                    await connection.ExecuteAsync(detailSql);
 
-                }, "请求数据保存失败").ConfigureAwait(false);
+                }, "请求数据保存失败");
 
             } 
         }
@@ -202,8 +225,8 @@ namespace HttpReports.Storage.Oracle
             string[] nodeNames = null;
             await LoggingSqlOperation(async connection =>
             {
-                nodeNames = (await connection.QueryAsync<string>("Select Distinct Node FROM RequestInfo").ConfigureAwait(false)).ToArray();
-            }, "获取所有节点信息失败").ConfigureAwait(false);
+                nodeNames = (await connection.QueryAsync<string>("Select Distinct Node FROM RequestInfo")).ToArray();
+            }, "获取所有节点信息失败");
 
             return nodeNames?.Select(m => new NodeInfo { Name = m }).ToList();
         }
@@ -225,8 +248,8 @@ namespace HttpReports.Storage.Oracle
             List<RequestAvgResponeTime> result = null;
             await LoggingSqlOperation(async connection =>
             {
-                result = (await connection.QueryAsync<RequestAvgResponeTime>(sql).ConfigureAwait(false)).ToList();
-            }, "获取Url的平均请求处理时间统计异常").ConfigureAwait(false);
+                result = (await connection.QueryAsync<RequestAvgResponeTime>(sql)).ToList();
+            }, "获取Url的平均请求处理时间统计异常");
 
             return result;
         }
@@ -242,8 +265,8 @@ namespace HttpReports.Storage.Oracle
             List<StatusCodeCount> result = null;
             await LoggingSqlOperation(async connection =>
             {
-                result = (await connection.QueryAsync<StatusCodeCount>(sql).ConfigureAwait(false)).ToList();
-            }, "获取http状态码数量统计异常").ConfigureAwait(false);
+                result = (await connection.QueryAsync<StatusCodeCount>(sql)).ToList();
+            }, "获取http状态码数量统计异常");
 
             return result;
         }
@@ -277,8 +300,8 @@ namespace HttpReports.Storage.Oracle
             List<ResponeTimeGroup> result = null;
             await LoggingSqlOperation(async connection =>
             {
-                result = (await connection.QueryAsync<ResponeTimeGroup>(sql).ConfigureAwait(false)).ToList();
-            }, "获取http状态码分组统计异常").ConfigureAwait(false);
+                result = (await connection.QueryAsync<ResponeTimeGroup>(sql)).ToList();
+            }, "获取http状态码分组统计异常");
 
             return result;
         }
@@ -296,8 +319,8 @@ namespace HttpReports.Storage.Oracle
             List<UrlRequestCount> result = null;
             await LoggingSqlOperation(async connection =>
             {
-                result = (await connection.QueryAsync<UrlRequestCount>(sql).ConfigureAwait(false)).ToList();
-            }).ConfigureAwait(false);
+                result = (await connection.QueryAsync<UrlRequestCount>(sql)).ToList();
+            });
 
             return result;
         } 
@@ -356,7 +379,7 @@ namespace HttpReports.Storage.Oracle
 
             await LoggingSqlOperation(async connection =>
             {
-                var data = await connection.QueryAsync<KVClass<string,string>>(sql).ConfigureAwait(false);
+                var data = await connection.QueryAsync<KVClass<string,string>>(sql);
 
                 result.Total = data.Where(x => x.KeyField == "Total").FirstOrDefault().ValueField.ToInt();
                 result.NotFound = data.Where(x => x.KeyField == "Code404").FirstOrDefault().ValueField.ToInt();
@@ -365,7 +388,7 @@ namespace HttpReports.Storage.Oracle
                 result.ErrorPercent = result.Total == 0 ? 0 : Convert.ToDouble(result.ServerError) / Convert.ToDouble(result.Total);
                 result.AvgResponseTime = data.Where(x => x.KeyField == "ART").FirstOrDefault().ValueField.ToDouble(); 
                
-            }, "获取首页数据异常").ConfigureAwait(false);
+            }, "获取首页数据异常");
 
             return result;
         }
@@ -377,7 +400,7 @@ namespace HttpReports.Storage.Oracle
             {
                 using (var connection = ConnectionFactory.GetConnection())
                 {
-                    await func(connection).ConfigureAwait(false);
+                    await func(connection);
                 }
             }
             catch (Exception ex)
@@ -392,7 +415,7 @@ namespace HttpReports.Storage.Oracle
             {
                 using (var connection = ConnectionFactory.GetConnection())
                 {
-                    return await func(connection).ConfigureAwait(false);
+                    return await func(connection);
                 }
             }
             catch (Exception ex)
@@ -485,14 +508,14 @@ namespace HttpReports.Storage.Oracle
             {
                 result.Items = new Dictionary<string, int>();
 
-                var list = (await connection.QueryAsync<KVClass<string, int>>(sql).ConfigureAwait(false)).ToList(); 
+                var list = (await connection.QueryAsync<KVClass<string, int>>(sql)).ToList(); 
 
                 foreach (var item in list)
                 {
                     result.Items.Add(item.KeyField, item.ValueField);
                 } 
                  
-            }, "获取请求次数统计异常").ConfigureAwait(false);
+            }, "获取请求次数统计异常");
 
             return result;
         } 
@@ -520,11 +543,11 @@ namespace HttpReports.Storage.Oracle
             await LoggingSqlOperation(async connection =>
             {
                 result.Items = new Dictionary<string, int>();
-                (await connection.QueryAsync<KVClass<string, int>>(sql).ConfigureAwait(false)).ToList().ForEach(m =>
+                (await connection.QueryAsync<KVClass<string, int>>(sql)).ToList().ForEach(m =>
                 {
                     result.Items.Add(m.KeyField, m.ValueField);
                 });
-            }, "获取响应时间统计异常").ConfigureAwait(false);
+            }, "获取响应时间统计异常");
 
             return result;
         }
@@ -584,6 +607,24 @@ namespace HttpReports.Storage.Oracle
                 whereBuilder.Append($" AND  Url like '%{filterOption.Url}%' ");
             }
 
+            if (!filterOption.TraceId.IsEmpty())
+            {
+                whereBuilder.Append($" AND ID = '{filterOption.TraceId}' ");
+            }
+
+
+            if (filterOption.StatusCodes != null)
+            {
+                if (filterOption.StatusCodes.Length == 1)
+                {
+                    whereBuilder.Append($" AND StatusCode = {filterOption.StatusCodes[0]} ");
+                }
+                else
+                {
+                    whereBuilder.Append($" AND StatusCode in ({string.Join(",", filterOption.StatusCodes)}) ");
+                }
+            }
+
             var where = whereBuilder.ToString();
 
             sqlBuilder.Append(where);
@@ -606,8 +647,8 @@ namespace HttpReports.Storage.Oracle
 
                 var listSql = GetListSql(sql, "CreateTime Desc",filterOption.Page,filterOption.PageSize);
 
-                result.List.AddRange((await connection.QueryAsync<RequestInfo>(listSql).ConfigureAwait(false)).ToArray());
-            }, "查询请求信息列表异常").ConfigureAwait(false);
+                result.List.AddRange((await connection.QueryAsync<RequestInfo>(listSql)).ToArray());
+            }, "查询请求信息列表异常");
 
             return result;
         }
@@ -618,7 +659,7 @@ namespace HttpReports.Storage.Oracle
 
             TraceLogSql(sql);
 
-            return await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql).ConfigureAwait(false));
+            return await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql));
         }
 
         /// <summary>
@@ -644,12 +685,12 @@ namespace HttpReports.Storage.Oracle
 
             TraceLogSql(sql);
 
-            var max = await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql).ConfigureAwait(false));
+            var max = await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql));
             sql = $"SELECT COUNT(1) TOTAL FROM RequestInfo {BuildSqlFilter(filterOption)} AND {ipFilter}";
 
 
             TraceLogSql(sql);
-            var all = await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql).ConfigureAwait(false));
+            var all = await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql));
             return (max, all);
         }
 
@@ -660,7 +701,7 @@ namespace HttpReports.Storage.Oracle
 
             TraceLogSql(sql);
 
-            return await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql).ConfigureAwait(false));
+            return await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql));
         }
 
         public async Task<bool> AddMonitorJob(IMonitorJob job)
@@ -673,7 +714,7 @@ namespace HttpReports.Storage.Oracle
 
             TraceLogSql(sql);
 
-            return await LoggingSqlOperation(async connection => ( await connection.ExecuteAsync(sql, job).ConfigureAwait(false)  ) > 0).ConfigureAwait(false);
+            return await LoggingSqlOperation(async connection => ( await connection.ExecuteAsync(sql, job)  ) > 0);
 
         }
 
@@ -689,9 +730,9 @@ namespace HttpReports.Storage.Oracle
 
             return await LoggingSqlOperation(async connection => (
 
-            await connection.ExecuteAsync(sql, job).ConfigureAwait(false)
+            await connection.ExecuteAsync(sql, job)
 
-            ) > 0).ConfigureAwait(false);
+            ) > 0);
         }
 
         public async Task<IMonitorJob> GetMonitorJob(string Id)
@@ -702,9 +743,9 @@ namespace HttpReports.Storage.Oracle
 
             return await LoggingSqlOperation(async connection => (
 
-              await connection.QueryFirstOrDefaultAsync<MonitorJob>(sql).ConfigureAwait(false)
+              await connection.QueryFirstOrDefaultAsync<MonitorJob>(sql)
 
-            )).ConfigureAwait(false);
+            ));
         }
 
         private string MD5_16(string source)
@@ -722,9 +763,9 @@ namespace HttpReports.Storage.Oracle
 
             return await LoggingSqlOperation(async connection => (
 
-            await connection.QueryAsync<MonitorJob>(sql).ConfigureAwait(false)
+            await connection.QueryAsync<MonitorJob>(sql)
 
-            ).ToList().Select(x => x as IMonitorJob).ToList()).ConfigureAwait(false);
+            ).ToList().Select(x => x as IMonitorJob).ToList());
         }
 
         public async Task<bool> DeleteMonitorJob(string Id)
@@ -734,7 +775,7 @@ namespace HttpReports.Storage.Oracle
             TraceLogSql(sql);
 
             return await LoggingSqlOperation(async connection =>
-            (await connection.ExecuteAsync(sql).ConfigureAwait(false)) > 0).ConfigureAwait(false);
+            (await connection.ExecuteAsync(sql)) > 0);
         }
 
         public async Task<SysUser> CheckLogin(string Username, string Password)
@@ -745,9 +786,9 @@ namespace HttpReports.Storage.Oracle
 
             return await LoggingSqlOperation(async connection => (
 
-              await connection.QueryFirstOrDefaultAsync<SysUser>(sql, new { Username, Password }).ConfigureAwait(false)
+              await connection.QueryFirstOrDefaultAsync<SysUser>(sql, new { Username, Password })
 
-            )).ConfigureAwait(false);
+            ));
 
         }
 
@@ -759,9 +800,9 @@ namespace HttpReports.Storage.Oracle
 
             return await LoggingSqlOperation(async connection => (
 
-              await connection.ExecuteAsync(sql, model).ConfigureAwait(false)
+              await connection.ExecuteAsync(sql, model)
 
-             ) > 0).ConfigureAwait(false);
+             ) > 0);
 
         }
 
@@ -774,9 +815,9 @@ namespace HttpReports.Storage.Oracle
 
             return await LoggingSqlOperation(async connection => (
 
-              await connection.QueryFirstOrDefaultAsync<SysUser>(sql, new { UserName }).ConfigureAwait(false)
+              await connection.QueryFirstOrDefaultAsync<SysUser>(sql, new { UserName })
 
-            )).ConfigureAwait(false);
+            ));
         }
 
         public async Task<(IRequestInfo, IRequestDetail)> GetRequestInfoDetail(string Id)
@@ -787,9 +828,9 @@ namespace HttpReports.Storage.Oracle
 
             var requestInfo = await LoggingSqlOperation(async connection => (
 
-             await connection.QueryFirstOrDefaultAsync<RequestInfo>(sql, new { Id }).ConfigureAwait(false)
+             await connection.QueryFirstOrDefaultAsync<RequestInfo>(sql, new { Id })
 
-           )).ConfigureAwait(false);
+           ));
 
             string detailSql = $" Select * From RequestDetail Where RequestId = '{Id}' ";
 
@@ -797,9 +838,9 @@ namespace HttpReports.Storage.Oracle
 
             var requestDetail = await LoggingSqlOperation(async connection => (
 
-             await connection.QueryFirstOrDefaultAsync<RequestDetail>(detailSql, new { Id }).ConfigureAwait(false)
+             await connection.QueryFirstOrDefaultAsync<RequestDetail>(detailSql, new { Id })
 
-           )).ConfigureAwait(false);
+           ));
 
             return (requestInfo, requestDetail);
         }
@@ -812,9 +853,9 @@ namespace HttpReports.Storage.Oracle
 
             var requestInfo = await LoggingSqlOperation(async connection => (
 
-             await connection.QueryFirstOrDefaultAsync<RequestInfo>(sql, new { Id }).ConfigureAwait(false)
+             await connection.QueryFirstOrDefaultAsync<RequestInfo>(sql, new { Id })
 
-           )).ConfigureAwait(false);
+           ));
 
             return requestInfo;
         }
@@ -827,9 +868,9 @@ namespace HttpReports.Storage.Oracle
 
             var requestInfo = await LoggingSqlOperation(async connection => (
 
-             await connection.QueryAsync<RequestInfo>(sql).ConfigureAwait(false)
+             await connection.QueryAsync<RequestInfo>(sql)
 
-           )).ConfigureAwait(false);
+           ));
 
             return requestInfo.Select(x => x as IRequestInfo).ToList();
         }
@@ -842,9 +883,40 @@ namespace HttpReports.Storage.Oracle
 
             var result = await LoggingSqlOperation(async connection => (
 
-             await connection.ExecuteAsync(sql).ConfigureAwait(false)
+             await connection.ExecuteAsync(sql)
 
-           )).ConfigureAwait(false);
+           ));
         }
+
+        public async Task SetLanguage(string Language)
+        {
+            string sql = $"Update SysConfig Set Value = '{Language}' Where Key = '{BasicConfig.Language}' ";
+
+            TraceLogSql(sql);
+
+            var result = await LoggingSqlOperation(async connection => (
+
+             await connection.ExecuteAsync(sql)
+
+           ));
+        }
+
+        public async Task<string> GetSysConfig(string Key)
+        {
+            string sql = $"Select Value  From SysConfig Where Key = '{Key}' ";
+
+            TraceLogSql(sql);
+
+            var result = await LoggingSqlOperation(async connection => (
+
+               await connection.QueryFirstOrDefaultAsync<string>(sql, new { Key })
+
+           ));
+
+            return result;
+        }
+
+       
+
     }
 }

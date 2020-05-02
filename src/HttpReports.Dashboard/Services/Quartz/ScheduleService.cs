@@ -1,4 +1,5 @@
 ﻿using HttpReports.Core.Config;
+using HttpReports.Dashboard.Services.Language;
 using HttpReports.Dashboard.Services.Quartz;
 using HttpReports.Monitor;
 using Microsoft.Extensions.Options;
@@ -22,16 +23,16 @@ namespace HttpReports.Dashboard.Services
 
         private IHttpReportsStorage _storage;
 
-        private DashboardOptions _options;
+        private DashboardOptions _options; 
+      
 
-
-        public ScheduleService(IHttpReportsStorage storage, IOptions<DashboardOptions> options)
+        public ScheduleService(IHttpReportsStorage storage, IOptions<DashboardOptions> options, LanguageService languageService)
         {
             _storage = storage;
 
             _options = options.Value;
 
-            scheduler = scheduler ?? new StdSchedulerFactory().GetScheduler().Result;  
+            scheduler = scheduler ?? new StdSchedulerFactory().GetScheduler().Result; 
         }
 
         public async Task InitAsync()
@@ -46,7 +47,7 @@ namespace HttpReports.Dashboard.Services
 
         public async Task InitMonitorJobAsync()
         { 
-            List<IMonitorJob> list = await _storage.GetMonitorJobs().ConfigureAwait(false);
+            List<IMonitorJob> list = await _storage.GetMonitorJobs();
 
             if (list == null || list.Count == 0)
             {
@@ -86,7 +87,7 @@ namespace HttpReports.Dashboard.Services
 
         public async Task UpdateMonitorJobAsync()
         { 
-            List<IMonitorJob> list = await _storage.GetMonitorJobs().ConfigureAwait(false);
+            List<IMonitorJob> list = await _storage.GetMonitorJobs();
 
             if (list == null || list.Count == 0)
             {

@@ -194,6 +194,7 @@ namespace HttpReports
                 activity.Start();
                 activity.AddBaggage(BasicConfig.ActiveTraceId, activity.Id);
                 context.Items.Add(BasicConfig.ActiveTraceCreateTime, DateTime.Now);
+                context.Response.Headers.Add(BasicConfig.ActiveTraceId,activity.SpanId.ToString());
                 return;
             }
 
@@ -206,6 +207,7 @@ namespace HttpReports
                 activity.Start();
                 activity.AddBaggage(BasicConfig.ActiveTraceId, activity.Id);
                 context.Items.Add(BasicConfig.ActiveTraceCreateTime, DateTime.Now);
+                context.Response.Headers.Add(BasicConfig.ActiveTraceId, activity.SpanId.ToString());
             }
             else
             {
@@ -214,6 +216,7 @@ namespace HttpReports
                 activity.Start();
                 activity.AddBaggage(BasicConfig.ActiveTraceId, activity.Id);
                 context.Items.Add(BasicConfig.ActiveTraceCreateTime, DateTime.Now);
+                context.Response.Headers.Add(BasicConfig.ActiveTraceId, activity.SpanId.ToString());
             }
         }
     }

@@ -22,7 +22,9 @@ namespace HttpReports.Storage.FilterOptions
         public string StartTimeFormat { get; set; } = "yyyy-MM-dd";
         public string EndTimeFormat { get; set; } = "yyyy-MM-dd";
         public bool IsOrderByField { get; set; } = true;
- 
+
+        public string TraceId { get; set; }
+
         public string IP { get; set; }
 
        

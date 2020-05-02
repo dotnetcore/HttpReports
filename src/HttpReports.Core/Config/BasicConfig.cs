@@ -38,5 +38,7 @@ namespace HttpReports.Core.Config
 
         public const string HttpReportsGrpcResponse = "HttpReports.GrpcResponse";
 
+        public const string Language = "Language";
+         
     }
 }

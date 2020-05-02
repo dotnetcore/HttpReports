@@ -3,8 +3,19 @@ GoTop();
 
 function InitPage() {
 
-    laydate.render({ elem: '.start', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange() });
-    laydate.render({ elem: '.end', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange() }); 
+    if (lang.Language == "English") {
+
+        laydate.render({ elem: '.start', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange(), lang: 'en' });
+        laydate.render({ elem: '.end', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange(), lang: 'en' });
+
+    }
+
+    if (lang.Language == "Chinese") {
+
+        laydate.render({ elem: '.start', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange() });
+        laydate.render({ elem: '.end', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange() });
+
+    }
 
 }  
 
@@ -68,35 +79,35 @@ function InitTable() {
             
             {
                 field: 'node',
-                title: '服务节点',
+                title: lang.Index_ServiceNode,
                 align: 'center'
             },
             {
                 field: 'requestType',
-                title: '通信方式',
+                title: lang.Request_Connection,
                 align: 'center'
             },
             {
                 field: 'route',
-                title: '路径',
+                title: lang.Request_Route,
                 align: 'center'
 
             },
             {
                 field: 'url',
-                title: '请求地址',
+                title: lang.Request_Url,
                 align: 'center'
 
             },
             {
                 field: 'method',
-                title: '请求方法',
+                title: lang.Request_Type,
                 align: 'center'
 
             },
             {
                 field: 'milliseconds',
-                title: '处理时间',
+                title: lang.Request_Time,
                 align: 'center',
                 formatter: function (value, row, index) {
 
@@ -107,20 +118,20 @@ function InitTable() {
             },
             {
                 field: 'statusCode',
-                title: '状态码',
+                title: lang.Request_StatusCode,
                 align: 'center'
 
             },
             {
                 field: 'ip',
-                title: 'IP地址',
+                title: lang.Request_RemoteIP,
                 align: 'center'
 
             },
 
             {
                 field: 'createTime',
-                title: '请求时间',
+                title: lang.Request_CreateTime,
                 align: 'center',
                 formatter: function (value, row, index) {
 
@@ -130,7 +141,7 @@ function InitTable() {
             },
             {
                 field: 'id',
-                title: '详细信息',
+                title: lang.Request_DetailInfo,
                 align: 'center',
                 width: '80px',
                 formatter: function (value, row, index) {
@@ -141,7 +152,7 @@ function InitTable() {
             },
             {
                 field: 'id',
-                title: '追踪',
+                title: lang.Request_Trace,
                 align: 'center', 
                 width:'80px',
                 formatter: function (value, row, index) {
@@ -206,6 +217,8 @@ function RefreshTable() {
     var end = $(".end").val().trim();
     var requestUrl = $(".url").val().trim();
     var ip = $(".ipadress").val().trim();
+    var statusCode = $(".statusCode").val().trim();
+    var traceId = $(".traceId").val().trim(); 
 
     var nodes = [];
 
@@ -215,7 +228,7 @@ function RefreshTable() {
 
     var node = nodes.join(",");
 
-    url = url + `?start=${start}&end=${end}&url=${requestUrl}&ip=${ip}&node=${node}`;
+    url = url + `?start=${start}&end=${end}&url=${requestUrl}&ip=${ip}&node=${node}&statusCode=${statusCode}&traceId=${traceId}`;
 
     $('#TableData').bootstrapTable('refresh', { 
         url: url  
@@ -292,7 +305,7 @@ function QueryClick() {
 
     if ($(".start").val().trim().length == 0 || $(".end").val().trim().length == 0) {
 
-        alertWarn("开始时间结束时间不能为空");
+        alertWarn(lang.TimeNotNull);
         return;
 
     } 

@@ -1,5 +1,8 @@
 ﻿@{
     var user = ViewContext.HttpContext.Request.Cookies["login_info"];
+
+    var lang = ViewBag.Language as HttpReports.Dashboard.Services.Language.ILanguage;
+
 }
 
 <!DOCTYPE html>
@@ -13,20 +16,20 @@
     <link href="/HttpReportsStaticFiles/Content/assets/css/bootstrap.min.css" rel="stylesheet">
     <link href="/HttpReportsStaticFiles/Content/assets/css/font-awesome.min.css" rel="stylesheet">
     <link href="/HttpReportsStaticFiles/Content/assets/css/jquery.mmenu.css" rel="stylesheet" />
-    <link id="theme" href="/HttpReportsStaticFiles/Content/assets/css/style.min.css?ver=1.0.3" rel="stylesheet">
-    <link href="/HttpReportsStaticFiles/Content/assets/css/add-ons.min.css?ver=1.0.3" rel="stylesheet">
+    <link id="theme" href="/HttpReportsStaticFiles/Content/assets/css/style.min.css?ver=1.0.4" rel="stylesheet">
+    <link href="/HttpReportsStaticFiles/Content/assets/css/add-ons.min.css?ver=1.0.4" rel="stylesheet">
     <link href="/HttpReportsStaticFiles/Content/bootstrap/bootstrap-switch/3.3.4/bootstrap-switch.css" rel="stylesheet" />
 
 
-    <link class="theme" id="theme_light" href="/HttpReportsStaticFiles/Content/css/theme/light.css?ver=1.0.3" rel="stylesheet" />
-    <link class="theme" id="theme_dark" href="/HttpReportsStaticFiles/Content/css/theme/dark.css?ver=1.0.3" rel="stylesheet" />
+    <link class="theme" id="theme_light" href="/HttpReportsStaticFiles/Content/css/theme/light.css?ver=1.0.4" rel="stylesheet" />
+    <link class="theme" id="theme_dark" href="/HttpReportsStaticFiles/Content/css/theme/dark.css?ver=1.0.4" rel="stylesheet" />
     <link href="/HttpReportsStaticFiles/Content/css/animate/3.5.2/animate.min.css" rel="stylesheet" />
 
 
     <script src="/HttpReportsStaticFiles/Content/assets/js/jquery-2.1.1.min.js"></script>
     <script src="/HttpReportsStaticFiles/Content/js/jquery.cookie.js"></script>
     <script src="/HttpReportsStaticFiles/Content/assets/js/jquery.mmenu.min.js"></script>
-    <script src="/HttpReportsStaticFiles/Content/assets/js/core.min.js?ver=1.0.3"></script>
+    <script src="/HttpReportsStaticFiles/Content/assets/js/core.min.js?ver=1.0.4"></script>
     <script src="/HttpReportsStaticFiles/Content/bootstrap/bootstrap-table/1.14.2/bootstrap-table.js"></script>
 
     <script src="/HttpReportsStaticFiles/Content/assets/js/bootstrap-table-zh-CN.js"></script>
@@ -40,26 +43,31 @@
     <script src="/HttpReportsStaticFiles/Content/echarts/4.3.0/macarons.js"></script>
     <script src="/HttpReportsStaticFiles/Content/echarts/4.3.0/dark.js"></script>
 
-    <link href="/HttpReportsStaticFiles/Content/busyload/app.css?ver=1.0.3" rel="stylesheet" />
-    <script src="/HttpReportsStaticFiles/Content/busyload/app.js?ver=1.0.3"></script>
+    <link href="/HttpReportsStaticFiles/Content/busyload/app.css?ver=1.0.4" rel="stylesheet" />
+    <script src="/HttpReportsStaticFiles/Content/busyload/app.js?ver=1.0.4"></script>
 
     <!-- CSS 引入 -->
     <script src="/HttpReportsStaticFiles/Content/laydate/laydate.js"></script>
 
     <script src="/HttpReportsStaticFiles/Content/assets/js/jquery.goup.js"></script>
 
-    <link href="/HttpReportsStaticFiles/Content/alert/alert.css?ver=1.0.3" rel="stylesheet" />
+    <link href="/HttpReportsStaticFiles/Content/alert/alert.css?ver=1.0.4" rel="stylesheet" />
 
-    <script src="/HttpReportsStaticFiles/Content/alert/alert.js?ver=1.0.3"></script>
-    <script src="/HttpReportsStaticFiles/Content/js/bootstrap-treeview.js?ver=1.0.3"></script> 
+    <script src="/HttpReportsStaticFiles/Content/alert/alert.js?ver=1.0.4"></script>
+    <script src="/HttpReportsStaticFiles/Content/js/bootstrap-treeview.js?ver=1.0.4"></script>
 
 
     <link href="/HttpReportsStaticFiles/Content/message/message.css" rel="stylesheet" />
     <script src="/HttpReportsStaticFiles/Content/message/message.js"></script>
-    <script src="/HttpReportsStaticFiles/Content/common/basic.js?ver=1.0.3"></script>
 
-    <link href="/HttpReportsStaticFiles/Content/common/basic.css?ver=1.0.3" rel="stylesheet" />
-    <script src="/HttpReportsStaticFiles/Content/page/main.js?ver=1.0.3"></script>
+    <script>  var lang = JSON.parse('@(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(lang)))');   </script>
+
+    <script src="/HttpReportsStaticFiles/Content/common/basic.js?ver=1.0.4"></script>
+    <link href="/HttpReportsStaticFiles/Content/common/basic.css?ver=1.0.4" rel="stylesheet" /> 
+
+
+    <script src="/HttpReportsStaticFiles/Content/page/main.js?ver=1.0.4"></script>
+
 
     <link rel="icon" href="/HttpReportsStaticFiles/Content/assets/img/img.ico" type="image/x-icon" />
 
@@ -80,13 +88,25 @@
             <ul class="nav navbar-nav navbar-right">
 
                 <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i style="margin-top:24px;" class="fa fa-language"></i></a>
+                    <ul class="dropdown-menu update-menu" role="menu">
+                        <li>
+                            <a data-key="English" onclick="ChangeLanguage(this)"> English </a>
+                        </li>
+                        <li>
+                            <a data-key="Chinese" onclick="ChangeLanguage(this)"> 中文</a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-dashboard"></i></a>
                     <ul class="dropdown-menu update-menu" role="menu">
                         <li>
-                            <a data-key="light" onclick="ChangeTheme(this)"><i class="fa fa-sun-o"></i> 亮色模式 </a>
+                            <a data-key="light" onclick="ChangeTheme(this)"><i class="fa fa-sun-o"></i> @lang.Template_Light </a>
                         </li>
                         <li>
-                            <a data-key="dark" onclick="ChangeTheme(this)"><i class="fa fa-moon-o"></i> 暗色模式 </a>
+                            <a data-key="dark" onclick="ChangeTheme(this)"><i class="fa fa-moon-o"></i> @lang.Template_Dark </a>
                         </li>
                     </ul>
                 </li>
@@ -98,10 +118,10 @@
                             <a>admin</a>
                         </li>
                         <li>
-                            <a onclick="show_password_modal()">修改账号 </a>
+                            <a onclick="show_password_modal()"> @lang.Template_EditAccount </a>
                         </li>
                         <li>
-                            <a href="/HttpReports/UserLogOut"> 退出登陆 </a>
+                            <a href="/HttpReports/UserLogOut"> @lang.Template_Logout </a>
                         </li>
                     </ul>
                 </li>
@@ -125,13 +145,13 @@
 
                         <ul class="nav nav-sidebar">
 
-                            <li data-title="HomePage1" class="meun1"><a href="/HttpReports/Index"><i class="fa fa-laptop"></i><span class="text">基础数据</span></a></li>
+                            <li data-title="HomePage1" class="meun1"><a href="/HttpReports/Index"><i class="fa fa-laptop"></i><span class="text">@lang.Menu_BasicData</span></a></li>
 
-                            <li data-title="HomePage1" class="meun1"><a href="/HttpReports/Trend"><i class="fa fa-bar-chart-o"></i><span class="text">趋势数据</span></a></li>
+                            <li data-title="HomePage1" class="meun1"><a href="/HttpReports/Trend"><i class="fa fa-bar-chart-o"></i><span class="text">@lang.Menu_TrendData</span></a></li>
 
-                            <li data-title="HomePage1" class=""><a href="/HttpReports/Detail"><i class="fa fa-bars"></i><span class="text">请求列表</span></a></li>
+                            <li data-title="HomePage1" class=""><a href="/HttpReports/Detail"><i class="fa fa-bars"></i><span class="text">@lang.Menu_RequestList</span></a></li>
 
-                            <li data-title="HomePage1" class=""><a href="/HttpReports/Monitor"><i class="fa fa-rocket"></i><span class="text">预警监控</span></a></li>
+                            <li data-title="HomePage1" class=""><a href="/HttpReports/Monitor"><i class="fa fa-rocket"></i><span class="text">@lang.Menu_Monitor</span></a></li>
                         </ul>
                     </div>
                 </div>
@@ -159,22 +179,22 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <span class="modal-title">修改账号</span>
+                    <span class="modal-title">@lang.Template_EditAccount</span>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>用户名</label>
+                        <label>@lang.Login_UserName</label>
                         <input autocomplete="new-password" type="text" class="form-control update_username">
                     </div>
                     <div class="form-group">
-                        <label>旧密码</label>
+                        <label>@lang.Index_OldPwd</label>
                         <input autocomplete="new-password" type="password" class="form-control update_oldpwd">
                     </div>
                     <div class="form-group">
-                        <label>新密码</label>
+                        <label>@lang.Index_NewPwd</label>
                         <input autocomplete="new-password" type="password" class="form-control update_newpwd">
                     </div>
-                    <button style="width:100%" type="submit" onclick="update_password()" class="btn btn-info">保 存</button>
+                    <button style="width:100%" type="submit" onclick="update_password()" class="btn btn-info">@lang.Index_UserSave</button>
                 </div> 
             </div>
         </div>
@@ -183,6 +203,7 @@
 
     <div class="clearfix"></div>
 
-    <input type="hidden" id="meun" value="@(ViewData["menu"] == null ? "HomePage":ViewData["menu"] )" />
+    <input type="hidden" id="meun" value="@(ViewData["menu"] == null ? "HomePage":ViewData["menu"] )" /> 
+
 </body>
 </html>

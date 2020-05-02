@@ -2,6 +2,8 @@
     ViewData["Title"] = "Detail";
     Layout = "~/Views/HttpReports/HttpReportsTemplate.cshtml";
 
+    var lang = ViewBag.Language as HttpReports.Dashboard.Services.Language.ILanguage;
+
     List<string> nodes = ViewBag.nodes;
 }
 
@@ -18,7 +20,7 @@
 
                         <div class="col-sm-12" style="margin-top:10px">
 
-                            <b><i class="glyphicon glyphicon-signal"></i> 服务节点</b>
+                            <b><i class="glyphicon glyphicon-signal"></i> @lang.Index_ServiceNode</b>
 
                             <span class="glyphicon glyphicon-info-sign serviceTip" style="font-size:20px;top:0.2em;cursor:pointer"></span>
 
@@ -40,7 +42,7 @@
 
                         <div class="col-sm-3" style="padding-left:0">
 
-                            <button style="min-width:120px;" onclick="QueryClick(this)" class="btn btn-info  btn-search">查询</button>
+                            <button style="min-width:120px;" onclick="QueryClick(this)" class="btn btn-info  btn-search">@lang.Query</button>
                         </div>
                     </div>
                 </div>
@@ -104,4 +106,4 @@
     </div>
 </div>
 
-<script src="/HttpReportsStaticFiles/Content/page/trend.js?ver=1.0.3"></script>
+<script src="/HttpReportsStaticFiles/Content/page/trend.js?ver=1.0.4"></script>

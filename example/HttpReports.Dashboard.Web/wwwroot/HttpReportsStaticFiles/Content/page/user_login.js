@@ -1,4 +1,4 @@
-$(function() {
+ $(function () {
 	$("input[type='password'][data-eye]").each(function(i) {
 		let $this = $(this);
 
@@ -69,7 +69,7 @@ function login() {
 	var password = $(".password").val().trim();
 
 	if (username.length == 0 || password.length == 0) { 
-		alertError("用户名或者密码不能为空");
+		alertError(lang.Login_CheckRule);
 		return;
 	} 
 

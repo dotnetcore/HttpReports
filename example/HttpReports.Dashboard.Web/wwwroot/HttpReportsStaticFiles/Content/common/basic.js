@@ -104,22 +104,27 @@ function Go(url) {
 } 
 
 
-window.confirm = function (msg,fun) {
+window.confirm = function (msg, fun) {
 
-    M.dialog4 = jqueryAlert({
+    var ok = lang.Button_OK;
+    var cancel = lang.Button_Cancel;
+
+
+    M.dialog4 = jqueryAlert({ 
+
 
         'content': '<b>' + msg + '</b>',
         'modal': true,
         'top':"40%",
         'animateType': '',
         'buttons': {
-            '确定': function () {
+            ok: function () {
 
                 fun();
 
                 M.dialog4.close(); 
             },
-            '关闭': function () {
+            cancel: function () {
 
                 M.dialog4.close();   
             }

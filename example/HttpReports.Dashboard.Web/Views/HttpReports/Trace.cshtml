@@ -2,6 +2,8 @@
     ViewData["Title"] = "Trace";
     Layout = "~/Views/HttpReports/HttpReportsTemplate.cshtml";
 
+    var lang = ViewBag.Language as HttpReports.Dashboard.Services.Language.ILanguage;
+
 }
 
 <script src="/HttpReportsStaticFiles/Content/js/mSlider.min.js"></script> 
@@ -18,9 +20,9 @@
 
 <div class="contextBox" style="display:none;">
 
-        <h3 class="request_detail_notfound" style="display:none">未知错误，没有找到相关信息</h3>
+    <h3 class="request_detail_notfound" style="display:none">@lang.Request_NotFound</h3>
 
-        <h3 class="request_detail_title" style="padding-left:6px;margin-bottom:16px"><i class="fa fa-star-half-o" style="margin-right:10px"></i>  请求基础信息</h3>
+        <h3 class="request_detail_title" style="padding-left:6px;margin-bottom:16px"><i class="fa fa-star-half-o" style="margin-right:10px"></i>  @lang.Request_BasicInfo</h3>
 
         <table class="table table-striped table-bordered" style="word-break:break-all">
             <thead>
@@ -35,62 +37,62 @@
                     <td class="context_requestId" style="text-align:left;font-size:12px;padding-left:8px"></td>
                 </tr>
                 <tr>
-                    <td>服务节点</td>
+                    <td>@lang.Index_ServiceNode</td>
                     <td class="context_node" style="text-align:left;font-size:12px;padding-left:8px"></td>
                 </tr>
                 <tr>
-                    <td>请求路由</td>
+                    <td>@lang.Request_Route</td>
                     <td class="context_route" style="text-align:left;font-size:12px;padding-left:8px"></td>
                 </tr>
 
                 <tr>
-                    <td>请求地址</td>
+                    <td>@lang.Request_Url</td>
                     <td class="context_url" style="text-align:left;font-size:12px;padding-left:8px"></td>
                 </tr>
 
                 <tr>
-                    <td>请求方式</td>
+                    <td>@lang.Request_Type</td>
                     <td class="context_method" style="text-align:left;font-size:12px;padding-left:8px"></td>
                 </tr>
 
                 <tr>
-                    <td>通信方式</td>
+                    <td>@lang.Request_Connection</td>
                     <td class="context_requestType" style="text-align:left;font-size:12px;padding-left:8px"></td>
                 </tr>
 
 
                 <tr>
-                    <td>请求耗时</td>
+                    <td>@lang.Request_Time</td>
                     <td class="context_milliseconds" style="text-align:left;font-size:12px;padding-left:8px"></td>
                 </tr>
 
                 <tr>
-                    <td>响应状态码</td>
+                    <td>@lang.Request_StatusCode</td>
                     <td class="context_statusCode" style="text-align:left;font-size:12px;padding-left:6px"></td>
                 </tr>
 
                 <tr>
-                    <td>远程IP</td>
+                    <td>@lang.Request_RemoteIP</td>
                     <td class="context_ip" style="text-align:left;font-size:12px;padding-left:6px"></td>
                 </tr>
 
                 <tr>
-                    <td>远程端口</td>
+                    <td>@lang.Request_RemotePort</td>
                     <td class="context_port" style="text-align:left;font-size:12px;padding-left:6px"></td>
                 </tr>
 
                 <tr>
-                    <td>本地IP</td>
+                    <td>@lang.Request_LocalIP</td>
                     <td class="context_localIp" style="text-align:left;font-size:12px;padding-left:6px"></td>
                 </tr>
 
                 <tr>
-                    <td>本地端口</td>
+                    <td>@lang.Request_LocalPort</td>
                     <td class="context_localPort" style="text-align:left;font-size:12px;padding-left:6px"></td>
                 </tr>
 
                 <tr>
-                    <td>请求时间</td>
+                    <td>@lang.Request_CreateTime</td>
                     <td class="context_createTime" style="text-align:left;font-size:12px;padding-left:6px"></td>
                 </tr>
 
@@ -98,7 +100,7 @@
             </tbody>
         </table>
 
-        <h3 class="request_detail_title" style="padding-left:6px; margin-top:20px;margin-bottom:16px"><i class="fa fa-space-shuttle" style="margin-right:10px"></i>  请求详细信息</h3>
+        <h3 class="request_detail_title" style="padding-left:6px; margin-top:20px;margin-bottom:16px"><i class="fa fa-space-shuttle" style="margin-right:10px"></i>  @lang.Request_DetailInfo</h3>
 
         <table class="table table-striped table-bordered" style="word-break:break-all">
             <thead>
@@ -153,4 +155,4 @@
 
 <input type="hidden" value="@ViewBag.TraceId" class="trace_id" />
 
-<script src="/HttpReportsStaticFiles/Content/page/trace.js?ver=1.0.3"></script> 
+<script src="/HttpReportsStaticFiles/Content/page/trace.js?ver=1.0.4"></script> 

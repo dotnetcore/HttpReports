@@ -144,7 +144,11 @@ namespace HttpReports
 
         Task<List<IRequestInfo>> GetRequestInfoByParentId(string ParentId);
 
-        Task ClearData(string StartTime);  
+        Task ClearData(string StartTime);
+
+        Task SetLanguage(string Language);
+
+        Task<string> GetSysConfig(string Key); 
 
     }
 }

@@ -1,8 +1,8 @@
-﻿
+﻿ 
 var httpreports = {};  
 httpreports.chart_theme = "macarons";
 httpreports.theme = "light";
-httpreports.index_chart_color = "#333333";
+httpreports.index_chart_color = "#333333"; 
 
 initTheme();   
 
@@ -93,12 +93,30 @@ function ChangeTheme(item) {
 
     var key = $(item).attr("data-key");
 
-    localStorage.setItem("httpreports.theme", key);  
-
+    localStorage.setItem("httpreports.theme", key); 
 
     location.reload(); 
 
 } 
+
+
+
+function ChangeLanguage(item) {
+
+    var language = $(item).attr("data-key");
+
+    $.ajax({
+        url: "/HttpReportsData/ChangeLanguage",
+        data: { language: language },
+        success: function (result) {
+
+
+            location.reload();
+        } 
+    })  
+}
+
+
 
 function initTheme() { 
 
@@ -157,12 +175,12 @@ function update_password() {
     var newPwd = $(".update_newpwd").val().trim(); 
 
     if (newUserName.length == 0 || oldPwd.length == 0 || newPwd.length == 0) {
-        alertError("不能为空");
+        alertError(lang.User_NotNull);
         return;  
     }  
 
     if (oldPwd == newPwd) {
-        alertError("新旧密码不能一样");
+        alertError(lang.User_OldNewPass);
         return;  
     } 
 
@@ -177,7 +195,7 @@ function update_password() {
 
             if (result.code == 1) {
 
-                alertOk("修改成功",800,function () { 
+                alertOk(lang.User_UpdateSuccess, 800, function () { 
                     location.href = "/HttpReports/UserLogout"; 
                 }); 
             }

@@ -20,7 +20,7 @@ namespace HttpReports
             Callback = callback ?? throw new ArgumentNullException(nameof(callback));
         }
 
-        protected override async Task FlushAsync(Dictionary<T,K> list, CancellationToken token) => await Callback(list, token).ConfigureAwait(false);
+        protected override async Task FlushAsync(Dictionary<T,K> list, CancellationToken token) => await Callback(list, token);
     }
 
     /// <summary>
@@ -87,7 +87,7 @@ namespace HttpReports
             FlushSecond = flushSecond;
 
             _autoFlushCTS = new CancellationTokenSource();
-            Task.Run(AutoFlushAsync, _autoFlushCTS.Token).ConfigureAwait(false);
+            Task.Run(AutoFlushAsync, _autoFlushCTS.Token);
         }
 
         public void Push(T t,K k)
@@ -131,8 +131,8 @@ namespace HttpReports
                 {
                     Debug.WriteLine($"Flush: {list.Count}");
 
-                    await FlushAsync(list, _autoFlushCTS.Token).ConfigureAwait(false);
-                }, _autoFlushCTS.Token).ConfigureAwait(false);
+                    await FlushAsync(list, _autoFlushCTS.Token);
+                }, _autoFlushCTS.Token);
             }
         }
 
@@ -148,7 +148,7 @@ namespace HttpReports
                 var interval = (DateTime.Now - _lastFlushTime).Seconds;
                 if (interval < FlushSecond)
                 {
-                    await Task.Delay((FlushSecond - interval) * 1000, token).ConfigureAwait(false);
+                    await Task.Delay((FlushSecond - interval) * 1000, token);
                     continue;
                 }
 
@@ -162,7 +162,7 @@ namespace HttpReports
                     {
                         Debug.WriteLine($"Auto Flush: {list.Count}");
 
-                        await FlushAsync(list, _autoFlushCTS.Token).ConfigureAwait(false);
+                        await FlushAsync(list, _autoFlushCTS.Token);
                     }
                 }
                 catch (OperationCanceledException)
@@ -173,7 +173,7 @@ namespace HttpReports
                     }
                 }
 
-                await Task.Delay(FlushSecond * 1000, token).ConfigureAwait(false);
+                await Task.Delay(FlushSecond * 1000, token);
             }
         }
 
