@@ -10,7 +10,7 @@ namespace HttpReports.Monitor
         /// <summary>
         /// 白名单
         /// </summary>
-        IList<string> WhileList { get; set; }
+        IList<string> WhiteList { get; set; }
 
         /// <summary>
         /// 警告百分比

@@ -73,7 +73,7 @@ function saveMonitorJob() {
 
         IPMonitor = {
             Status: 1, 
-            WhileList: $(".IPWhiteList").val().trim(),
+            WhiteList: $(".IPWhiteList").val().trim(),
             Percentage: $(".IPPercent").val().trim()
 
         }
@@ -152,7 +152,7 @@ function BindMonitorJob() {
             if (job.ipMonitor != null) {
 
                 $('.checkbox').eq(3).bootstrapSwitch('state', job.ipMonitor.status > 0);
-                $(".IPWhiteList").val(job.ipMonitor.whileList);
+                $(".IPWhiteList").val(job.ipMonitor.WhiteList);
                 $(".IPPercent").val(job.ipMonitor.percentage); 
             }  
 

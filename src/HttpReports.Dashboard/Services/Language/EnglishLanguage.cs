@@ -206,7 +206,7 @@ namespace HttpReports.Dashboard.Services.Language
 
         public string Monitor_Error_PercnetError { get; set; } = "Request error monitoring - Percentage format error";
 
-        public string Monitor_IP_WhileListTooLong { get; set; } = "IP monitoring - White list is too long";
+        public string Monitor_IP_WhiteListTooLong { get; set; } = "IP monitoring - White list is too long";
 
         public string Monitor_IP_PercentError { get; set; } = "IP monitoring - Percentage format error";
 
@@ -306,9 +306,9 @@ namespace HttpReports.Dashboard.Services.Language
 
         public string Monitor_Type_RequestError_Info { get; set; } = "1.Set HTTP status code,500,503,404..., multiple separated by commas  2.Set timeout percentage, supports two decimal places, 5%,0.03%,30%..., when the error rate reaches or exceeds the set value, an early warning will be triggered";
 
-        public string Monitor_IPWhileList { get; set; } = "IP white list";
+        public string Monitor_IPWhiteList { get; set; } = "IP white list";
 
-        public string Monitor_IPWhileList_Placeholder { get; set; } = "Multiple separated by commas";
+        public string Monitor_IPWhiteList_Placeholder { get; set; } = "Multiple separated by commas";
 
         public string Monitor_IP_Desc { get; set; } = "Mainly for a large number of fixed IP requests in a period of time, like Robot request ;";
 

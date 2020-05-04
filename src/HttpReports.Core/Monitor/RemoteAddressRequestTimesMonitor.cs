@@ -9,7 +9,7 @@ namespace HttpReports.Monitor
     {
         public int Id { get; set; }
 
-        public IList<string> WhileList { get; set; }
+        public IList<string> WhiteList { get; set; }
 
         public float WarningPercentage { get; set; }
 

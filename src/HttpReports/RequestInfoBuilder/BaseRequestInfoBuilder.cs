@@ -63,8 +63,7 @@ namespace HttpReports
 
         private IRequestDetail ParseRequestDetail(IRequestDetail request)
         {
-            if (request.Scheme == null) request.Scheme = string.Empty;
-            if (request.Scheme == null) request.Scheme = string.Empty;
+            if (request.Scheme == null) request.Scheme = string.Empty; 
             if (request.QueryString == null) request.QueryString = string.Empty;
             if (request.Header == null) request.Header = string.Empty;
             if (request.Cookie == null) request.Cookie = string.Empty;
