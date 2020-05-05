@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HttpReports.Core.Config;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -12,9 +13,7 @@ using Microsoft.Extensions.Logging;
 namespace HttpReports.Dashboard.Docker
 {
     public class Startup
-    {
-        private ILogger<Startup> _logger;
-
+    {  
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration; 
@@ -22,20 +21,12 @@ namespace HttpReports.Dashboard.Docker
 
         public IConfiguration Configuration { get; }
 
+        private ILogger<Startup> _logger { get; set; }
+
       
         public void ConfigureServices(IServiceCollection services)
         {
-            _logger = services.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger<Startup>(); 
-         
-
-            Test();
-
-            services.AddHttpReportsDashboard().UseAutoStorage(new StorageOptions
-            { 
-                StorageType = "MySql",
-                ConnectionString = "DataBase=HttpReports;Data Source=127.0.0.1;User Id=root;Password=123456;"
-
-            }) ;
+            BuildHttpRereports(services);
 
             services.AddControllersWithViews();
         } 
@@ -59,14 +50,29 @@ namespace HttpReports.Dashboard.Docker
             });
         }
 
+        public void BuildHttpRereports(IServiceCollection services)
+        {
+            _logger = services.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger<Startup>();
 
-        public void Test()
-        {   
-            _logger.LogInformation("----------------------------------------------------------");
-            _logger.LogInformation($"HttpReports:Storage:ConnectionString:{Configuration["HttpReports:Storage:ConnectionString"]}");
-            _logger.LogInformation($"HttpReports:ExpireDay:{Configuration["HttpReports:ExpireDay"]}"); 
+            string ConnectionString = Configuration["HttpReportsDashboard:Storage:ConnectionString"];
 
-        } 
+            string Type = Configuration["HttpReportsDashboard:Type"];
 
+            int ExpireDay = Configuration["HttpReportsDashboard:ExpireDay"].ToInt();
+
+            _logger.LogInformation($"Init Start...");
+            _logger.LogInformation($"HttpReportsDashboard:Storage:ConnectionString:{ConnectionString}");
+            _logger.LogInformation($"HttpReportsDashboard:Type:{Type}");
+            _logger.LogInformation($"HttpReportsDashboard:ExpireDay:{ExpireDay}");
+
+            services.AddHttpReportsDashboard(x => {
+                x.ExpireDay = ExpireDay > 0 ? ExpireDay : BasicConfig.ExpireDay;
+            }).UseAutoStorage(new StorageOptions
+            {
+                StorageType = Type ?? string.Empty,
+                ConnectionString = ConnectionString ?? string.Empty
+            }); 
+
+        }  
     }
 }
