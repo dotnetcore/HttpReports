@@ -12,7 +12,7 @@
  **HttpReports** 是针对.Net Core 开发的轻量级APM系统，基于MIT开源协议, 使用HttpReports可以快速搭建.Net Core环境下统计,分析,图表,监控，分布式追踪一体化的站点， 适应.Net Core WebAPI,MVC，Web项目, 通过引用Nuget构建Dashboard面板，上手简单，适合在微服务架构中使用。
 
 
-Github地址：**https://github.com/SpringLeee/HttpReports**   
+Github地址：**https://github.com/dotnetcore/HttpReports**   
 
 在线预览： **https://moa.hengyinfs.com** 
 
@@ -281,9 +281,9 @@ HttpReports.Dashboard 集成了预警监控功能，使用的话需要先配置 
 
 **HttpReports** 是 .Net Core环境下开源的APM系统，非常适合微服务环境中使用，如果是中小型项目的话，那么使用 HttpReports 是一个不错的选择, 开源不易，如果能帮助到您的话，还请希望给个Star 支持下， 感谢 😆
 
-Github: https://github.com/SpringLeee/HttpReports
+Github: https://github.com/dotnetcore/HttpReports
 
-[MIT协议](https://github.com/SpringLeee/HttpReports/blob/master/LICENSE "MIT") 
+[MIT协议](https://github.com/dotnetcore/HttpReports/blob/master/LICENSE "MIT") 
 
 ## 交流反馈
  
