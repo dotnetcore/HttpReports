@@ -5,6 +5,9 @@
     <span>English</a>
 </p>
 
+[![Member project of .NET Core Community](https://img.shields.io/badge/member%20project%20of-NCC-9e20c9.svg)](https://github.com/dotnetcore)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/dotnetcore/HttpReports/blob/master/LICENSE) 
+
 ## Introduce
 
 HttpReports is a lightweight APM system developed for Net Core. Based on MIT open source protocol, using HttpReports can quickly build an integrated site of statistics, analysis, charts, monitoring and distributed tracking under the.net Core environment, which can adapt to Net Core WebAPI,MVC, Web project, build Dashboard panel by reference to Nuget, easy to get started, suitable for use in micro-service architecture. 
