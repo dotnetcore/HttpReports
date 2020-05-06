@@ -291,12 +291,7 @@ Github: https://github.com/dotnetcore/HttpReports
 
 ![](https://lee-1259586045.cos.ap-shanghai.myqcloud.com/mywechat3.jpg)   
 
-## 捐赠
  
-如您觉得 **HttpReports** 对您有帮助，可以请作者媳妇儿喝一杯柠檬茶~
-
-![](https://lee-1259586045.cos.ap-shanghai.myqcloud.com/juanzheng.jpg)
-  
 
  
 
