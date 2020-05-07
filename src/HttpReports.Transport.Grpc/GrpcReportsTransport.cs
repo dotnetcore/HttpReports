@@ -9,6 +9,7 @@ using Grpc.Net.Client;
 
 using HttpReports.Collector.Grpc;
 
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace HttpReports.Transport.Grpc
@@ -20,8 +21,9 @@ namespace HttpReports.Transport.Grpc
         private GrpcCollector.GrpcCollectorClient _client = null;
 
         private readonly AsyncCallbackDeferFlushCollection<HttpReports.Collector.Grpc.RequestInfo, HttpReports.Collector.Grpc.RequestDetail> _deferFlushCollection = null;
+        private readonly ILogger<GrpcReportsTransport> _logger;
 
-        public GrpcReportsTransport(IOptions<GrpcReportsTransportOptions> options)
+        public GrpcReportsTransport(IOptions<GrpcReportsTransportOptions> options, ILogger<GrpcReportsTransport> logger)
         {
             Options = options.Value ?? throw new ArgumentNullException();
 
@@ -50,14 +52,24 @@ namespace HttpReports.Transport.Grpc
             _client = new GrpcCollector.GrpcCollectorClient(channel);
 
             _deferFlushCollection = new AsyncCallbackDeferFlushCollection<HttpReports.Collector.Grpc.RequestInfo, HttpReports.Collector.Grpc.RequestDetail>(WriteToRemote, 50, 5);
+            _logger = logger;
         }
 
         private async Task WriteToRemote(Dictionary<HttpReports.Collector.Grpc.RequestInfo, HttpReports.Collector.Grpc.RequestDetail> list, CancellationToken token)
         {
-            var pack = new RequestInfoPack();
-            var data = list.Select(m => new RequestInfoWithDetail() { Info = m.Key, Detail = m.Value }).ToArray();
-            pack.Data.AddRange(data);
-            var reply = await _client.WriteAsync(pack);
+            try
+            {
+                var pack = new RequestInfoPack();
+                var data = list.Select(m => new RequestInfoWithDetail() { Info = m.Key, Detail = m.Value }).ToArray();
+                pack.Data.AddRange(data);
+
+                var reply = await _client.WriteAsync(pack);
+            }
+            catch (Exception ex)
+            {
+                //TODO ReTry?
+                _logger.LogError(ex, "ReportsTransport Error");
+            }
         }
 
         public void Write(IRequestInfo requestInfo, IRequestDetail requestDetail)

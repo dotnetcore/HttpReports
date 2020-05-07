@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using HttpReports.Core.Config;
 using HttpReports.Core.Models;
 using HttpReports.Dashboard.DTO;
@@ -9,20 +10,19 @@ using HttpReports.Dashboard.Implements;
 using HttpReports.Dashboard.Models;
 using HttpReports.Dashboard.Services;
 using HttpReports.Dashboard.Services.Language;
-using HttpReports.Dashboard.Services.Quartz;
 using HttpReports.Dashboard.ViewModels;
-using HttpReports.Models;
 using HttpReports.Monitor;
 using HttpReports.Storage.FilterOptions;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Org.BouncyCastle.Ocsp;
 
 namespace HttpReports.Dashboard.Controllers
 {
-    public class HttpReportsDataController : Controller
+    public class HttpReportsDataController : Controller, IHttpReportsHttpUnit
     {
         private readonly IHttpReportsStorage _storage;
 
@@ -32,7 +32,7 @@ namespace HttpReports.Dashboard.Controllers
 
         private readonly ILanguage _lang;
 
-        public HttpReportsDataController(IHttpReportsStorage storage, MonitorService monitorService, ScheduleService scheduleService,LanguageService languageService)
+        public HttpReportsDataController(IHttpReportsStorage storage, MonitorService monitorService, ScheduleService scheduleService, LanguageService languageService)
         {
             _storage = storage;
             _monitorService = monitorService;
@@ -55,7 +55,7 @@ namespace HttpReports.Dashboard.Controllers
                 IsAscend = false,
                 Take = request.TOP,
                 StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
-                EndTimeFormat = "yyyy-MM-dd HH:mm:ss" 
+                EndTimeFormat = "yyyy-MM-dd HH:mm:ss"
             });
 
             var topError500 = await _storage.GetUrlRequestStatisticsAsync(new RequestInfoFilterOption()
@@ -90,7 +90,6 @@ namespace HttpReports.Dashboard.Controllers
                 Take = request.TOP,
                 StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
                 EndTimeFormat = "yyyy-MM-dd HH:mm:ss"
-
             });
 
             var Art = new
@@ -124,7 +123,7 @@ namespace HttpReports.Dashboard.Controllers
         public async Task<IActionResult> GetDayStateBar(GetIndexDataRequest request)
         {
             var startTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, 0, 0, DateTimeKind.Local).AddDays(-1);
-            var endTime = DateTime.Now; 
+            var endTime = DateTime.Now;
 
             var nodes = request.Node.IsEmpty() ? null : request.Node.Split(',');
 
@@ -153,25 +152,22 @@ namespace HttpReports.Dashboard.Controllers
             List<int> timesList = new List<int>();
             List<int> avgList = new List<int>();
 
-            List<int> hours = new List<int>(); 
+            List<int> hours = new List<int>();
 
-            for (int i = 1; i <= 24 ; i++)
+            for (int i = 1; i <= 24; i++)
             {
-                var start = startTime.AddHours(i).ToString("dd-HH"); 
+                var start = startTime.AddHours(i).ToString("dd-HH");
 
                 // 每小时请求次数
-                var times = requestTimesStatistics.Items.TryGetValue(start,out var tTimes) ? tTimes : 0;
+                var times = requestTimesStatistics.Items.TryGetValue(start, out var tTimes) ? tTimes : 0;
                 timesList.Add(times);
-
 
                 //每小时平均处理时间
                 var avg = responseTimeStatistics.Items.TryGetValue(start, out var tAvg) ? tAvg : 0;
                 avgList.Add(avg);
 
-
                 hours.Add(startTime.AddHours(i).ToString("HH").ToInt());
-
-            }  
+            }
 
             return Json(new HttpResultEntity(1, "ok", new { timesList, avgList, hours }));
         }
@@ -179,7 +175,7 @@ namespace HttpReports.Dashboard.Controllers
         public async Task<IActionResult> GetMinuteStateBar(GetIndexDataRequest request)
         {
             var startTime = DateTime.Now.AddHours(-1).AddSeconds(-DateTime.Now.Second);
-           
+
             var endTime = DateTime.Now;
 
             var nodes = request.Node.IsEmpty() ? null : request.Node.Split(',');
@@ -219,14 +215,11 @@ namespace HttpReports.Dashboard.Controllers
                 var times = requestTimesStatistics.Items.TryGetValue(start, out var tTimes) ? tTimes : 0;
                 timesList.Add(times);
 
-
                 //每小时平均处理时间
                 var avg = responseTimeStatistics.Items.TryGetValue(start, out var tAvg) ? tAvg : 0;
                 avgList.Add(avg);
 
-
                 time.Add(startTime.AddMinutes(i).ToString("mm").ToInt());
-
             }
 
             return Json(new HttpResultEntity(1, "ok", new { timesList, avgList, time }));
@@ -251,7 +244,6 @@ namespace HttpReports.Dashboard.Controllers
             List<string> time = new List<string>();
             List<int> value = new List<int>();
 
-
             var monthDayCount = (endTime - startTime).Days;
             for (int i = 1; i <= monthDayCount; i++)
             {
@@ -260,8 +252,8 @@ namespace HttpReports.Dashboard.Controllers
                 var times = responseTimeStatistics.Items.TryGetValue(day, out var tTimes) ? tTimes : 0;
 
                 time.Add(startTime.AddDays(i).ToString("dd").ToInt().ToString());
-                value.Add(times); 
-            }  
+                value.Add(times);
+            }
 
             return Json(new HttpResultEntity(1, "ok", new { time, value }));
         }
@@ -302,8 +294,8 @@ namespace HttpReports.Dashboard.Controllers
         {
             await _storage.SetLanguage(Language);
 
-            return Json(new HttpResultEntity(1,"ok", null));  
-        } 
+            return Json(new HttpResultEntity(1, "ok", null));
+        }
 
         public async Task<IActionResult> GetIndexData(GetIndexDataRequest request)
         {
@@ -315,7 +307,7 @@ namespace HttpReports.Dashboard.Controllers
                 Nodes = request.Node.IsEmpty() ? null : request.Node.Split(','),
                 StartTime = start,
                 EndTime = end,
-                StartTimeFormat= "yyyy-MM-dd HH:mm:ss",
+                StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
                 EndTimeFormat = "yyyy-MM-dd HH:mm:ss"
             });
 
@@ -331,11 +323,11 @@ namespace HttpReports.Dashboard.Controllers
         }
 
         public async Task<IActionResult> GetRequestList(GetRequestListRequest request)
-        {  
+        {
             var result = await _storage.SearchRequestInfoAsync(new RequestInfoSearchFilterOption()
             {
                 TraceId = request.TraceId,
-                StatusCodes = request.StatusCode.IsEmpty() ? null: request.StatusCode.Split(',').Select(x=>x.ToInt()).ToArray(),
+                StatusCodes = request.StatusCode.IsEmpty() ? null : request.StatusCode.Split(',').Select(x => x.ToInt()).ToArray(),
                 Nodes = request.Node.IsEmpty() ? null : request.Node.Split(','),
                 IP = request.IP,
                 Url = request.Url,
@@ -348,7 +340,6 @@ namespace HttpReports.Dashboard.Controllers
                 IsAscend = false,
                 StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
                 EndTimeFormat = "yyyy-MM-dd HH:mm:ss"
-
             });
 
             return Json(new { total = result.AllItemCount, rows = result.List });
@@ -365,7 +356,6 @@ namespace HttpReports.Dashboard.Controllers
 
             if (request.Id.IsEmpty() || request.Id == "0")
                 await _storage.AddMonitorJob(model);
-
             else
                 await _storage.UpdateMonitorJob(model);
 
@@ -411,14 +401,13 @@ namespace HttpReports.Dashboard.Controllers
             return Json(new HttpResultEntity(1, "ok", null));
         }
 
-
         [AllowAnonymous]
         public async Task<IActionResult> CheckUserLogin(SysUser user)
         {
             var model = await _storage.CheckLogin(user.UserName.Trim(), user.Password.Trim().MD5());
 
             if (model == null)
-                return Json(new HttpResultEntity(-1,_lang.Login_UserOrPassError, null));
+                return Json(new HttpResultEntity(-1, _lang.Login_UserOrPassError, null));
 
             HttpContext.SetCookie(BasicConfig.LoginCookieId, user.UserName, 60 * 30 * 7);
 
@@ -436,12 +425,12 @@ namespace HttpReports.Dashboard.Controllers
 
             if (request.NewUserName.Length <= 2 || request.NewUserName.Length > 20)
             {
-                return Json(new HttpResultEntity(-1,_lang.User_AccountFormatError, null));
+                return Json(new HttpResultEntity(-1, _lang.User_AccountFormatError, null));
             }
 
             if (request.OldPwd.Length <= 5 || request.OldPwd.Length > 20)
             {
-                return Json(new HttpResultEntity(-1,_lang.User_NewPassFormatError, null));
+                return Json(new HttpResultEntity(-1, _lang.User_NewPassFormatError, null));
             }
 
             await _storage.UpdateLoginUser(new SysUser
@@ -451,7 +440,7 @@ namespace HttpReports.Dashboard.Controllers
                 Password = request.NewPwd.MD5()
             });
 
-            return Json(new HttpResultEntity(1,_lang.UpdateSuccess, null));
+            return Json(new HttpResultEntity(1, _lang.UpdateSuccess, null));
         }
 
         public async Task<IActionResult> GetTraceList(string Id)
@@ -460,27 +449,25 @@ namespace HttpReports.Dashboard.Controllers
 
             var tree = await GetRequestInfoTrace(parent.Id);
 
-            return Json(new HttpResultEntity(1,"ok", new List<RequestInfoTrace>() { tree }));
+            return Json(new HttpResultEntity(1, "ok", new List<RequestInfoTrace>() { tree }));
         }
 
-
         public async Task<IActionResult> GetRequestInfoDetail(string Id)
-        { 
-            var (requestInfo, requestDetail) = await _storage.GetRequestInfoDetail(Id); 
+        {
+            var (requestInfo, requestDetail) = await _storage.GetRequestInfoDetail(Id);
 
-            return Json(new HttpResultEntity(1, "ok", new { 
-            
+            return Json(new HttpResultEntity(1, "ok", new
+            {
                 Info = requestInfo,
-                Detail = requestDetail  
-
+                Detail = requestDetail
             }));
         }
 
         public IActionResult Json(object data)
         {
-            HttpContext.Response.ContentType = "application/json;charset=utf-8"; 
+            HttpContext.Response.ContentType = "application/json;charset=utf-8";
 
-            return Content(JsonConvert.SerializeObject(data,new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }));
+            return Content(JsonConvert.SerializeObject(data, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }));
         }
 
         private async Task<IRequestInfo> GetGrandParentRequestInfo(string Id)
@@ -497,7 +484,6 @@ namespace HttpReports.Dashboard.Controllers
             }
         }
 
-
         private async Task<RequestInfoTrace> GetRequestInfoTrace(string Id)
         {
             var requestInfo = await _storage.GetRequestInfo(Id);
@@ -506,14 +492,13 @@ namespace HttpReports.Dashboard.Controllers
 
             var childs = await _storage.GetRequestInfoByParentId(requestInfo.Id);
 
-            if (childs != null && childs.Count > 0 )
+            if (childs != null && childs.Count > 0)
             {
                 requestInfoTrace.Nodes = new List<RequestInfoTrace>();
             }
 
-
             foreach (var item in childs)
-            { 
+            {
                 var child = MapRequestInfo(item);
 
                 var trace = await GetRequestInfoTrace(item.Id);
@@ -521,24 +506,21 @@ namespace HttpReports.Dashboard.Controllers
                 requestInfoTrace.Nodes.Add(trace);
             }
 
-            return requestInfoTrace; 
+            return requestInfoTrace;
         }
 
         private RequestInfoTrace MapRequestInfo(IRequestInfo requestInfo)
         {
-            return new RequestInfoTrace { 
-
-                 Id = requestInfo.Id, 
-                 Text = requestInfo.Id,
-                 Node = requestInfo.Node,
-                 Url = requestInfo.Url,
-                 Milliseconds = requestInfo.Milliseconds,
-                 StatusCode = requestInfo.StatusCode,
-                 RequestType = requestInfo.RequestType
-
-            }; 
-
+            return new RequestInfoTrace
+            {
+                Id = requestInfo.Id,
+                Text = requestInfo.Id,
+                Node = requestInfo.Node,
+                Url = requestInfo.Url,
+                Milliseconds = requestInfo.Milliseconds,
+                StatusCode = requestInfo.StatusCode,
+                RequestType = requestInfo.RequestType
+            };
         }
-         
     }
 }
