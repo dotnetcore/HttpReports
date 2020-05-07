@@ -67,7 +67,7 @@ namespace HttpReports.Models
     {
         public int Status { get; set; }
 
-        public string WhileList { get; set; }
+        public string WhiteList { get; set; }
 
         public double Percentage { get; set; }
 

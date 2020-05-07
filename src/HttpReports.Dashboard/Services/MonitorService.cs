@@ -69,8 +69,8 @@ namespace HttpReports.Dashboard.Services
 
             if (request.IPMonitor != null)
             {
-                if (!request.IPMonitor.WhileList.IsEmpty() && request.IPMonitor.WhileList.Length > 100)
-                    return _lang.Monitor_IP_WhileListTooLong;
+                if (!request.IPMonitor.WhiteList.IsEmpty() && request.IPMonitor.WhiteList.Length > 100)
+                    return _lang.Monitor_IP_WhiteListTooLong;
 
                 if (!VaildPercentage(request.IPMonitor.Percentage))
                     return _lang.Monitor_IP_PercentError;
@@ -191,7 +191,7 @@ namespace HttpReports.Dashboard.Services
                 payload.IPMonitor = new IPMonitorJob
                 {
                     Status = request.IPMonitor.Status,
-                    WhileList = (request.IPMonitor.WhileList ?? string.Empty),
+                    WhiteList = (request.IPMonitor.WhiteList ?? string.Empty),
                     Percentage = request.IPMonitor.Percentage.Replace("%", "").ToDouble(2)
                 };
             }
@@ -269,7 +269,7 @@ namespace HttpReports.Dashboard.Services
                 {
 
                     Status = payload.IPMonitor.Status,
-                    WhileList = payload.IPMonitor.WhileList,
+                    WhiteList = payload.IPMonitor.WhiteList,
                     Percentage = payload.IPMonitor.Percentage + "%"
 
                 };

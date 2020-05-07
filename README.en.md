@@ -6,13 +6,13 @@
 </p>
 
 [![Member project of .NET Core Community](https://img.shields.io/badge/member%20project%20of-NCC-9e20c9.svg)](https://github.com/dotnetcore)
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/dotnetcore/HttpReports/blob/master/LICENSE)  
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/dotnetcore/HttpReports/blob/master/LICENSE) 
 
 ## Introduce
 
 HttpReports is a lightweight APM system developed for Net Core. Based on MIT open source protocol, using HttpReports can quickly build an integrated site of statistics, analysis, charts, monitoring and distributed tracking under the.net Core environment, which can adapt to Net Core WebAPI,MVC, Web project, build Dashboard panel by reference to Nuget, easy to get started, suitable for use in micro-service architecture. 
 
-Github ：**https://github.com/SpringLeee/HttpReports**   
+Github ：**https://github.com/dotnetcore/HttpReports**   
 
 The online preview： **https://moa.hengyinfs.com** 
 
@@ -277,9 +277,9 @@ ExpireDay
 
 **HttpReports**  is an open source APM system in the.net Core environment, which is very suitable for microservice environment. If it is a small or medium-sized project, then using HttpReports is a good choice, open source is not easy, if it can help you, please hope to give a Star support, thank you 😆
 
-Github: https://github.com/SpringLeee/HttpReports
+Github: https://github.com/dotnetcore/HttpReports
 
-[MIT](https://github.com/SpringLeee/HttpReports/blob/master/LICENSE "MIT") 
+[MIT](https://github.com/dotnetcore/HttpReports/blob/master/LICENSE "MIT") 
 
 ## Communication feedback
  

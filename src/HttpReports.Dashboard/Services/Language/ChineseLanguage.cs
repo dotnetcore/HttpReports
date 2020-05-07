@@ -200,7 +200,7 @@ namespace HttpReports.Dashboard.Services.Language
 
         public string Monitor_Error_PercnetError { get; set; } = "请求错误监控-百分比格式错误";
 
-        public string Monitor_IP_WhileListTooLong { get; set; } = "IP监控-白名单过长";
+        public string Monitor_IP_WhiteListTooLong { get; set; } = "IP监控-白名单过长";
 
         public string Monitor_IP_PercentError { get; set; } = "IP监控-百分比格式错误";
 
@@ -301,9 +301,9 @@ namespace HttpReports.Dashboard.Services.Language
 
         public string Monitor_Type_RequestError_Info { get; set; } = "1.设定Http状态码,500,503,404,多个状态码用英文逗号隔开； 2.设置命中率,支持 两位小数点，5%,0.03%,30%等，命中率达到或大于设定值时会触发预警；";
 
-        public string Monitor_IPWhileList { get; set; } = "IP白名单";
+        public string Monitor_IPWhiteList { get; set; } = "IP白名单";
 
-        public string Monitor_IPWhileList_Placeholder { get; set; } = "多个用逗号隔开";
+        public string Monitor_IPWhiteList_Placeholder { get; set; } = "多个用逗号隔开";
 
         public string Monitor_IP_Desc { get; set; } = "主要针对一段时间内大量固定IP请求，类似机器人请求;";
 

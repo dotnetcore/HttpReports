@@ -245,7 +245,7 @@ namespace HttpReports.Dashboard.Services.Quartz
                 StartTime = start,
                 EndTime = end,
                 InList = false,
-                List = payload.IPMonitor.WhileList.Split(',').ToArray(),
+                List = payload.IPMonitor.WhiteList.Split(',').ToArray(),
             });
 
             if (count == 0)
@@ -274,7 +274,7 @@ namespace HttpReports.Dashboard.Services.Quartz
 
                           <p>{_lang.Monitor_Frequency}：{_monitorService.ParseJobCronString(job.CronLike)} </p>
 
-                          <p>{_lang.Monitor_IPWhileList}：{payload.IPMonitor.WhileList}</p>
+                          <p>{_lang.Monitor_IPWhiteList}：{payload.IPMonitor.WhiteList}</p>
 
                           <p>{_lang.Warning_TimeRange}：{start.ToStandardTime()}-{end.ToStandardTime()} </p>"
                 };

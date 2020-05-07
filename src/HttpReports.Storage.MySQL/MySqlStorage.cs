@@ -46,7 +46,7 @@ namespace HttpReports.Storage.MySql
         public async Task InitAsync()
         {
             try
-            {
+            { 
                 using (var connection = ConnectionFactory.GetConnection())
                 {
                     await connection.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS `RequestInfo` (

@@ -200,7 +200,7 @@ namespace HttpReports.Dashboard.Services.Language
 
         string Monitor_Error_PercnetError { get; set; }
 
-        string Monitor_IP_WhileListTooLong { get; set; }
+        string Monitor_IP_WhiteListTooLong { get; set; }
 
         string Monitor_IP_PercentError { get; set; }
 
@@ -299,9 +299,9 @@ namespace HttpReports.Dashboard.Services.Language
 
         string Monitor_Type_RequestError_Info { get; set; }
 
-        string Monitor_IPWhileList { get; set; }
+        string Monitor_IPWhiteList { get; set; }
 
-        string Monitor_IPWhileList_Placeholder { get; set; }
+        string Monitor_IPWhiteList_Placeholder { get; set; }
 
         string Monitor_IP_Desc { get; set; }
 
