@@ -1,10 +1,10 @@
 ﻿namespace HttpReports
 {
-    public class DirectlyReportsDataWriter : IReportsDataWriter
+    public class DirectlyReportsTransport : IReportsTransport
     {
         public IHttpReportsStorage Storage { get; }
 
-        public DirectlyReportsDataWriter(IHttpReportsStorage storage)
+        public DirectlyReportsTransport(IHttpReportsStorage storage)
         {
             Storage = storage;
         }

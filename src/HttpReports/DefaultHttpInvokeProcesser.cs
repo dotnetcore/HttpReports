@@ -7,14 +7,14 @@ namespace HttpReports
 {
     internal class DefaultHttpInvokeProcesser : IHttpInvokeProcesser
     {
-        public IReportsDataWriter ReportsDataWriter { get; }
+        public IReportsTransport ReportsTransport { get; }
         public IRequestInfoBuilder RequestInfoBuilder { get; }
 
         public IConfiguration Configuration { get; }
 
-        public DefaultHttpInvokeProcesser(IReportsDataWriter reportsDataWriter, IRequestInfoBuilder requestInfoBuilder, IConfiguration configuration)
+        public DefaultHttpInvokeProcesser(IReportsTransport reportsTransport, IRequestInfoBuilder requestInfoBuilder, IConfiguration configuration)
         {
-            ReportsDataWriter = reportsDataWriter;
+            ReportsTransport = reportsTransport;
             RequestInfoBuilder = requestInfoBuilder;
             Configuration = configuration;
         }
@@ -25,7 +25,7 @@ namespace HttpReports
 
             if (requestInfo != null)
             {
-                ReportsDataWriter.Write(requestInfo, requestDetail);
+                ReportsTransport.Write(requestInfo, requestDetail);
             }
         }
     }

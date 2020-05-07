@@ -33,7 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddSingleton<IModelCreator, DefaultModelCreator>();
             services.AddSingleton<IHttpInvokeProcesser, DefaultHttpInvokeProcesser>();
-            services.AddSingleton<IReportsDataWriter, DirectlyReportsDataWriter>();
+            services.AddSingleton<IReportsTransport, DirectlyReportsTransport>();
             services.AddSingleton<IRequestInfoBuilder, DefaultRequestInfoBuilder>();
 
             services.AddMvcCore(x =>

@@ -11,17 +11,17 @@ using HttpReports.Collector.Grpc;
 
 using Microsoft.Extensions.Options;
 
-namespace HttpReports.DataWriter.Grpc
+namespace HttpReports.Transport.Grpc
 {
-    public class GrpcReportsDataWriter : IReportsDataWriter
+    public class GrpcReportsTransport : IReportsTransport
     {
-        public GrpcReportsDataWriterOptions Options { get; }
+        public GrpcReportsTransportOptions Options { get; }
 
         private GrpcCollector.GrpcCollectorClient _client = null;
 
         private readonly AsyncCallbackDeferFlushCollection<HttpReports.Collector.Grpc.RequestInfo, HttpReports.Collector.Grpc.RequestDetail> _deferFlushCollection = null;
 
-        public GrpcReportsDataWriter(IOptions<GrpcReportsDataWriterOptions> options)
+        public GrpcReportsTransport(IOptions<GrpcReportsTransportOptions> options)
         {
             Options = options.Value ?? throw new ArgumentNullException();
 

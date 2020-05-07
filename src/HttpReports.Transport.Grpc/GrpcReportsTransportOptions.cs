@@ -5,9 +5,9 @@ using Grpc.Net.Client;
 
 using Microsoft.Extensions.Options;
 
-namespace HttpReports.DataWriter.Grpc
+namespace HttpReports.Transport.Grpc
 {
-    public class GrpcReportsDataWriterOptions : IOptions<GrpcReportsDataWriterOptions>
+    public class GrpcReportsTransportOptions : IOptions<GrpcReportsTransportOptions>
     {
         public Uri CollectorAddress { get; set; }
 
@@ -17,6 +17,6 @@ namespace HttpReports.DataWriter.Grpc
 
         public Action<GrpcChannelOptions> PostConfigGrpcChannelOptions = null;
 
-        public GrpcReportsDataWriterOptions Value => this;
+        public GrpcReportsTransportOptions Value => this;
     }
 }

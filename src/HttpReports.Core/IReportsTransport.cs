@@ -1,6 +1,6 @@
 ﻿namespace HttpReports
 {
-    public interface IReportsDataWriter
+    public interface IReportsTransport
     {
         void Write(IRequestInfo requestInfo, IRequestDetail requestDetail);
     }
