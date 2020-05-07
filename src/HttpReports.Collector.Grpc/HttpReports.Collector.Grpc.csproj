@@ -15,7 +15,7 @@
     <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>
     <Version>1.2.8</Version>
     <PackageLicenseFile></PackageLicenseFile>
-    <PackageId>HttpReports</PackageId>
+    <PackageId>HttpReports.Collector.Grpc</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

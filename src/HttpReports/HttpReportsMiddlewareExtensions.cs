@@ -44,19 +44,26 @@ namespace Microsoft.Extensions.DependencyInjection
             return new HttpReportsBuilder(services, configuration);
         }
 
-        public static IApplicationBuilder UseHttpReports(this IApplicationBuilder app)
+        public static IHttpReportsInitializer UseHttpReports(this IApplicationBuilder app)
         {
             Activity.DefaultIdFormat = ActivityIdFormat.W3C;
 
             var options = app.ApplicationServices.GetRequiredService<IOptions<HttpReportsOptions>>();
 
             if (!options.Value.Switch)
-                return app;
+                return null;
 
-            var storage = app.ApplicationServices.GetRequiredService<IHttpReportsStorage>() ?? throw new ArgumentNullException("Storage Service Not Found");
+            app.UseMiddleware<DefaultHttpReportsMiddleware>();
+
+            return new HttpReportsInitializer(app);
+        }
+
+        public static IHttpReportsInitializer InitStorage(this IHttpReportsInitializer initializer)
+        {
+            var storage = initializer.ApplicationBuilder.ApplicationServices.GetRequiredService<IHttpReportsStorage>() ?? throw new ArgumentNullException("Storage Service Not Found");
             storage.InitAsync().Wait();
 
-            return app.UseMiddleware<DefaultHttpReportsMiddleware>();
+            return initializer;
         }
     }
 }

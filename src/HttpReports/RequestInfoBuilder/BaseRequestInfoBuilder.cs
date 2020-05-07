@@ -16,18 +16,18 @@ namespace HttpReports
         {
             Options = options.Value;
             ModelCreator = modelCreator;
-        } 
-        
-        protected abstract (IRequestInfo,IRequestDetail) Build(HttpContext context,IRequestInfo request, string path); 
+        }
 
-        public (IRequestInfo,IRequestDetail) Build(HttpContext context, Stopwatch stopwatch)
-        {  
-            var path = (context.Request.Path.Value ?? string.Empty).ToLowerInvariant(); 
+        protected abstract (IRequestInfo, IRequestDetail) Build(HttpContext context, IRequestInfo request, string path);
+
+        public (IRequestInfo, IRequestDetail) Build(HttpContext context, Stopwatch stopwatch)
+        {
+            var path = (context.Request.Path.Value ?? string.Empty).ToLowerInvariant();
 
             if (Options.FilterStaticFiles && path.Contains("."))
-            { 
-                return (null,null);
-            }  
+            {
+                return (null, null);
+            }
 
             // Build RequestInfo 
             var request = ModelCreator.CreateRequestInfo();
@@ -42,11 +42,11 @@ namespace HttpReports
             request.Milliseconds = ToInt32(stopwatch.ElapsedMilliseconds);
             request.CreateTime = context.Items[BasicConfig.ActiveTraceCreateTime].ToDateTime();
 
-            path = path.Replace(@"///",@"/").Replace(@"//", @"/");  
+            path = path.Replace(@"///", @"/").Replace(@"//", @"/");
 
-            var (requestInfo,requestDetail) = Build(context, request, path);
+            var (requestInfo, requestDetail) = Build(context, request, path);
 
-            return (ParseRequestInfo(requestInfo),ParseRequestDetail(requestDetail));
+            return (ParseRequestInfo(requestInfo), ParseRequestDetail(requestDetail));
 
         }
 
@@ -56,14 +56,14 @@ namespace HttpReports
             if (request.Route == null) request.Route = string.Empty;
             if (request.Url == null) request.Url = string.Empty;
             if (request.Method == null) request.Method = string.Empty;
-            if (request.IP == null) request.IP = string.Empty; 
+            if (request.IP == null) request.IP = string.Empty;
 
             return request;
         }
 
         private IRequestDetail ParseRequestDetail(IRequestDetail request)
         {
-            if (request.Scheme == null) request.Scheme = string.Empty; 
+            if (request.Scheme == null) request.Scheme = string.Empty;
             if (request.QueryString == null) request.QueryString = string.Empty;
             if (request.Header == null) request.Header = string.Empty;
             if (request.Cookie == null) request.Cookie = string.Empty;
@@ -76,7 +76,7 @@ namespace HttpReports
 
             if (request.QueryString.Length > max)
             {
-                request.QueryString = request.QueryString.Substring(0,max);
+                request.QueryString = request.QueryString.Substring(0, max);
             }
 
             if (request.Header.Length > max)
@@ -107,7 +107,7 @@ namespace HttpReports
             if (request.ErrorStack.Length > max)
             {
                 request.ErrorStack = request.ErrorStack.Substring(0, max);
-            } 
+            }
 
             return request;
         }
@@ -119,9 +119,9 @@ namespace HttpReports
             {
                 return -1;
             }
-            return (int)value == 0 ? 1:(int)value;
-        } 
-      
+            return (int)value == 0 ? 1 : (int)value;
+        }
+
 
         protected static bool IsNumber(string str)
         {

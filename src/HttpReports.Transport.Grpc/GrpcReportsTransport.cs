@@ -52,13 +52,12 @@ namespace HttpReports.Transport.Grpc
             _deferFlushCollection = new AsyncCallbackDeferFlushCollection<HttpReports.Collector.Grpc.RequestInfo, HttpReports.Collector.Grpc.RequestDetail>(WriteToRemote, 50, 5);
         }
 
-        private Task WriteToRemote(Dictionary<HttpReports.Collector.Grpc.RequestInfo, HttpReports.Collector.Grpc.RequestDetail> list, CancellationToken token)
+        private async Task WriteToRemote(Dictionary<HttpReports.Collector.Grpc.RequestInfo, HttpReports.Collector.Grpc.RequestDetail> list, CancellationToken token)
         {
             var pack = new RequestInfoPack();
             var data = list.Select(m => new RequestInfoWithDetail() { Info = m.Key, Detail = m.Value }).ToArray();
             pack.Data.AddRange(data);
-            _client.WriteAsync(pack);
-            return Task.CompletedTask;
+            var reply = await _client.WriteAsync(pack);
         }
 
         public void Write(IRequestInfo requestInfo, IRequestDetail requestDetail)

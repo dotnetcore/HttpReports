@@ -1,4 +1,5 @@
-﻿using HttpReports.Collector.Grpc;
+﻿using HttpReports;
+using HttpReports.Collector.Grpc;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -7,10 +8,10 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class DependencyInjectionExtensions
     {
-        public static IServiceCollection AddHttpReportsGrpcCollector(this IServiceCollection services)
+        public static IHttpReportsBuilder AddHttpReportsGrpcCollector(this IHttpReportsBuilder builder)
         {
-            services.AddGrpc();
-            return services;
+            builder.Services.AddGrpc();
+            return builder;
         }
 
         public static GrpcServiceEndpointConventionBuilder MapHttpReportsGrpcCollector(this IEndpointRouteBuilder builder)

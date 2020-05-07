@@ -4,29 +4,33 @@ using HttpReports;
 using HttpReports.Transport.Grpc;
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class DependencyInjectionExtensions
     {
-        public static IServiceCollection AddGrpcReportsTransport(this IServiceCollection services, IConfiguration configuration)
+        public static IHttpReportsBuilder UseGrpcReportsTransport(this IHttpReportsBuilder builder, IConfiguration configuration)
         {
-            services.AddOptions()
-                    .Configure<GrpcReportsTransportOptions>(configuration);
-            return services.AddGrpcReportsTransport();
+            builder.Services.AddOptions()
+                            .Configure<GrpcReportsTransportOptions>(configuration);
+            return builder.UseGrpcReportsTransport();
         }
 
-        public static IServiceCollection AddGrpcReportsTransport(this IServiceCollection services, Action<GrpcReportsTransportOptions> options)
+        public static IHttpReportsBuilder UseGrpcReportsTransport(this IHttpReportsBuilder builder, Action<GrpcReportsTransportOptions> options)
         {
-            services.AddOptions()
-                    .Configure(options);
-            return services.AddGrpcReportsTransport();
+            builder.Services.AddOptions()
+                            .Configure(options);
+            return builder;
         }
 
-        public static IServiceCollection AddGrpcReportsTransport(this IServiceCollection services)
+        public static IHttpReportsBuilder UseGrpcReportsTransport(this IHttpReportsBuilder builder)
         {
-            services.AddSingleton<IReportsTransport, GrpcReportsTransport>();
-            return services;
+            builder.Services.RemoveAll<IReportsTransport>();
+            builder.Services.AddSingleton<IReportsTransport, GrpcReportsTransport>();
+            builder.Services.RemoveAll<IModelCreator>();
+            builder.Services.AddSingleton<IModelCreator, ModelCreator>();
+            return builder;
         }
     }
 }
