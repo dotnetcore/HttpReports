@@ -194,7 +194,7 @@ namespace HttpReports.Storage.Oracle
 
 
         public async Task AddRequestInfoAsync(IRequestInfo request, IRequestDetail detail)
-        {
+        {  
             if (_options.EnableDefer)
             {
                 _deferFlushCollection.Push(request,detail);
@@ -203,13 +203,13 @@ namespace HttpReports.Storage.Oracle
             {
                 await LoggingSqlOperation(async connection =>
                 {
-                    string requestSql = $@"Insert Into RequestInfo Values ('{request.Id}','{request.ParentId}','{request.Node}','{request.Route}','{request.Url}','{request.RequestType}','{request.Method}',{request.Milliseconds},{request.StatusCode},'{request.IP}',{request.Port},'{request.LocalIP}',{request.LocalPort},to_date('{request.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss')) ";
+                    string requestSql = $@"Insert Into RequestInfo  Values (:Id,:ParentId, :Node, :Route, :Url,:RequestType,:Method, :Milliseconds, :StatusCode, :IP,:Port,:LocalIP,:LocalPort,:CreateTime) ";
 
-                    await connection.ExecuteAsync(requestSql);
+                    await connection.ExecuteAsync(requestSql, request);
 
-                    string detailSql = $@"Insert Into RequestDetail Values ('{detail.Id}','{detail.RequestId}','{detail.Scheme}','{detail.QueryString}','{detail.Header}','{detail.Cookie}','{detail.RequestBody}','{detail.ResponseBody}','{detail.ErrorMessage}','{detail.ErrorStack}',to_date('{detail.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss'))  ";
+                    string detailSql = $@"Insert Into RequestDetail Values  (:Id,:RequestId,:Scheme,:QueryString,:Header,:Cookie,:RequestBody,:ResponseBody,:ErrorMessage,:ErrorStack,:CreateTime)  ";
 
-                    await connection.ExecuteAsync(detailSql);
+                    await connection.ExecuteAsync(detailSql, detail); 
 
                 }, "请求数据保存失败");
 

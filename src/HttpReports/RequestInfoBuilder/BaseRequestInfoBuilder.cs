@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using HttpReports.Core.Config;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -20,14 +21,13 @@ namespace HttpReports
         
         protected abstract (IRequestInfo,IRequestDetail) Build(HttpContext context,IRequestInfo request, string path); 
 
+
+
         public (IRequestInfo,IRequestDetail) Build(HttpContext context, Stopwatch stopwatch)
         {  
-            var path = (context.Request.Path.Value ?? string.Empty).ToLowerInvariant(); 
+            var path = (context.Request.Path.Value ?? string.Empty).ToLowerInvariant();
 
-            if (Options.FilterStaticFiles && path.Contains("."))
-            { 
-                return (null,null);
-            }  
+            if (IsFilterRequest(context)) return (null,null);
 
             // Build RequestInfo 
             var request = ModelCreator.CreateRequestInfo();
@@ -48,8 +48,8 @@ namespace HttpReports
 
             return (ParseRequestInfo(requestInfo),ParseRequestDetail(requestDetail));
 
-        }
-
+        } 
+        
         private IRequestInfo ParseRequestInfo(IRequestInfo request)
         {
             if (request.Node == null) request.Node = string.Empty;
@@ -106,12 +106,37 @@ namespace HttpReports
 
             if (request.ErrorStack.Length > max)
             {
-                request.ErrorStack = request.ErrorStack.Substring(0, max);
+                request.ErrorStack = request.ErrorStack.Substring(0, max - 10);
             } 
 
             return request;
         }
 
+        private bool IsFilterRequest(HttpContext context)
+        {  
+            bool result = false;
+
+            if (!context.Request.ContentType.IsEmpty() && context.Request.ContentType.Contains("application/grpc"))
+                return false; 
+
+            if (context.Request.Method.ToLowerInvariant() == "options")
+                 return true;
+
+            if (!Options.FilterStaticFiles)
+                return false; 
+           
+            var path = (context.Request.Path.Value ?? string.Empty).ToLowerInvariant();
+
+            if (path.Contains("."))
+            {
+                var fileType = path.Split('.').Last();
+
+                if (fileType != "html" && fileType!= "aspx")
+                    return true;   
+            }  
+
+            return result;  
+        }  
 
         protected static int ToInt32(long value)
         {

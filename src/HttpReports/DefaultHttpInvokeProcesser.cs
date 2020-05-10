@@ -24,7 +24,7 @@ namespace HttpReports
         {
             var (requestInfo,requestDetail) = RequestInfoBuilder.Build(context, stopwatch);
 
-            if (requestInfo != null)
+            if (requestInfo != null && requestDetail != null)
             {
                 Task.Run(() => { Storage.AddRequestInfoAsync(requestInfo,requestDetail); });
             }  
