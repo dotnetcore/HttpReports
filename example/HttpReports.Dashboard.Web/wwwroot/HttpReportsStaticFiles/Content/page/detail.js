@@ -86,17 +86,11 @@ function InitTable() {
                 field: 'requestType',
                 title: lang.Request_Connection,
                 align: 'center'
-            },
-            {
-                field: 'route',
-                title: lang.Request_Route,
-                align: 'center'
-
-            },
+            }, 
             {
                 field: 'url',
                 title: lang.Request_Url,
-                align: 'center'
+                align: 'left'
 
             },
             {

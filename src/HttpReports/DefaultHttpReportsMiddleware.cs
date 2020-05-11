@@ -35,28 +35,21 @@ namespace HttpReports
             {
                 await _next(context);
                 return;
-            } 
+            }
 
-
-            if (context.Request.ContentType == "application/grpc")
+            if (!context.Request.ContentType.IsEmpty() && context.Request.ContentType.Contains("application/grpc"))
             {
                 await InvokeGrpcAsync(context);
             }
             else
             {
-               await InvokeHttpAsync(context);
-            } 
+                await InvokeHttpAsync(context);
+            }
         }
 
 
         private async Task InvokeHttpAsync(HttpContext context)
         {
-            if (context.Request.Method.ToUpper() == "OPTIONS")
-            {
-                await _next(context);
-                return;
-            }
-
             var stopwatch = Stopwatch.StartNew();
             stopwatch.Start();
 
@@ -84,7 +77,7 @@ namespace HttpReports
                 context.Items.Add(BasicConfig.HttpReportsRequestBody, requestBody);
                 context.Items.Add(BasicConfig.HttpReportsResponseBody, responseBody);
 
-                await responseMemoryStream.CopyToAsync(originalBodyStream); 
+                await responseMemoryStream.CopyToAsync(originalBodyStream);
 
                 responseMemoryStream.Dispose();
 
@@ -98,14 +91,14 @@ namespace HttpReports
         }
 
         private async Task InvokeGrpcAsync(HttpContext context)
-        { 
+        {
             var stopwatch = Stopwatch.StartNew();
             stopwatch.Start();
 
-            ConfigTrace(context); 
+            ConfigTrace(context);
 
             try
-            { 
+            {
                 await _next(context);
 
             }
@@ -118,29 +111,29 @@ namespace HttpReports
 
                 if (context.Items.ContainsKey(BasicConfig.HttpReportsGrpcRequest))
                 {
-                    requestBody = JsonConvert.SerializeObject(context.Items[BasicConfig.HttpReportsGrpcRequest]); 
+                    requestBody = JsonConvert.SerializeObject(context.Items[BasicConfig.HttpReportsGrpcRequest]);
                 }
 
                 if (context.Items.ContainsKey(BasicConfig.HttpReportsGrpcResponse))
                 {
                     responseBody = JsonConvert.SerializeObject(context.Items[BasicConfig.HttpReportsGrpcResponse]);
-                } 
+                }
 
                 context.Items.Add(BasicConfig.HttpReportsRequestBody, requestBody);
-                context.Items.Add(BasicConfig.HttpReportsResponseBody,responseBody); 
+                context.Items.Add(BasicConfig.HttpReportsResponseBody, responseBody);
 
                 if (!string.IsNullOrEmpty(context.Request.Path))
                 {
                     InvokeProcesser.Process(context, stopwatch);
-                } 
-            } 
-        } 
+                }
+            }
+        }
 
 
         private async Task<string> GetRequestBodyAsync(HttpContext context)
         {
             try
-            { 
+            {
                 string result = string.Empty;
 
                 context.Request.EnableBuffering();
@@ -156,15 +149,20 @@ namespace HttpReports
             catch (Exception ex)
             {
                 Logger.LogWarning(ex.ToString());
-                return string.Empty; 
-            }  
+                return string.Empty;
+            }
         }
 
         private async Task<string> GetResponseBodyAsync(HttpContext context)
         {
             try
             {
-                if (!context.Response.Body.CanSeek || !context.Request.Body.CanRead)   return string.Empty; 
+                if (FilterStaticFiles(context))
+                {
+                    context.Response.Body.Seek(0, SeekOrigin.Begin);
+                    return string.Empty;
+                } 
+                
 
                 string result = string.Empty;
 
@@ -183,7 +181,7 @@ namespace HttpReports
             {
                 Logger.LogWarning(ex.ToString());
                 return string.Empty;
-            }  
+            }
         }
 
         private void ConfigTrace(HttpContext context)
@@ -194,7 +192,7 @@ namespace HttpReports
                 activity.Start();
                 activity.AddBaggage(BasicConfig.ActiveTraceId, activity.Id);
                 context.Items.Add(BasicConfig.ActiveTraceCreateTime, DateTime.Now);
-                context.Response.Headers.Add(BasicConfig.ActiveTraceId,activity.SpanId.ToString());
+                context.Response.Headers.Add(BasicConfig.ActiveTraceId, activity.SpanId.ToString());
                 return;
             }
 
@@ -219,5 +217,21 @@ namespace HttpReports
                 context.Response.Headers.Add(BasicConfig.ActiveTraceId, activity.SpanId.ToString());
             }
         }
+
+        private bool FilterStaticFiles(HttpContext context)
+        { 
+            if (!context.Request.ContentType.IsEmpty() && context.Request.ContentType.Contains("application/grpc"))
+                return false;
+
+            if (context.Request.Method.ToLowerInvariant() == "options")
+                return true;
+
+            if (context.Request.Path.HasValue && context.Request.Path.Value.Contains("."))
+            {
+                return true;
+            }
+
+            return false;
+        } 
     }
 }

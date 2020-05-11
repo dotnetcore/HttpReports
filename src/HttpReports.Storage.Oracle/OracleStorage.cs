@@ -176,25 +176,43 @@ namespace HttpReports.Storage.Oracle
 
                 sb.AppendLine("begin");
 
+                DynamicParameters Parameters = new DynamicParameters();
+
+                int m = 0;
+                int n = 0;
+
                 foreach (var request in list.Select(x=>x.Key))
                 {
-                    sb.AppendLine($@"Insert Into RequestInfo Values ('{request.Id}','{request.ParentId}','{request.Node}','{request.Route}','{request.Url}','{request.RequestType}', '{request.Method}',{request.Milliseconds},{request.StatusCode},'{request.IP}',{request.Port},'{request.LocalIP}',{request.LocalPort},to_date('{request.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss')); ");
+                    m = m + 1;
+
+                    Parameters.Add($"mId{m}",request.Id);
+                    Parameters.Add($"mParentId", request.ParentId);
+                    Parameters.Add($"mNode", request.Node);
+                    Parameters.Add($"mRoute", request.Route);
+                    Parameters.Add($"mUrl", request.Url);
+                    Parameters.Add($"mUrl", request.Url);
+
+                    sb.AppendLine($@" Insert Into RequestInfo  Values (:mId{m},:mParentId{m}, :mNode{m}, :mRoute{m}, :mUrl{m},:mRequestType{m},:mMethod{m}, :mMilliseconds{m}, :mStatusCode{m}, :mIP{m},:mPort{m},:mLocalIP{m},:mLocalPort{m},:mCreateTime{m}) ");
                 }
 
                 foreach (var detail in list.Select(x => x.Value))
                 {
-                    sb.AppendLine($@"Insert Into RequestDetail Values ('{detail.Id}','{detail.RequestId}','{detail.Scheme}','{detail.QueryString}','{detail.Header}','{detail.Cookie}','{detail.RequestBody}','{detail.ResponseBody}','{detail.ErrorMessage}','{detail.ErrorStack}' ,to_date('{detail.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss'));  ");
+                    n = n + 1;
+
+                    sb.AppendLine($@"Insert Into RequestDetail Values  (:nId{n},:nRequestId{n},:nScheme{n},:nQueryString{n},:nHeader{n},:nCookie{n},:nRequestBody{n},:nResponseBody{n},:nErrorMessage{n},:nErrorStack{n},:nCreateTime{n})  ");
                 }
 
                 sb.AppendLine("end;"); 
               
-                await connection.ExecuteAsync(sb.ToString());
+                await connection.ExecuteAsync(sb.ToString(), Parameters);
             }, "请求数据批量保存失败");
         } 
 
 
         public async Task AddRequestInfoAsync(IRequestInfo request, IRequestDetail detail)
         {
+            detail = CutRequestDetail(detail);
+
             if (_options.EnableDefer)
             {
                 _deferFlushCollection.Push(request,detail);
@@ -203,18 +221,60 @@ namespace HttpReports.Storage.Oracle
             {
                 await LoggingSqlOperation(async connection =>
                 {
-                    string requestSql = $@"Insert Into RequestInfo Values ('{request.Id}','{request.ParentId}','{request.Node}','{request.Route}','{request.Url}','{request.RequestType}','{request.Method}',{request.Milliseconds},{request.StatusCode},'{request.IP}',{request.Port},'{request.LocalIP}',{request.LocalPort},to_date('{request.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss')) ";
+                    string requestSql = $@"Insert Into RequestInfo  Values (:Id,:ParentId, :Node, :Route, :Url,:RequestType,:Method, :Milliseconds, :StatusCode, :IP,:Port,:LocalIP,:LocalPort,:CreateTime) ";
 
-                    await connection.ExecuteAsync(requestSql);
+                    await connection.ExecuteAsync(requestSql, request);
 
-                    string detailSql = $@"Insert Into RequestDetail Values ('{detail.Id}','{detail.RequestId}','{detail.Scheme}','{detail.QueryString}','{detail.Header}','{detail.Cookie}','{detail.RequestBody}','{detail.ResponseBody}','{detail.ErrorMessage}','{detail.ErrorStack}',to_date('{detail.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','yyyy-mm-dd hh24:mi:ss'))  ";
+                    string detailSql = $@"Insert Into RequestDetail Values  (:Id,:RequestId,:Scheme,:QueryString,:Header,:Cookie,:RequestBody,:ResponseBody,:ErrorMessage,:ErrorStack,:CreateTime)  ";
 
-                    await connection.ExecuteAsync(detailSql);
+                    await connection.ExecuteAsync(detailSql, detail); 
 
                 }, "请求数据保存失败");
 
             } 
         }
+
+        private IRequestDetail CutRequestDetail(IRequestDetail detail)
+        {
+            int OracleMaxClob = 4000;
+
+            if (detail.QueryString.Length > OracleMaxClob)
+            {
+                detail.QueryString = detail.QueryString.Substring(0, OracleMaxClob);
+            }
+
+            if (detail.Header.Length > OracleMaxClob)
+            {
+                detail.Header = detail.Header.Substring(0, OracleMaxClob);
+            }
+
+            if (detail.Cookie.Length > OracleMaxClob)
+            {
+                detail.Cookie = detail.Cookie.Substring(0, OracleMaxClob);
+            }
+
+            if (detail.RequestBody.Length > OracleMaxClob)
+            {
+                detail.RequestBody = detail.RequestBody.Substring(0, OracleMaxClob);
+            }
+
+            if (detail.ResponseBody.Length > OracleMaxClob)
+            {
+                detail.ResponseBody = detail.ResponseBody.Substring(0, OracleMaxClob);
+            }
+
+            if (detail.ErrorMessage.Length > OracleMaxClob)
+            {
+                detail.ErrorMessage = detail.ErrorMessage.Substring(0, OracleMaxClob);
+            }
+
+            if (detail.ErrorStack.Length > OracleMaxClob)
+            {
+                detail.ErrorStack = detail.ErrorStack.Substring(0, OracleMaxClob);
+            } 
+
+            return detail; 
+        } 
 
         /// <summary>
         /// 获取所有节点信息

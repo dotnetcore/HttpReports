@@ -14,6 +14,8 @@ namespace HttpReports
         /// </summary>
         /// <param name="context"></param>
         /// <param name="stopwatch">调用计时器</param>
-        void Process(HttpContext context, Stopwatch stopwatch);
+        void Process(HttpContext context, Stopwatch stopwatch); 
+
+
     }
 }

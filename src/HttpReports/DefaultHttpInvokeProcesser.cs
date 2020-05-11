@@ -23,7 +23,7 @@ namespace HttpReports
         {
             var (requestInfo, requestDetail) = RequestInfoBuilder.Build(context, stopwatch);
 
-            if (requestInfo != null)
+            if (requestInfo != null && requestDetail != null)
             {
                 ReportsTransport.Write(requestInfo, requestDetail);
             }
