@@ -23,13 +23,13 @@ namespace HttpReports
 
         public ILogger<DefaultHttpReportsMiddleware> Logger { get; }
 
-        public DefaultHttpReportsMiddleware(RequestDelegate next, HttpReportsOptions options, IRequestInfoBuilder requestInfoBuilder, IHttpInvokeProcesser invokeProcesser, ILogger<DefaultHttpReportsMiddleware> logger)
+        public DefaultHttpReportsMiddleware(RequestDelegate next, IOptions<HttpReportsOptions> options, IRequestInfoBuilder requestInfoBuilder, IHttpInvokeProcesser invokeProcesser, ILogger<DefaultHttpReportsMiddleware> logger)
         {
             _next = next;
             Logger = logger;
             RequestInfoBuilder = requestInfoBuilder;
             InvokeProcesser = invokeProcesser;
-            Options = options;
+            Options = options.Value;
         }
 
         public async Task InvokeAsync(HttpContext context)

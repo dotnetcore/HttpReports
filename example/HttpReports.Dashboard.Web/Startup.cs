@@ -22,7 +22,7 @@ namespace HttpReports.Dashboard.Web
        
         public void ConfigureServices(IServiceCollection services)
         {   
-            services.AddHttpReports().UsePostgreSQLStorage().UseGrpc(); 
+            services.AddHttpReports().UseMySqlStorage().UseGrpc(); 
 
             services.AddHttpReportsDashboard();
            
