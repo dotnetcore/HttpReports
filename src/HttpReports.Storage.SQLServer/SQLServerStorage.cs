@@ -15,21 +15,21 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks; 
+using System.Threading.Tasks;
 
 namespace HttpReports.Storage.SQLServer
-{  
+{
     public class SQLServerStorage : IHttpReportsStorage
     {
         public SQLServerStorageOptions _options;
 
         public SQLServerConnectionFactory ConnectionFactory { get; }
 
-        public ILogger<SQLServerStorage> Logger { get; } 
+        public ILogger<SQLServerStorage> Logger { get; }
 
         private readonly AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail> _deferFlushCollection = null;
 
-        public SQLServerStorage(IOptions<SQLServerStorageOptions> options,SQLServerConnectionFactory connectionFactory, ILogger<SQLServerStorage> logger)
+        public SQLServerStorage(IOptions<SQLServerStorageOptions> options, SQLServerConnectionFactory connectionFactory, ILogger<SQLServerStorage> logger)
         {
             _options = options.Value;
 
@@ -38,7 +38,7 @@ namespace HttpReports.Storage.SQLServer
 
             if (_options.EnableDefer)
             {
-                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail>(AddRequestInfoAsync,_options.DeferThreshold, _options.DeferSecond);
+                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail>(AddRequestInfoAsync, _options.DeferThreshold, _options.DeferSecond);
             }
         }
 
@@ -46,9 +46,9 @@ namespace HttpReports.Storage.SQLServer
         {
             try
             {
-                using (var con = ConnectionFactory.GetConnection()) 
-                {   
-                     
+                using (var con = ConnectionFactory.GetConnection())
+                {
+
                     if (await con.QueryFirstOrDefaultAsync<int>($" Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.RequestInfo') ") == 0)
                     {
                         await con.ExecuteAsync(@"   
@@ -56,7 +56,7 @@ namespace HttpReports.Storage.SQLServer
 	                            [Id] [varchar](50) NOT NULL PRIMARY KEY,
                                 [ParentId] [nvarchar](50) NULL,
 	                            [Node] [nvarchar](50) NULL,
-	                            [Route] [nvarchar](120) NULL,
+	                            [Route] [nvarchar](200) NULL,
 	                            [Url] [nvarchar](200) NULL,
                                 [RequestType] [nvarchar](50) NULL,
 	                            [Method] [nvarchar](50) NULL,
@@ -68,7 +68,7 @@ namespace HttpReports.Storage.SQLServer
                                 [LocalPort] [int] NULL,
 	                            [CreateTime] [datetime] NULL)
                     ");
-                    } 
+                    }
 
                     if (await con.QueryFirstOrDefaultAsync<int>($" Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.RequestDetail') ") == 0)
                     {
@@ -86,7 +86,7 @@ namespace HttpReports.Storage.SQLServer
                                 [ErrorStack] [text] NULL,
                                 [CreateTime] [datetime] NULL )
                     ");
-                    } 
+                    }
 
                     if (await con.QueryFirstOrDefaultAsync<int>($"Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.MonitorJob')") == 0)
                     {
@@ -104,8 +104,8 @@ namespace HttpReports.Storage.SQLServer
                                 [PayLoad] [nvarchar](2000) NULL, 
 	                            [CreateTime] [datetime] NULL )
                       ");
-                    } 
-                   
+                    }
+
                     if (await con.QueryFirstOrDefaultAsync<int>($"Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.SysUser')") == 0)
                     {
                         await con.ExecuteAsync($@"
@@ -144,27 +144,74 @@ namespace HttpReports.Storage.SQLServer
                         await con.ExecuteAsync($" Insert Into [SysConfig] Values ('{MD5_16(Guid.NewGuid().ToString())}','{Core.Config.BasicConfig.Language}','English') ");
                     }
 
-                } 
+                }
             }
             catch (Exception ex)
             {
-                throw new Exception("Database init failed：" + ex.Message,ex);
-            } 
+                throw new Exception("Database init failed：" + ex.Message, ex);
+            }
         }
-         
+
         private async Task AddRequestInfoAsync(Dictionary<IRequestInfo, IRequestDetail> list, CancellationToken token)
         {
             await LoggingSqlOperation(async connection =>
-            { 
-                string requestSql = string.Join(",", list.Select(x => x.Key).Select(x => $" ('{x.Id}','{x.ParentId}','{x.Node}','{x.Route}','{x.Url}','{x.RequestType}','{x.Method}',{x.Milliseconds},{x.StatusCode},'{x.IP}',{x.Port},'{x.LocalIP}',{x.LocalPort},'{x.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}') ")); 
-              
-                await connection.ExecuteAsync($"Insert into [RequestInfo] ([Id],[ParentId],[Node],[Route],[Url],[RequestType],[Method],[Milliseconds],[StatusCode],[IP],[Port],[LocalIP],[LocalPort],[CreateTime]) VALUES {requestSql}");
+            {
+                List<IRequestInfo> requestInfos = list.Select(x => x.Key).ToList();
 
-                string detailSql = string.Join(",", list.Select(x => x.Value).Select(x => $" ('{x.Id}','{x.RequestId}','{x.Scheme}','{x.QueryString}','{x.Header}','{x.Cookie}','{x.RequestBody}','{x.ResponseBody}','{x.ErrorMessage}','{x.ErrorStack}','{x.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}' ) "));
+                List<IRequestDetail> requestDetails = list.Select(x => x.Value).ToList();
 
-                await connection.ExecuteAsync($"Insert into [RequestDetail] (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime) VALUES {detailSql}");
-                  
+                string requestSql = string.Join(",", requestInfos.Select(item =>
+                { 
+                    int i = requestInfos.IndexOf(item) + 1;
+
+                    return $"(@Id{i},@ParentId{i},@Node{i}, @Route{i}, @Url{i},@RequestType{i}, @Method{i}, @Milliseconds{i}, @StatusCode{i}, @IP{i},@Port{i},@LocalIP{i},@LocalPort{i},@CreateTime{i})";
+
+                }));
+
+                await connection.ExecuteAsync($"Insert into [RequestInfo] ([Id],[ParentId],[Node],[Route],[Url],[RequestType],[Method],[Milliseconds],[StatusCode],[IP],[Port],[LocalIP],[LocalPort],[CreateTime]) VALUES {requestSql}", BuildParameters(requestInfos));
+
+
+
+                string detailSql = string.Join(",", requestDetails.Select(item =>
+                {
+
+                    int i = requestDetails.IndexOf(item) + 1;
+
+                    return $"(@Id{i},@RequestId{i},@Scheme{i},@QueryString{i},@Header{i},@Cookie{i},@RequestBody{i},@ResponseBody{i},@ErrorMessage{i},@ErrorStack{i},@CreateTime{i}) ";
+
+                }));
+
+
+                await connection.ExecuteAsync($"Insert into [RequestDetail] (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime) VALUES {detailSql}", BuildParameters(requestDetails));
+
+
+
             }, "请求数据批量保存失败");
+        }
+
+        private DynamicParameters BuildParameters<K>(List<K> data)
+        {
+            DynamicParameters parameters = new DynamicParameters();
+
+            AddParameters<K>(data);
+
+            return parameters;
+
+            void AddParameters<T>(List<T> list)
+            {
+                var props = typeof(T).GetProperties().ToList();
+
+                foreach (var item in list)
+                {
+                    foreach (var p in props)
+                    {
+                        if (p.CanRead)
+                        {
+                            parameters.Add(p.Name + (list.IndexOf(item) + 1), p.GetValue(item));
+                        }
+                    }
+                }
+            }
         }
 
 
@@ -172,7 +219,7 @@ namespace HttpReports.Storage.SQLServer
         {
             if (_options.EnableDefer)
             {
-                _deferFlushCollection.Push(request,detail);
+                _deferFlushCollection.Push(request, detail);
             }
             else
             {
@@ -184,7 +231,7 @@ namespace HttpReports.Storage.SQLServer
 
                 }, "请求数据保存失败");
 
-            } 
+            }
 
         }
 
@@ -313,11 +360,11 @@ namespace HttpReports.Storage.SQLServer
                 {
                     builder.Append($"{(orderFilterOption.IsAscend ? "Asc" : "Desc")} ");
                 }
-            } 
+            }
 
             return builder.ToString();
-        }   
-        
+        }
+
 
         /// <summary>
         /// 获取首页数据
@@ -507,10 +554,10 @@ namespace HttpReports.Storage.SQLServer
             };
 
             await LoggingSqlOperation(async connection =>
-            { 
+            {
                 result.AllItemCount = connection.QueryFirstOrDefault<int>(countSql);
 
-                result.List.AddRange((await connection.GetListBySqlAsync<RequestInfo>(sql,"CreateTime desc",filterOption.PageSize,filterOption.Page,result.AllItemCount)).ToArray());
+                result.List.AddRange((await connection.GetListBySqlAsync<RequestInfo>(sql, "CreateTime desc", filterOption.PageSize, filterOption.Page, result.AllItemCount)).ToArray());
             }, "查询请求信息列表异常");
 
             return result;
@@ -544,17 +591,17 @@ namespace HttpReports.Storage.SQLServer
                 if (filterOption.Type == TimeUnit.Minute)
                 {
                     foreach (var item in list)
-                    { 
+                    {
                         result.Items.Add(item.KeyField.Substring(11).Replace(":", "-"), item.ValueField);
-                    } 
+                    }
                 }
 
                 if (filterOption.Type == TimeUnit.Hour)
                 {
                     foreach (var item in list)
-                    { 
+                    {
                         result.Items.Add(item.KeyField.Substring(8).Replace(" ", "-"), item.ValueField);
-                    }  
+                    }
                 }
 
 
@@ -570,7 +617,7 @@ namespace HttpReports.Storage.SQLServer
             }, "获取请求次数统计异常");
 
             return result;
-        } 
+        }
 
         /// <summary>
         /// 获取响应时间统计
@@ -623,7 +670,7 @@ namespace HttpReports.Storage.SQLServer
 
             }, "获取响应时间统计异常");
 
-            return result; 
+            return result;
         }
 
 
@@ -637,7 +684,7 @@ namespace HttpReports.Storage.SQLServer
         {
             string dateFormat;
             switch (filterOption.Type)
-            { 
+            {
                 case TimeUnit.Minute:
                     dateFormat = "CONVERT(varchar(16),CreateTime,120)";
                     break;
@@ -648,8 +695,8 @@ namespace HttpReports.Storage.SQLServer
 
                 case TimeUnit.Month:
                     dateFormat = "CONVERT(varchar(7),CreateTime, 120)";
-                    break; 
-             
+                    break;
+
                 case TimeUnit.Day:
                 default:
                     dateFormat = "CONVERT(varchar(10),CreateTime,120)";
@@ -675,7 +722,7 @@ namespace HttpReports.Storage.SQLServer
         /// <returns></returns>
         public async Task<(int Max, int All)> GetRequestCountWithWhiteListAsync(RequestCountWithListFilterOption filterOption)
         {
-            var ipFilter = $"({string.Join(",", filterOption.List.Select(x=> $"'{x}'" ))})";
+            var ipFilter = $"({string.Join(",", filterOption.List.Select(x => $"'{x}'"))})";
             if (filterOption.InList)
             {
                 ipFilter = "IP IN " + ipFilter;
@@ -744,7 +791,7 @@ namespace HttpReports.Storage.SQLServer
 
         public async Task<IMonitorJob> GetMonitorJob(string Id)
         {
-            string sql = $@"Select * From MonitorJob Where Id = '{Id}' " ;
+            string sql = $@"Select * From MonitorJob Where Id = '{Id}' ";
 
             TraceLogSql(sql);
 
@@ -804,7 +851,7 @@ namespace HttpReports.Storage.SQLServer
 
              ) > 0);
 
-        } 
+        }
 
         public async Task<SysUser> GetSysUser(string UserName)
         {
@@ -830,13 +877,13 @@ namespace HttpReports.Storage.SQLServer
         {
             string sql = " Select * From RequestInfo Where Id = @Id";
 
-            TraceLogSql(sql);  
+            TraceLogSql(sql);
 
-             var requestInfo = await LoggingSqlOperation(async connection => (
+            var requestInfo = await LoggingSqlOperation(async connection => (
 
-              await connection.QueryFirstOrDefaultAsync<RequestInfo>(sql, new { Id })
+             await connection.QueryFirstOrDefaultAsync<RequestInfo>(sql, new { Id })
 
-            ));
+           ));
 
             string detailSql = " Select * From RequestDetail Where RequestId = @Id";
 
@@ -848,7 +895,7 @@ namespace HttpReports.Storage.SQLServer
 
            ));
 
-            return (requestInfo,requestDetail);
+            return (requestInfo, requestDetail);
 
         }
 
@@ -862,7 +909,7 @@ namespace HttpReports.Storage.SQLServer
 
              await connection.QueryFirstOrDefaultAsync<RequestInfo>(sql, new { Id })
 
-           )); 
+           ));
 
             return requestInfo;
 
@@ -905,7 +952,7 @@ namespace HttpReports.Storage.SQLServer
 
             var result = await LoggingSqlOperation(async connection => (
 
-             await connection.ExecuteAsync(sql,new { Language })
+             await connection.ExecuteAsync(sql, new { Language })
 
            ));
         }
@@ -923,7 +970,7 @@ namespace HttpReports.Storage.SQLServer
            ));
 
             return result;
-        } 
+        }
 
     }
 }

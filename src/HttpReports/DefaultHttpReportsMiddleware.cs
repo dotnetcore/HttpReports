@@ -19,14 +19,17 @@ namespace HttpReports
 
         public IHttpInvokeProcesser InvokeProcesser { get; }
 
+        private HttpReportsOptions Options { get; }
+
         public ILogger<DefaultHttpReportsMiddleware> Logger { get; }
 
-        public DefaultHttpReportsMiddleware(RequestDelegate next, IRequestInfoBuilder requestInfoBuilder, IHttpInvokeProcesser invokeProcesser, ILogger<DefaultHttpReportsMiddleware> logger)
+        public DefaultHttpReportsMiddleware(RequestDelegate next, IOptions<HttpReportsOptions> options, IRequestInfoBuilder requestInfoBuilder, IHttpInvokeProcesser invokeProcesser, ILogger<DefaultHttpReportsMiddleware> logger)
         {
             _next = next;
             Logger = logger;
             RequestInfoBuilder = requestInfoBuilder;
             InvokeProcesser = invokeProcesser;
+            Options = options.Value;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -50,6 +53,12 @@ namespace HttpReports
 
         private async Task InvokeHttpAsync(HttpContext context)
         {
+            if (FilterRequest(context))
+            {
+                await _next(context);
+                return;
+            } 
+
             var stopwatch = Stopwatch.StartNew();
             stopwatch.Start();
 
@@ -138,7 +147,7 @@ namespace HttpReports
 
                 context.Request.EnableBuffering();
 
-                var requestReader = new StreamReader(context.Request.Body);
+                var requestReader = new StreamReader(context.Request.Body,System.Text.Encoding.UTF8);
 
                 result = await requestReader.ReadToEndAsync();
 
@@ -168,7 +177,7 @@ namespace HttpReports
 
                 context.Response.Body.Seek(0, SeekOrigin.Begin);
 
-                var responseReader = new StreamReader(context.Response.Body);
+                var responseReader = new StreamReader(context.Response.Body, System.Text.Encoding.UTF8);
 
                 result = await responseReader.ReadToEndAsync();
 
@@ -232,6 +241,58 @@ namespace HttpReports
             }
 
             return false;
+        }
+
+        private bool FilterRequest(HttpContext context)
+        {
+            if (Options.FilterRequest == null || Options.FilterRequest.Count() == 0)
+            {
+                return false;
+            }
+
+            var path = context.Request.Path.Value.ToLowerInvariant(); 
+
+            return MatchRequestRule();
+
+            bool MatchRequestRule()
+            {
+                bool result = false;
+
+                foreach (var item in Options.FilterRequest)
+                {
+                    var rule = item.ToLowerInvariant();
+
+                    if (rule.Select(x => x == '%').Count() == 0)
+                    {
+                        continue;
+                    }
+                    else if (rule.Select(x => x == '%').Count() >= 2)
+                    {
+                        if (path.Contains(rule.Replace("%", "")))
+                        {
+                            return true;
+                        }
+                    }
+                    else if (rule.Select(x => x == '%').Count() == 1 && rule.LastOrDefault() == '%')
+                    {
+                        if (path.StartsWith(rule.Replace("%", "")))
+                        {
+                            return true;
+                        }
+                    }
+
+                    else if (rule.Select(x => x == '%').Count() == 1 && rule.FirstOrDefault() == '%')
+                    {
+                        if (path.EndsWith(rule.Replace("%", "")))
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                return result;
+            }
         } 
+      
     }
 }

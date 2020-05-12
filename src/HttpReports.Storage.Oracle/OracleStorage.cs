@@ -176,38 +176,58 @@ namespace HttpReports.Storage.Oracle
 
                 sb.AppendLine("begin");
 
-                DynamicParameters Parameters = new DynamicParameters();
+                DynamicParameters Parameters = BuildParameters(list);
 
-                int m = 0;
-                int n = 0;
+                List<IRequestInfo> requestInfos = list.Select(x => x.Key).ToList();
 
-                foreach (var request in list.Select(x=>x.Key))
+                List<IRequestDetail> requestDetails = list.Select(x => x.Value).ToList(); 
+
+                foreach (var request in requestInfos)
                 {
-                    m = m + 1;
+                    int m = requestInfos.IndexOf(request) + 1;
 
-                    Parameters.Add($"mId{m}",request.Id);
-                    Parameters.Add($"mParentId", request.ParentId);
-                    Parameters.Add($"mNode", request.Node);
-                    Parameters.Add($"mRoute", request.Route);
-                    Parameters.Add($"mUrl", request.Url);
-                    Parameters.Add($"mUrl", request.Url);
-
-                    sb.AppendLine($@" Insert Into RequestInfo  Values (:mId{m},:mParentId{m}, :mNode{m}, :mRoute{m}, :mUrl{m},:mRequestType{m},:mMethod{m}, :mMilliseconds{m}, :mStatusCode{m}, :mIP{m},:mPort{m},:mLocalIP{m},:mLocalPort{m},:mCreateTime{m}) ");
+                    sb.AppendLine($@" Insert Into RequestInfo  Values (:mId{m},:mParentId{m}, :mNode{m}, :mRoute{m}, :mUrl{m},:mRequestType{m},:mMethod{m}, :mMilliseconds{m}, :mStatusCode{m}, :mIP{m},:mPort{m},:mLocalIP{m},:mLocalPort{m},:mCreateTime{m}) ;");
                 }
 
-                foreach (var detail in list.Select(x => x.Value))
+                foreach (var detail in requestDetails)
                 {
-                    n = n + 1;
+                    int n = requestDetails.IndexOf(detail) + 1;
 
-                    sb.AppendLine($@"Insert Into RequestDetail Values  (:nId{n},:nRequestId{n},:nScheme{n},:nQueryString{n},:nHeader{n},:nCookie{n},:nRequestBody{n},:nResponseBody{n},:nErrorMessage{n},:nErrorStack{n},:nCreateTime{n})  ");
+                    sb.AppendLine($@"Insert Into RequestDetail Values  (:nId{n},:nRequestId{n},:nScheme{n},:nQueryString{n},:nHeader{n},:nCookie{n},:nRequestBody{n},:nResponseBody{n},:nErrorMessage{n},:nErrorStack{n},:nCreateTime{n}) ; ");
                 }
 
-                sb.AppendLine("end;"); 
-              
+                sb.AppendLine("end;");  
+
                 await connection.ExecuteAsync(sb.ToString(), Parameters);
             }, "请求数据批量保存失败");
         } 
 
+        private DynamicParameters BuildParameters(Dictionary<IRequestInfo,IRequestDetail> dic)
+        {
+            DynamicParameters parameters = new DynamicParameters();
+
+            AddParameters(dic.Select(x => x.Key).ToList(),"m");
+
+            AddParameters(dic.Select(x => x.Value).ToList(),"n");
+
+            return parameters;
+
+            void AddParameters<T>(List<T> list,string key)
+            {
+                var props = typeof(T).GetProperties().ToList(); 
+
+                foreach (var item in list)
+                {
+                    foreach (var p in props)
+                    {
+                        if (p.CanRead)
+                        {
+                            parameters.Add(key + p.Name + (list.IndexOf(item) + 1), p.GetValue(item));
+                        } 
+                    } 
+                } 
+            }  
+        }  
 
         public async Task AddRequestInfoAsync(IRequestInfo request, IRequestDetail detail)
         {
@@ -770,7 +790,7 @@ namespace HttpReports.Storage.Oracle
 
             string sql = $@"Insert Into MonitorJob 
             (Id,Title,Description,CronLike,Emails,WebHook,Mobiles,Status,Nodes,PayLoad,CreateTime)
-             Values ('{Guid.NewGuid().ToString()}','{job.Title}','{job.Description}','{job.CronLike}','{job.Emails}', '{job.WebHook}', '{job.Mobiles}',{job.Status},'{job.Nodes}','{job.Payload}',to_date('{job.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','YYYY-MM-DD HH24:MI:SS'))";
+             Values ('{Guid.NewGuid().ToString()}',:Title,:Description,:CronLike,:Emails,:WebHook,:Mobiles,:Status,:Nodes,:Payload,to_date('{job.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','YYYY-MM-DD HH24:MI:SS'))";
 
             TraceLogSql(sql);
 
@@ -782,9 +802,9 @@ namespace HttpReports.Storage.Oracle
         {
             string sql = $@"Update MonitorJob 
 
-                Set Title = '{job.Title}' ,Description = '{job.Description}',CronLike = '{job.CronLike}',Emails = '{job.Emails}',Mobiles = '{job.Mobiles}', WebHook = '{job.WebHook}', Status= {job.Status} ,Nodes = '{job.Nodes}',PayLoad = '{job.Payload}' 
+                Set Title = :Title ,Description = :Description,CronLike = :CronLike ,Emails = :Emails ,Mobiles = :Mobiles , WebHook = :WebHook, Status = :Status ,Nodes = :Nodes',PayLoad = :Payload' 
 
-                Where Id = '{job.Id}' ";
+                Where Id = :Id ";
 
             TraceLogSql(sql);
 
@@ -797,13 +817,13 @@ namespace HttpReports.Storage.Oracle
 
         public async Task<IMonitorJob> GetMonitorJob(string Id)
         {
-            string sql = $@"Select * From MonitorJob Where Id = '{Id}' ";
+            string sql = $@"Select * From MonitorJob Where Id = :Id ";
 
             TraceLogSql(sql);
 
             return await LoggingSqlOperation(async connection => (
 
-              await connection.QueryFirstOrDefaultAsync<MonitorJob>(sql)
+              await connection.QueryFirstOrDefaultAsync<MonitorJob>(sql,new { Id })
 
             ));
         }
@@ -830,17 +850,17 @@ namespace HttpReports.Storage.Oracle
 
         public async Task<bool> DeleteMonitorJob(string Id)
         {
-            string sql = $@"Delete From MonitorJob Where Id = '{Id}' ";
+            string sql = $@"Delete From MonitorJob Where Id = :Id ";
 
             TraceLogSql(sql);
 
             return await LoggingSqlOperation(async connection =>
-            (await connection.ExecuteAsync(sql)) > 0);
+            (await connection.ExecuteAsync(sql,new { Id })) > 0);
         }
 
         public async Task<SysUser> CheckLogin(string Username, string Password)
         {
-            string sql = $" Select * From SysUser Where UserName = '{Username}' AND Password = '{Password}' ";
+            string sql = $" Select * From SysUser Where UserName = :UserName AND Password = :Password ";
 
             TraceLogSql(sql);
 
@@ -854,7 +874,7 @@ namespace HttpReports.Storage.Oracle
 
         public async Task<bool> UpdateLoginUser(SysUser model)
         {
-            string sql = $" Update SysUser Set UserName = '{model.UserName}' , Password = '{model.Password}'  Where Id = '{model.Id}' ";
+            string sql = $" Update SysUser Set UserName = :UserName , Password = :Password  Where Id = :Id ";
 
             TraceLogSql(sql);
 
@@ -869,7 +889,7 @@ namespace HttpReports.Storage.Oracle
 
         public async Task<SysUser> GetSysUser(string UserName)
         {
-            string sql = $" Select * From SysUser Where UserName = '{UserName}' ";
+            string sql = $" Select * From SysUser Where UserName = :UserName ";
 
             TraceLogSql(sql);
 
@@ -882,7 +902,7 @@ namespace HttpReports.Storage.Oracle
 
         public async Task<(IRequestInfo, IRequestDetail)> GetRequestInfoDetail(string Id)
         {
-            string sql = $" Select * From RequestInfo Where Id = '{Id}'";
+            string sql = $" Select * From RequestInfo Where Id = :Id ";
 
             TraceLogSql(sql);
 
@@ -892,7 +912,7 @@ namespace HttpReports.Storage.Oracle
 
            ));
 
-            string detailSql = $" Select * From RequestDetail Where RequestId = '{Id}' ";
+            string detailSql = $" Select * From RequestDetail Where RequestId = :Id ";
 
             TraceLogSql(detailSql);
 
@@ -907,7 +927,7 @@ namespace HttpReports.Storage.Oracle
 
         public async Task<IRequestInfo> GetRequestInfo(string Id)
         {
-            string sql = $" Select * From RequestInfo Where Id = '{Id}'";
+            string sql = $" Select * From RequestInfo Where Id = :Id ";
 
             TraceLogSql(sql);
 
@@ -922,13 +942,13 @@ namespace HttpReports.Storage.Oracle
 
         public async Task<List<IRequestInfo>> GetRequestInfoByParentId(string ParentId)
         {
-            string sql = $" Select * From RequestInfo Where ParentId = '{ParentId}' Order By CreateTime ";
+            string sql = $" Select * From RequestInfo Where ParentId = :ParentId Order By CreateTime ";
 
             TraceLogSql(sql);
 
             var requestInfo = await LoggingSqlOperation(async connection => (
 
-             await connection.QueryAsync<RequestInfo>(sql)
+             await connection.QueryAsync<RequestInfo>(sql,new { ParentId })
 
            ));
 
@@ -950,13 +970,13 @@ namespace HttpReports.Storage.Oracle
 
         public async Task SetLanguage(string Language)
         {
-            string sql = $"Update SysConfig Set Value = '{Language}' Where Key = '{BasicConfig.Language}' ";
+            string sql = $"Update SysConfig Set Value = :Language  Where Key = '{BasicConfig.Language}' ";
 
             TraceLogSql(sql);
 
             var result = await LoggingSqlOperation(async connection => (
 
-             await connection.ExecuteAsync(sql)
+             await connection.ExecuteAsync(sql,new { Language })
 
            ));
         }
