@@ -55,15 +55,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             app.UseMiddleware<DefaultHttpReportsMiddleware>();
 
-            return new HttpReportsInitializer(app);
-        }
-
-        public static IHttpReportsInitializer InitStorage(this IHttpReportsInitializer initializer)
-        {
-            var storage = initializer.ApplicationBuilder.ApplicationServices.GetRequiredService<IHttpReportsStorage>() ?? throw new ArgumentNullException("Storage Service Not Found");
-            storage.InitAsync().Wait();
-
-            return initializer;
+            return app.InitHttpReports().InitStorage();
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System;
-
-using HttpReports;
+﻿using HttpReports;
 using HttpReports.Dashboard;
 using HttpReports.Dashboard.Services;
 using HttpReports.Dashboard.Services.Language;
@@ -69,14 +67,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseHttpReportsDashboardAPI(this IApplicationBuilder app)
+        public static IHttpReportsInitializer InitHttpReportsDashboardAPI(this IApplicationBuilder app)
         {
-            var storage = app.ApplicationServices.GetRequiredService<IHttpReportsStorage>() ?? throw new ArgumentNullException("未正确配置存储方式");
-            storage.InitAsync().Wait();
-
             app.ConfigQuartz();
 
-            return app;
+            return app.InitHttpReports().InitStorage();
         }
 
         /// <summary>
