@@ -160,18 +160,61 @@ CREATE TABLE IF NOT EXISTS `SysConfig` (
         private async Task AddRequestInfoAsync(Dictionary<IRequestInfo, IRequestDetail> list, CancellationToken token)
         {
             await LoggingSqlOperation(async connection =>
-            {
-                string request = string.Join(",", list.Select(x => x.Key).Select(m => $"('{m.Id}','{m.ParentId}','{m.Node}','{m.Route}','{m.Url}','{m.RequestType}', '{m.Method}',{m.Milliseconds},{m.StatusCode},'{m.IP}',{m.Port},'{m.LocalIP}',{m.LocalPort},'{m.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}')"));
+            { 
+                List<IRequestInfo> requestInfos = list.Select(x => x.Key).ToList();
 
-                await connection.ExecuteAsync($"INSERT INTO `RequestInfo` (`Id`,`ParentId`,`Node`, `Route`, `Url`,`RequestType`,`Method`, `Milliseconds`, `StatusCode`, `IP`,`Port`,`LocalIP`,`LocalPort`,`CreateTime`) VALUES {request}");
+                List<IRequestDetail> requestDetails = list.Select(x => x.Value).ToList();
 
-                string detail = string.Join(",", list.Select(x => x.Value).Select(x => $" ('{x.Id}','{x.RequestId}','{x.Scheme}','{x.QueryString}','{x.Header}','{x.Cookie}','{x.RequestBody}','{x.ResponseBody}','{x.ErrorMessage}','{x.ErrorStack}','{x.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fff")}' ) "));
+                string requestSql = string.Join(",", requestInfos.Select(request => {
 
-                await connection.ExecuteAsync($"Insert into `RequestDetail` (`Id`,`RequestId`,`Scheme`,`QueryString`,`Header`,`Cookie`,`RequestBody`,`ResponseBody`,`ErrorMessage`,`ErrorStack`,`CreateTime`) VALUES {detail}");
+                    int i = requestInfos.IndexOf(request) + 1;
+
+                    return $"(@Id{i}, @ParentId{i}, @Node{i}, @Route{i}, @Url{i}, @RequestType{i}, @Method{i}, @Milliseconds{i}, @StatusCode{i}, @IP{i}, @Port{i}, @LocalIP{i}, @LocalPort{i}, @CreateTime{i})";
+
+                }));
+
+                await connection.ExecuteAsync($"INSERT INTO `RequestInfo` (`Id`,`ParentId`,`Node`, `Route`, `Url`,`RequestType`,`Method`, `Milliseconds`, `StatusCode`, `IP`,`Port`,`LocalIP`,`LocalPort`,`CreateTime`) VALUES {requestSql}",BuildParameters(requestInfos));
+
+                string detailSql = string.Join(",", requestDetails.Select(detail => {
+
+                    int i = requestDetails.IndexOf(detail) + 1;
+
+                    return $"(@Id{i},@RequestId{i},@Scheme{i},@QueryString{i},@Header{i},@Cookie{i},@RequestBody{i},@ResponseBody{i},@ErrorMessage{i},@ErrorStack{i},@CreateTime{i})";
+                     
+                }));
+
+                await connection.ExecuteAsync($"Insert into `RequestDetail` (`Id`,`RequestId`,`Scheme`,`QueryString`,`Header`,`Cookie`,`RequestBody`,`ResponseBody`,`ErrorMessage`,`ErrorStack`,`CreateTime`) VALUES {detailSql}",BuildParameters(requestDetails));
 
 
             }, "请求数据批量保存失败");
         }
+
+
+        private DynamicParameters BuildParameters<K>(List<K> data)
+        {
+            DynamicParameters parameters = new DynamicParameters();
+
+            AddParameters<K>(data); 
+
+            return parameters;
+
+            void AddParameters<T>(List<T> list)
+            {
+                var props = typeof(T).GetProperties().ToList();
+
+                foreach (var item in list)
+                {
+                    foreach (var p in props)
+                    {
+                        if (p.CanRead)
+                        {
+                            parameters.Add(p.Name + (list.IndexOf(item) + 1), p.GetValue(item));
+                        }
+                    }
+                } 
+            }
+        }
+
 
         public async Task AddRequestInfoAsync(IRequestInfo request, IRequestDetail detail)
         {

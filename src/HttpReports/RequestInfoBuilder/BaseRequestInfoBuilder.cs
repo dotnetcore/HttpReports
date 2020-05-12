@@ -122,7 +122,7 @@ namespace HttpReports
             if (context.Request.Method.ToLowerInvariant() == "options")
                  return true;
 
-            if (!Options.FilterStaticFiles)
+            if (!Options.FilterStaticFile)
                 return false; 
            
             var path = (context.Request.Path.Value ?? string.Empty).ToLowerInvariant();

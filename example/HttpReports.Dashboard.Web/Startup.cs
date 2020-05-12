@@ -22,9 +22,9 @@ namespace HttpReports.Dashboard.Web
        
         public void ConfigureServices(IServiceCollection services)
         {   
-            services.AddHttpReports().UseOracleStorage().UseGrpc(); 
+            services.AddHttpReports().UsePostgreSQLStorage().UseGrpc(); 
 
-            services.AddHttpReportsDashboard().UseOracleStorage();
+            services.AddHttpReportsDashboard();
            
             services.AddControllersWithViews();
         }

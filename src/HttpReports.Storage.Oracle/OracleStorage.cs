@@ -212,7 +212,7 @@ namespace HttpReports.Storage.Oracle
 
             return parameters;
 
-            DynamicParameters AddParameters<T>(List<T> list,string key)
+            void AddParameters<T>(List<T> list,string key)
             {
                 var props = typeof(T).GetProperties().ToList(); 
 
@@ -220,11 +220,12 @@ namespace HttpReports.Storage.Oracle
                 {
                     foreach (var p in props)
                     {
-                        parameters.Add(key + p.Name + (list.IndexOf(item) + 1),p.GetValue(item));
+                        if (p.CanRead)
+                        {
+                            parameters.Add(key + p.Name + (list.IndexOf(item) + 1), p.GetValue(item));
+                        } 
                     } 
-                }  
-
-                return new DynamicParameters();
+                } 
             }  
         }  
 
