@@ -11,6 +11,7 @@ using HttpReports.Dashboard.ViewModels;
 using HttpReports.Monitor;
 using HttpReports.Storage.FilterOptions;
 
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 using Newtonsoft.Json;
@@ -18,6 +19,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace HttpReports.Dashboard.Services
 {
+    [EnableCors("HttpReports.Dashboard.API")]
     internal class DashboardDataProvideService : IHttpReportsHttpUnit
     {
         private readonly IHttpReportsStorage _storage;

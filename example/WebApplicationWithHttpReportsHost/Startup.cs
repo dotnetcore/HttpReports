@@ -28,17 +28,26 @@ namespace WebApplicationWithHttpReportsHost
                 options.DocInclusionPredicate((docName, description) => true);
             });
 
-            // !!!Important
-            services.AddHttpReportsDashboardAPI(Configuration.GetSection("HttpReports"), "customRoute/api")
+            // !!!Important for API
+            services.AddHttpReportsDashboardAPI(Configuration.GetSection("HttpReports"), "HttpReports/api")
                     .AddHttpReportsGrpcCollector()
                     .UseMySqlStorage();
+
+            // !!!Important for UI
+            services.AddHttpReportsDashboardUI(Configuration.GetSection("HttpReportsUI"));
+
+            // API CORS.....
+            services.AddCors(option => option.AddPolicy("HttpReports.Dashboard.API", policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            // !!!Important
+            // !!!Important for API
             app.InitHttpReportsDashboardAPI();
+
+            // !!!Important for UI
+            app.UseHttpReportsDashboardUI();
 
             if (env.IsDevelopment())
             {
@@ -52,6 +61,9 @@ namespace WebApplicationWithHttpReportsHost
 
             app.UseRouting();
 
+            // API CORS.....
+            app.UseCors();
+
             app.UseSwagger();
 
             app.UseSwaggerUI(c =>
@@ -59,11 +71,12 @@ namespace WebApplicationWithHttpReportsHost
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApi");
             });
 
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                // !!!Important
+                // !!!Important for GrpcCollector
                 endpoints.MapHttpReportsGrpcCollector();
 
                 endpoints.MapControllerRoute(
