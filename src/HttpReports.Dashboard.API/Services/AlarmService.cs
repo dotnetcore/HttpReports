@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 
 using HttpReports.Dashboard.Models;
-using HttpReports.Dashboard.Services.Language;
 
 using MailKit.Net.Smtp;
 
@@ -23,13 +22,14 @@ namespace HttpReports.Dashboard.Services
 
         private ILogger<AlarmService> Logger;
 
-        private readonly ILanguage lang;
+        private readonly LocalizeService _localizeService;
+        private Localize Localize => _localizeService.Current;
 
-        public AlarmService(IOptions<DashboardAPIOptions> options, ILogger<AlarmService> logger, LanguageService languageService)
+        public AlarmService(IOptions<DashboardAPIOptions> options, ILogger<AlarmService> logger, LocalizeService localizeService)
         {
             Options = options.Value;
             Logger = logger;
-            lang = languageService.GetLanguage().Result;
+            _localizeService = localizeService;
         }
 
         private async Task SendMessageAsync(MimeMessage message)
@@ -76,7 +76,7 @@ namespace HttpReports.Dashboard.Services
 
                 using (var httpClient = new HttpClient())
                 {
-                    string Title = $"HttpReports - {lang.Warning_Title}";
+                    string Title = $"HttpReports - {Localize.Warning_Title}";
 
                     HttpContent content = new StringContent(JsonConvert.SerializeObject(new { Title, option.Content }));
                     content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
@@ -118,7 +118,7 @@ namespace HttpReports.Dashboard.Services
                     message.To.Add(new MailboxAddress(to));
                 }
 
-                message.Subject = $"HttpReports - {lang.Warning_Title}";
+                message.Subject = $"HttpReports - {Localize.Warning_Title}";
 
                 message.Body = new TextPart(option.IsHtml ? TextFormat.Html : TextFormat.Plain) { Text = option.Content };
                 await SendMessageAsync(message);

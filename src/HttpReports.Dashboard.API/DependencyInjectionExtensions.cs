@@ -1,7 +1,6 @@
 ﻿using HttpReports;
 using HttpReports.Dashboard;
 using HttpReports.Dashboard.Services;
-using HttpReports.Dashboard.Services.Language;
 using HttpReports.Dashboard.Services.Quartz;
 
 using Microsoft.AspNetCore.Builder;
@@ -28,6 +27,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddOptions()
                     .Configure<DashboardAPIOptions>(configuration);
 
+            services.AddHttpContextAccessor();
+
             services.AddMvcCore(options =>
             {
                 options.Conventions.Add(new HttpReportsDashboardApplicationModelConvention(routeOptions));
@@ -41,9 +42,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddQuartz();
 
-            services.AddSingleton<ChineseLanguage>();
-            services.AddSingleton<EnglishLanguage>();
-            services.AddSingleton<LanguageService>();
+            services.AddSingleton<LocalizeService>();
 
             return new HttpReportsBuilder(services, configuration);
         }
@@ -71,7 +70,13 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             app.ConfigQuartz();
 
-            return app.InitHttpReports().InitStorage();
+            var initializer = app.InitHttpReports().InitStorage();
+
+            var localizeService = app.ApplicationServices.GetRequiredService<LocalizeService>();
+
+            localizeService.InitAsync().Wait();
+
+            return initializer;
         }
 
         /// <summary>

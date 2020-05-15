@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using HttpReports.Core.Config;
 using HttpReports.Core.Models;
 using HttpReports.Dashboard.DTO;
 using HttpReports.Dashboard.Models;
-using HttpReports.Dashboard.Services.Language;
 using HttpReports.Dashboard.ViewModels;
 using HttpReports.Monitor;
 using HttpReports.Storage.FilterOptions;
 
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -22,21 +24,32 @@ namespace HttpReports.Dashboard.Services
     [EnableCors]
     internal class DashboardDataProvideService : IHttpReportsHttpUnit
     {
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IHttpContextAccessor _contextAccessor;
         private readonly IHttpReportsStorage _storage;
 
         private readonly MonitorService _monitorService;
 
         private readonly QuartzSchedulerService _scheduleService;
 
-        private readonly ILanguage _lang;
+        private readonly Localize _localize;
 
-        public DashboardDataProvideService(IHttpReportsStorage storage, MonitorService monitorService, QuartzSchedulerService scheduleService, LanguageService languageService)
+        public DashboardDataProvideService(IServiceProvider serviceProvider,
+                                           IHttpContextAccessor contextAccessor,
+                                           IHttpReportsStorage storage,
+                                           MonitorService monitorService,
+                                           QuartzSchedulerService scheduleService,
+                                           LocalizeService localizeService)
         {
+            _serviceProvider = serviceProvider;
+            _contextAccessor = contextAccessor;
             _storage = storage;
             _monitorService = monitorService;
             _scheduleService = scheduleService;
-            _lang = languageService.GetLanguage().Result;
+            _localize = localizeService.Current;
         }
+
+        private T RequireService<T>() => _serviceProvider.GetRequiredService<T>();
 
         [HttpPost]
         public async Task<IActionResult> GetIndexChartData([FromBody]GetIndexDataRequest request)
@@ -293,12 +306,71 @@ namespace HttpReports.Dashboard.Services
             return Json(new HttpResultEntity(1, "ok", new { time, value, Range }));
         }
 
+        /// <summary>
+        /// 更改语言
+        /// </summary>
+        /// <param name="language"></param>
+        /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> ChangeLanguage(string Language)
+        public async Task<IActionResult> ChangeLanguage(string language)
         {
-            await _storage.SetLanguage(Language);
+            var localizeService = RequireService<LocalizeService>();
+
+            await localizeService.SetLanguageAsync(language);
 
             return Json(new HttpResultEntity(1, "ok", null));
+        }
+
+        /// <summary>
+        /// 获取可用的语言列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult GetAvailableLanguages()
+        {
+            var localizeService = RequireService<LocalizeService>();
+            return Json(new HttpResultEntity(1, "ok", localizeService.Langs));
+        }
+
+        /// <summary>
+        /// 获取本地化语言
+        /// </summary>
+        /// <param name="language"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [ResponseCache(Duration = 3600)]
+        public async Task<IActionResult> GetLocalizeLanguageAsync(string language = null)
+        {
+            Localize localize = null;
+            var localizeService = RequireService<LocalizeService>();
+
+            if (string.IsNullOrEmpty(language))
+            {
+                language = await _storage.GetSysConfig(BasicConfig.Language);
+                if (!localizeService.TryGetLanguage(language, out localize)
+                    && _contextAccessor.HttpContext.Request.Headers.TryGetValue("Accept-Language", out var acceptLanguage))
+                {
+                    var accepts = acceptLanguage.ToString().Split(new[] { ';', ',' }).Where(m => !m.Contains('=')).ToArray();
+                    if (accepts.Length > 0)
+                    {
+                        foreach (var item in accepts)
+                        {
+                            if (localizeService.TryGetLanguage(item, out localize))
+                            {
+                                await _storage.SetLanguage(item);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                localizeService.TryGetLanguage(language, out localize);
+            }
+            localize ??= localizeService.Current;
+
+            return Json(new HttpResultEntity(1, "ok", localize));
         }
 
         [HttpPost]
@@ -418,17 +490,17 @@ namespace HttpReports.Dashboard.Services
 
             if (user.Password != request.OldPwd.MD5())
             {
-                return Json(new HttpResultEntity(-1, _lang.User_OldPasswordError, null));
+                return Json(new HttpResultEntity(-1, _localize.User_OldPasswordError, null));
             }
 
             if (request.NewUserName.Length <= 2 || request.NewUserName.Length > 20)
             {
-                return Json(new HttpResultEntity(-1, _lang.User_AccountFormatError, null));
+                return Json(new HttpResultEntity(-1, _localize.User_AccountFormatError, null));
             }
 
             if (request.OldPwd.Length <= 5 || request.OldPwd.Length > 20)
             {
-                return Json(new HttpResultEntity(-1, _lang.User_NewPassFormatError, null));
+                return Json(new HttpResultEntity(-1, _localize.User_NewPassFormatError, null));
             }
 
             await _storage.UpdateLoginUser(new SysUser
@@ -438,7 +510,7 @@ namespace HttpReports.Dashboard.Services
                 Password = request.NewPwd.MD5()
             });
 
-            return Json(new HttpResultEntity(1, _lang.UpdateSuccess, null));
+            return Json(new HttpResultEntity(1, _localize.UpdateSuccess, null));
         }
 
         [HttpGet]

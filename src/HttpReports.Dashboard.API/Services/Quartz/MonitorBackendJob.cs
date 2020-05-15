@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 using HttpReports.Dashboard.Implements;
 using HttpReports.Dashboard.Models;
-using HttpReports.Dashboard.Services.Language;
 using HttpReports.Models;
 using HttpReports.Monitor;
 using HttpReports.Storage.FilterOptions;
@@ -29,15 +28,20 @@ namespace HttpReports.Dashboard.Services.Quartz
 
         private ILogger<MonitorBackendJob> _logger;
 
-        private ILanguage _lang;
+        private readonly LocalizeService _localizeService;
+        private Localize Localize => _localizeService.Current;
 
-        public MonitorBackendJob(IHttpReportsStorage storage, IAlarmService alarmService, MonitorService monitorService, ILogger<MonitorBackendJob> logger, LanguageService languageService)
+        public MonitorBackendJob(IHttpReportsStorage storage,
+                                 IAlarmService alarmService,
+                                 MonitorService monitorService,
+                                 ILogger<MonitorBackendJob> logger,
+                                 LocalizeService localizeService)
         {
             _storage = storage;
             _alarmService = alarmService;
             _monitorService = monitorService;
             _logger = logger;
-            _lang = languageService.GetLanguage().Result;
+            _localizeService = localizeService;
         }
 
         public async Task Execute(IJobExecutionContext context)
@@ -130,17 +134,17 @@ namespace HttpReports.Dashboard.Services.Quartz
                     Content = $@"
 
                           <br>
-                          <b>【{_lang.Monitor_Type_Timeout}】 </b>
+                          <b>【{Localize.Monitor_Type_Timeout}】 </b>
 
-                          <p> {_lang.Warning_Threshold}：{payload.ResponseTimeOutMonitor.Percentage.ToString("F2")}%  {_lang.Warning_Current}：{percent.ToString("F2")}% </p>
+                          <p> {Localize.Warning_Threshold}：{payload.ResponseTimeOutMonitor.Percentage.ToString("F2")}%  {Localize.Warning_Current}：{percent.ToString("F2")}% </p>
 
-                          <p>{_lang.Monitor_Title}：{job.Title}</p>
+                          <p>{Localize.Monitor_Title}：{job.Title}</p>
 
-                          <p>{_lang.Monitor_ServiceNode}：{job.Nodes}</p>
+                          <p>{Localize.Monitor_ServiceNode}：{job.Nodes}</p>
 
-                          <p>{_lang.Monitor_Frequency}：{_monitorService.ParseJobCronString(job.CronLike)} </p>
+                          <p>{Localize.Monitor_Frequency}：{_monitorService.ParseJobCronString(job.CronLike)} </p>
 
-                          <p>{_lang.Warning_TimeRange}：{start.ToStandardTime()}-{end.ToStandardTime()} </p>"
+                          <p>{Localize.Warning_TimeRange}：{start.ToStandardTime()}-{end.ToStandardTime()} </p>"
                 };
             }
 
@@ -195,19 +199,19 @@ namespace HttpReports.Dashboard.Services.Quartz
                     Content = $@"
 
                           <br>
-                          <b>【{_lang.Monitor_Type_RequestError}】 </b>
+                          <b>【{Localize.Monitor_Type_RequestError}】 </b>
 
-                          <p>{_lang.Warning_Threshold}：{payload.ErrorResponseMonitor.Percentage.ToString("F2")}%  {_lang.Warning_Current}：{percent.ToString("F2")}% </p>
+                          <p>{Localize.Warning_Threshold}：{payload.ErrorResponseMonitor.Percentage.ToString("F2")}%  {Localize.Warning_Current}：{percent.ToString("F2")}% </p>
 
-                          <p>{_lang.Warning_Title}：{job.Title}</p>
+                          <p>{Localize.Warning_Title}：{job.Title}</p>
 
-                          <p>{_lang.Monitor_ServiceNode}：{job.Nodes}</p>
+                          <p>{Localize.Monitor_ServiceNode}：{job.Nodes}</p>
 
-                          <p>{_lang.Monitor_Frequency}：{_monitorService.ParseJobCronString(job.CronLike)} </p>
+                          <p>{Localize.Monitor_Frequency}：{_monitorService.ParseJobCronString(job.CronLike)} </p>
 
-                          <p>{_lang.Monitor_HttpStatusCode}：{payload.ErrorResponseMonitor.HttpCodeStatus}</p>
+                          <p>{Localize.Monitor_HttpStatusCode}：{payload.ErrorResponseMonitor.HttpCodeStatus}</p>
 
-                          <p>{_lang.Warning_TimeRange}：{start.ToStandardTime()}-{end.ToStandardTime()} </p>"
+                          <p>{Localize.Warning_TimeRange}：{start.ToStandardTime()}-{end.ToStandardTime()} </p>"
                 };
             }
             return null;
@@ -249,19 +253,19 @@ namespace HttpReports.Dashboard.Services.Quartz
                     Content = $@"
 
                           <br>
-                          <b>【{_lang.Monitor_Type_IP}】 </b>
+                          <b>【{Localize.Monitor_Type_IP}】 </b>
 
-                          <p>{_lang.Warning_Threshold}：{payload.IPMonitor.Percentage.ToString("F2")}% {_lang.Warning_Current}：{percent.ToString("F2")}% </p>
+                          <p>{Localize.Warning_Threshold}：{payload.IPMonitor.Percentage.ToString("F2")}% {Localize.Warning_Current}：{percent.ToString("F2")}% </p>
 
-                          <p>{_lang.Warning_Title}：{job.Title}</p>
+                          <p>{Localize.Warning_Title}：{job.Title}</p>
 
-                          <p>{_lang.Monitor_ServiceNode}：{job.Nodes}</p>
+                          <p>{Localize.Monitor_ServiceNode}：{job.Nodes}</p>
 
-                          <p>{_lang.Monitor_Frequency}：{_monitorService.ParseJobCronString(job.CronLike)} </p>
+                          <p>{Localize.Monitor_Frequency}：{_monitorService.ParseJobCronString(job.CronLike)} </p>
 
-                          <p>{_lang.Monitor_IPWhiteList}：{payload.IPMonitor.WhiteList}</p>
+                          <p>{Localize.Monitor_IPWhiteList}：{payload.IPMonitor.WhiteList}</p>
 
-                          <p>{_lang.Warning_TimeRange}：{start.ToStandardTime()}-{end.ToStandardTime()} </p>"
+                          <p>{Localize.Warning_TimeRange}：{start.ToStandardTime()}-{end.ToStandardTime()} </p>"
                 };
             }
             return null;
@@ -294,17 +298,17 @@ namespace HttpReports.Dashboard.Services.Quartz
                     Content = $@"
 
                           <br>
-                          <b>【{_lang.Monitor_Type_RequestCount}】 </b>
+                          <b>【{Localize.Monitor_Type_RequestCount}】 </b>
 
-                          <p>{_lang.Warning_Threshold}：{payload.RequestCountMonitor.Max}  {_lang.Warning_Current}：{count} </p>
+                          <p>{Localize.Warning_Threshold}：{payload.RequestCountMonitor.Max}  {Localize.Warning_Current}：{count} </p>
 
-                          <p>{_lang.Warning_Title}：{job.Title}</p>
+                          <p>{Localize.Warning_Title}：{job.Title}</p>
 
-                          <p>{_lang.Monitor_ServiceNode}：{job.Nodes}</p>
+                          <p>{Localize.Monitor_ServiceNode}：{job.Nodes}</p>
 
-                          <p>{_lang.Monitor_Frequency}：{_monitorService.ParseJobCronString(job.CronLike)} </p>
+                          <p>{Localize.Monitor_Frequency}：{_monitorService.ParseJobCronString(job.CronLike)} </p>
 
-                          <p>{_lang.Warning_TimeRange}：{start.ToStandardTime()}-{end.ToStandardTime()} </p>"
+                          <p>{Localize.Warning_TimeRange}：{start.ToStandardTime()}-{end.ToStandardTime()} </p>"
                 };
             }
 

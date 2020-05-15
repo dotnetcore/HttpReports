@@ -16,6 +16,7 @@
     <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
     <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
     <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +27,10 @@
     <PackageReference Include="Quartz" Version="3.0.7" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="Lang\**" />
+  </ItemGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
   </ItemGroup>

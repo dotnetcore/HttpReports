@@ -10,6 +10,11 @@ namespace HttpReports.Dashboard
 
         public int ExpireDay { get; set; } = BasicConfig.ExpireDay;
 
+        /// <summary>
+        /// 本地化文件附加路径
+        /// </summary>
+        public string LocalizeAddOnDirectory { get; set; }
+
         public DashboardAPIOptions Value => this;
     }
 }

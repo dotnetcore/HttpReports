@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 
-using HttpReports.Dashboard.Services.Language;
 using HttpReports.Dashboard.ViewModels;
 using HttpReports.Models;
 using HttpReports.Monitor;
@@ -12,77 +11,78 @@ namespace HttpReports.Dashboard.Services
 {
     public class MonitorService
     {
-        private readonly ILanguage _lang;
+        private readonly LocalizeService _localizeService;
+        private Localize Localize => _localizeService.Current;
 
-        public MonitorService(LanguageService languageService)
+        public MonitorService(LocalizeService localizeService)
         {
-            _lang = languageService.GetLanguage().Result;
+            _localizeService = localizeService;
         }
 
         public string VaildMonitorJob(MonitorJobRequest request)
         {
             if (request.Title.IsEmpty())
-                return _lang.Monitor_TitleNotNull;
+                return Localize.Monitor_TitleNotNull;
 
             if (request.Title.Length > 30)
-                return _lang.Monitor_TitleTooLong;
+                return Localize.Monitor_TitleTooLong;
 
             if (!request.Description.IsEmpty() && request.Description.Length > 100)
-                return _lang.Monitor_DescTooLong;
+                return Localize.Monitor_DescTooLong;
 
             if (request.Nodes.IsEmpty())
-                return _lang.Monitor_MustSelectNode;
+                return Localize.Monitor_MustSelectNode;
 
             if (request.Emails.IsEmpty() && request.WebHook.IsEmpty())
             {
-                return _lang.Monitor_EmailOrWebHookNotNull;
+                return Localize.Monitor_EmailOrWebHookNotNull;
             }
 
             if (!request.Emails.IsEmpty() && request.Emails.Length > 100)
-                return _lang.Monitor_EmailTooLong;
+                return Localize.Monitor_EmailTooLong;
 
             if (!request.WebHook.IsEmpty() && request.WebHook.Length > 100)
-                return _lang.Monitor_WebHookTooLong;
+                return Localize.Monitor_WebHookTooLong;
 
             if (request.ResponseTimeOutMonitor != null)
             {
                 if (!request.ResponseTimeOutMonitor.TimeOutMs.IsInt() || request.ResponseTimeOutMonitor.TimeOutMs.ToInt() <= 0 || request.ResponseTimeOutMonitor.TimeOutMs.ToInt() > 1000000)
-                    return _lang.Monitor_TimeOut_TimeFormatError;
+                    return Localize.Monitor_TimeOut_TimeFormatError;
 
                 if (!VaildPercentage(request.ResponseTimeOutMonitor.Percentage))
-                    return _lang.Monitor_TimeOut_PercnetError;
+                    return Localize.Monitor_TimeOut_PercnetError;
             }
 
             if (request.ErrorResponseMonitor != null)
             {
                 if (request.ErrorResponseMonitor.HttpCodeStatus.IsEmpty())
-                    return _lang.Monitor_Error_StatusCodeNotNull;
+                    return Localize.Monitor_Error_StatusCodeNotNull;
 
                 if (request.ErrorResponseMonitor.HttpCodeStatus.Length > 100)
-                    return _lang.Monitor_Error_StatusCodeTooLong;
+                    return Localize.Monitor_Error_StatusCodeTooLong;
 
                 if (!VaildPercentage(request.ErrorResponseMonitor.Percentage))
-                    return _lang.Monitor_Error_PercnetError;
+                    return Localize.Monitor_Error_PercnetError;
             }
 
             if (request.IPMonitor != null)
             {
                 if (!request.IPMonitor.WhiteList.IsEmpty() && request.IPMonitor.WhiteList.Length > 100)
-                    return _lang.Monitor_IP_WhiteListTooLong;
+                    return Localize.Monitor_IP_WhiteListTooLong;
 
                 if (!VaildPercentage(request.IPMonitor.Percentage))
-                    return _lang.Monitor_IP_PercentError;
+                    return Localize.Monitor_IP_PercentError;
             }
 
             if (request.RequestCountMonitor != null)
             {
                 if (request.RequestCountMonitor.Max.ToInt() <= 0)
-                    return _lang.Monitor_Request_FormatError;
+                    return Localize.Monitor_Request_FormatError;
             }
 
             if (request.ResponseTimeOutMonitor == null && request.ErrorResponseMonitor == null && request.IPMonitor == null && request.RequestCountMonitor == null)
             {
-                return _lang.Monitor_MustSelectType;
+                return Localize.Monitor_MustSelectType;
             }
 
             return null;
@@ -142,20 +142,20 @@ namespace HttpReports.Dashboard.Services
 
         public string ParseJobCronString(string cron)
         {
-            if (cron == "0 0/1 * * * ?") return _lang.Monitor_Time1Min;
-            if (cron == "0 0/3 * * * ?") return _lang.Monitor_Time3Min;
-            if (cron == "0 0/5 * * * ?") return _lang.Monitor_Time5Min;
-            if (cron == "0 0/10 * * * ?") return _lang.Monitor_Time10Min;
-            if (cron == "0 0/30 * * * ?") return _lang.Monitor_Time30Min;
-            if (cron == "0 0 0/1 * * ?") return _lang.Monitor_Time1Hour;
-            if (cron == "0 0 0/2 * * ?") return _lang.Monitor_Time2Hour;
-            if (cron == "0 0 0/4 * * ?") return _lang.Monitor_Time4Hour;
-            if (cron == "0 0 0/6 * * ?") return _lang.Monitor_Time6Hour;
-            if (cron == "0 0 0/8 * * ?") return _lang.Monitor_Time8Hour;
-            if (cron == "0 0 0/12 * * ?") return _lang.Monitor_Time12Hour;
-            if (cron == "0 0 0 1/1 * ?") return _lang.Monitor_Time1Day;
+            if (cron == "0 0/1 * * * ?") return Localize.Monitor_Time1Min;
+            if (cron == "0 0/3 * * * ?") return Localize.Monitor_Time3Min;
+            if (cron == "0 0/5 * * * ?") return Localize.Monitor_Time5Min;
+            if (cron == "0 0/10 * * * ?") return Localize.Monitor_Time10Min;
+            if (cron == "0 0/30 * * * ?") return Localize.Monitor_Time30Min;
+            if (cron == "0 0 0/1 * * ?") return Localize.Monitor_Time1Hour;
+            if (cron == "0 0 0/2 * * ?") return Localize.Monitor_Time2Hour;
+            if (cron == "0 0 0/4 * * ?") return Localize.Monitor_Time4Hour;
+            if (cron == "0 0 0/6 * * ?") return Localize.Monitor_Time6Hour;
+            if (cron == "0 0 0/8 * * ?") return Localize.Monitor_Time8Hour;
+            if (cron == "0 0 0/12 * * ?") return Localize.Monitor_Time12Hour;
+            if (cron == "0 0 0 1/1 * ?") return Localize.Monitor_Time1Day;
 
-            return _lang.Monitor_Time1Min;
+            return Localize.Monitor_Time1Min;
         }
 
         public MonitorJob GetMonitorJob(MonitorJobRequest request)
