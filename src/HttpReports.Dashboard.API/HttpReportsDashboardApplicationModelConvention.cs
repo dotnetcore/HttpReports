@@ -1,5 +1,6 @@
-﻿using HttpReports.Dashboard.Services;
-
+﻿using System.Linq;
+using HttpReports.Dashboard.Services;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
@@ -7,11 +8,11 @@ namespace HttpReports.Dashboard
 {
     internal class HttpReportsDashboardApplicationModelConvention : IApplicationModelConvention
     {
-        private readonly string _routePrefix;
+        private readonly DashboardAPIRouteOptions _routeOptions;
 
-        public HttpReportsDashboardApplicationModelConvention(string routePrefix)
+        public HttpReportsDashboardApplicationModelConvention(DashboardAPIRouteOptions routeOptions)
         {
-            _routePrefix = routePrefix;
+            _routeOptions = routeOptions;
         }
 
         public void Apply(ApplicationModel application)
@@ -20,12 +21,19 @@ namespace HttpReports.Dashboard
             {
                 if (controller.ControllerType == typeof(DashboardDataProvideService))
                 {
+                    if (!string.IsNullOrEmpty(_routeOptions.CorsPolicyName))
+                    {
+                        if (controller.Attributes.Cast<EnableCorsAttribute>().FirstOrDefault() is EnableCorsAttribute enableCors)
+                        {
+                            enableCors.PolicyName = _routeOptions.CorsPolicyName;
+                        }
+                    }
                     controller.ApiExplorer.GroupName = "HttpReportsDashboardAPI";
                     controller.ApiExplorer.IsVisible = true;
                     foreach (var action in controller.Actions)
                     {
                         action.ApiExplorer.IsVisible = true;
-                        action.Selectors[0].AttributeRouteModel = new AttributeRouteModel(new RouteAttribute($"{_routePrefix}/{action.ActionName}"));
+                        action.Selectors[0].AttributeRouteModel = new AttributeRouteModel(new RouteAttribute($"{_routeOptions.RoutePrefix}/{action.ActionName}"));
                     }
                 }
             }

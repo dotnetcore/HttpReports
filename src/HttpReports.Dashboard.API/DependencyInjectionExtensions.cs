@@ -21,16 +21,16 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services"></param>
         /// <param name="configuration"></param>
-        /// <param name="routePrefix"></param>
+        /// <param name="routeOptions"></param>
         /// <returns></returns>
-        public static IHttpReportsBuilder AddHttpReportsDashboardAPI(this IServiceCollection services, IConfiguration configuration, string routePrefix = "HttpReportsDashboard/Api")
+        public static IHttpReportsBuilder AddHttpReportsDashboardAPI(this IServiceCollection services, DashboardAPIRouteOptions routeOptions, IConfiguration configuration)
         {
             services.AddOptions()
                     .Configure<DashboardAPIOptions>(configuration);
 
             services.AddMvcCore(options =>
             {
-                options.Conventions.Add(new HttpReportsDashboardApplicationModelConvention(routePrefix));
+                options.Conventions.Add(new HttpReportsDashboardApplicationModelConvention(routeOptions));
             }).PartManager.FeatureProviders.Add(new HttpReportsDashboardControllerFeatureProvider());
 
             services.AddSingleton<IModelCreator, DefaultModelCreator>();

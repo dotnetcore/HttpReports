@@ -1,3 +1,5 @@
+using HttpReports.Dashboard;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -29,7 +31,7 @@ namespace WebApplicationWithHttpReportsHost
             });
 
             // !!!Important for API
-            services.AddHttpReportsDashboardAPI(Configuration.GetSection("HttpReports"), "HttpReports/api")
+            services.AddHttpReportsDashboardAPI(new DashboardAPIRouteOptions("HttpReports/api", "HttpReports.Api.Cors"), Configuration.GetSection("HttpReports"))
                     .AddHttpReportsGrpcCollector()
                     .UseMySqlStorage();
 
@@ -37,7 +39,7 @@ namespace WebApplicationWithHttpReportsHost
             services.AddHttpReportsDashboardUI(Configuration.GetSection("HttpReportsUI"));
 
             // API CORS.....
-            services.AddCors(option => option.AddPolicy("HttpReports.Dashboard.API", policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()));
+            services.AddCors(option => option.AddPolicy("HttpReports.Api.Cors", policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -70,7 +72,6 @@ namespace WebApplicationWithHttpReportsHost
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApi");
             });
-
 
             app.UseAuthorization();
 

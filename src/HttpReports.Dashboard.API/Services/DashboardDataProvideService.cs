@@ -19,7 +19,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace HttpReports.Dashboard.Services
 {
-    [EnableCors("HttpReports.Dashboard.API")]
+    [EnableCors]
     internal class DashboardDataProvideService : IHttpReportsHttpUnit
     {
         private readonly IHttpReportsStorage _storage;
