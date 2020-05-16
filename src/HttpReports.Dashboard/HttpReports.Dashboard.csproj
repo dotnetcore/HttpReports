@@ -5,7 +5,7 @@
     <MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish> 
     <AssemblyName>HttpReports.Dashboard</AssemblyName>
     <RootNamespace>HttpReports.Dashboard</RootNamespace>
-    <Version>1.2.8</Version>
+    <Version>1.3.0</Version>
     <PackageId>HttpReports.Dashboard</PackageId>
     <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
     <PackageLicenseFile></PackageLicenseFile>
@@ -35,6 +35,13 @@ github: https://github.com/SpringLeee/HttpReports
     <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
   </ItemGroup>
 
+ <ItemGroup>
+    <Content Include="Views\**">
+      <Pack>true</Pack>
+      <PackageCopyToOutput>false</PackageCopyToOutput>
+    </Content>
+  </ItemGroup>
+
   <!--<ItemGroup>
     <Content Include="Views\**">
       <Pack>true</Pack>
@@ -48,12 +55,6 @@ github: https://github.com/SpringLeee/HttpReports
       <PackageCopyToOutput>true</PackageCopyToOutput>
     </Content>
   </ItemGroup>-->
-
-
-  <ItemGroup>
-    <Folder Include="Views\" />
-    <Folder Include="wwwroot\" />
-  </ItemGroup>
 
 
 </Project> 
