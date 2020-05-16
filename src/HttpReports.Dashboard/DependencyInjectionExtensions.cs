@@ -1,12 +1,15 @@
 ﻿using System;
-
+using System.Linq;
+using System.Reflection;
 using HttpReports;
 using HttpReports.Dashboard;
+using HttpReports.Dashboard.Handle;
 using HttpReports.Dashboard.Implements;
+using HttpReports.Dashboard.Route;
 using HttpReports.Dashboard.Services;
 using HttpReports.Dashboard.Services.Language;
 using HttpReports.Dashboard.Services.Quartz;
-
+using HttpReports.Dashboard.Views;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
@@ -53,51 +56,29 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSingleton<ChineseLanguage>();
             services.AddSingleton<EnglishLanguage>(); 
-            services.AddSingleton<LanguageService>(); 
+            services.AddSingleton<LanguageService>();
 
-            services.AddMvcCore(x => {
-                x.Filters.Add<GlobalAuthorizeFilter>();
-            }).AddViews(); 
 
-            ServiceContainer.provider = services.BuildServiceProvider(); 
+            services.AddHandleService().AddViewsService();   
 
             return new HttpReportsBuilder(services, configuration);
         }  
 
         public static IApplicationBuilder UseHttpReportsDashboard(this IApplicationBuilder app)
-        {
-            //ServiceContainer.provider = app.ApplicationServices as ServiceProvider; 
+        { 
+            ServiceContainer.provider = app.ApplicationServices.GetRequiredService<IServiceProvider>() ?? throw new ArgumentNullException("ServiceProvider Init Faild"); 
 
-            ConfigRoute(app);
+            ConfigRoute(app); 
 
-            ConfigStaticFiles(app);
-
-            var storage = app.ApplicationServices.GetRequiredService<IHttpReportsStorage>() ?? throw new ArgumentNullException("未正确配置存储方式");
+            var storage = app.ApplicationServices.GetRequiredService<IHttpReportsStorage>() ?? throw new ArgumentNullException("Storage Not Found");
             storage.InitAsync().Wait();
 
             app.ApplicationServices.GetService<ScheduleService>().InitAsync().Wait();
-             
+
+            app.UseMiddleware<DashboardMiddleware>(); 
+
             return app;
-        }
-
-
-        /// <summary>
-        /// Add access to static resources on debug mode
-        /// </summary>
-        /// <param name="app"></param>
-        private static void ConfigStaticFiles(IApplicationBuilder app)
-        {
-            if (System.IO.Directory.Exists(System.IO.Path.Combine(AppContext.BaseDirectory, @"wwwroot\HttpReportsStaticFiles")))
-            {
-                app.UseStaticFiles(new StaticFileOptions
-                {
-                    FileProvider = new PhysicalFileProvider(System.IO.Path.Combine(AppContext.BaseDirectory, @"wwwroot\HttpReportsStaticFiles")),
-                    RequestPath = new Microsoft.AspNetCore.Http.PathString("/HttpReportsStaticFiles")
-
-                });
-            } 
         } 
-
 
         /// <summary>
         /// Configure user routing  
@@ -114,7 +95,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 { 
                     if (context.Request.Path.Value.ToLower() == (options.UseHome ? "/" : "dashboard"))
                     {
-                        context.Request.Path = "/HttpReports";
+                        context.Request.Path = "/HttpReports/Index";
                     }    
                 }
 
@@ -122,8 +103,33 @@ namespace Microsoft.Extensions.DependencyInjection
 
             }); 
          
-        } 
+        }
 
+
+        private static IServiceCollection AddHandleService(this IServiceCollection services)
+        {
+            var handles = Assembly.GetAssembly(typeof(DashboardRoute)).GetTypes().Where(x => typeof(DashboardHandleBase).IsAssignableFrom(x) && x != typeof(DashboardHandleBase));
+
+            foreach (var handle in handles)
+            {
+                services.AddTransient(handle);
+            }
+
+            return services;
+
+        }
+
+        private static IServiceCollection AddViewsService(this IServiceCollection services)
+        {
+            var views = Assembly.GetAssembly(typeof(DashboardRoute)).GetTypes().Where(x => typeof(RazorPage).IsAssignableFrom(x) && x != typeof(RazorPage));
+
+            foreach (var view in views)
+            {
+                services.AddTransient(view);
+            }
+
+            return services;
+        } 
 
     }
 }

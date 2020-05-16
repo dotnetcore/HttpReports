@@ -1,25 +1,33 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk"> 
+ 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish> 
+    <LangVersion>8.0</LangVersion> 
     <AssemblyName>HttpReports.Dashboard</AssemblyName>
     <RootNamespace>HttpReports.Dashboard</RootNamespace>
     <Version>1.3.0</Version>
-    <PackageId>HttpReports.Dashboard</PackageId>
-    <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
+    <PackageId>HttpReports.Dashboard</PackageId> 
     <PackageLicenseFile></PackageLicenseFile>
-    <Description>HttpReports is an lightweight APM system for microservice in .Net Core 
+    <Description>
+      HttpReports is an lightweight APM system for microservice on .Net Core
 
-github: https://github.com/SpringLeee/HttpReports   
+      github: https://github.com/SpringLeee/HttpReports
 
-</Description>
-    <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
+    </Description>
+    <PackageProjectUrl>https://github.com/dotnetcore/HttpReports</PackageProjectUrl>
     <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
     <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>
-  </PropertyGroup> 
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="HttpReportsStaticFiles\**" /> 
+  </ItemGroup> 
    
-  
+
+  <ItemGroup>
+    <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="MailKit" Version="2.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.1.1" />
@@ -29,34 +37,127 @@ github: https://github.com/SpringLeee/HttpReports
     <PackageReference Include="Quartz" Version="3.0.7" />
   </ItemGroup>
 
-
+  <ItemGroup>
+    <Compile Update="Views\HttpReports\Detail.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Detail.cshtml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\HttpReports\EditMonitor.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EditMonitor.cshtml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\HttpReports\HttpReportsTemplate.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>HttpReportsTemplate.cshtml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\HttpReports\Index.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Index.cshtml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\HttpReports\Monitor.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Monitor.cshtml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\HttpReports\RequestInfoDetail.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>RequestInfoDetail.cshtml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\HttpReports\Trace.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Trace.cshtml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\HttpReports\Trend.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Trend.cshtml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\HttpReports\UserLogin.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UserLogin.cshtml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\HttpReports\UserLogout.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UserLogout.cshtml</DependentUpon>
+    </Compile>
+  </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
-  </ItemGroup>
+    <None Update="Views\HttpReports\Detail.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Detail.generated.cs</LastGenOutput>
+      <CustomToolNamespace>HttpReports.Dashboard.Views</CustomToolNamespace>
+    </None>
+    <None Update="Views\HttpReports\EditMonitor.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditMonitor.generated.cs</LastGenOutput>
+      <CustomToolNamespace>HttpReports.Dashboard.Views</CustomToolNamespace>
+    </None>
+    <None Update="Views\HttpReports\HttpReportsTemplate.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>HttpReportsTemplate.generated.cs</LastGenOutput>
+      <CustomToolNamespace>HttpReports.Dashboard.Views</CustomToolNamespace>
+    </None>
+    <None Update="Views\HttpReports\Index.cshtml">
+      <CustomToolNamespace>HttpReports.Dashboard.Views</CustomToolNamespace>
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Index.generated.cs</LastGenOutput>
+    </None>
+    <None Update="Views\HttpReports\Monitor.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Monitor.generated.cs</LastGenOutput>
+      <CustomToolNamespace>HttpReports.Dashboard.Views</CustomToolNamespace>
+    </None>
+    <None Update="Views\HttpReports\RequestInfoDetail.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>RequestInfoDetail.generated.cs</LastGenOutput>
+      <CustomToolNamespace>HttpReports.Dashboard.Views</CustomToolNamespace>
+    </None>
+    <None Update="Views\HttpReports\Trace.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Trace.generated.cs</LastGenOutput>
+      <CustomToolNamespace>HttpReports.Dashboard.Views</CustomToolNamespace>
+    </None>
+    <None Update="Views\HttpReports\Trend.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Trend.generated.cs</LastGenOutput>
+      <CustomToolNamespace>HttpReports.Dashboard.Views</CustomToolNamespace>
+    </None>
+    <None Update="Views\HttpReports\UserLogin.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>UserLogin.generated.cs</LastGenOutput>
+      <CustomToolNamespace>HttpReports.Dashboard.Views</CustomToolNamespace>
+    </None>
+    <None Update="Views\HttpReports\UserLogout.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>UserLogout.generated.cs</LastGenOutput>
+      <CustomToolNamespace>HttpReports.Dashboard.Views</CustomToolNamespace>
+    </None>
+  </ItemGroup> 
+  
 
- <ItemGroup>
-    <Content Include="Views\**">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>false</PackageCopyToOutput>
-    </Content>
-  </ItemGroup>
-
-  <!--<ItemGroup>
-    <Content Include="Views\**">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>false</PackageCopyToOutput>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="wwwroot\">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-    </Content>
-  </ItemGroup>-->
-
-
-</Project> 
-
-
+</Project>
