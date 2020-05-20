@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+option csharp_namespace = "HttpReports.Collector.Grpc";
+
+service GrpcCollector {
+ rpc Write (RequestInfoPack) returns (WriteReply);
+}
+
+message RequestInfoPack {
+  repeated RequestInfoWithDetail Data = 1;
+}
+
+message RequestInfoWithDetail {
+ RequestInfo Info = 1;
+ RequestDetail Detail = 2;
+}
+
+message RequestInfo {
+ string Id = 1; 
+ string ParentId = 2; 
+ string IP = 3; 
+ int32 Port = 4;
+ string LocalIP = 5;
+ int32 LocalPort = 6;
+ string Method = 7;
+ int32 Milliseconds = 8;
+ string Node = 9;
+ string Route = 10;
+ int32 StatusCode = 11;
+ string Url = 12; 
+ string RequestType = 13;
+ sint64 CreateTimeStamp = 14;
+}
+
+message RequestDetail {
+ string Id = 1;
+ string RequestId = 2;
+ string Scheme = 3;
+ string QueryString = 4;
+ string Header = 5;
+ string Cookie = 6;
+ string RequestBody = 7;
+ string ResponseBody = 8;
+ string ErrorMessage = 9;
+ string ErrorStack = 10; 
+ sint64 CreateTimeStamp = 11;
+}
+
+message WriteReply {
+ int32 code = 1;
+}

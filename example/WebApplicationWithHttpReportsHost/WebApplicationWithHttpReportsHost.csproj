@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>23b38f6c-9d03-4adf-9243-e1f857f24147</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\HttpReports.Collector.Grpc\HttpReports.Collector.Grpc.csproj" />
+    <ProjectReference Include="..\..\src\HttpReports.Dashboard.API\HttpReports.Dashboard.API.csproj" />
+    <ProjectReference Include="..\..\src\HttpReports.Dashboard.UI\HttpReports.Dashboard.UI.csproj" />
+    <ProjectReference Include="..\..\src\HttpReports.Storage.MySQL\HttpReports.Storage.MySQL.csproj" />
+  </ItemGroup>
+
+</Project>

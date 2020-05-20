@@ -339,6 +339,4 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb 
 
-
-bin/
-obj/
+**/HttpReports.Dashboard.UI/web/

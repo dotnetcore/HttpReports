@@ -14,6 +14,12 @@ namespace HttpReports
         IRequestInfo CreateRequestInfo();
 
         /// <summary>
+        /// 创建请求详情
+        /// </summary>
+        /// <returns></returns>
+        IRequestDetail CreateRequestDetail();
+
+        /// <summary>
         /// 创建监控
         /// </summary>
         /// <param name="type"></param>

@@ -1,14 +1,16 @@
-﻿using HttpReports.Core.Config;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+
+using HttpReports.Core.Config;
+
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
+
+using Newtonsoft.Json;
 
 namespace HttpReports.RequestInfoBuilder
 {
@@ -16,9 +18,7 @@ namespace HttpReports.RequestInfoBuilder
     {
         public DefaultRequestInfoBuilder(IModelCreator modelCreator, IOptions<HttpReportsOptions> options) : base(modelCreator, options)
         {
-
         }
-
 
         protected override (IRequestInfo, IRequestDetail) Build(HttpContext context, IRequestInfo request, string path)
         {
@@ -28,7 +28,7 @@ namespace HttpReports.RequestInfoBuilder
             }
 
             request.Node = Options.Node.Substring(0, 1).ToUpper() + Options.Node.Substring(1).ToLower();
-            request.Route = GetRoute(path); 
+            request.Route = GetRoute(path);
 
             IRequestDetail requestDetail = GetRequestDetail(context, request);
 
@@ -41,7 +41,7 @@ namespace HttpReports.RequestInfoBuilder
 
         private IRequestDetail GetRequestDetail(HttpContext context, IRequestInfo request)
         {
-            IRequestDetail model = new RequestDetail();
+            IRequestDetail model = ModelCreator.CreateRequestDetail();
 
             if (context.Request != null)
             {
@@ -60,7 +60,7 @@ namespace HttpReports.RequestInfoBuilder
                 if (headers != null && headers.Count > 0)
                 {
                     model.Header = JsonConvert.SerializeObject(headers);
-                }  
+                }
 
                 if (context.Items.ContainsKey(BasicConfig.HttpReportsGlobalException))
                 {
@@ -69,10 +69,10 @@ namespace HttpReports.RequestInfoBuilder
                     if (ex != null)
                     {
                         model.ErrorMessage = ex.Message;
-                        model.ErrorStack = ex.StackTrace; 
+                        model.ErrorStack = ex.StackTrace;
                     }
 
-                    context.Items.Remove(BasicConfig.HttpReportsGlobalException); 
+                    context.Items.Remove(BasicConfig.HttpReportsGlobalException);
                 }
 
                 if (context.Items.ContainsKey(BasicConfig.HttpReportsRequestBody))
@@ -107,8 +107,6 @@ namespace HttpReports.RequestInfoBuilder
 
             return model;
         }
-         
-
 
         private string GetRoute(string path)
         {
@@ -124,7 +122,7 @@ namespace HttpReports.RequestInfoBuilder
             if (route.Contains("?"))
             {
                 route = route.Split('?').FirstOrDefault();
-            } 
+            }
 
             return route;
         }
@@ -136,7 +134,7 @@ namespace HttpReports.RequestInfoBuilder
             return val;
         }
 
-        private string CutString(string str,int count)
+        private string CutString(string str, int count)
         {
             if (str.IsEmpty())
             {
@@ -145,12 +143,12 @@ namespace HttpReports.RequestInfoBuilder
 
             if (str.Length > count)
             {
-                return str.Substring(count); 
+                return str.Substring(count);
             }
             else
             {
                 return str;
-            } 
-        } 
+            }
+        }
     }
 }
