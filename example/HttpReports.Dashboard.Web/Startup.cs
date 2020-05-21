@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -12,24 +8,25 @@ namespace HttpReports.Dashboard.Web
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
-
-       
         public void ConfigureServices(IServiceCollection services)
-        {   
-            services.AddHttpReports().UseMySqlStorage().UseGrpc(); 
+        {
+            services.AddHttpReports()
+                    .UseMySqlStorage()
+                    .UseGrpc()
+                    .AddHttpReportsGrpcCollector();     //Add Grpc Collector
 
-            services.AddHttpReportsDashboard();
-           
+            services.AddHttpReportsDashboard().UseMySqlStorage();
+
             services.AddControllersWithViews();
         }
 
-   
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseHttpReports();
@@ -52,6 +49,8 @@ namespace HttpReports.Dashboard.Web
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHttpReportsGrpcCollector();
+
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");

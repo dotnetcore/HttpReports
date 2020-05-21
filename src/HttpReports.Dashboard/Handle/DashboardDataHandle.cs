@@ -1,4 +1,9 @@
-﻿using HttpReports.Core.Config;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+using HttpReports.Core.Config;
 using HttpReports.Core.Models;
 using HttpReports.Dashboard.DTO;
 using HttpReports.Dashboard.Implements;
@@ -8,6 +13,7 @@ using HttpReports.Dashboard.Services.Language;
 using HttpReports.Dashboard.ViewModels;
 using HttpReports.Monitor;
 using HttpReports.Storage.FilterOptions;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -89,7 +95,6 @@ namespace HttpReports.Dashboard.Handle
                 Take = request.TOP,
                 StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
                 EndTimeFormat = "yyyy-MM-dd HH:mm:ss"
-
             });
 
             var Art = new
@@ -162,11 +167,9 @@ namespace HttpReports.Dashboard.Handle
                 var times = requestTimesStatistics.Items.TryGetValue(start, out var tTimes) ? tTimes : 0;
                 timesList.Add(times);
 
-
                 //每小时平均处理时间
                 var avg = responseTimeStatistics.Items.TryGetValue(start, out var tAvg) ? tAvg : 0;
                 avgList.Add(avg);
-
 
                 hours.Add(startTime.AddHours(i).ToString("HH").ToInt());
 
@@ -218,14 +221,11 @@ namespace HttpReports.Dashboard.Handle
                 var times = requestTimesStatistics.Items.TryGetValue(start, out var tTimes) ? tTimes : 0;
                 timesList.Add(times);
 
-
                 //每小时平均处理时间
                 var avg = responseTimeStatistics.Items.TryGetValue(start, out var tAvg) ? tAvg : 0;
                 avgList.Add(avg);
 
-
                 time.Add(startTime.AddMinutes(i).ToString("mm").ToInt());
-
             }
 
             return Json(new HttpResultEntity(1, "ok", new { timesList, avgList, time }));
@@ -249,7 +249,6 @@ namespace HttpReports.Dashboard.Handle
 
             List<string> time = new List<string>();
             List<int> value = new List<int>();
-
 
             var monthDayCount = (endTime - startTime).Days;
             for (int i = 1; i <= monthDayCount; i++)
@@ -347,7 +346,6 @@ namespace HttpReports.Dashboard.Handle
                 IsAscend = false,
                 StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
                 EndTimeFormat = "yyyy-MM-dd HH:mm:ss"
-
             });
 
             return Json(new { total = result.AllItemCount, rows = result.List });
@@ -364,7 +362,6 @@ namespace HttpReports.Dashboard.Handle
 
             if (request.Id.IsEmpty() || request.Id == "0")
                 await _storage.AddMonitorJob(model);
-
             else
                 await _storage.UpdateMonitorJob(model);
 
@@ -411,7 +408,6 @@ namespace HttpReports.Dashboard.Handle
 
             return Json(new HttpResultEntity(1, "ok", null));
         }
-
 
         [AllowAnonymous]
         public async Task<string> CheckUserLogin(SysUser user)
@@ -506,7 +502,6 @@ namespace HttpReports.Dashboard.Handle
             {
                 requestInfoTrace.Nodes = new List<RequestInfoTrace>();
             }
-
 
             foreach (var item in childs)
             {

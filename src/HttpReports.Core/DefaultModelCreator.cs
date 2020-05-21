@@ -1,6 +1,4 @@
-﻿using System;
-
-using HttpReports.Monitor;
+﻿using HttpReports.Monitor;
 
 namespace HttpReports
 {
@@ -29,6 +27,8 @@ namespace HttpReports
         }
 
         public virtual IMonitorRule CreateMonitorRule() => new MonitorRule();
+
+        public virtual IRequestDetail CreateRequestDetail() => new RequestDetail();
 
         public virtual IRequestInfo CreateRequestInfo() => new RequestInfo();
     }
