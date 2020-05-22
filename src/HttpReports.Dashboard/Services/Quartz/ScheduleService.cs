@@ -1,5 +1,4 @@
-﻿using HttpReports.Core.Config;
-using HttpReports.Dashboard.Services.Language;
+﻿using HttpReports.Core.Config; 
 using HttpReports.Dashboard.Services.Quartz;
 using HttpReports.Monitor;
 using Microsoft.Extensions.Options;
@@ -26,7 +25,7 @@ namespace HttpReports.Dashboard.Services
         private DashboardOptions _options; 
       
 
-        public ScheduleService(IHttpReportsStorage storage, IOptions<DashboardOptions> options, LanguageService languageService)
+        public ScheduleService(IHttpReportsStorage storage, IOptions<DashboardOptions> options)
         {
             _storage = storage;
 

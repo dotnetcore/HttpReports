@@ -40,7 +40,7 @@ WriteLiteral("\r\n");
   
     ViewData["Title"] = "Trace"; 
   
-    var lang = ViewData["Language"] as HttpReports.Dashboard.Services.Language.ILanguage;
+    var lang = ViewData["Language"] as HttpReports.Dashboard.Services.Localize;
 
     Layout = new HttpReports.Dashboard.Views.HttpReportsTemplate { Context = Context, ViewData = ViewData };
 

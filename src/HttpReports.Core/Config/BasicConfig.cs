@@ -40,9 +40,7 @@ namespace HttpReports.Core.Config
 
         public const string Language = "Language";
 
-        public const string StaticFilesRoot = "HttpReports.Dashboard";
-
-
+        public const string StaticFilesRoot = "HttpReports.Dashboard"; 
 
     }
 }

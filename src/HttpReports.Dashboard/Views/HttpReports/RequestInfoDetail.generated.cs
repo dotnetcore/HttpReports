@@ -44,7 +44,7 @@ WriteLiteral("\r\n");
 
     var RequestDetail = ViewData["Detail"] as HttpReports.IRequestDetail;
 
-    var lang = ViewData["Language"] as HttpReports.Dashboard.Services.Language.ILanguage;
+    var lang = ViewData["Language"] as HttpReports.Dashboard.Services.Localize;
 
     Layout = new HttpReports.Dashboard.Views.HttpReportsTemplate { Context = Context, ViewData = ViewData };
 

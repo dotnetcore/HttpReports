@@ -1,29 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-
+using System.Threading.Tasks; 
 using HttpReports.Core.Config;
 using HttpReports.Core.Models;
 using HttpReports.Dashboard.DTO;
 using HttpReports.Dashboard.Implements;
 using HttpReports.Dashboard.Models;
-using HttpReports.Dashboard.Services;
-using HttpReports.Dashboard.Services.Language;
+using HttpReports.Dashboard.Services; 
 using HttpReports.Dashboard.ViewModels;
 using HttpReports.Monitor;
-using HttpReports.Storage.FilterOptions;
-
+using HttpReports.Storage.FilterOptions; 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Newtonsoft.Json.Serialization; 
 
 namespace HttpReports.Dashboard.Handle
 {
@@ -33,16 +25,20 @@ namespace HttpReports.Dashboard.Handle
 
         private readonly MonitorService _monitorService;
 
-        private readonly ScheduleService _scheduleService;
+        private readonly ScheduleService _scheduleService; 
 
-        private readonly ILanguage _lang;
+        private readonly LocalizeService _localizeService;
 
-        public DashboardDataHandle(IServiceProvider serviceProvider, IHttpReportsStorage storage, MonitorService monitorService, ScheduleService scheduleService, LanguageService languageService) : base(serviceProvider)
+        private readonly Localize _lang;
+
+
+        public DashboardDataHandle(IServiceProvider serviceProvider, IHttpReportsStorage storage, MonitorService monitorService, ScheduleService scheduleService,LocalizeService localizeService) : base(serviceProvider)
         {
             _storage = storage;
             _monitorService = monitorService;
-            _scheduleService = scheduleService;
-            _lang = languageService.GetLanguage().Result;
+            _scheduleService = scheduleService; 
+            _localizeService = localizeService;
+            _lang = localizeService.Current;
         }
 
         public async Task<string> GetIndexChartData(GetIndexDataRequest request)
@@ -297,8 +293,8 @@ namespace HttpReports.Dashboard.Handle
         }
 
         public async Task<string> ChangeLanguage(ChangeLanguageRequest request)
-        {
-            await _storage.SetLanguage(request.Language);
+        { 
+            await _localizeService.SetLanguageAsync(request.Language); 
 
             return Json(new HttpResultEntity(1, "ok", null));
         }

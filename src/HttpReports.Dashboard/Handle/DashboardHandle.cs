@@ -1,6 +1,6 @@
 ﻿using HttpReports.Core.Config;
 using HttpReports.Dashboard.Implements;
-using HttpReports.Dashboard.Services.Language;
+using HttpReports.Dashboard.Services; 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using System;
@@ -15,20 +15,23 @@ namespace HttpReports.Dashboard.Handle
     {
         private readonly IHttpReportsStorage _storage;
         private readonly IOptions<DashboardOptions> _options;
-        private readonly LanguageService _language;
+
+        private readonly LocalizeService _localizeService;
+        private Localize _lang;
 
 
-        public DashboardHandle(IServiceProvider serviceProvider, IHttpReportsStorage storage, IOptions<DashboardOptions> options,LanguageService language) : base(serviceProvider)
+        public DashboardHandle(IServiceProvider serviceProvider, IHttpReportsStorage storage, IOptions<DashboardOptions> options, LocalizeService localizeService) : base(serviceProvider)
         {
             _storage = storage;
             _options = options;
-            _language = language;
+            _localizeService = localizeService; 
+            _lang = _localizeService.Current;
         }
 
 
         public async Task<string> Index()
         {
-            await ConfigLanguage();
+            ConfigLanguage();
 
             var nodes = (await _storage.GetNodesAsync()).Select(m => m.Name).ToList();
 
@@ -39,7 +42,7 @@ namespace HttpReports.Dashboard.Handle
 
         public async Task<string> Trend()
         {
-            await ConfigLanguage();
+            ConfigLanguage();
 
             var nodes = (await _storage.GetNodesAsync()).Select(m => m.Name).ToList();
 
@@ -50,7 +53,7 @@ namespace HttpReports.Dashboard.Handle
 
         public async Task<string> EditMonitor(string Id = "")
         {
-            await ConfigLanguage();
+            ConfigLanguage();
 
             var nodes = (await _storage.GetNodesAsync()).Select(m => m.Name).ToList();
 
@@ -63,7 +66,7 @@ namespace HttpReports.Dashboard.Handle
 
         public async Task<string> Monitor()
         {
-            await ConfigLanguage();
+            ConfigLanguage();
 
             var list = await _storage.GetMonitorJobs();
 
@@ -75,7 +78,7 @@ namespace HttpReports.Dashboard.Handle
         }
         public async Task<string> Detail()
         {
-            await ConfigLanguage();
+            ConfigLanguage();
 
             var nodes = (await _storage.GetNodesAsync()).Select(m => m.Name).ToList();
 
@@ -86,7 +89,7 @@ namespace HttpReports.Dashboard.Handle
 
         public async Task<string> Trace(string Id)
         {
-            await ConfigLanguage();
+            ConfigLanguage();
 
             ViewData["TraceId"] = Id;
 
@@ -95,7 +98,7 @@ namespace HttpReports.Dashboard.Handle
 
         public async Task<string> RequestInfoDetail(string Id = "")
         {
-            await ConfigLanguage();
+            ConfigLanguage();
 
             var (requestInfo, requestDetail) = await _storage.GetRequestInfoDetail(Id);
 
@@ -106,9 +109,7 @@ namespace HttpReports.Dashboard.Handle
         }
 
         private string ParseJobCronString(string cron)
-        {
-            ILanguage _lang = _language.GetLanguage().Result;
-
+        { 
             if (cron == "0 0/1 * * * ?") return _lang.Monitor_Time1Min;
             if (cron == "0 0/3 * * * ?") return _lang.Monitor_Time3Min;
             if (cron == "0 0/5 * * * ?") return _lang.Monitor_Time5Min;
@@ -125,18 +126,16 @@ namespace HttpReports.Dashboard.Handle
             return _lang.Monitor_Time1Min;
         }
 
-        private async Task ConfigLanguage()
-        {
-            ILanguage language = await _language.GetLanguage();
-
-            ViewData["Language"] = language;
+        private void ConfigLanguage()
+        { 
+            ViewData["Language"] = _lang;
         }
 
 
         [AllowAnonymous]
         public async Task<string> UserLogin()
         {
-            await ConfigLanguage();
+            ConfigLanguage();
 
             if (_options.Value.AllowAnonymous)
             {

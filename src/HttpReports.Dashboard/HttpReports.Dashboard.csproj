@@ -21,6 +21,11 @@
 
   <ItemGroup>
     <EmbeddedResource Include="HttpReportsStaticFiles\**" /> 
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="HttpReportsStaticFiles\Content\Lang\en-us.json" />
+    <None Remove="HttpReportsStaticFiles\Content\Lang\zh-cn.json" />
   </ItemGroup> 
    
 

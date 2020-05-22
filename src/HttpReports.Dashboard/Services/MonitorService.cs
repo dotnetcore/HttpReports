@@ -1,4 +1,4 @@
-﻿using HttpReports.Dashboard.Services.Language;
+﻿ 
 using HttpReports.Dashboard.ViewModels;
 using HttpReports.Models;
 using HttpReports.Monitor;
@@ -12,11 +12,11 @@ namespace HttpReports.Dashboard.Services
 {
     public class MonitorService
     {
-        private readonly ILanguage _lang;
+        private Localize _lang;
 
-        public MonitorService(LanguageService languageService)
+        public MonitorService(LocalizeService localizeService)
         {
-            _lang = languageService.GetLanguage().Result;
+            _lang = localizeService.Current;
         }
 
 

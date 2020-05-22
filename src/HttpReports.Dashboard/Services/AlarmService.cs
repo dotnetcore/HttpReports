@@ -2,8 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 
-using HttpReports.Dashboard.Models;
-using HttpReports.Dashboard.Services.Language;
+using HttpReports.Dashboard.Models; 
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -21,14 +20,14 @@ namespace HttpReports.Dashboard.Services
 
         private ILogger<AlarmService> Logger;
 
-        private readonly ILanguage lang;
+        private readonly Localize lang;
 
 
-        public AlarmService(IOptions<DashboardOptions> options, ILogger<AlarmService> logger, LanguageService languageService)
+        public AlarmService(IOptions<DashboardOptions> options, ILogger<AlarmService> logger,LocalizeService localizeService)
         {
             Options = options.Value;
             Logger = logger;
-            lang = languageService.GetLanguage().Result;
+            lang = localizeService.Current;
         }
 
         private async Task SendMessageAsync(MimeMessage message)

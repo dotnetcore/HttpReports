@@ -1,6 +1,5 @@
 ﻿using HttpReports.Dashboard.Implements;
-using HttpReports.Dashboard.Models;
-using HttpReports.Dashboard.Services.Language;
+using HttpReports.Dashboard.Models; 
 using HttpReports.Models;
 using HttpReports.Monitor;
 using HttpReports.Storage.FilterOptions;
@@ -24,9 +23,9 @@ namespace HttpReports.Dashboard.Services.Quartz
 
         private IAlarmService _alarmService;
 
-        private ILogger<MonitorBackendJob> _logger;
-
-        private ILanguage _lang;
+        private ILogger<MonitorBackendJob> _logger; 
+        
+        private Localize _lang;
 
 
         public MonitorBackendJob()
@@ -41,7 +40,7 @@ namespace HttpReports.Dashboard.Services.Quartz
             _alarmService = _alarmService ?? ServiceContainer.provider.GetService(typeof(IAlarmService)) as IAlarmService;
             _monitorService = _monitorService ?? ServiceContainer.provider.GetService(typeof(MonitorService)) as MonitorService;
             _logger = _logger ?? ServiceContainer.provider.GetService(typeof(ILogger<MonitorBackendJob>)) as ILogger<MonitorBackendJob>;
-            _lang = _lang ?? (ServiceContainer.provider.GetService(typeof(LanguageService)) as LanguageService).GetLanguage().Result;
+            _lang = _lang ?? (ServiceContainer.provider.GetService(typeof(LocalizeService)) as LocalizeService).Current;
 
 
             IMonitorJob job = context.JobDetail.JobDataMap.Get("job") as IMonitorJob;

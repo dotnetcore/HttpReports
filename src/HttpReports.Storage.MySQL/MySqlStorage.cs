@@ -120,10 +120,22 @@ CREATE TABLE IF NOT EXISTS `SysConfig` (
                         await connection.ExecuteAsync($@" Insert Into `SysUser` (`Id`,`UserName`,`Password`) Values ('{MD5_16(Guid.NewGuid().ToString())}','{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ");
                     }
 
-                    if (await connection.QueryFirstOrDefaultAsync<int>($"Select count(1) from `SysConfig` Where `Key` =  '{BasicConfig.Language}' ") == 0)
+                    var lang = await connection.QueryFirstOrDefaultAsync<string>($"Select * from `SysConfig` Where `Key` =  '{BasicConfig.Language}' ");
+                     
+                    if (!lang.IsEmpty())
                     {
-                        await connection.ExecuteAsync($@" Insert Into `SysConfig` (`Id`,`Key`,`Value`) Values ('{MD5_16(Guid.NewGuid().ToString())}','{BasicConfig.Language}','English') ");
+                        if (lang.ToLowerInvariant() == "chinese" || lang.ToLowerInvariant() == "english")
+                        {
+                            await connection.ExecuteAsync($@" Delete From `SysConfig` Where `Key` =  '{BasicConfig.Language}'  ");
+
+                            await connection.ExecuteAsync($@" Insert Into `SysConfig` Values ('{MD5_16(Guid.NewGuid().ToString())}','{BasicConfig.Language}','en-us') ");
+
+                        }  
                     }
+                    else
+                    {
+                        await connection.ExecuteAsync($@" Insert Into `SysConfig` Values ('{MD5_16(Guid.NewGuid().ToString())}','{BasicConfig.Language}','en-us') ");
+                    } 
 
                     if (await connection.QueryFirstOrDefaultAsync<string>($" SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS where table_schema ='{ConnectionFactory.DataBase}' AND table_name  = 'RequestInfo'  AND COLUMN_NAME = 'Route'") != "varchar(120)")
                     {

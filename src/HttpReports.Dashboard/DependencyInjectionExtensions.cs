@@ -6,8 +6,7 @@ using HttpReports.Dashboard;
 using HttpReports.Dashboard.Handle;
 using HttpReports.Dashboard.Implements;
 using HttpReports.Dashboard.Route;
-using HttpReports.Dashboard.Services;
-using HttpReports.Dashboard.Services.Language;
+using HttpReports.Dashboard.Services; 
 using HttpReports.Dashboard.Services.Quartz;
 using HttpReports.Dashboard.Views;
 using Microsoft.AspNetCore.Builder;
@@ -52,12 +51,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSingleton<MonitorService>();
 
-            services.AddSingleton<ScheduleService>();
+            services.AddSingleton<ScheduleService>(); 
 
-            services.AddSingleton<ChineseLanguage>();
-            services.AddSingleton<EnglishLanguage>(); 
-            services.AddSingleton<LanguageService>();
-
+            services.AddSingleton<LocalizeService>(); 
 
             services.AddHandleService().AddViewsService();   
 
@@ -73,7 +69,11 @@ namespace Microsoft.Extensions.DependencyInjection
             var storage = app.ApplicationServices.GetRequiredService<IHttpReportsStorage>() ?? throw new ArgumentNullException("Storage Not Found");
             storage.InitAsync().Wait();
 
-            app.ApplicationServices.GetService<ScheduleService>().InitAsync().Wait();
+            app.ApplicationServices.GetService<ScheduleService>().InitAsync().Wait(); 
+
+            var localizeService = app.ApplicationServices.GetRequiredService<LocalizeService>() ?? throw new ArgumentNullException("localizeService Not Found");
+
+            localizeService.InitAsync().Wait(); 
 
             app.UseMiddleware<DashboardMiddleware>(); 
 

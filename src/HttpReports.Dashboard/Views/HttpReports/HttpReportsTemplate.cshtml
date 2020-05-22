@@ -1,7 +1,7 @@
 ﻿@* Generator: Template TypeVisibility: Internal GeneratePrettyNames: true *@
 @inherits HttpReports.Dashboard.Views.RazorPage
 @{
-    var lang = ViewData["Language"] as HttpReports.Dashboard.Services.Language.ILanguage;
+    var lang = ViewData["Language"] as HttpReports.Dashboard.Services.Localize;
 }
 
 <!DOCTYPE html>
@@ -90,10 +90,10 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i style="margin-top:24px;" class="fa fa-language"></i></a>
                     <ul class="dropdown-menu update-menu" role="menu">
                         <li>
-                            <a data-key="English" onclick="ChangeLanguage(this)"> English </a>
+                            <a data-key="en-us" onclick="ChangeLanguage(this)"> English </a>
                         </li>
                         <li>
-                            <a data-key="Chinese" onclick="ChangeLanguage(this)"> 中文</a>
+                            <a data-key="zh-cn" onclick="ChangeLanguage(this)"> 中文</a>
                         </li>
                     </ul>
                 </li>

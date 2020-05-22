@@ -32,7 +32,7 @@ WriteLiteral("\r\n");
             
             #line 3 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
   
-    var lang = ViewData["Language"] as HttpReports.Dashboard.Services.Language.ILanguage;
+    var lang = ViewData["Language"] as HttpReports.Dashboard.Services.Localize;
 
 
             
@@ -102,16 +102,15 @@ WriteLiteral("\');   </script>\r\n\r\n    <script src=\"/HttpReportsStaticFiles/
 "     <li class=\"dropdown\">\r\n                    <a href=\"#\" class=\"dropdown-togg" +
 "le\" data-toggle=\"dropdown\"><i style=\"margin-top:24px;\" class=\"fa fa-language\"></" +
 "i></a>\r\n                    <ul class=\"dropdown-menu update-menu\" role=\"menu\">\r\n" +
-"                        <li>\r\n                            <a data-key=\"English\" " +
-"onclick=\"ChangeLanguage(this)\"> English </a>\r\n                        </li>\r\n   " +
-"                     <li>\r\n                            <a data-key=\"Chinese\" onc" +
-"lick=\"ChangeLanguage(this)\"> 中文</a>\r\n                        </li>\r\n            " +
-"        </ul>\r\n                </li>\r\n\r\n                <li class=\"dropdown\">\r\n " +
-"                   <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\"><i" +
-" class=\"fa fa-dashboard\"></i></a>\r\n                    <ul class=\"dropdown-menu " +
-"update-menu\" role=\"menu\">\r\n                        <li>\r\n                       " +
-"     <a data-key=\"light\" onclick=\"ChangeTheme(this)\"><i class=\"fa fa-sun-o\"></i>" +
-" ");
+"                        <li>\r\n                            <a data-key=\"en-us\" on" +
+"click=\"ChangeLanguage(this)\"> English </a>\r\n                        </li>\r\n     " +
+"                   <li>\r\n                            <a data-key=\"zh-cn\" onclick" +
+"=\"ChangeLanguage(this)\"> 中文</a>\r\n                        </li>\r\n                " +
+"    </ul>\r\n                </li>\r\n\r\n                <li class=\"dropdown\">\r\n     " +
+"               <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\"><i cla" +
+"ss=\"fa fa-dashboard\"></i></a>\r\n                    <ul class=\"dropdown-menu upda" +
+"te-menu\" role=\"menu\">\r\n                        <li>\r\n                           " +
+" <a data-key=\"light\" onclick=\"ChangeTheme(this)\"><i class=\"fa fa-sun-o\"></i> ");
 
 
             
