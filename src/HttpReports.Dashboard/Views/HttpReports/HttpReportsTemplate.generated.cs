@@ -32,7 +32,7 @@ WriteLiteral("\r\n");
             
             #line 3 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
   
-    var lang = ViewData["Language"] as HttpReports.Dashboard.Services.Localize;
+    var lang = ViewData["Language"] as HttpReports.Dashboard.Services.Localize;  
 
 
             
@@ -77,44 +77,54 @@ WriteLiteral("\r\n<!DOCTYPE html>\r\n<html lang=\"zh-cn\">\r\n<head>\r\n    <met
 "ript src=\"/HttpReportsStaticFiles/Content/js/bootstrap-treeview.js?ver=1.0.5\"></" +
 "script>\r\n\r\n\r\n    <link href=\"/HttpReportsStaticFiles/Content/message/message.css" +
 "\" rel=\"stylesheet\" />\r\n    <script src=\"/HttpReportsStaticFiles/Content/message/" +
-"message.js\"></script>\r\n\r\n    <script>  var lang = JSON.parse(\'");
+"message.js\"></script>\r\n\r\n    <script src=\"/HttpReportsStaticFiles/Content/Lang/");
 
 
             
             #line 62 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
-                                Write(Raw(Newtonsoft.Json.JsonConvert.SerializeObject(lang)));
+                                                  Write(lang.LanguageFormat + ".json");
 
             
             #line default
             #line hidden
-WriteLiteral("\');   </script>\r\n\r\n    <script src=\"/HttpReportsStaticFiles/Content/common/basic." +
-"js?ver=1.0.5\"></script>\r\n    <link href=\"/HttpReportsStaticFiles/Content/common/" +
-"basic.css?ver=1.0.5\" rel=\"stylesheet\" />\r\n\r\n\r\n    <script src=\"/HttpReportsStati" +
-"cFiles/Content/page/main.js?ver=1.0.5\"></script>\r\n\r\n\r\n    <link rel=\"icon\" href=" +
-"\"/HttpReportsStaticFiles/Content/assets/img/img.ico\" type=\"image/x-icon\" />\r\n\r\n<" +
-"/head>\r\n\r\n<body>\r\n\r\n    <!-- start: Header -->\r\n    <div class=\"navbar\" role=\"na" +
-"vigation\">\r\n\r\n        <div class=\"container-fluid\">\r\n\r\n            <ul class=\"na" +
-"v navbar-nav navbar-actions navbar-left\">\r\n                <li class=\"visible-md" +
-" visible-lg\"><a href=\"#\" style=\"padding:0 10px;\" id=\"main-menu-toggle\"><i class=" +
-"\"fa fa-th-large\"></i></a></li>\r\n                <li class=\"visible-xs visible-sm" +
-"\"><a href=\"#\" id=\"sidebar-menu\"><i class=\"fa fa-navicon\"></i></a></li>\r\n        " +
-"    </ul>\r\n\r\n            <ul class=\"nav navbar-nav navbar-right\">\r\n\r\n           " +
-"     <li class=\"dropdown\">\r\n                    <a href=\"#\" class=\"dropdown-togg" +
-"le\" data-toggle=\"dropdown\"><i style=\"margin-top:24px;\" class=\"fa fa-language\"></" +
-"i></a>\r\n                    <ul class=\"dropdown-menu update-menu\" role=\"menu\">\r\n" +
-"                        <li>\r\n                            <a data-key=\"en-us\" on" +
-"click=\"ChangeLanguage(this)\"> English </a>\r\n                        </li>\r\n     " +
-"                   <li>\r\n                            <a data-key=\"zh-cn\" onclick" +
-"=\"ChangeLanguage(this)\"> 中文</a>\r\n                        </li>\r\n                " +
-"    </ul>\r\n                </li>\r\n\r\n                <li class=\"dropdown\">\r\n     " +
-"               <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\"><i cla" +
-"ss=\"fa fa-dashboard\"></i></a>\r\n                    <ul class=\"dropdown-menu upda" +
-"te-menu\" role=\"menu\">\r\n                        <li>\r\n                           " +
-" <a data-key=\"light\" onclick=\"ChangeTheme(this)\"><i class=\"fa fa-sun-o\"></i> ");
+WriteLiteral("\"></script> \r\n\r\n    <script>  var langFormat = \'");
 
 
             
-            #line 105 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 64 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+                            Write(lang.LanguageFormat);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\';   </script>\r\n\r\n    <script src=\"/HttpReportsStaticFiles/Content/common/basic.j" +
+"s?ver=1.0.5\"></script>\r\n    <link href=\"/HttpReportsStaticFiles/Content/common/b" +
+"asic.css?ver=1.0.5\" rel=\"stylesheet\" />\r\n\r\n\r\n    <script src=\"/HttpReportsStatic" +
+"Files/Content/page/main.js?ver=1.0.5\"></script>\r\n\r\n\r\n    <link rel=\"icon\" href=\"" +
+"/HttpReportsStaticFiles/Content/assets/img/img.ico\" type=\"image/x-icon\" />\r\n\r\n</" +
+"head>\r\n\r\n<body>\r\n\r\n    <!-- start: Header -->\r\n    <div class=\"navbar\" role=\"nav" +
+"igation\">\r\n\r\n        <div class=\"container-fluid\">\r\n\r\n            <ul class=\"nav" +
+" navbar-nav navbar-actions navbar-left\">\r\n                <li class=\"visible-md " +
+"visible-lg\"><a href=\"#\" style=\"padding:0 10px;\" id=\"main-menu-toggle\"><i class=\"" +
+"fa fa-th-large\"></i></a></li>\r\n                <li class=\"visible-xs visible-sm\"" +
+"><a href=\"#\" id=\"sidebar-menu\"><i class=\"fa fa-navicon\"></i></a></li>\r\n         " +
+"   </ul>\r\n\r\n            <ul class=\"nav navbar-nav navbar-right\">\r\n\r\n            " +
+"    <li class=\"dropdown\">\r\n                    <a href=\"#\" class=\"dropdown-toggl" +
+"e\" data-toggle=\"dropdown\"><i style=\"margin-top:24px;\" class=\"fa fa-language\"></i" +
+"></a>\r\n                    <ul class=\"dropdown-menu update-menu\" role=\"menu\">\r\n " +
+"                       <li>\r\n                            <a data-key=\"en-us\" onc" +
+"lick=\"ChangeLanguage(this)\"> English </a>\r\n                        </li>\r\n      " +
+"                  <li>\r\n                            <a data-key=\"zh-cn\" onclick=" +
+"\"ChangeLanguage(this)\"> 中文</a>\r\n                        </li>\r\n                 " +
+"   </ul>\r\n                </li>\r\n\r\n                <li class=\"dropdown\">\r\n      " +
+"              <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\"><i clas" +
+"s=\"fa fa-dashboard\"></i></a>\r\n                    <ul class=\"dropdown-menu updat" +
+"e-menu\" role=\"menu\">\r\n                        <li>\r\n                            " +
+"<a data-key=\"light\" onclick=\"ChangeTheme(this)\"><i class=\"fa fa-sun-o\"></i> ");
+
+
+            
+            #line 107 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                    Write(lang.Template_Light);
 
             
@@ -126,7 +136,7 @@ WriteLiteral(" </a>\r\n                        </li>\r\n                        
 
 
             
-            #line 108 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 110 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                    Write(lang.Template_Dark);
 
             
@@ -148,7 +158,7 @@ WriteLiteral(@" </a>
 
 
             
-            #line 120 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 122 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                            Write(lang.Template_EditAccount);
 
             
@@ -159,7 +169,7 @@ WriteLiteral(" </a>\r\n                        </li>\r\n                        
 
 
             
-            #line 123 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 125 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                           Write(lang.Template_Logout);
 
             
@@ -193,7 +203,7 @@ WriteLiteral(@" </a>
 
 
             
-            #line 147 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 149 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                                                             Write(lang.Menu_BasicData);
 
             
@@ -205,7 +215,7 @@ WriteLiteral("</span></a></li>\r\n\r\n                            <li data-title
 
 
             
-            #line 149 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 151 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                                                                  Write(lang.Menu_TrendData);
 
             
@@ -216,7 +226,7 @@ WriteLiteral("</span></a></li>\r\n\r\n                            <li data-title
 
 
             
-            #line 151 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 153 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                                                       Write(lang.Menu_RequestList);
 
             
@@ -228,7 +238,7 @@ WriteLiteral("</span></a></li>\r\n\r\n                            <li data-title
 
 
             
-            #line 153 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 155 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                                                          Write(lang.Menu_Monitor);
 
             
@@ -249,7 +259,7 @@ WriteLiteral(@"</span></a></li>
 
 
             
-            #line 164 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 166 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
            Write(RenderBody());
 
             
@@ -276,7 +286,7 @@ WriteLiteral(@"
 
 
             
-            #line 181 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 183 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                          Write(lang.Template_EditAccount);
 
             
@@ -287,7 +297,7 @@ WriteLiteral("</span>\r\n                </div>\r\n                <div class=\"
 
 
             
-            #line 185 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 187 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                           Write(lang.Login_UserName);
 
             
@@ -299,7 +309,7 @@ WriteLiteral("</label>\r\n                        <input autocomplete=\"new-pass
 
 
             
-            #line 189 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 191 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                           Write(lang.Index_OldPwd);
 
             
@@ -311,7 +321,7 @@ WriteLiteral("</label>\r\n                        <input autocomplete=\"new-pass
 
 
             
-            #line 193 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 195 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                           Write(lang.Index_NewPwd);
 
             
@@ -324,7 +334,7 @@ WriteLiteral(@"</label>
 
 
             
-            #line 196 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 198 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                          Write(lang.Index_UserSave);
 
             

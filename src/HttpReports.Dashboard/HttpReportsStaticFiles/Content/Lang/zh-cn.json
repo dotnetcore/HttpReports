@@ -1,5 +1,6 @@
 {
   "Language": "语言",
+  "LanguageFormat": "zh-cn",
   "StartTime": "开始时间",
   "EndTime": "结束时间",
   "Template_Light": "亮色模式",

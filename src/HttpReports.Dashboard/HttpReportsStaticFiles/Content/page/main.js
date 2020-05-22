@@ -2,8 +2,20 @@
 var httpreports = {};  
 httpreports.chart_theme = "macarons";
 httpreports.theme = "light";
-httpreports.index_chart_color = "#333333";   
+httpreports.index_chart_color = "#333333";  
+var lang = {};
 
+function InitLanguage() {
+
+    $.getJSON("/HttpReportsStaticFiles/Content/Lang/" + langFormat + ".json", function (result) {
+
+        lang = result;
+
+    }); 
+}
+ 
+
+InitLanguage();
 initTheme();   
 
 function InitTimeRange() {

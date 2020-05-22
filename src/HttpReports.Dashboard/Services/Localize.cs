@@ -27,6 +27,8 @@ namespace HttpReports.Dashboard.Services
         public string Index_Slow => GetValue();
         public string Index_UserSave => GetValue();
         public string Language => GetValue();
+
+        public string LanguageFormat => GetValue();
         public string Login_Button => GetValue();
         public string Login_CheckRule => GetValue();
         public string Login_Password => GetValue();

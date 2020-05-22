@@ -1,7 +1,7 @@
 ﻿@* Generator: Template TypeVisibility: Internal GeneratePrettyNames: true *@
 @inherits HttpReports.Dashboard.Views.RazorPage
 @{
-    var lang = ViewData["Language"] as HttpReports.Dashboard.Services.Localize;
+    var lang = ViewData["Language"] as HttpReports.Dashboard.Services.Localize;  
 }
 
 <!DOCTYPE html>
@@ -59,7 +59,9 @@
     <link href="/HttpReportsStaticFiles/Content/message/message.css" rel="stylesheet" />
     <script src="/HttpReportsStaticFiles/Content/message/message.js"></script>
 
-    <script>  var lang = JSON.parse('@Raw(Newtonsoft.Json.JsonConvert.SerializeObject(lang))');   </script>
+    <script src="/HttpReportsStaticFiles/Content/Lang/@(lang.LanguageFormat + ".json")"></script> 
+
+    <script>  var langFormat = '@(lang.LanguageFormat)';   </script>
 
     <script src="/HttpReportsStaticFiles/Content/common/basic.js?ver=1.0.5"></script>
     <link href="/HttpReportsStaticFiles/Content/common/basic.css?ver=1.0.5" rel="stylesheet" />

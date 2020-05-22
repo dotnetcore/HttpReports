@@ -18,6 +18,7 @@ namespace HttpReports.Dashboard.Handle
             { ".ico","image/x-icon"},
             { ".png","image/png"},
             { ".js","application/javascript"},
+            { ".json","application/json;charset=utf-8"},
             {".woff2","font/woff2" },
             {".woff","font/woff" },
             {".ttf","application/octet-stream" },
