@@ -119,8 +119,7 @@ namespace HttpReports.Storage.SQLServer
                          ");
 
                     }
-
-
+                     
                     if (await con.QueryFirstOrDefaultAsync<int>($"Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.SysConfig')") == 0)
                     {
                         await con.ExecuteAsync($@"
@@ -142,6 +141,23 @@ namespace HttpReports.Storage.SQLServer
                     if (await con.QueryFirstOrDefaultAsync<int>($"Select count(1) from [SysConfig] Where [Key] = '{BasicConfig.Language}' ") == 0)
                     {
                         await con.ExecuteAsync($" Insert Into [SysConfig] Values ('{MD5_16(Guid.NewGuid().ToString())}','{Core.Config.BasicConfig.Language}','English') ");
+                    }
+
+
+                    var lang = await con.QueryFirstOrDefaultAsync<string>($"Select * from [SysConfig] Where [Key] =  '{BasicConfig.Language}' ");
+
+                    if (!lang.IsEmpty())
+                    {
+                        if (lang.ToLowerInvariant() == "chinese" || lang.ToLowerInvariant() == "english")
+                        {
+                            await con.ExecuteAsync($@" Delete From [SysConfig] Where [Key] =  '{BasicConfig.Language}'  ");
+
+                            await con.ExecuteAsync($@" Insert Into [SysConfig] Values ('{MD5_16(Guid.NewGuid().ToString())}','{BasicConfig.Language}','en-us') "); 
+                        }
+                    }
+                    else
+                    {
+                        await con.ExecuteAsync($" Insert Into [SysConfig] Values ('{MD5_16(Guid.NewGuid().ToString())}','{Core.Config.BasicConfig.Language}','en-us') "); 
                     }
 
                 }
@@ -972,5 +988,19 @@ namespace HttpReports.Storage.SQLServer
             return result;
         }
 
+        public async Task<List<ServiceInstanceInfo>> GetServiceInstance(DateTime startTime)
+        {
+            string sql = "Select [Node],[IP],[Port] from RequestInfo where CreateTime >= @CreateTime GROUP BY [Node],[IP],[Port]  ORDER BY [IP],[Port] ";
+
+            TraceLogSql(sql);
+
+            var result = await LoggingSqlOperation(async connection => (
+
+               await connection.QueryAsync<ServiceInstanceInfo>(sql, new { CreateTime = startTime })
+
+           ));
+
+            return result.ToList();
+        }
     }
 }

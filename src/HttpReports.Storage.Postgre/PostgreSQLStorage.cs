@@ -470,13 +470,25 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
                     {
                         await con.ExecuteAsync($@" Insert Into ""SysUser"" (Id,UserName,Password) Values ('{MD5_16(Guid.NewGuid().ToString())}', '{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ");
                     }
+                     
 
 
-                    if (await con.QueryFirstOrDefaultAsync<int>($@"Select count(1) from ""SysConfig"" Where Key =  '{BasicConfig.Language}' ") == 0)
+                    var lang = await con.QueryFirstOrDefaultAsync<string>($@"Select * from ""SysConfig"" Where Key =  '{BasicConfig.Language}' ");
+
+                    if (!lang.IsEmpty())
                     {
-                        await con.ExecuteAsync($@" Insert Into ""SysConfig"" (Id,Key,Value) Values ('{MD5_16(Guid.NewGuid().ToString())}','{BasicConfig.Language}','English') ");
-                    }
+                        if (lang.ToLowerInvariant() == "chinese" || lang.ToLowerInvariant() == "english")
+                        {
+                            await con.ExecuteAsync($@" Delete From ""SysConfig"" Where Key =  '{BasicConfig.Language}'  ");
 
+                            await con.ExecuteAsync($@" Insert Into ""SysConfig"" (Id,Key,Value) Values ('{MD5_16(Guid.NewGuid().ToString())}','{BasicConfig.Language}','en-us') ");
+
+                        }
+                    }
+                    else
+                    {
+                        await con.ExecuteAsync($@" Insert Into ""SysConfig"" (Id,Key,Value) Values ('{MD5_16(Guid.NewGuid().ToString())}','{BasicConfig.Language}','en-us') ");
+                    }  
                 }
             }
             catch (Exception ex)
@@ -839,7 +851,21 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
             return result;
         }
 
-     
+        public async Task<List<ServiceInstanceInfo>> GetServiceInstance(DateTime startTime)
+        {
+            string sql = $@"Select Node,IP,Port from ""RequestInfo"" where CreateTime >= @CreateTime GROUP BY Node,IP,Port ORDER BY IP,Port";
+
+            TraceLogSql(sql);
+
+            var result = await LoggingSqlOperation(async connection => (
+
+               await connection.QueryAsync<ServiceInstanceInfo>(sql, new { CreateTime = startTime })
+
+           ));
+
+            return result.ToList();
+        }
+
         private class KVClass<TKey, TValue>
         {
             public TKey KeyField { get; set; }

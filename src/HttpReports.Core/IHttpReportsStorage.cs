@@ -32,6 +32,8 @@ namespace HttpReports
         /// <returns></returns>
         Task<List<NodeInfo>> GetNodesAsync();
 
+        Task<List<ServiceInstanceInfo>> GetServiceInstance(DateTime startTime); 
+
         #region Statistics
 
         /// <summary>

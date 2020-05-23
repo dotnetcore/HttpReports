@@ -22,12 +22,12 @@ namespace HttpReports.RequestInfoBuilder
 
         protected override (IRequestInfo, IRequestDetail) Build(HttpContext context, IRequestInfo request, string path)
         {
-            if (Options.Node.IsEmpty())
+            if (Options.Service.IsEmpty())
             {
-                Options.Node = "Default";
+                Options.Service = Options.Node.IsEmpty() ? "Default":Options.Node;
             }
 
-            request.Node = Options.Node.Substring(0, 1).ToUpper() + Options.Node.Substring(1).ToLower();
+            request.Node = Options.Service.Substring(0, 1).ToUpper() + Options.Service.Substring(1).ToLower();
             request.Route = GetRoute(path);
 
             IRequestDetail requestDetail = GetRequestDetail(context, request);

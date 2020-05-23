@@ -6,7 +6,9 @@ namespace HttpReports
 {
     public class HttpReportsOptions : IOptions<HttpReportsOptions>
     {  
-        public string Node { get; set; } = "Default";
+        public string Service { get; set; } = "Default";
+
+        public string Node { get; set; }
 
         public bool Switch { get; set; } = true;
 

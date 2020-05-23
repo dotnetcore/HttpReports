@@ -970,7 +970,22 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
            ));
 
             return result;
-        } 
+        }
+
+        public async Task<List<ServiceInstanceInfo>> GetServiceInstance(DateTime startTime)
+        { 
+            string sql = "Select `Node`,`IP`,`Port` from RequestInfo where CreateTime >= @CreateTime GROUP BY `Node`,`IP`,`Port`  ORDER BY `IP`,`Port`  ";
+
+            TraceLogSql(sql);  
+
+            var result = await LoggingSqlOperation(async connection => (
+
+               await connection.QueryAsync<ServiceInstanceInfo>(sql, new { CreateTime = startTime })
+
+           ));
+
+            return result.ToList();
+        }  
 
 
         #endregion Base

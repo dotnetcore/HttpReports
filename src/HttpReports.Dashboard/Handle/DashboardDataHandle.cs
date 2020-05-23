@@ -7,6 +7,7 @@ using HttpReports.Core.Models;
 using HttpReports.Dashboard.DTO;
 using HttpReports.Dashboard.Implements;
 using HttpReports.Dashboard.Models;
+using HttpReports.Dashboard.Models.ViewModels;
 using HttpReports.Dashboard.Services; 
 using HttpReports.Dashboard.ViewModels;
 using HttpReports.Monitor;
@@ -40,6 +41,30 @@ namespace HttpReports.Dashboard.Handle
             _localizeService = localizeService;
             _lang = localizeService.Current;
         }
+
+        public async Task<string> GetServiceInstance()
+        {
+           var serviceInstance = await _storage.GetServiceInstance(DateTime.Now.AddDays(-1)); 
+
+           List<ServiceInstanceResponse> response = new List<ServiceInstanceResponse>();
+
+            if (serviceInstance != null)
+            {
+                var services = serviceInstance.Select(x => x.Service).Distinct(); 
+
+                foreach (var service in services)
+                {
+                    List<string> instance = serviceInstance.Where(k => k.Service == service).Select(k => k.IP + k.Port).Select(x => x.Replace("::1", "127.0.0.1")).ToList();
+
+                    response.Add(new ServiceInstanceResponse {  
+                         Service = service,
+                         Instance = instance 
+                    });
+                }  
+            } 
+
+           return Json(new HttpResultEntity(1,"ok", response));  
+        } 
 
         public async Task<string> GetIndexChartData(GetIndexDataRequest request)
         {
