@@ -2,7 +2,9 @@
 {
     public class GetIndexDataRequest
     {
-        public string Node { get; set; }
+        public string Service { get; set; }
+
+        public string Instance { get; set; }
 
         public string Start { get; set; }
 

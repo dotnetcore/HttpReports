@@ -71,7 +71,7 @@ namespace HttpReports.Dashboard.Handle
             var start = (request.Start.IsEmpty() ? DateTime.Now.ToString("yyyy-MM-dd") : request.Start).ToDateTime();
             var end = (request.End.IsEmpty() ? DateTime.Now.AddDays(1).ToString("yyyy-MM-dd") : request.End).ToDateTime();
 
-            var nodes = request.Node.IsEmpty() ? null : request.Node.Split(',');
+            var nodes = request.Service.IsEmpty() ? null : request.Service.Split(',');
 
             var topRequest = await _storage.GetUrlRequestStatisticsAsync(new RequestInfoFilterOption()
             {
@@ -151,7 +151,7 @@ namespace HttpReports.Dashboard.Handle
             var startTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, 0, 0, DateTimeKind.Local).AddDays(-1);
             var endTime = DateTime.Now;
 
-            var nodes = request.Node.IsEmpty() ? null : request.Node.Split(',');
+            var nodes = request.Service.IsEmpty() ? null : request.Service.Split(',');
 
             // 每小时请求次数
             var requestTimesStatistics = await _storage.GetRequestTimesStatisticsAsync(new TimeSpanStatisticsFilterOption()
@@ -205,7 +205,7 @@ namespace HttpReports.Dashboard.Handle
 
             var endTime = DateTime.Now;
 
-            var nodes = request.Node.IsEmpty() ? null : request.Node.Split(',');
+            var nodes = request.Service.IsEmpty() ? null : request.Service.Split(',');
 
             // 每小时请求次数
             var requestTimesStatistics = await _storage.GetRequestTimesStatisticsAsync(new TimeSpanStatisticsFilterOption()
@@ -256,7 +256,7 @@ namespace HttpReports.Dashboard.Handle
         {
             var startTime = DateTime.Now.Date.AddDays(-31);
             var endTime = DateTime.Now.Date.AddDays(1).AddSeconds(-1);
-            var nodes = request.Node.IsEmpty() ? null : request.Node.Split(',');
+            var nodes = request.Service.IsEmpty() ? null : request.Service.Split(',');
 
             var responseTimeStatistics = await _storage.GetRequestTimesStatisticsAsync(new TimeSpanStatisticsFilterOption()
             {
@@ -289,7 +289,7 @@ namespace HttpReports.Dashboard.Handle
         {
             var startTime = $"{request.Year}-01-01".ToDateTimeOrDefault(() => new DateTime(DateTime.Now.Year, 1, 1));
             var endTime = startTime.AddYears(1);
-            var nodes = request.Node?.Split(',');
+            var nodes = request.Service?.Split(',');
 
             var responseTimeStatistics = await _storage.GetRequestTimesStatisticsAsync(new TimeSpanStatisticsFilterOption()
             {
@@ -331,7 +331,7 @@ namespace HttpReports.Dashboard.Handle
 
             var result = await _storage.GetIndexPageDataAsync(new IndexPageDataFilterOption()
             {
-                Nodes = request.Node.IsEmpty() ? null : request.Node.Split(','),
+                Nodes = request.Service.IsEmpty() ? null : request.Service.Split(','),
                 StartTime = start,
                 EndTime = end,
                 StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
