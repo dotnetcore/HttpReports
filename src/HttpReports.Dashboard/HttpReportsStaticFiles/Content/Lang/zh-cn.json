@@ -1,4 +1,7 @@
 {
+
+  "ServiceTag": "服务节点",
+  "InstanceTag": "服务实例",
   "Language": "语言",
   "LanguageFormat": "zh-cn",
   "StartTime": "开始时间",

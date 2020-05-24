@@ -24,6 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="HttpReportsStaticFiles\Content\bootstrap\select\select.css" />
+    <None Remove="HttpReportsStaticFiles\Content\bootstrap\select\select.js" />
     <None Remove="HttpReportsStaticFiles\Content\Lang\en-us.json" />
     <None Remove="HttpReportsStaticFiles\Content\Lang\zh-cn.json" />
   </ItemGroup> 

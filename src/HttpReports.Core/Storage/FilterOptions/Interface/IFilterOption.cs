@@ -4,6 +4,6 @@
     /// 过滤选项
     /// </summary>
     public interface IFilterOption
-    {
+    { 
     }
 }

@@ -4,16 +4,79 @@ httpreports.chart_theme = "macarons";
 httpreports.theme = "light";
 httpreports.index_chart_color = "#333333";  
 var lang = {};
+httpreports.serviceInstance = [];  
 
-function InitLanguage() {
+function InitLanguage() { 
+    
+    lang = $.ajax({
+        url: "/HttpReportsStaticFiles/Content/Lang/" + langFormat + ".json",
+        type: "POST",
+        async: false,
+        contentType: "application/json;charset=utf-8",
+        data: JSON.stringify({})
+    }).responseJSON;    
+} 
 
-    $.getJSON("/HttpReportsStaticFiles/Content/Lang/" + langFormat + ".json", function (result) {
+$(function () {  
 
-        lang = result;
+    $(".service-form").find(".service").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) { 
 
+        var service = $(e.currentTarget).val();   
+
+        $(".service-form").find(".instance").find("select").find("option").each(function (index, item) {
+
+            if ($(item).text() != "ALL") {
+
+                $(item).remove();
+            }  
+
+        });   
+
+
+        $.each(httpreports.serviceInstance, function (index,item) {
+
+            if (item.service == service) {
+
+                $.each(item.instance, function (i, k) { 
+
+                    $(".service-form").find(".instance").find("select").append('<option>' + k + '</option>'); 
+
+                }); 
+
+            } 
+
+        });  
+
+        $(".service-form").find(".instance").find("select").selectpicker('refresh');
+
+    });  
+
+    $(".service-form").find(".service").on('loaded.bs.select', (e, clickedIndex, isSelected, previousValue) => InitServiceInstance() );  
+
+});  
+
+function InitServiceInstance() {
+
+    $.ajax({
+        url: "/HttpReportsData/GetServiceInstance",
+        type: "POST",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify({ }),
+        success: function (result) {     
+        
+            httpreports.serviceInstance = result.data;      
+
+            $.each(httpreports.serviceInstance, function (i, item) {  
+
+                $(".service-form").find(".service").find("select").append('<option>' + item.service + '</option>');
+
+            });  
+
+            $(".service-form").find(".service").find("select").selectpicker('refresh');
+           
+        }
     }); 
-}
- 
+}     
 
 InitLanguage();
 initTheme();   

@@ -1,4 +1,7 @@
 {
+
+  "ServiceTag": "Service",
+  "InstanceTag": "Instance",
   "Language": "Language",
   "LanguageFormat": "en-us",
   "StartTime": "StartTime",

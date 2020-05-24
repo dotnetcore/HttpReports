@@ -9,7 +9,10 @@ namespace HttpReports.Storage.FilterOptions
     [DebuggerStepThrough]
     public class GroupResponeTimeFilterOption : INodeFilterOption, IStatusCodeFilterOption, ITimeSpanFilterOption
     {
-        public string[] Nodes { get; set; }
+        public string Service { get; set; }
+
+        public string LocalIP { get; set; } 
+        public int LocalPort { get; set; }
         public int[] StatusCodes { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }

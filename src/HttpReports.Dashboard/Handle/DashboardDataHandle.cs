@@ -16,7 +16,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization; 
+using Newtonsoft.Json.Serialization;
+using Org.BouncyCastle.Ocsp;
 
 namespace HttpReports.Dashboard.Handle
 {
@@ -54,7 +55,7 @@ namespace HttpReports.Dashboard.Handle
 
                 foreach (var service in services)
                 {
-                    List<string> instance = serviceInstance.Where(k => k.Service == service).Select(k => k.IP + k.Port).Select(x => x.Replace("::1", "127.0.0.1")).ToList();
+                    List<string> instance = serviceInstance.Where(k => k.Service == service).Select(k => k.IP + ":" + k.Port).Distinct().ToList();
 
                     response.Add(new ServiceInstanceResponse {  
                          Service = service,
@@ -71,11 +72,27 @@ namespace HttpReports.Dashboard.Handle
             var start = (request.Start.IsEmpty() ? DateTime.Now.ToString("yyyy-MM-dd") : request.Start).ToDateTime();
             var end = (request.End.IsEmpty() ? DateTime.Now.AddDays(1).ToString("yyyy-MM-dd") : request.End).ToDateTime();
 
-            var nodes = request.Service.IsEmpty() ? null : request.Service.Split(',');
+            if (request.Service.IsEmpty() || request.Service == "ALL")
+            {
+                request.Service = "";
+            }  
 
+            if (request.Instance.IsEmpty() || request.Instance == "ALL")
+            {
+                request.LocalIP = "";
+                request.LocalPort = 0;
+            }
+            else
+            {
+                request.LocalIP = request.Instance.Substring(0, request.Instance.LastIndexOf(':'));
+                request.LocalPort = request.Instance.Substring(request.Instance.LastIndexOf(':') + 1).ToInt(); 
+            } 
+             
             var topRequest = await _storage.GetUrlRequestStatisticsAsync(new RequestInfoFilterOption()
             {
-                Nodes = nodes,
+                Service = request.Service, 
+                LocalIP = request.LocalIP,
+                LocalPort = request.LocalPort,
                 StartTime = start,
                 EndTime = end,
                 IsAscend = false,
@@ -86,7 +103,9 @@ namespace HttpReports.Dashboard.Handle
 
             var topError500 = await _storage.GetUrlRequestStatisticsAsync(new RequestInfoFilterOption()
             {
-                Nodes = nodes,
+                Service = request.Service,
+                LocalIP = request.LocalIP,
+                LocalPort = request.LocalPort,
                 StartTime = start,
                 EndTime = end,
                 IsAscend = false,
@@ -98,7 +117,9 @@ namespace HttpReports.Dashboard.Handle
 
             var fast = await _storage.GetRequestAvgResponeTimeStatisticsAsync(new RequestInfoFilterOption()
             {
-                Nodes = nodes,
+                Service = request.Service,
+                LocalIP = request.LocalIP,
+                LocalPort = request.LocalPort,
                 StartTime = start,
                 EndTime = end,
                 IsAscend = true,
@@ -109,7 +130,9 @@ namespace HttpReports.Dashboard.Handle
 
             var slow = await _storage.GetRequestAvgResponeTimeStatisticsAsync(new RequestInfoFilterOption()
             {
-                Nodes = nodes,
+                Service = request.Service,
+                LocalIP = request.LocalIP,
+                LocalPort = request.LocalPort,
                 StartTime = start,
                 EndTime = end,
                 IsAscend = false,
@@ -126,7 +149,9 @@ namespace HttpReports.Dashboard.Handle
 
             var StatusCode = (await _storage.GetStatusCodeStatisticsAsync(new RequestInfoFilterOption()
             {
-                Nodes = nodes,
+                Service = request.Service,
+                LocalIP = request.LocalIP,
+                LocalPort = request.LocalPort,
                 StartTime = start,
                 EndTime = end,
                 StatusCodes = new[] { 200, 301, 302, 303, 400, 401, 403, 404, 500, 502, 503 },
@@ -136,7 +161,9 @@ namespace HttpReports.Dashboard.Handle
 
             var ResponseTime = (await _storage.GetGroupedResponeTimeStatisticsAsync(new GroupResponeTimeFilterOption()
             {
-                Nodes = nodes,
+                Service = request.Service,
+                LocalIP = request.LocalIP,
+                LocalPort = request.LocalPort,
                 StartTime = start,
                 EndTime = end,
                 StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
@@ -151,27 +178,45 @@ namespace HttpReports.Dashboard.Handle
             var startTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, 0, 0, DateTimeKind.Local).AddDays(-1);
             var endTime = DateTime.Now;
 
-            var nodes = request.Service.IsEmpty() ? null : request.Service.Split(',');
+            if (request.Service.IsEmpty() || request.Service == "ALL")
+            {
+                request.Service = "";
+            }
+
+            if (request.Instance.IsEmpty() || request.Instance == "ALL")
+            {
+                request.LocalIP = "";
+                request.LocalPort = 0;
+            }
+            else
+            {
+                request.LocalIP = request.Instance.Substring(0, request.Instance.LastIndexOf(':'));
+                request.LocalPort = request.Instance.Substring(request.Instance.LastIndexOf(':') + 1).ToInt();
+            }
 
             // 每小时请求次数
             var requestTimesStatistics = await _storage.GetRequestTimesStatisticsAsync(new TimeSpanStatisticsFilterOption()
             {
+                Service = request.Service,
+                LocalPort = request.LocalPort,
+                LocalIP = request.LocalIP,
                 StartTime = startTime,
                 EndTime = endTime,
                 StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
-                EndTimeFormat = "yyyy-MM-dd HH:mm:ss",
-                Nodes = nodes,
+                EndTimeFormat = "yyyy-MM-dd HH:mm:ss", 
                 Type = TimeUnit.Hour,
             });
 
             //每小时平均处理时间
             var responseTimeStatistics = await _storage.GetResponseTimeStatisticsAsync(new TimeSpanStatisticsFilterOption()
             {
+                Service = request.Service,
+                LocalPort = request.LocalPort,
+                LocalIP = request.LocalIP,
                 StartTime = startTime,
                 EndTime = endTime,
                 StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
-                EndTimeFormat = "yyyy-MM-dd HH:mm:ss",
-                Nodes = nodes,
+                EndTimeFormat = "yyyy-MM-dd HH:mm:ss", 
                 Type = TimeUnit.Hour,
             });
 
@@ -329,9 +374,27 @@ namespace HttpReports.Dashboard.Handle
             var start = request.Start.ToDateTime();
             var end = request.End.ToDateTime();
 
+            if (request.Service.IsEmpty() || request.Service == "ALL")
+            {
+                request.Service = "";
+            }
+
+            if (request.Instance.IsEmpty() || request.Instance == "ALL")
+            {
+                request.LocalIP = "";
+                request.LocalPort = 0;
+            }
+            else
+            {
+                request.LocalIP = request.Instance.Substring(0, request.Instance.LastIndexOf(':'));
+                request.LocalPort = request.Instance.Substring(request.Instance.LastIndexOf(':') + 1).ToInt();
+            }
+
             var result = await _storage.GetIndexPageDataAsync(new IndexPageDataFilterOption()
             {
-                Nodes = request.Service.IsEmpty() ? null : request.Service.Split(','),
+                Service = request.Service,
+                LocalIP = request.LocalIP,
+                LocalPort = request.LocalPort,
                 StartTime = start,
                 EndTime = end,
                 StartTimeFormat = "yyyy-MM-dd HH:mm:ss",

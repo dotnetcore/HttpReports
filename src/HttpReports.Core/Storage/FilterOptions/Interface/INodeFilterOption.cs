@@ -5,9 +5,10 @@
     /// </summary>
     public interface INodeFilterOption : IFilterOption
     {
-        /// <summary>
-        /// 节点列表
-        /// </summary>
-        string[] Nodes { get; set; }
+
+        string Service { get; set; }
+        string LocalIP { get; set; }
+
+        int LocalPort { get; set; }
     }
 }

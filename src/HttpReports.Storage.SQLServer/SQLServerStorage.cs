@@ -463,9 +463,22 @@ namespace HttpReports.Storage.SQLServer
         {
             var builder = new StringBuilder(256);
 
-            if (filterOption is INodeFilterOption nodeFilterOption && nodeFilterOption.Nodes?.Length > 0)
+            if (filterOption is INodeFilterOption nodeFilterOption)
             {
-                CheckSqlWhere(builder).Append($"Node in ({string.Join(",", nodeFilterOption.Nodes.Select(m => $"'{m}'"))}) ");
+                if (!nodeFilterOption.Service.IsEmpty())
+                {
+                    CheckSqlWhere(builder).Append($"Node = '{nodeFilterOption.Service}' ");
+                }
+
+                if (!nodeFilterOption.LocalIP.IsEmpty())
+                {
+                    CheckSqlWhere(builder).Append($"IP = '{nodeFilterOption.LocalIP}' ");
+                }
+
+                if (nodeFilterOption.LocalPort > 0)
+                {
+                    CheckSqlWhere(builder).Append($"Port = {nodeFilterOption.LocalPort} ");
+                }
             }
 
             if (!withOutStatusCode && filterOption is IStatusCodeFilterOption statusCodeFilterOption && statusCodeFilterOption.StatusCodes?.Length > 0)
@@ -990,17 +1003,23 @@ namespace HttpReports.Storage.SQLServer
 
         public async Task<List<ServiceInstanceInfo>> GetServiceInstance(DateTime startTime)
         {
-            string sql = "Select [Node],[IP],[Port] from RequestInfo where CreateTime >= @CreateTime GROUP BY [Node],[IP],[Port]  ORDER BY [IP],[Port] ";
+            string sql = "Select [Node],[LocalIP],[LocalPort] from RequestInfo where CreateTime >= @CreateTime GROUP BY [Node],[LocalIP],[LocalPort]  ORDER BY [LocalIP],[LocalPort] ";
 
             TraceLogSql(sql);
 
             var result = await LoggingSqlOperation(async connection => (
 
-               await connection.QueryAsync<ServiceInstanceInfo>(sql, new { CreateTime = startTime })
+               await connection.QueryAsync<ServiceInstanceInfoModel>(sql, new { CreateTime = startTime })
 
            ));
 
-            return result.ToList();
+            return result.Select(x => new ServiceInstanceInfo
+            {
+                Service = x.Node,
+                IP = x.LocalIP,
+                Port = x.LocalPort
+
+            }).ToList();
         }
     }
 }

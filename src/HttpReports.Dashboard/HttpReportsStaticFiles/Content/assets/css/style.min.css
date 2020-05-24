@@ -2773,9 +2773,25 @@ ul.profile-details li div i {
     display: inline-block !important;
   }
 }
-@media (min-width: 1200px) {
-  
+@media (min-width: 1400px) {
+
+    .service-form .col-sm-3 { 
+        width:240px !important; 
+    }
+
+    .timeRange .col-sm-3 {
+        width: 240px !important;
+    }  
+
+
 }
+
+.service-form .dropdown-menu a {
+    height: 30px;
+    line-height: 24px;
+    color:#FFF;
+} 
+
 
 .request-tree .list-group-item {
     font-size: 16px;

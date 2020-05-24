@@ -20,11 +20,8 @@ function QueryClick(item) {
 
 function GetMinuteChart() {
 
-    var node = [];
-
-    $(".node-row").find(".btn-info").each(function (i, item) {
-        node.push($(item).text());
-    });
+    var service = $(".service-form").find(".service").find("select").val();
+    var instance = $(".service-form").find(".instance").find("select").val();  
 
     Loading(global.MinuteStateTimesBar);
     Loading(global.MinuteStateAvgBar);
@@ -34,7 +31,8 @@ function GetMinuteChart() {
         type: "POST",
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify({
-            node: node.join(",")
+            service: service,
+            instance:instance
         }), 
         success: function (result) {
 
@@ -220,11 +218,9 @@ function InitChart() {
 } 
 
 function GetLatelyChart() { 
-    var node = []; 
 
-    $(".node-row").find(".btn-info").each(function (i, item) {
-        node.push($(item).text());
-    });
+    var service = $(".service-form").find(".service").find("select").val();
+    var instance = $(".service-form").find(".instance").find("select").val();  
 
     Loading(global.LatelyDayChart); 
 
@@ -233,7 +229,8 @@ function GetLatelyChart() {
         type: "POST",
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify({
-            node: node.join(",")
+            service: service,
+            instance:instance
         }), 
         success: function (result) {
              
@@ -250,11 +247,8 @@ function GetLatelyChart() {
 
 function GetDayChart() {
 
-    var node = []; 
-
-    $(".node-row").find(".btn-info").each(function (i, item) {
-        node.push($(item).text());
-    });
+    var service = $(".service-form").find(".service").find("select").val();
+    var instance = $(".service-form").find(".instance").find("select").val();  
 
     Loading(global.DayStateTimesBar); 
     Loading(global.DayStateAvgBar); 
@@ -264,7 +258,8 @@ function GetDayChart() {
         type: "POST",
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify({
-            node: node.join(",")
+            service: service,
+            instance: instance
         }), 
         success: function (result) {
 

@@ -8,6 +8,10 @@ namespace HttpReports.Dashboard.Services
     public class Localize
     {
         private readonly IDictionary<string, string> _resource;
+         
+        public string ServiceTag => GetValue();
+
+        public string InstanceTag => GetValue();
 
         public string AvgProcessingTime => GetValue();
         public string Back => GetValue();

@@ -12,9 +12,9 @@ function changeChartHeight() {
 } 
   
 
-function InitPage() {
-
-    if (lang.Language == "English") {
+function InitPage() {   
+   
+    if (lang.LanguageFormat == "en-us") {
 
         laydate.render({ elem: '.start', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange(), lang: 'en' });
         laydate.render({ elem: '.end', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange(), lang: 'en' });
@@ -23,15 +23,14 @@ function InitPage() {
     } 
 
 
-    if (lang.Language == "Chinese") {
+    if (lang.LanguageFormat == "zh-cn") {
 
         laydate.render({ elem: '.start', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange() });
         laydate.render({ elem: '.end', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange() });
         laydate.render({ elem: '.day', theme: '#67c2ef' });
 
-    } 
-   
-  
+    }  
+
 }    
 
 
@@ -460,24 +459,7 @@ function InitChart() {
 
     global.SlowARTChart.setOption(global.SlowARTChartOption);  
    
-}
-
-//Ajax获取页面数据
-function GetData() {
-    $.ajax({
-        url: "/HttpReportsData/GetNodes",
-        success: function (result) {
-
-            $(".node-row").html("");
-
-            $.each(result.data, function (i, item) {
-
-                $(".node-row").append(' <button onclick="check_node(this)" style="width:120px;margin-left:20px;" class="btn btn-info">' + item + '</button>');
-
-            });
-        }
-    })
-}  
+} 
  
 
 function GetTOPRequestChart() {
@@ -537,14 +519,11 @@ function Loading(item) {
 function GetIndexChartData() { 
 
     var start = $(".start").val();
-    var end = $(".end").val();
+    var end = $(".end").val(); 
 
-    var node = [];
-
-    $(".node-row").find(".btn-info").each(function (i, item) {
-        node.push($(item).text());
-    });
-
+    var service = $(".service-form").find(".service").find("select").val();
+    var instance = $(".service-form").find(".instance").find("select").val(); 
+    
 
     Loading(global.StatusCodePie);
     Loading(global.ResponseTimePie);
@@ -560,7 +539,8 @@ function GetIndexChartData() {
         data: JSON.stringify({
             start: start,
             end: end,
-            node: node.join(","), 
+            service: service,
+            instance: instance,
             top: global.top
         }),
         success: function (result) { 
@@ -819,11 +799,8 @@ function GetBoardData() {
     var start = $(".start").val();
     var end = $(".end").val();
 
-    var node = [];
-
-    $(".node-row").find(".btn-info").each(function (i, item) {
-        node.push($(item).text());
-    });
+    var service = $(".service-form").find(".service").find("select").val();
+    var instance = $(".service-form").find(".instance").find("select").val(); 
 
     $.ajax({
         url: "/HttpReportsData/GetIndexData",
@@ -832,10 +809,10 @@ function GetBoardData() {
         data: JSON.stringify({
             start: start,
             end: end,
-            node: node.join(",")
+            service: service,
+            instance: instance
         }),
-        success: function (result) {   
-
+        success: function (result) {    
 
             $(".board-row").busyLoad("hide");
 

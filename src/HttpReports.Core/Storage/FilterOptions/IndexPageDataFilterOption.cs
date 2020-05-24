@@ -8,11 +8,13 @@ namespace HttpReports.Storage.FilterOptions
     /// </summary>
     [DebuggerStepThrough]
     public class IndexPageDataFilterOption : INodeFilterOption, ITimeSpanFilterOption
-    {
-        public string[] Nodes { get; set; }
+    { 
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
         public string StartTimeFormat { get; set; } = "yyyy-MM-dd";
         public string EndTimeFormat { get; set; } = "yyyy-MM-dd";
+        public string Service { get; set; }
+        public string LocalIP { get; set; }
+        public int LocalPort { get; set; }
     }
 }

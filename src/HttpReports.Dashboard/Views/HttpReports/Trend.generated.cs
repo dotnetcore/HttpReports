@@ -64,58 +64,45 @@ WriteLiteral(@"
 
                     <div class=""form-inline form"">
 
-                        <div class=""col-sm-12"" style=""margin-top:10px"">
+                        <div class=""col-sm-12 form-inline form service-form"">
 
-                            <b><i class=""glyphicon glyphicon-signal""></i> ");
-
-
-            
-            #line 29 "..\..\Views\HttpReports\Trend.cshtml"
-                                                                     Write(lang.Index_ServiceNode);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</b>\r\n\r\n                            <span class=\"glyphicon glyphicon-info-sign se" +
-"rviceTip\" style=\"font-size:20px;top:0.2em;cursor:pointer\"></span>\r\n\r\n           " +
-"                 ");
-
-
-
-WriteLiteral("\r\n                        </div>\r\n\r\n                        <div class=\"col-sm-12" +
-" node-row\" style=\"margin-top:8px;margin-bottom:8px;min-height:44px\">\r\n\r\n");
+                            <div class=""col-sm-3"" style=""padding-left:0"">
+                                <label class=""form-label""><i class=""fa fa-paper-plane"" style=""margin-right:8px;margin-left:2px""></i>");
 
 
             
-            #line 40 "..\..\Views\HttpReports\Trend.cshtml"
-                             foreach (var item in nodes)
-                            {
+            #line 30 "..\..\Views\HttpReports\Trend.cshtml"
+                                                                                                                               Write(lang.ServiceTag);
 
             
             #line default
             #line hidden
-WriteLiteral("                                <button onclick=\"check_node(this)\" style=\"width:1" +
-"20px;margin-left:20px;border-radius:4px;\" class=\"btn btn-info service-button\">");
+WriteLiteral(@"</label>
+                                <select class=""selectpicker service"" data-live-search=""true"" data-style=""btn-primary"" data-width=""220px"">
+                                    <option>ALL</option>
+                                </select>
+
+                            </div>
+
+                            <div class=""col-sm-3"">
+                                <label class=""form-label""><i class=""fa fa-desktop"" style=""margin-right:8px;margin-left:2px""></i>");
 
 
             
-            #line 42 "..\..\Views\HttpReports\Trend.cshtml"
-                                                                                                                                                          Write(item);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</button>\r\n");
-
-
-            
-            #line 43 "..\..\Views\HttpReports\Trend.cshtml"
-                            }
+            #line 38 "..\..\Views\HttpReports\Trend.cshtml"
+                                                                                                                           Write(lang.InstanceTag);
 
             
             #line default
             #line hidden
-WriteLiteral(@"                        </div>
+WriteLiteral(@"</label>
+                                <select class=""selectpicker instance"" data-live-search=""true"" data-style=""btn-primary"" data-width=""220px"">
+                                    <option>ALL</option>
+                                </select>
+                            </div> 
+
+                        </div> 
+                       
                     </div>
 
                     <div class=""col-sm-12"" style="""">
@@ -126,7 +113,7 @@ WriteLiteral(@"                        </div>
 
 
             
-            #line 51 "..\..\Views\HttpReports\Trend.cshtml"
+            #line 52 "..\..\Views\HttpReports\Trend.cshtml"
                                                                                                                     Write(lang.Query);
 
             

@@ -63,38 +63,28 @@ WriteLiteral("\r\n<!DOCTYPE html>\r\n<html lang=\"zh-cn\">\r\n<head>\r\n    <met
 "sStaticFiles/Content/assets/js/bootstrap-table-zh-CN.js\"></script>\r\n    <script " +
 "src=\"/HttpReportsStaticFiles/Content/bootstrap/bootstrap_switch/_3._3._4/bootstr" +
 "ap-switch.js\"></script>\r\n\r\n\r\n    <script src=\"/HttpReportsStaticFiles/Content/as" +
-"sets/js/bootstrap.min.js\"></script>\r\n\r\n    <link rel=\"stylesheet\" href=\"https://" +
-"cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css\">" +
-" \r\n    <script src=\"https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js" +
-"/bootstrap-select.min.js\"></script>\r\n\r\n\r\n    <script src=\"/HttpReportsStaticFile" +
-"s/Content/echarts/_4._3._0/echarts.min.js\"></script>\r\n    <script src=\"/HttpRepo" +
-"rtsStaticFiles/Content/echarts/_4._3._0/macarons.js\"></script>\r\n    <script src=" +
-"\"/HttpReportsStaticFiles/Content/echarts/_4._3._0/dark.js\"></script>\r\n\r\n    <lin" +
-"k href=\"/HttpReportsStaticFiles/Content/busyload/app.css?ver=1.0.5\" rel=\"stylesh" +
-"eet\" />\r\n    <script src=\"/HttpReportsStaticFiles/Content/busyload/app.js?ver=1." +
-"0.5\"></script>\r\n\r\n    <!-- CSS 引入 -->\r\n    <script src=\"/HttpReportsStaticFiles/" +
-"Content/laydate/laydate.js\"></script>\r\n\r\n    <script src=\"/HttpReportsStaticFile" +
-"s/Content/assets/js/jquery.goup.js\"></script>\r\n\r\n    <link href=\"/HttpReportsSta" +
-"ticFiles/Content/alert/alert.css?ver=1.0.5\" rel=\"stylesheet\" />\r\n\r\n    <script s" +
-"rc=\"/HttpReportsStaticFiles/Content/alert/alert.js?ver=1.0.5\"></script>\r\n    <sc" +
-"ript src=\"/HttpReportsStaticFiles/Content/js/bootstrap-treeview.js?ver=1.0.5\"></" +
-"script>\r\n\r\n\r\n    <link href=\"/HttpReportsStaticFiles/Content/message/message.css" +
-"\" rel=\"stylesheet\" />\r\n    <script src=\"/HttpReportsStaticFiles/Content/message/" +
-"message.js\"></script>\r\n\r\n    <script src=\"/HttpReportsStaticFiles/Content/Lang/");
+"sets/js/bootstrap.min.js\"></script>\r\n\r\n    <link rel=\"stylesheet\" href=\"/HttpRep" +
+"ortsStaticFiles/Content/bootstrap/select/select.css\"> \r\n    <script src=\"/HttpRe" +
+"portsStaticFiles/Content/bootstrap/select/select.js\"></script>\r\n\r\n\r\n    <script " +
+"src=\"/HttpReportsStaticFiles/Content/echarts/_4._3._0/echarts.min.js\"></script>\r" +
+"\n    <script src=\"/HttpReportsStaticFiles/Content/echarts/_4._3._0/macarons.js\">" +
+"</script>\r\n    <script src=\"/HttpReportsStaticFiles/Content/echarts/_4._3._0/dar" +
+"k.js\"></script>\r\n\r\n    <link href=\"/HttpReportsStaticFiles/Content/busyload/app." +
+"css?ver=1.0.5\" rel=\"stylesheet\" />\r\n    <script src=\"/HttpReportsStaticFiles/Con" +
+"tent/busyload/app.js?ver=1.0.5\"></script>\r\n\r\n    <!-- CSS 引入 -->\r\n    <script sr" +
+"c=\"/HttpReportsStaticFiles/Content/laydate/laydate.js\"></script>\r\n\r\n    <script " +
+"src=\"/HttpReportsStaticFiles/Content/assets/js/jquery.goup.js\"></script>\r\n\r\n    " +
+"<link href=\"/HttpReportsStaticFiles/Content/alert/alert.css?ver=1.0.5\" rel=\"styl" +
+"esheet\" />\r\n\r\n    <script src=\"/HttpReportsStaticFiles/Content/alert/alert.js?ve" +
+"r=1.0.5\"></script>\r\n    <script src=\"/HttpReportsStaticFiles/Content/js/bootstra" +
+"p-treeview.js?ver=1.0.5\"></script>\r\n\r\n\r\n    <link href=\"/HttpReportsStaticFiles/" +
+"Content/message/message.css\" rel=\"stylesheet\" />\r\n    <script src=\"/HttpReportsS" +
+"taticFiles/Content/message/message.js\"></script> >\r\n\r\n    <script>  var langForm" +
+"at = \'");
 
 
             
             #line 65 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
-                                                  Write(lang.LanguageFormat + ".json");
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\"></script>\r\n\r\n    <script>  var langFormat = \'");
-
-
-            
-            #line 67 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                             Write(lang.LanguageFormat);
 
             
@@ -127,7 +117,7 @@ WriteLiteral("\';   </script>\r\n\r\n    <script src=\"/HttpReportsStaticFiles/C
 
 
             
-            #line 111 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 109 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                    Write(lang.Template_Light);
 
             
@@ -139,7 +129,7 @@ WriteLiteral(" </a>\r\n                        </li>\r\n                        
 
 
             
-            #line 114 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 112 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                    Write(lang.Template_Dark);
 
             
@@ -161,7 +151,7 @@ WriteLiteral(@" </a>
 
 
             
-            #line 126 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 124 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                            Write(lang.Template_EditAccount);
 
             
@@ -172,7 +162,7 @@ WriteLiteral(" </a>\r\n                        </li>\r\n                        
 
 
             
-            #line 129 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 127 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                           Write(lang.Template_Logout);
 
             
@@ -206,7 +196,7 @@ WriteLiteral(@" </a>
 
 
             
-            #line 153 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 151 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                                                             Write(lang.Menu_BasicData);
 
             
@@ -218,7 +208,7 @@ WriteLiteral("</span></a></li>\r\n\r\n                            <li data-title
 
 
             
-            #line 155 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 153 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                                                                  Write(lang.Menu_TrendData);
 
             
@@ -229,7 +219,7 @@ WriteLiteral("</span></a></li>\r\n\r\n                            <li data-title
 
 
             
-            #line 157 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 155 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                                                       Write(lang.Menu_RequestList);
 
             
@@ -241,7 +231,7 @@ WriteLiteral("</span></a></li>\r\n\r\n                            <li data-title
 
 
             
-            #line 159 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 157 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                                                          Write(lang.Menu_Monitor);
 
             
@@ -262,7 +252,7 @@ WriteLiteral(@"</span></a></li>
 
 
             
-            #line 170 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 168 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
            Write(RenderBody());
 
             
@@ -289,7 +279,7 @@ WriteLiteral(@"
 
 
             
-            #line 187 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 185 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                          Write(lang.Template_EditAccount);
 
             
@@ -300,7 +290,7 @@ WriteLiteral("</span>\r\n                </div>\r\n                <div class=\"
 
 
             
-            #line 191 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 189 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                           Write(lang.Login_UserName);
 
             
@@ -312,7 +302,7 @@ WriteLiteral("</label>\r\n                        <input autocomplete=\"new-pass
 
 
             
-            #line 195 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 193 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                           Write(lang.Index_OldPwd);
 
             
@@ -324,7 +314,7 @@ WriteLiteral("</label>\r\n                        <input autocomplete=\"new-pass
 
 
             
-            #line 199 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 197 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                           Write(lang.Index_NewPwd);
 
             
@@ -337,7 +327,7 @@ WriteLiteral(@"</label>
 
 
             
-            #line 202 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 200 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                          Write(lang.Index_UserSave);
 
             

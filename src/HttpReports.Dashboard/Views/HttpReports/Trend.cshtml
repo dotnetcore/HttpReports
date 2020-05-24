@@ -24,24 +24,25 @@
 
                     <div class="form-inline form">
 
-                        <div class="col-sm-12" style="margin-top:10px">
+                        <div class="col-sm-12 form-inline form service-form">
 
-                            <b><i class="glyphicon glyphicon-signal"></i> @lang.Index_ServiceNode</b>
+                            <div class="col-sm-3" style="padding-left:0">
+                                <label class="form-label"><i class="fa fa-paper-plane" style="margin-right:8px;margin-left:2px"></i>@lang.ServiceTag</label>
+                                <select class="selectpicker service" data-live-search="true" data-style="btn-primary" data-width="220px">
+                                    <option>ALL</option>
+                                </select>
 
-                            <span class="glyphicon glyphicon-info-sign serviceTip" style="font-size:20px;top:0.2em;cursor:pointer"></span>
+                            </div>
 
-                            @*<button type="button" onclick="select_all(this)" style="width:60px;margin-right:8px;margin-left:8px" class="btn btn-success btn-xs">全选</button>
+                            <div class="col-sm-3">
+                                <label class="form-label"><i class="fa fa-desktop" style="margin-right:8px;margin-left:2px"></i>@lang.InstanceTag</label>
+                                <select class="selectpicker instance" data-live-search="true" data-style="btn-primary" data-width="220px">
+                                    <option>ALL</option>
+                                </select>
+                            </div> 
 
-                                <button type="button" onclick="select_reverse(this)" style="width:60px;margin-right:8px;" class="btn btn-success btn-xs">反选</button>*@
-                        </div>
-
-                        <div class="col-sm-12 node-row" style="margin-top:8px;margin-bottom:8px;min-height:44px">
-
-                            @foreach (var item in nodes)
-                            {
-                                <button onclick="check_node(this)" style="width:120px;margin-left:20px;border-radius:4px;" class="btn btn-info service-button">@item</button>
-                            }
-                        </div>
+                        </div> 
+                       
                     </div>
 
                     <div class="col-sm-12" style="">

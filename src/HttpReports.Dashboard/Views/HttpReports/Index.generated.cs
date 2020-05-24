@@ -49,130 +49,77 @@ WriteLiteral("\r\n");
             
             #line default
             #line hidden
-WriteLiteral("\r\n\r\n\r\n<div class=\"panel panel-default\">\r\n\r\n    <div class=\"panel-body\" style=\"pad" +
-"ding-left:30px;padding-right:30px;padding-top:30px;min-height:720px\">\r\n\r\n       " +
-" <div class=\"row\" style=\"padding-left:13px;padding-right:13px\">\r\n\r\n            <" +
-"div class=\"panel panel-default\">\r\n                <div class=\"panel-body shadow-" +
-"box\" style=\"padding-bottom:20px\"> \r\n\r\n                    <div class=\"form-inlin" +
-"e form\">\r\n\r\n                        <div class=\"col-lg-3\">\r\n                    " +
-"        <label style=\"width:150px\" class=\"form-label\"><i class=\"fa fa-paper-plan" +
-"e\" style=\"margin-right:8px;margin-left:2px\"></i>服务节点</label>\r\n                  " +
-"          <select class=\"selectpicker\" data-live-search=\"true\" data-style=\"btn-p" +
-"rimary\">\r\n                                <option>ALL</option>\r\n                " +
-"                <option>UserService</option>\r\n                                <o" +
-"ption>OrderServiceOrderServiceOrderService</option>\r\n                           " +
-" </select>\r\n\r\n                        </div>\r\n\r\n                        <div cla" +
-"ss=\"col-lg-3\">\r\n                            <label style=\"width:150px\" class=\"fo" +
-"rm-label\"><i class=\"fa fa-desktop\" style=\"margin-right:8px;margin-left:2px\"></i>" +
-"服务实例</label>\r\n                            <select class=\"selectpicker\" data-live" +
-"-search=\"true\" data-style=\"btn-primary\">\r\n                                <optio" +
-"n>ALL</option>\r\n                                <option>127.0.0.1:8001</option>\r" +
-"\n                                <option>127.0.0.1:8002</option>\r\n              " +
-"                  <option>127.0.0.1:8003</option>\r\n                            <" +
-"/select>  \r\n                        </div> \r\n                       \r\n\r\n        " +
-"            </div>\r\n\r\n                    <div class=\"form-inline form\">\r\n\r\n    " +
-"                    <div class=\"col-sm-12\" style=\"margin-top:10px\">\r\n\r\n         " +
-"                   <b><i class=\"glyphicon glyphicon-signal\" style=\"margin-right:" +
-"10px\"></i>");
+WriteLiteral(@"
+
+
+<div class=""panel panel-default"">
+
+    <div class=""panel-body"" style=""padding-left:30px;padding-right:30px;padding-top:30px;min-height:720px"">
+
+        <div class=""row"" style=""padding-left:13px;padding-right:13px"">
+
+            <div class=""panel panel-default"">
+                <div class=""panel-body shadow-box"" style=""padding-bottom:24px"">
+
+                    <div class=""col-sm-12 form-inline form service-form"">
+
+                        <div class=""col-sm-3"" style=""padding-left:0"">
+                            <label class=""form-label""><i class=""fa fa-paper-plane"" style=""margin-right:8px;margin-left:2px""></i>");
 
 
             
-            #line 53 "..\..\Views\HttpReports\Index.cshtml"
-                                                                                              Write(lang.Index_ServiceNode);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</b>\r\n\r\n                            <span class=\"glyphicon glyphicon-info-sign\" d" +
-"ata-toggle=\"tooltip\" title=\"");
-
-
-            
-            #line 55 "..\..\Views\HttpReports\Index.cshtml"
-                                                                                                Write(lang.Index_ServiceNodeTip);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("\" style=\"font-size:20px;top:0.2em;cursor:pointer;\"></span>\r\n\r\n                   " +
-"         ");
-
-
-
-WriteLiteral("\r\n                        </div>\r\n\r\n                        <div class=\"col-sm-12" +
-" node-row\" style=\"margin-top:8px;margin-bottom:8px;min-height:44px\">\r\n\r\n");
-
-
-            
-            #line 64 "..\..\Views\HttpReports\Index.cshtml"
-                             foreach (var item in nodes)
-                            {
-
-            
-            #line default
-            #line hidden
-WriteLiteral("                                <button onclick=\"check_node(this)\" style=\"width:1" +
-"20px;margin-left:20px;border-radius:4px;\" class=\"btn btn-info service-button\">");
-
-
-            
-            #line 66 "..\..\Views\HttpReports\Index.cshtml"
-                                                                                                                                                          Write(item);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</button>\r\n");
-
-
-            
-            #line 67 "..\..\Views\HttpReports\Index.cshtml"
-                            }
-
-            
-            #line default
-            #line hidden
-WriteLiteral("                        </div>\r\n                    </div>\r\n\r\n                   " +
-" <div class=\"form-inline form\" style=\"margin-bottom:30px;\">\r\n\r\n                 " +
-"       <div class=\"col-sm-3\">\r\n                            <label class=\"form-la" +
-"bel\">");
-
-
-            
-            #line 74 "..\..\Views\HttpReports\Index.cshtml"
-                                                 Write(lang.StartTime);
+            #line 27 "..\..\Views\HttpReports\Index.cshtml"
+                                                                                                                           Write(lang.ServiceTag);
 
             
             #line default
             #line hidden
 WriteLiteral(@"</label>
-                            <input onfocus=""ClearTimeRange()"" type=""text"" class=""form-control laydate start"">
+                            <select class=""selectpicker service"" data-live-search=""true"" data-style=""btn-primary"" data-width=""220px"">
+                                <option>ALL</option>
+                            </select>
+
                         </div>
 
                         <div class=""col-sm-3"">
-                            <label class=""form-label"">");
+                            <label class=""form-label""><i class=""fa fa-desktop"" style=""margin-right:8px;margin-left:2px""></i>");
 
 
             
-            #line 79 "..\..\Views\HttpReports\Index.cshtml"
-                                                 Write(lang.EndTime);
+            #line 35 "..\..\Views\HttpReports\Index.cshtml"
+                                                                                                                       Write(lang.InstanceTag);
 
             
             #line default
             #line hidden
 WriteLiteral(@"</label>
-                            <input onfocus=""ClearTimeRange()"" type=""text"" class=""form-control laydate end"">
+                            <select class=""selectpicker instance"" data-live-search=""true"" data-style=""btn-primary"" data-width=""220px"">
+                                <option>ALL</option>
+                            </select>
+                        </div>
+
+
+                    </div>
+
+                    <div class=""col-sm-12 form-inline form timeRange"" style=""margin-bottom:10px;"">
+
+                        <div class=""col-sm-3"" style=""padding:0"">
+                            <input style=""width:220px"" onfocus=""ClearTimeRange()"" type=""text"" class=""form-control laydate start"">
+                        </div>
+
+                        <div class=""col-sm-3"">
+                            <input style=""width:220px"" onfocus=""ClearTimeRange()"" type=""text"" class=""form-control laydate end"">
                         </div>
 
                     </div>
 
-                    <div class=""col-sm-12 timeSelect"" style=""margin-top:20px"">
+                    <div class=""col-sm-12 timeSelect"" style=""margin-top:12px"">
 
                         <button type=""button"" data-minute=""15"" onclick=""timeChange(this,15)"" style=""width:60px;margin-right:8px;"" class=""btn btn-default btn-xs"">");
 
 
             
-            #line 87 "..\..\Views\HttpReports\Index.cshtml"
+            #line 58 "..\..\Views\HttpReports\Index.cshtml"
                                                                                                                                                             Write(lang.Time_15m);
 
             
@@ -184,7 +131,7 @@ WriteLiteral("</button>\r\n\r\n                        <button type=\"button\" d
 
 
             
-            #line 89 "..\..\Views\HttpReports\Index.cshtml"
+            #line 60 "..\..\Views\HttpReports\Index.cshtml"
                                                                                                                                                             Write(lang.Time_30m);
 
             
@@ -196,7 +143,7 @@ WriteLiteral("</button>\r\n\r\n                        <button type=\"button\" d
 
 
             
-            #line 91 "..\..\Views\HttpReports\Index.cshtml"
+            #line 62 "..\..\Views\HttpReports\Index.cshtml"
                                                                                                                                                             Write(lang.Time_1h);
 
             
@@ -208,7 +155,7 @@ WriteLiteral("</button>\r\n\r\n                        <button type=\"button\" d
 
 
             
-            #line 93 "..\..\Views\HttpReports\Index.cshtml"
+            #line 64 "..\..\Views\HttpReports\Index.cshtml"
                                                                                                                                                                Write(lang.Time_4h);
 
             
@@ -220,7 +167,7 @@ WriteLiteral("</button>\r\n\r\n                        <button type=\"button\" d
 
 
             
-            #line 95 "..\..\Views\HttpReports\Index.cshtml"
+            #line 66 "..\..\Views\HttpReports\Index.cshtml"
                                                                                                                                                                 Write(lang.Time_12h);
 
             
@@ -232,7 +179,7 @@ WriteLiteral("</button>\r\n\r\n                        <button type=\"button\" d
 
 
             
-            #line 97 "..\..\Views\HttpReports\Index.cshtml"
+            #line 68 "..\..\Views\HttpReports\Index.cshtml"
                                                                                                                                                                  Write(lang.Time_24h);
 
             
@@ -242,6 +189,9 @@ WriteLiteral(@"</button>
 
                     </div>
 
+
+
+
                     <div class=""col-sm-12"" style="""">
 
                         <div class=""col-sm-3"" style=""padding-left:0"">
@@ -250,7 +200,7 @@ WriteLiteral(@"</button>
 
 
             
-            #line 105 "..\..\Views\HttpReports\Index.cshtml"
+            #line 79 "..\..\Views\HttpReports\Index.cshtml"
                                                                                                                    Write(lang.Query);
 
             
@@ -275,7 +225,7 @@ WriteLiteral(@"</button>
 
 
             
-            #line 120 "..\..\Views\HttpReports\Index.cshtml"
+            #line 94 "..\..\Views\HttpReports\Index.cshtml"
                        Write(lang.Index_RequestCount);
 
             
@@ -293,7 +243,7 @@ WriteLiteral(@"</h4>
 
 
             
-            #line 128 "..\..\Views\HttpReports\Index.cshtml"
+            #line 102 "..\..\Views\HttpReports\Index.cshtml"
                        Write(lang.Index_ART);
 
             
@@ -326,7 +276,7 @@ WriteLiteral(@" (ms)</h4>
 
 
             
-            #line 151 "..\..\Views\HttpReports\Index.cshtml"
+            #line 125 "..\..\Views\HttpReports\Index.cshtml"
                        Write(lang.Index_ErrorPercent);
 
             
@@ -343,7 +293,7 @@ WriteLiteral(@"</h4>
 
 
             
-            #line 158 "..\..\Views\HttpReports\Index.cshtml"
+            #line 132 "..\..\Views\HttpReports\Index.cshtml"
                        Write(lang.Index_APICount);
 
             
@@ -391,7 +341,7 @@ WriteLiteral(@"</h4>
 
 
             
-            #line 196 "..\..\Views\HttpReports\Index.cshtml"
+            #line 170 "..\..\Views\HttpReports\Index.cshtml"
                                                      Write(lang.Index_SelectCount);
 
             

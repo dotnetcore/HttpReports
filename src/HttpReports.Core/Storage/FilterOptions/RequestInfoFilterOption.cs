@@ -9,7 +9,11 @@ namespace HttpReports.Storage.FilterOptions
     [DebuggerStepThrough]
     public class RequestInfoFilterOption : INodeFilterOption, IStatusCodeFilterOption, ITakeFilterOption, ITimeSpanFilterOption, IOrderFilterOption<RequestInfoFields>
     {
-        public string[] Nodes { get; set; }
+        public string Service { get; set; } 
+        public string LocalIP { get; set; }
+
+        public int LocalPort { get; set; }
+
         public int[] StatusCodes { get; set; }
         public int Skip { get; set; }
         public int Take { get; set; }

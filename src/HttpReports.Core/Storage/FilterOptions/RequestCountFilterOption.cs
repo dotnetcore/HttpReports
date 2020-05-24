@@ -40,6 +40,10 @@ namespace HttpReports.Storage.FilterOptions
             }
         }
 
+        public string Service { get; set; }
+        public string LocalIP { get; set; }
+        public int LocalPort { get; set; }
+
         /// <summary>
         /// 重新设置take的信息
         /// </summary>

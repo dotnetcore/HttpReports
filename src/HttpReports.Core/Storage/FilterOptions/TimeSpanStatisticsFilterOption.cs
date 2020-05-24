@@ -20,5 +20,8 @@ namespace HttpReports.Storage.FilterOptions
         /// 统计类型
         /// </summary>
         public TimeUnit Type { get; set; } = TimeUnit.Day;
+        public string Service { get; set; }
+        public string LocalIP { get; set; }
+        public int LocalPort { get; set; }
     }
 }
