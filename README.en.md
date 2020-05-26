@@ -10,7 +10,7 @@
 
 ## Introduce
 
-HttpReports is a lightweight APM system developed for Net Core. Based on MIT open source protocol, using HttpReports can quickly build an integrated site of statistics, analysis, charts, monitoring and distributed tracking under the.net Core environment, which can adapt to Net Core WebAPI,MVC, Web project, build Dashboard panel by reference to Nuget, easy to get started, suitable for use in micro-service architecture. 
+HttpReports is a lightweight APM system developed for Net Core. Based on MIT open source protocol, using HttpReports can quickly build an integrated site of statistics, analysis, charts, monitoring and distributed tracking under the .net Core environment, which can adapt to Net Core WebAPI,MVC, Web project, build Dashboard panel by adding nuget package, easy to get started, it is also suitable for use in a micro-service architecture. 
 
 Github ：**https://github.com/dotnetcore/HttpReports**   
 
@@ -20,7 +20,7 @@ account: admin password 123456
 
 Open source is not easy, interested students welcome a wave of Github Star...
 
-## The main function
+## Main features
 
 - Interface invocation metrics analysis
 - Multi-service node data aggregation analysis
@@ -31,7 +31,7 @@ Open source is not easy, interested students welcome a wave of Github Star...
 - HTTP call analysis
 - Grpc call analysis
 - Distributed tracing
-- Multi - database support, easy integration
+- Multi database support, easy integration
 
 ## Database support
  Database | Nuget 
@@ -54,18 +54,18 @@ Open source is not easy, interested students welcome a wave of Github Star...
  
 ### Step1: initialize the database
 
-HttpReports requires manual database creation. I use SqlServer database as an example to create database HttpReports. Of course, the database name can be defined freely.
+HttpReports requires manual database creation. In the example SqlServer is used to store reports into database. Of course, the database name can be defined freely.
 
 ### Step2: integrate into WebAPI application
-Open the VS development tool and create a new WebAPI application. Here, as long as the version of.Net Core is 2.0 or above, I use version 3.1 here，then Nuget install HttpReports
+Open the VS development tool and create a new WebAPI application. HttpReports requires .Net Core 2.0 or higher, In the example version 3.1 is used. After project is created add HttpReport nuget package to the project.
 
 ![](https://lee-1259586045.cos.ap-shanghai.myqcloud.com/useHttpReports.png)
 
-After the reference is successful, because I'm using a SqlServer database, let's Nuget reference HttpReports.SqlServer package
+Depending on the database you use choose HttpReport database package for example HttpReports.SqlServer package
 
 ![](https://lee-1259586045.cos.ap-shanghai.myqcloud.com/useSqlServer.png)
 
-Find the appsetting.json of the program and change it to the following configuration. Note: the database name of the Storage configuration here should be the same as the new database name
+Edit the appsetting.json in the project and add HttpReports setting in the configuration as shown below. Note: Database name in the connection string should be the same as you named the database when you have manaully created the database. 
 
 
 ```csharp
@@ -80,7 +80,7 @@ Find the appsetting.json of the program and change it to the following configura
 
 ```
 
-Once the configuration is complete, we then modify the StartUp. cs file to the following code
+Once the configuration is complete modify the Startup.cs file:
 
 ![](https://lee-1259586045.cos.ap-shanghai.myqcloud.com/startup.png)
 
@@ -114,16 +114,16 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 	});
 }
 ```
-With everything in place, we launch the WebAPi and refresh the page a few times. By this point, the WebAPi part is complete 😛
+After you have modified Startup.cs launch the WebAPi and refresh the page a few times so you get some reports into the database. 
 
 ### Step3: integrate visual Dashboard
-Use VS to create a new.net Core MVC application, after the completion of the new, through the Nuget package we installed HttpReports.Dashboard, HttpReports.SqlServer
+- Add new .net Core MVC application to the solution and add following nuget packages to the project HttpReports.Dashboard, HttpReports.SqlServer
 
 ![](https://lee-1259586045.cos.ap-shanghai.myqcloud.com/useDashboard.png)
 
 ![](https://lee-1259586045.cos.ap-shanghai.myqcloud.com/usedashboardSQLServer.png)
 
-After the reference is completed, modify the appsets. json file of the Dahboard project, and note that the database should be consistent
+-Modify the appsettings.json file of the Dahboard project note that the database name should be consistent
 ```csharp
 {
   "HttpReportsDashboard": {
@@ -134,7 +134,7 @@ After the reference is completed, modify the appsets. json file of the Dahboard 
 }
 ```
 
-When the changes are complete, we then modify the startup.cs file for the Dahboard project
+When the changes are complete modify the startup.cs file in the Dahboard project
 
 ```csharp
  public void ConfigureServices(IServiceCollection services)
@@ -153,18 +153,18 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 ``` 
 
 
-When everything is ready, we start the Dashboard project. If there is no problem, it will jump to the Dashboard login page with the default account: admin password: 123456, which can be changed after login
+When everything is completed, start the Dashboard project. Dashboard login page should be displayed. Login with the default account: admin password: 123456, which can be changed after login
 
 ![](https://images.cnblogs.com/cnblogs_com/myshowtime/1650023/o_200219092441HttpReportsLogin.png)
 
-In the example, I use SqlServer database, other databases are similar, I only created a WebAPI, of course, HttpRrports also support multiple WebAPI, we just modify appsetting.json Node, you can set Node as UserService, OrderService... At this point, the simplest example of integrating HttpReports has been completed. Feel free to use it 😆
+In the example, SqlServer database is used, other databases configurations are similar. In the example WebAPI is used, HttpRrports also support multiple WebAPIs, we just modify appsetting.json Node setting, you can set Node as UserService, OrderService... At this point, the simplest example of integrating HttpReports has been completed. Feel free to use it 😆
 
 ## Grpc support
-The popularity of microservice Grpc, we also do the adaptation of Grpc, if you use Grpc communication in your project, you need to use your API project, Nuget package reference HttpReports.Grpc, note here is the API project reference, not the Dashboard project reference
+Grpc microservices are also supported. if you want to use Grpc in your project, you need to  Nuget package HttpReports.Grpc to your project. Note  You should add nuget package to the API project and not to the Dashboard project.
 
 ![](https://lee-1259586045.cos.ap-shanghai.myqcloud.com/usegrpc.png)
 
-Modify the startup. Cs
+Modify the Startup.cs
 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
@@ -177,8 +177,8 @@ public void ConfigureServices(IServiceCollection services)
 
 ## Early warning and monitoring
 
-HttpReports.Dashboard integrates the function of early warning monitoring. If you use it, you need to configure the Smtp mailbox first, otherwise you will not receive the early warning email.
-We modify the Dashboard project appsetting. Json can be as follows
+HttpReports.Dashboard integrates the functionality of early warning monitoring. If you want to use it, you need to configure the Smtp  first, otherwise you will not receive early warnings on the email.
+Modify the Dashboard project appsettings.json as shown bellow
 
 ```csharp
 {
@@ -275,7 +275,7 @@ ExpireDay
 
 ## Conclusion
 
-**HttpReports**  is an open source APM system in the.net Core environment, which is very suitable for microservice environment. If it is a small or medium-sized project, then using HttpReports is a good choice, open source is not easy, if it can help you, please hope to give a Star support, thank you 😆
+**HttpReports**  is an open source APM system in the.net Core environment, which is very suitable for microservice environment. If it is a small or medium-sized project, then HttpReports is a good choice, open source is not easy, if it can help you, please  give us a star, thank you 😆
 
 Github: https://github.com/dotnetcore/HttpReports
 
@@ -283,7 +283,7 @@ Github: https://github.com/dotnetcore/HttpReports
 
 ## Communication feedback
  
-If you use HttpReports in the project, or if you are interested, you can join the QQ group, we can communicate together, there will be updates will be notified at the first time, you can also add my WeChat, I hope to help you
+If you use HttpReports in the project, or if you are interested, you can join the QQ group, News about HttpReports are published in QQ group. If You have any questions you can also add me on WeChat. 
 
 ![](https://lee-1259586045.cos.ap-shanghai.myqcloud.com/mywechat3.jpg)   
 
