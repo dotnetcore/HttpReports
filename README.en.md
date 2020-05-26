@@ -54,7 +54,7 @@ Open source is not easy, interested students welcome a wave of Github Star...
  
 ### Step1: initialize the database
 
-HttpReports requires manual database creation. In the example SqlServer is used to store reports into database HttpReports. Of course, the database name can be defined freely.
+HttpReports requires manual database creation. In the example SqlServer is used to store reports into database. Of course, the database name can be defined freely.
 
 ### Step2: integrate into WebAPI application
 Open the VS development tool and create a new WebAPI application. HttpReports requires .Net Core 2.0 or higher, In the example version 3.1 is used. After project is created add HttpReport nuget package to the project.
