@@ -539,12 +539,12 @@ namespace HttpReports.Storage.Oracle
 
                 if (!nodeFilterOption.LocalIP.IsEmpty())
                 {
-                    CheckSqlWhere(builder).Append($"IP = '{nodeFilterOption.LocalIP}' ");
+                    CheckSqlWhere(builder).Append($"LocalIP = '{nodeFilterOption.LocalIP}' ");
                 }
 
                 if (nodeFilterOption.LocalPort > 0)
                 {
-                    CheckSqlWhere(builder).Append($"Port = {nodeFilterOption.LocalPort} ");
+                    CheckSqlWhere(builder).Append($"LocalPort = {nodeFilterOption.LocalPort} ");
                 }
             }
 

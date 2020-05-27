@@ -33,7 +33,7 @@
   "Index_ErrorPercent": "错误率占比",
   "Index_APICount": "接口总数 (已请求)",
   "Index_SelectCount": "选择数量",
-  "StatusCode": "请求状态码",
+  "StatusCode": "状态码",
   "ProcessingTime": "请求处理时间(ms)",
   "ProcessingTime2": "处理时间",
   "Mostrequests": "最多请求",

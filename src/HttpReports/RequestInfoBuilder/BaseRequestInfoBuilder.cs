@@ -27,7 +27,7 @@ namespace HttpReports
         {  
             var path = (context.Request.Path.Value ?? string.Empty).ToLowerInvariant();
 
-            if (IsFilterRequest(context)) return (null,null);
+            if (IsFilterRequest(context)) return (null,null); 
 
             // Build RequestInfo 
             var request = ModelCreator.CreateRequestInfo();
@@ -38,9 +38,15 @@ namespace HttpReports
             request.StatusCode = context.Response.StatusCode;
             request.Method = context.Request.Method;
             request.Url = context.Request.Path;
-            request.RequestType = context.Request.ContentType == "application/grpc" ? "grpc" : "http";
+            request.RequestType = (context.Request.ContentType ?? string.Empty).Contains("grpc") ? "grpc" : "http";
             request.Milliseconds = ToInt32(stopwatch.ElapsedMilliseconds);
             request.CreateTime = context.Items[BasicConfig.ActiveTraceCreateTime].ToDateTime();
+
+
+            //Parse RequestInfo
+            if (request.LocalIP == "::1") request.LocalIP = "127.0.0.1";
+            if (request.IP == "::1") request.IP = "127.0.0.1"; 
+
 
             path = path.Replace(@"///",@"/").Replace(@"//", @"/");  
 

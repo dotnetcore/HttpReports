@@ -90,58 +90,45 @@ WriteLiteral(@"
 
                     <div class=""form-inline form"">
 
-                        <div class=""col-sm-12"" style=""margin-top:10px"">
+                        <div class=""col-sm-12 form-inline form service-form"">
 
-                            <b> <b><i class=""glyphicon glyphicon-signal""></i> ");
-
-
-            
-            #line 55 "..\..\Views\HttpReports\Detail.cshtml"
-                                                                         Write(lang.Index_ServiceNode);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</b></b>\r\n\r\n                            <span class=\"glyphicon glyphicon-info-sig" +
-"n serviceTip\" style=\"font-size:20px;top:0.2em;cursor:pointer\"></span>\r\n\r\n       " +
-"                     ");
-
-
-
-WriteLiteral("\r\n                        </div>\r\n\r\n                        <div class=\"col-sm-12" +
-" node-row\" style=\"margin-top:8px;margin-bottom:8px;min-height:44px\">\r\n\r\n");
+                            <div class=""col-sm-3"" style=""padding-left:0"">
+                                <label class=""form-label""><i class=""fa fa-paper-plane"" style=""margin-right:8px;margin-left:2px""></i>");
 
 
             
-            #line 66 "..\..\Views\HttpReports\Detail.cshtml"
-                             foreach (var item in nodes)
-                            {
+            #line 56 "..\..\Views\HttpReports\Detail.cshtml"
+                                                                                                                               Write(lang.ServiceTag);
 
             
             #line default
             #line hidden
-WriteLiteral("                                <button onclick=\"check_node(this)\" style=\"width:1" +
-"20px;margin-left:20px;border-radius:4px;\" class=\"btn btn-info service-button\">");
+WriteLiteral(@"</label>
+                                <select class=""selectpicker service"" data-live-search=""true"" data-style=""btn-primary"" data-width=""220px"">
+                                    <option>ALL</option>
+                                </select>
+
+                            </div>
+
+                            <div class=""col-sm-3"">
+                                <label class=""form-label""><i class=""fa fa-desktop"" style=""margin-right:8px;margin-left:2px""></i>");
 
 
             
-            #line 68 "..\..\Views\HttpReports\Detail.cshtml"
-                                                                                                                                                          Write(item);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</button>\r\n");
-
-
-            
-            #line 69 "..\..\Views\HttpReports\Detail.cshtml"
-                            }
+            #line 64 "..\..\Views\HttpReports\Detail.cshtml"
+                                                                                                                           Write(lang.InstanceTag);
 
             
             #line default
             #line hidden
-WriteLiteral(@"                        </div>
+WriteLiteral(@"</label>
+                                <select class=""selectpicker instance"" data-live-search=""true"" data-style=""btn-primary"" data-width=""220px"">
+                                    <option>ALL</option>
+                                </select>
+                            </div>
+
+                        </div>
+
                     </div>
 
                     <div class=""form-inline form"" style=""margin-bottom:30px;"">
@@ -156,7 +143,7 @@ WriteLiteral(@"                        </div>
 
 
             
-            #line 81 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 82 "..\..\Views\HttpReports\Detail.cshtml"
                                                  Write(lang.StatusCode);
 
             
@@ -168,7 +155,7 @@ WriteLiteral("</label>\r\n                            <input type=\"text\" class
 
 
             
-            #line 86 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 87 "..\..\Views\HttpReports\Detail.cshtml"
                                                  Write(lang.StartTime);
 
             
@@ -183,7 +170,7 @@ WriteLiteral(@"</label>
 
 
             
-            #line 91 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 92 "..\..\Views\HttpReports\Detail.cshtml"
                                                  Write(lang.EndTime);
 
             
@@ -196,7 +183,7 @@ WriteLiteral("</label>\r\n                            <input onfocus=\"ClearTime
 
 
             
-            #line 96 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 97 "..\..\Views\HttpReports\Detail.cshtml"
                                                  Write(lang.Request_RequestUrl);
 
             
@@ -208,7 +195,7 @@ WriteLiteral("</label>\r\n                            <input type=\"text\" class
 
 
             
-            #line 101 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 102 "..\..\Views\HttpReports\Detail.cshtml"
                                                  Write(lang.Request_IPAddress);
 
             
@@ -223,12 +210,12 @@ WriteLiteral(@"</label>
 
                     <div class=""col-sm-12 timeSelect"" style=""margin-top:20px"">
 
-                        <button type=""button""  data-minute=""15"" onclick=""timeChange(this,15)"" style=""width:60px;margin-right:8px;"" class=""btn btn-default btn-xs"">");
+                        <button type=""button"" data-minute=""15"" onclick=""timeChange(this,15)"" style=""width:60px;margin-right:8px;"" class=""btn btn-default btn-xs"">");
 
 
             
-            #line 110 "..\..\Views\HttpReports\Detail.cshtml"
-                                                                                                                                                             Write(lang.Time_15m);
+            #line 111 "..\..\Views\HttpReports\Detail.cshtml"
+                                                                                                                                                            Write(lang.Time_15m);
 
             
             #line default
@@ -239,7 +226,7 @@ WriteLiteral("</button>\r\n\r\n                        <button type=\"button\" d
 
 
             
-            #line 112 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 113 "..\..\Views\HttpReports\Detail.cshtml"
                                                                                                                                                             Write(lang.Time_30m);
 
             
@@ -251,20 +238,20 @@ WriteLiteral("</button>\r\n\r\n                        <button type=\"button\" d
 
 
             
-            #line 114 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 115 "..\..\Views\HttpReports\Detail.cshtml"
                                                                                                                                                             Write(lang.Time_1h);
 
             
             #line default
             #line hidden
-WriteLiteral("</button>\r\n\r\n                        <button type=\"button\" data-minute=\"240\"  onc" +
-"lick=\"timeChange(this,60*4)\" style=\"width:60px;margin-right:8px;\" class=\"btn btn" +
-"-default btn-xs\">");
+WriteLiteral("</button>\r\n\r\n                        <button type=\"button\" data-minute=\"240\" oncl" +
+"ick=\"timeChange(this,60*4)\" style=\"width:60px;margin-right:8px;\" class=\"btn btn-" +
+"default btn-xs\">");
 
 
             
-            #line 116 "..\..\Views\HttpReports\Detail.cshtml"
-                                                                                                                                                                Write(lang.Time_4h);
+            #line 117 "..\..\Views\HttpReports\Detail.cshtml"
+                                                                                                                                                               Write(lang.Time_4h);
 
             
             #line default
@@ -275,7 +262,7 @@ WriteLiteral("</button>\r\n\r\n                        <button type=\"button\" d
 
 
             
-            #line 118 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 119 "..\..\Views\HttpReports\Detail.cshtml"
                                                                                                                                                                 Write(lang.Time_12h);
 
             
@@ -287,7 +274,7 @@ WriteLiteral("</button>\r\n\r\n                        <button type=\"button\" d
 
 
             
-            #line 120 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 121 "..\..\Views\HttpReports\Detail.cshtml"
                                                                                                                                                                  Write(lang.Time_24h);
 
             
@@ -305,7 +292,7 @@ WriteLiteral(@"</button>
 
 
             
-            #line 128 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 129 "..\..\Views\HttpReports\Detail.cshtml"
                                                                                                                    Write(lang.Query);
 
             
@@ -336,7 +323,7 @@ WriteLiteral(@"</button>
 
 
             
-            #line 149 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 150 "..\..\Views\HttpReports\Detail.cshtml"
                                                         Write(lang.Request_NotFound);
 
             
@@ -347,7 +334,7 @@ WriteLiteral("</h3>\r\n\r\n    <h3 class=\"request_detail_title\" style=\"paddin
 
 
             
-            #line 151 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 152 "..\..\Views\HttpReports\Detail.cshtml"
                                                                                                                                         Write(lang.Request_BasicInfo);
 
             
@@ -372,7 +359,7 @@ WriteLiteral(@"</h3>
 
 
             
-            #line 166 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 167 "..\..\Views\HttpReports\Detail.cshtml"
                Write(lang.Index_ServiceNode);
 
             
@@ -384,7 +371,7 @@ WriteLiteral("</td>\r\n                <td class=\"context_node\" style=\"text-a
 
 
             
-            #line 170 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 171 "..\..\Views\HttpReports\Detail.cshtml"
                Write(lang.Request_Route);
 
             
@@ -396,7 +383,7 @@ WriteLiteral("</td>\r\n                <td class=\"context_route\" style=\"text-
 
 
             
-            #line 175 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 176 "..\..\Views\HttpReports\Detail.cshtml"
                Write(lang.Request_Url);
 
             
@@ -408,7 +395,7 @@ WriteLiteral("</td>\r\n                <td class=\"context_url\" style=\"text-al
 
 
             
-            #line 180 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 181 "..\..\Views\HttpReports\Detail.cshtml"
                Write(lang.Request_Type);
 
             
@@ -420,7 +407,7 @@ WriteLiteral("</td>\r\n                <td class=\"context_method\" style=\"text
 
 
             
-            #line 185 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 186 "..\..\Views\HttpReports\Detail.cshtml"
                Write(lang.Request_Connection);
 
             
@@ -432,7 +419,7 @@ WriteLiteral("</td>\r\n                <td class=\"context_requestType\" style=\
 
 
             
-            #line 190 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 191 "..\..\Views\HttpReports\Detail.cshtml"
                Write(lang.Request_Time);
 
             
@@ -444,7 +431,7 @@ WriteLiteral("</td>\r\n                <td class=\"context_milliseconds\" style=
 
 
             
-            #line 195 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 196 "..\..\Views\HttpReports\Detail.cshtml"
                Write(lang.Request_StatusCode);
 
             
@@ -456,7 +443,7 @@ WriteLiteral("</td>\r\n                <td class=\"context_statusCode\" style=\"
 
 
             
-            #line 200 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 201 "..\..\Views\HttpReports\Detail.cshtml"
                Write(lang.Request_RemoteIP);
 
             
@@ -468,7 +455,7 @@ WriteLiteral("</td>\r\n                <td class=\"context_ip\" style=\"text-ali
 
 
             
-            #line 205 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 206 "..\..\Views\HttpReports\Detail.cshtml"
                Write(lang.Request_RemotePort);
 
             
@@ -480,7 +467,7 @@ WriteLiteral("</td>\r\n                <td class=\"context_port\" style=\"text-a
 
 
             
-            #line 210 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 211 "..\..\Views\HttpReports\Detail.cshtml"
                Write(lang.Request_LocalIP);
 
             
@@ -492,7 +479,7 @@ WriteLiteral("</td>\r\n                <td class=\"context_localIp\" style=\"tex
 
 
             
-            #line 215 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 216 "..\..\Views\HttpReports\Detail.cshtml"
                Write(lang.Request_LocalPort);
 
             
@@ -504,7 +491,7 @@ WriteLiteral("</td>\r\n                <td class=\"context_localPort\" style=\"t
 
 
             
-            #line 220 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 221 "..\..\Views\HttpReports\Detail.cshtml"
                Write(lang.Request_CreateTime);
 
             
@@ -522,7 +509,7 @@ WriteLiteral(@"</td>
 
 
             
-            #line 228 "..\..\Views\HttpReports\Detail.cshtml"
+            #line 229 "..\..\Views\HttpReports\Detail.cshtml"
                                                                                                                                                             Write(lang.Request_DetailInfo);
 
             

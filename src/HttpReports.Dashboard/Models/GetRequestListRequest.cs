@@ -10,7 +10,13 @@
 
         public string IP { get; set; }
 
-        public string Node { get; set; }
+        public string Service { get; set; }
+
+        public string Instance { get; set; }
+
+        public string LocalIP { get; set; }
+
+        public int LocalPort { get; set; }
 
         public int pageNumber { get; set; }
 

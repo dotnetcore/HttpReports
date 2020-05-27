@@ -214,15 +214,10 @@ function RefreshTable() {
     var statusCode = $(".statusCode").val().trim();
     var traceId = $(".traceId").val().trim(); 
 
-    var nodes = [];
+    var service = $(".service-form").find(".service").find("select").val();
+    var instance = $(".service-form").find(".instance").find("select").val();  
 
-    $(".node-row").find(".btn-info").each(function (i, item) {
-        nodes.push($(item).text());
-    });
-
-    var node = nodes.join(",");
-
-    url = url + `?start=${start}&end=${end}&url=${requestUrl}&ip=${ip}&node=${node}&statusCode=${statusCode}&traceId=${traceId}`;
+    url = url + `?start=${start}&end=${end}&url=${requestUrl}&ip=${ip}&service=${service}&instance=${instance}&statusCode=${statusCode}&traceId=${traceId}`;
 
     $('#TableData').bootstrapTable('refresh', { 
         url: url  
