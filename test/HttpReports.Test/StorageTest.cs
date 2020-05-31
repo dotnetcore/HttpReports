@@ -78,7 +78,7 @@ namespace HttpReports.Test
             {
                 StartTime = DateTime.Now.Date,
                 EndTime = DateTime.Now.Date.AddDays(1).AddSeconds(-1),
-                Nodes = new string[] { "Test1", "Test2" },
+                Service = "Test1"
             });
 
             Assert.IsTrue(requestCount > 0);
@@ -87,7 +87,7 @@ namespace HttpReports.Test
             {
                 StartTime = DateTime.Now.Date,
                 EndTime = DateTime.Now.Date.AddDays(1).AddSeconds(-1),
-                Nodes = new string[] { "Test1", "Test2" },
+                Service = "Test1",
                 StatusCodes = new[] { 200, 301, 302 }
             });
 
@@ -97,7 +97,7 @@ namespace HttpReports.Test
             {
                 StartTime = DateTime.Now.Date,
                 EndTime = DateTime.Now.Date.AddDays(1).AddSeconds(-1),
-                Nodes = new string[] { "Test1", "Test2" },
+                Service = "Test1",
                 List = new[] { "127.0.0.1" },
                 InList = true,
             });
@@ -109,7 +109,7 @@ namespace HttpReports.Test
             {
                 StartTime = DateTime.Now.Date,
                 EndTime = DateTime.Now.Date.AddDays(1).AddSeconds(-1),
-                Nodes = new string[] { "Test1", "Test2" },
+                Service = "Test1",
                 List = new[] { "127.0.0.1" },
                 InList = false,
             });

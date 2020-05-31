@@ -29,6 +29,9 @@ namespace HttpReports.Dashboard
         /// </summary>
         public bool EnableSsl { get; set; } = false;
 
+        public bool Switch { get; set; } = true;
+
+
         public MailOptions Value => this;
     }
 }

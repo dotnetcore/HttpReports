@@ -20,20 +20,23 @@ namespace HttpReports.Dashboard.Services
 
         private ILogger<AlarmService> Logger;
 
-        private readonly Localize lang;
+        private LocalizeService _localizeService;
 
+        private Localize lang => _localizeService.Current;
 
         public AlarmService(IOptions<DashboardOptions> options, ILogger<AlarmService> logger,LocalizeService localizeService)
         {
             Options = options.Value;
             Logger = logger;
-            lang = localizeService.Current;
+            _localizeService = localizeService;
         }
 
         private async Task SendMessageAsync(MimeMessage message)
         { 
             try
             {
+                if (!Options.Mail.Switch) return; 
+
                 using (var client = new SmtpClient())
                 {
                     client.AuthenticationMechanisms.Remove("XOAUTH2");
@@ -47,7 +50,7 @@ namespace HttpReports.Dashboard.Services
             }
             catch (System.Exception ex)
             { 
-                Logger.LogInformation("Failed to send alert mail：" + ex.Message, ex);
+                Logger.LogError("Failed to send alert mail：" + ex.Message, ex);
             } 
         }
 

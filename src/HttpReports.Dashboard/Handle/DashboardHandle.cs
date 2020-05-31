@@ -17,48 +17,44 @@ namespace HttpReports.Dashboard.Handle
         private readonly IOptions<DashboardOptions> _options;
 
         private readonly LocalizeService _localizeService;
-        private Localize _lang;
+        private Localize _lang => _localizeService.Current;
 
 
         public DashboardHandle(IServiceProvider serviceProvider, IHttpReportsStorage storage, IOptions<DashboardOptions> options, LocalizeService localizeService) : base(serviceProvider)
         {
             _storage = storage;
             _options = options;
-            _localizeService = localizeService; 
-            _lang = _localizeService.Current;
+            _localizeService = localizeService;  
         }
 
 
         public async Task<string> Index()
         {
-            ConfigLanguage();
-
-            var nodes = (await _storage.GetNodesAsync()).Select(m => m.Name).ToList();
-
-            ViewData["nodes"] = nodes;
+            ConfigLanguage(); 
 
             return await View();
         } 
 
         public async Task<string> Trend()
         {
-            ConfigLanguage();
-
-            var nodes = (await _storage.GetNodesAsync()).Select(m => m.Name).ToList();
-
-            ViewData["nodes"] = nodes;
+            ConfigLanguage(); 
 
             return await View();
         }
 
-        public async Task<string> EditMonitor(string Id = "")
+        public async Task<string> Performance()
         {
             ConfigLanguage();
 
-            var nodes = (await _storage.GetNodesAsync()).Select(m => m.Name).ToList();
+            return await View();
 
-            ViewData["nodes"] = nodes;
+        }
 
+
+        public async Task<string> EditMonitor(string Id = "")
+        {
+            ConfigLanguage();
+ 
             ViewData["Id"] = Id;
 
             return await View();
@@ -78,11 +74,7 @@ namespace HttpReports.Dashboard.Handle
         }
         public async Task<string> Detail()
         {
-            ConfigLanguage();
-
-            var nodes = (await _storage.GetNodesAsync()).Select(m => m.Name).ToList();
-
-            ViewData["nodes"] = nodes;
+            ConfigLanguage(); 
 
             return await View();
         }

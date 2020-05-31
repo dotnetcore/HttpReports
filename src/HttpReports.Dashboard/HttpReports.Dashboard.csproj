@@ -28,6 +28,7 @@
     <None Remove="HttpReportsStaticFiles\Content\bootstrap\select\select.js" />
     <None Remove="HttpReportsStaticFiles\Content\Lang\en-us.json" />
     <None Remove="HttpReportsStaticFiles\Content\Lang\zh-cn.json" />
+    <None Remove="HttpReportsStaticFiles\Content\page\performance.js" />
   </ItemGroup> 
    
 
@@ -69,6 +70,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Monitor.cshtml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\HttpReports\Performance.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Performance.cshtml</DependentUpon>
     </Compile>
     <Compile Update="Views\HttpReports\RequestInfoDetail.generated.cs">
       <DesignTime>True</DesignTime>
@@ -129,6 +135,11 @@
       <LastGenOutput>Monitor.generated.cs</LastGenOutput>
       <CustomToolNamespace>HttpReports.Dashboard.Views</CustomToolNamespace>
     </None>
+    <None Update="Views\HttpReports\Performance.cshtml">
+      <CustomToolNamespace>HttpReports.Dashboard.Views</CustomToolNamespace>
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Performance.generated.cs</LastGenOutput>
+    </None>
     <None Update="Views\HttpReports\RequestInfoDetail.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
@@ -137,15 +148,11 @@
       <CustomToolNamespace>HttpReports.Dashboard.Views</CustomToolNamespace>
     </None>
     <None Update="Views\HttpReports\Trace.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CustomToolNamespace>HttpReports.Dashboard.Views</CustomToolNamespace>
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Trace.generated.cs</LastGenOutput>
-      <CustomToolNamespace>HttpReports.Dashboard.Views</CustomToolNamespace>
     </None>
     <None Update="Views\HttpReports\Trend.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>Trend.generated.cs</LastGenOutput>
       <CustomToolNamespace>HttpReports.Dashboard.Views</CustomToolNamespace>

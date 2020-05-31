@@ -22,24 +22,24 @@
             formatLoadingMessage: function formatLoadingMessage() {
                 return '';
             },
-            formatRecordsPerPage: function formatRecordsPerPage(pageNumber) { 
+            formatRecordsPerPage: function formatRecordsPerPage(pageNumber) {  
 
-                if (lang.Language == "English") {
+                if (lang.LanguageFormat == "en-us") {
                     return ' ' + pageNumber + '  ';
                 }
 
-                if (lang.Language == "Chinese") {
+                if (lang.LanguageFormat == "zh-cn") {
                     return '\u6BCF\u9875\u663E\u793A ' + pageNumber + ' \u6761\u8BB0\u5F55';
                 }  
                
             },
             formatShowingRows: function formatShowingRows(pageFrom, pageTo, totalRows) {
 
-                if (lang.Language == "English") {
+                if (lang.LanguageFormat == "en-us") {
                     return 'from ' + pageFrom + ' to ' + pageTo + ' , total ' + totalRows + ' ';
                 }
 
-                if (lang.Language == "Chinese") {
+                if (lang.LanguageFormat == "zh-cn") {
                     return '\u663E\u793A\u7B2C ' + pageFrom + ' \u5230\u7B2C ' + pageTo + ' \u6761\u8BB0\u5F55\uFF0C\u603B\u5171 ' + totalRows + ' \u6761\u8BB0\u5F55';
                 } 
               

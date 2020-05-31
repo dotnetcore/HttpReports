@@ -2,10 +2,8 @@
 @inherits HttpReports.Dashboard.Views.RazorPage
 @using System.Collections.Generic
 @{
-    ViewData["Title"] = "Detail";
-
-    var nodes = ViewData["nodes"] as List<string>;
-
+    ViewData["Title"] = "Detail"; 
+ 
     var lang = ViewData["Language"] as HttpReports.Dashboard.Services.Localize;
 
     Layout = new HttpReports.Dashboard.Views.HttpReportsTemplate { Context = Context, ViewData = ViewData };

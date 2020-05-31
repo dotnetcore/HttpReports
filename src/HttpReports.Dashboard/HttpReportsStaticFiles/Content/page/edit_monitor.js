@@ -19,10 +19,13 @@
         }
     }
 
-});
+}); 
 
+function InitServiceInstanceCallBack() {
 
-BindMonitorJob();
+    BindMonitorJob();
+
+}
 
 function saveMonitorJob() {
 
@@ -33,15 +36,10 @@ function saveMonitorJob() {
     var webhook = $(".webhook").val().trim();
     var mobiles = $(".mobiles").val().trim();
     var interval = $(".interval").val().trim();
-    var status = $('.checkbox').eq(0).bootstrapSwitch('state') ? 1 : 0;
+    var status = $('.checkbox').eq(0).bootstrapSwitch('state') ? 1 : 0;  
 
-    var nodeList = [];
-
-    $(".node-row").find(".btn-info").each(function (i, item) {
-        nodeList.push($(item).text());
-    });
-
-    var nodes = nodeList.join(",");
+    var service = $(".service-form").find(".service").find("select").val();
+    var instance = $(".service-form").find(".instance").find("select").val();    
 
     var responseTimeOutMonitor = null;
     var errorResponseMonitor = null;
@@ -93,7 +91,7 @@ function saveMonitorJob() {
         type: "POST",
         contentType: "application/json; charset=utf-8", 
         data: JSON.stringify({
-            id, title, description, emails, webhook, mobiles, nodes, interval, status, responseTimeOutMonitor, errorResponseMonitor, IPMonitor, requestCountMonitor
+            id, title, description, emails, webhook, mobiles, service, instance, interval, status, responseTimeOutMonitor, errorResponseMonitor, IPMonitor, requestCountMonitor
         }),
         success: function (result) {
 
@@ -127,7 +125,7 @@ function BindMonitorJob() {
         type: "POST",
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify({ id: id }),
-        success: function (result) {
+        success: function (result) {  
 
             var job = result.data; 
 
@@ -138,6 +136,10 @@ function BindMonitorJob() {
             $(".mobiles").val(job.mobiles);
             $(".interval").val(job.interval);
             $('.checkbox').eq(0).bootstrapSwitch('state', job.status > 0); 
+
+            BindServiceSelect(job.service); 
+            BindInstanceSelect(job.service,job.instance); 
+
 
             if (job.responseTimeOutMonitor != null) {
 
@@ -169,6 +171,4 @@ function BindMonitorJob() {
         } 
     }); 
 
-}
-
- 
+} 

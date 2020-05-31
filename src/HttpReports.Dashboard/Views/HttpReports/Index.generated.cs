@@ -39,10 +39,8 @@ WriteLiteral("\r\n");
             #line 4 "..\..\Views\HttpReports\Index.cshtml"
   
 
-    Layout = new HttpReports.Dashboard.Views.HttpReportsTemplate { Context = Context, ViewData = ViewData };
-
-    var nodes = ViewData["nodes"] as List<string>;
-
+    Layout = new HttpReports.Dashboard.Views.HttpReportsTemplate { Context = Context, ViewData = ViewData }; 
+  
     var lang = ViewData["Language"] as HttpReports.Dashboard.Services.Localize;
 
 
@@ -68,7 +66,7 @@ WriteLiteral(@"
 
 
             
-            #line 27 "..\..\Views\HttpReports\Index.cshtml"
+            #line 25 "..\..\Views\HttpReports\Index.cshtml"
                                                                                                                            Write(lang.ServiceTag);
 
             
@@ -86,7 +84,7 @@ WriteLiteral(@"</label>
 
 
             
-            #line 35 "..\..\Views\HttpReports\Index.cshtml"
+            #line 33 "..\..\Views\HttpReports\Index.cshtml"
                                                                                                                        Write(lang.InstanceTag);
 
             
@@ -119,7 +117,7 @@ WriteLiteral(@"</label>
 
 
             
-            #line 58 "..\..\Views\HttpReports\Index.cshtml"
+            #line 56 "..\..\Views\HttpReports\Index.cshtml"
                                                                                                                                                             Write(lang.Time_15m);
 
             
@@ -131,7 +129,7 @@ WriteLiteral("</button>\r\n\r\n                        <button type=\"button\" d
 
 
             
-            #line 60 "..\..\Views\HttpReports\Index.cshtml"
+            #line 58 "..\..\Views\HttpReports\Index.cshtml"
                                                                                                                                                             Write(lang.Time_30m);
 
             
@@ -143,7 +141,7 @@ WriteLiteral("</button>\r\n\r\n                        <button type=\"button\" d
 
 
             
-            #line 62 "..\..\Views\HttpReports\Index.cshtml"
+            #line 60 "..\..\Views\HttpReports\Index.cshtml"
                                                                                                                                                             Write(lang.Time_1h);
 
             
@@ -155,7 +153,7 @@ WriteLiteral("</button>\r\n\r\n                        <button type=\"button\" d
 
 
             
-            #line 64 "..\..\Views\HttpReports\Index.cshtml"
+            #line 62 "..\..\Views\HttpReports\Index.cshtml"
                                                                                                                                                                Write(lang.Time_4h);
 
             
@@ -167,7 +165,7 @@ WriteLiteral("</button>\r\n\r\n                        <button type=\"button\" d
 
 
             
-            #line 66 "..\..\Views\HttpReports\Index.cshtml"
+            #line 64 "..\..\Views\HttpReports\Index.cshtml"
                                                                                                                                                                 Write(lang.Time_12h);
 
             
@@ -179,7 +177,7 @@ WriteLiteral("</button>\r\n\r\n                        <button type=\"button\" d
 
 
             
-            #line 68 "..\..\Views\HttpReports\Index.cshtml"
+            #line 66 "..\..\Views\HttpReports\Index.cshtml"
                                                                                                                                                                  Write(lang.Time_24h);
 
             
@@ -200,7 +198,7 @@ WriteLiteral(@"</button>
 
 
             
-            #line 79 "..\..\Views\HttpReports\Index.cshtml"
+            #line 77 "..\..\Views\HttpReports\Index.cshtml"
                                                                                                                    Write(lang.Query);
 
             
@@ -225,7 +223,7 @@ WriteLiteral(@"</button>
 
 
             
-            #line 94 "..\..\Views\HttpReports\Index.cshtml"
+            #line 92 "..\..\Views\HttpReports\Index.cshtml"
                        Write(lang.Index_RequestCount);
 
             
@@ -243,7 +241,7 @@ WriteLiteral(@"</h4>
 
 
             
-            #line 102 "..\..\Views\HttpReports\Index.cshtml"
+            #line 100 "..\..\Views\HttpReports\Index.cshtml"
                        Write(lang.Index_ART);
 
             
@@ -276,7 +274,7 @@ WriteLiteral(@" (ms)</h4>
 
 
             
-            #line 125 "..\..\Views\HttpReports\Index.cshtml"
+            #line 123 "..\..\Views\HttpReports\Index.cshtml"
                        Write(lang.Index_ErrorPercent);
 
             
@@ -293,7 +291,7 @@ WriteLiteral(@"</h4>
 
 
             
-            #line 132 "..\..\Views\HttpReports\Index.cshtml"
+            #line 130 "..\..\Views\HttpReports\Index.cshtml"
                        Write(lang.Index_APICount);
 
             
@@ -341,7 +339,7 @@ WriteLiteral(@"</h4>
 
 
             
-            #line 170 "..\..\Views\HttpReports\Index.cshtml"
+            #line 168 "..\..\Views\HttpReports\Index.cshtml"
                                                      Write(lang.Index_SelectCount);
 
             

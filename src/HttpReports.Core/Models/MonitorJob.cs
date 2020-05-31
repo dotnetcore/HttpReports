@@ -23,7 +23,10 @@ namespace HttpReports.Models
 
         public int Status { get; set; }
 
-        public string Nodes { get; set; }
+        public string Instance { get; set; }
+
+        public string Service { get; set; }
+
 
         public string Payload { get; set; }
 

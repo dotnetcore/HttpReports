@@ -13,7 +13,9 @@ namespace HttpReports.Dashboard.ViewModels
 
         public string Description { get; set; }
 
-        public string Nodes { get; set; }
+        public string Service { get; set; }
+
+        public string Instance { get; set; } 
 
         public string Emails { get; set; }
 

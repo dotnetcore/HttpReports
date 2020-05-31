@@ -1,11 +1,18 @@
 ﻿using System;
 using System.Diagnostics;
-
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using HttpReports;
 using HttpReports.RequestInfoBuilder;
-
+using HttpReports.Service;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -30,11 +37,14 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         private static IHttpReportsBuilder AddHttpReportsService(this IServiceCollection services, IConfiguration configuration)
-        {
+        { 
             services.AddSingleton<IModelCreator, DefaultModelCreator>();
             services.AddSingleton<IHttpInvokeProcesser, DefaultHttpInvokeProcesser>();
             services.AddSingleton<IReportsTransport, DirectlyReportsTransport>();
             services.AddSingleton<IRequestInfoBuilder, DefaultRequestInfoBuilder>();
+            services.AddSingleton<IBackgroundService, HttpReportsBackgroundService>();
+            services.AddSingleton<IPerformanceService,PerformanceService>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); 
 
             services.AddMvcCore(x =>
             {
@@ -45,17 +55,23 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         public static IHttpReportsInitializer UseHttpReports(this IApplicationBuilder app)
-        {
-            Activity.DefaultIdFormat = ActivityIdFormat.W3C;
+        {  
+            Activity.DefaultIdFormat = ActivityIdFormat.W3C; 
 
-            var options = app.ApplicationServices.GetRequiredService<IOptions<HttpReportsOptions>>();
+            IHttpReportsInitializer httpReportsInitializer = app.InitHttpReports().InitStorage();
 
-            if (!options.Value.Switch)
-                return null;
+            var backgroundService = app.ApplicationServices.GetRequiredService<IBackgroundService>(); 
+
+            backgroundService.MapBackgroundService(app);
+            backgroundService.StartAsync(app); 
+
+            var options = app.ApplicationServices.GetRequiredService<IOptions<HttpReportsOptions>>(); 
+
+            if (!options.Value.Switch) return null; 
 
             app.UseMiddleware<DefaultHttpReportsMiddleware>();
 
-            return app.InitHttpReports().InitStorage();
+            return httpReportsInitializer;
         }
     }
 }

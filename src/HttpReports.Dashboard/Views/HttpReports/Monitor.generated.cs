@@ -137,11 +137,21 @@ WriteLiteral("</th>\r\n                                <th>");
             
             #line default
             #line hidden
-WriteLiteral("</th>\r\n                                <th width=\"276\">");
+WriteLiteral("</th>\r\n                                <th>");
 
 
             
             #line 51 "..\..\Views\HttpReports\Monitor.cshtml"
+                               Write(lang.Monitor_InstanceName);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</th>\r\n                                <th width=\"276\">");
+
+
+            
+            #line 52 "..\..\Views\HttpReports\Monitor.cshtml"
                                            Write(lang.Monitor_Operation);
 
             
@@ -152,66 +162,42 @@ WriteLiteral("</th>\r\n                            </tr>\r\n                    
 
 
             
-            #line 56 "..\..\Views\HttpReports\Monitor.cshtml"
+            #line 57 "..\..\Views\HttpReports\Monitor.cshtml"
                              foreach (var item in list)
                             {
 
             
             #line default
             #line hidden
-WriteLiteral("                                <tr>\r\n                                    <td>");
+WriteLiteral("                            <tr>\r\n                                <td>");
 
 
             
-            #line 59 "..\..\Views\HttpReports\Monitor.cshtml"
-                                   Write(item.Title);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</td>\r\n                                    <td>\r\n\r\n");
-
-
-            
-            #line 62 "..\..\Views\HttpReports\Monitor.cshtml"
-                                         if (item.Status == 1)
-                                        {
+            #line 60 "..\..\Views\HttpReports\Monitor.cshtml"
+                               Write(item.Title);
 
             
             #line default
             #line hidden
-WriteLiteral("                                            <span style=\"width: 60px;padding-left" +
-":10px; padding-right:10px;margin-right: 8px;border-radius:0;\" class=\"label label" +
-"-success\">");
+WriteLiteral("</td>\r\n                                <td>\r\n\r\n");
 
 
             
-            #line 64 "..\..\Views\HttpReports\Monitor.cshtml"
-                                                                                                                                                                      Write(lang.Monitor_Runing);
+            #line 63 "..\..\Views\HttpReports\Monitor.cshtml"
+                                     if (item.Status == 1)
+                                    {
 
             
             #line default
             #line hidden
-WriteLiteral("</span>\r\n");
+WriteLiteral("                                        <span style=\"width: 60px;padding-left:10p" +
+"x; padding-right:10px;margin-right: 8px;border-radius:0;\" class=\"label label-suc" +
+"cess\">");
 
 
             
             #line 65 "..\..\Views\HttpReports\Monitor.cshtml"
-                                        }
-                                        else
-                                        {
-
-            
-            #line default
-            #line hidden
-WriteLiteral("                                            <span style=\"width: 60px;padding-left" +
-":10px; padding-right:10px;margin-right: 8px;border-radius:0;\" class=\"label label" +
-"-danger\">");
-
-
-            
-            #line 68 "..\..\Views\HttpReports\Monitor.cshtml"
-                                                                                                                                                                     Write(lang.Monitor_Stoping);
+                                                                                                                                                                  Write(lang.Monitor_Runing);
 
             
             #line default
@@ -220,50 +206,83 @@ WriteLiteral("</span>\r\n");
 
 
             
+            #line 66 "..\..\Views\HttpReports\Monitor.cshtml"
+                                    }
+                                    else
+                                    {
+
+            
+            #line default
+            #line hidden
+WriteLiteral("                                        <span style=\"width: 60px;padding-left:10p" +
+"x; padding-right:10px;margin-right: 8px;border-radius:0;\" class=\"label label-dan" +
+"ger\">");
+
+
+            
             #line 69 "..\..\Views\HttpReports\Monitor.cshtml"
-                                        }
+                                                                                                                                                                 Write(lang.Monitor_Stoping);
 
             
             #line default
             #line hidden
-WriteLiteral("\r\n                                    </td>\r\n                                    " +
-"<td>");
+WriteLiteral("</span>\r\n");
 
 
             
-            #line 72 "..\..\Views\HttpReports\Monitor.cshtml"
-                                   Write(item.CronLike);
+            #line 70 "..\..\Views\HttpReports\Monitor.cshtml"
+                                    }
 
             
             #line default
             #line hidden
-WriteLiteral("</td>\r\n                                    <td>");
+WriteLiteral("\r\n                                </td>\r\n                                <td>");
 
 
             
             #line 73 "..\..\Views\HttpReports\Monitor.cshtml"
-                                   Write(item.Emails);
+                               Write(item.CronLike);
 
             
             #line default
             #line hidden
-WriteLiteral("</td>\r\n                                    <td>");
+WriteLiteral("</td>\r\n                                <td>");
 
 
             
             #line 74 "..\..\Views\HttpReports\Monitor.cshtml"
-                                   Write(item.Nodes);
+                               Write(item.Emails);
 
             
             #line default
             #line hidden
-WriteLiteral("</td>\r\n\r\n                                    <td>\r\n\r\n                            " +
-"            <a href=\"/HttpReports/EditMonitor?Id=");
+WriteLiteral("</td>\r\n                                <td>");
 
 
             
-            #line 78 "..\..\Views\HttpReports\Monitor.cshtml"
-                                                                        Write(item.Id);
+            #line 75 "..\..\Views\HttpReports\Monitor.cshtml"
+                               Write(item.Service);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</td>\r\n                                <td>");
+
+
+            
+            #line 76 "..\..\Views\HttpReports\Monitor.cshtml"
+                                Write( string.IsNullOrEmpty(item.Instance) ? "ALL": item.Instance );
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</td>\r\n\r\n                                <td>\r\n\r\n                                " +
+"    <a href=\"/HttpReports/EditMonitor?Id=");
+
+
+            
+            #line 80 "..\..\Views\HttpReports\Monitor.cshtml"
+                                                                    Write(item.Id);
 
             
             #line default
@@ -273,8 +292,8 @@ WriteLiteral("\" style=\"margin:4px\" type=\"button\" class=\"btn btn-info btn-x
 
 
             
-            #line 78 "..\..\Views\HttpReports\Monitor.cshtml"
-                                                                                                                                                                                              Write(lang.Monitor_Edit);
+            #line 80 "..\..\Views\HttpReports\Monitor.cshtml"
+                                                                                                                                                                                          Write(lang.Monitor_Edit);
 
             
             #line default
@@ -283,20 +302,20 @@ WriteLiteral("</a>\r\n\r\n");
 
 
             
-            #line 80 "..\..\Views\HttpReports\Monitor.cshtml"
-                                         if (item.Status == 1)
-                                        {
+            #line 82 "..\..\Views\HttpReports\Monitor.cshtml"
+                                     if (item.Status == 1)
+                                    {
 
             
             #line default
             #line hidden
-WriteLiteral("                                            <button style=\"margin:4px\" type=\"butt" +
-"on\" onclick=\"stopJob(\'");
+WriteLiteral("                                        <button style=\"margin:4px\" type=\"button\" " +
+"onclick=\"stopJob(\'");
 
 
             
-            #line 82 "..\..\Views\HttpReports\Monitor.cshtml"
-                                                                                                  Write(item.Id);
+            #line 84 "..\..\Views\HttpReports\Monitor.cshtml"
+                                                                                              Write(item.Id);
 
             
             #line default
@@ -306,8 +325,8 @@ WriteLiteral("\')\" class=\"btn btn-primary btn-xs\"><span class=\"glyphicon gly
 
 
             
-            #line 82 "..\..\Views\HttpReports\Monitor.cshtml"
-                                                                                                                                                                                           Write(lang.Monitor_Stop);
+            #line 84 "..\..\Views\HttpReports\Monitor.cshtml"
+                                                                                                                                                                                       Write(lang.Monitor_Stop);
 
             
             #line default
@@ -316,21 +335,21 @@ WriteLiteral("</button>\r\n");
 
 
             
-            #line 83 "..\..\Views\HttpReports\Monitor.cshtml"
-                                        }
-                                        else
-                                        {
+            #line 85 "..\..\Views\HttpReports\Monitor.cshtml"
+                                    }
+                                    else
+                                    {
 
             
             #line default
             #line hidden
-WriteLiteral("                                            <button style=\"margin:4px\" type=\"butt" +
-"on\" onclick=\"startJob(\'");
+WriteLiteral("                                        <button style=\"margin:4px\" type=\"button\" " +
+"onclick=\"startJob(\'");
 
 
             
-            #line 86 "..\..\Views\HttpReports\Monitor.cshtml"
-                                                                                                   Write(item.Id);
+            #line 88 "..\..\Views\HttpReports\Monitor.cshtml"
+                                                                                               Write(item.Id);
 
             
             #line default
@@ -340,8 +359,8 @@ WriteLiteral("\')\" class=\"btn btn-success btn-xs\"><span class=\"glyphicon gly
 
 
             
-            #line 86 "..\..\Views\HttpReports\Monitor.cshtml"
-                                                                                                                                                                                                    Write(lang.Monitor_Start);
+            #line 88 "..\..\Views\HttpReports\Monitor.cshtml"
+                                                                                                                                                                                                Write(lang.Monitor_Start);
 
             
             #line default
@@ -350,19 +369,19 @@ WriteLiteral("</button>\r\n");
 
 
             
-            #line 87 "..\..\Views\HttpReports\Monitor.cshtml"
-                                        }
+            #line 89 "..\..\Views\HttpReports\Monitor.cshtml"
+                                    }
 
             
             #line default
             #line hidden
-WriteLiteral("\r\n                                        <button style=\"margin:4px\" type=\"button" +
-"\" onclick=\"delJob(\'");
+WriteLiteral("\r\n                                    <button style=\"margin:4px\" type=\"button\" on" +
+"click=\"delJob(\'");
 
 
             
-            #line 89 "..\..\Views\HttpReports\Monitor.cshtml"
-                                                                                             Write(item.Id);
+            #line 91 "..\..\Views\HttpReports\Monitor.cshtml"
+                                                                                         Write(item.Id);
 
             
             #line default
@@ -372,18 +391,18 @@ WriteLiteral("\')\" class=\"btn btn-danger btn-xs\"><span class=\"glyphicon glyp
 
 
             
-            #line 89 "..\..\Views\HttpReports\Monitor.cshtml"
-                                                                                                                                                                                             Write(lang.Monitor_Delete);
+            #line 91 "..\..\Views\HttpReports\Monitor.cshtml"
+                                                                                                                                                                                         Write(lang.Monitor_Delete);
 
             
             #line default
             #line hidden
-WriteLiteral("</button>\r\n\r\n                                    </td>\r\n                         " +
-"       </tr>\r\n");
+WriteLiteral("</button>\r\n\r\n                                </td>\r\n                            <" +
+"/tr>\r\n");
 
 
             
-            #line 93 "..\..\Views\HttpReports\Monitor.cshtml"
+            #line 95 "..\..\Views\HttpReports\Monitor.cshtml"
 
                             }
 

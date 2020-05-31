@@ -51,7 +51,8 @@ namespace HttpReports.Dashboard.Handle
             {
                 if (inputStream == null)
                 {
-                    throw new ArgumentException($@"Resource with name {path.Substring(1)} not found in assembly {_assembly}.");
+                    context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                    return;
                 }
                 await inputStream.CopyToAsync(context.Response.Body).ConfigureAwait(false);
             }

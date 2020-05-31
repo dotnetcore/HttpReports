@@ -9,7 +9,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using HttpReports.Core.Config;
+using HttpReports.Core.Interface;
 using HttpReports.Core.Models;
+using HttpReports.Core.Storage.FilterOptions;
 using HttpReports.Models;
 using HttpReports.Monitor;
 using HttpReports.Storage.FilterOptions;
@@ -82,7 +84,13 @@ namespace HttpReports.Storage.MySql
   PRIMARY KEY (`Id`) 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
-                    await connection.ExecuteAsync(@"
+
+                if (await connection.QueryFirstOrDefaultAsync<int>($"select  COUNT(1) from information_schema.columns WHERE  TABLE_SCHEMA = '{ConnectionFactory.DataBase}' and table_name = 'MonitorJob' and column_name = 'Nodes' ") > 0)
+                {
+                    await connection.ExecuteAsync("DROP TABLE `MonitorJob` ");
+                }
+
+                        await connection.ExecuteAsync(@"
 CREATE TABLE IF NOT EXISTS `MonitorJob` (
   `Id` varchar(50) NOT NULL,
   `Title` varchar(255) DEFAULT NULL,
@@ -92,7 +100,8 @@ CREATE TABLE IF NOT EXISTS `MonitorJob` (
   `WebHook` varchar(1000) DEFAULT NULL,
   `Mobiles` varchar(1000) DEFAULT NULL,
   `Status` int(11) DEFAULT NULL,
-  `Nodes` varchar(255) DEFAULT NULL,
+  `Service` varchar(255) DEFAULT NULL,
+  `Instance` varchar(255) DEFAULT NULL,
   `PayLoad` varchar(2000) DEFAULT NULL,
   `CreateTime` datetime(3) DEFAULT NULL,
   PRIMARY KEY (`Id`)
@@ -114,6 +123,24 @@ CREATE TABLE IF NOT EXISTS `SysConfig` (
   `Value` varchar(255) DEFAULT NULL, 
   PRIMARY KEY (`Id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
+
+                    await connection.ExecuteAsync(@"
+CREATE TABLE IF NOT EXISTS `Performance` (
+  `Id` varchar(50) NOT NULL,
+  `Service` varchar(255) DEFAULT NULL,
+  `Instance` varchar(255) DEFAULT NULL,
+  `GCGen0` int DEFAULT NULL,
+  `GCGen1` int DEFAULT NULL,
+  `GCGen2` int DEFAULT NULL,
+  `HeapMemory` double DEFAULT NULL,
+  `ProcessCPU` double DEFAULT NULL,
+  `ProcessMemory` double DEFAULT NULL,
+  `ThreadCount` int DEFAULT NULL,
+  `PendingThreadCount` int DEFAULT NULL,
+  `CreateTime` datetime(3) DEFAULT NULL,
+  PRIMARY KEY (`Id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;"); 
+
 
                     if (await connection.QueryFirstOrDefaultAsync<int>("Select count(1) from `SysUser`") == 0)
                     {
@@ -149,7 +176,7 @@ CREATE TABLE IF NOT EXISTS `SysConfig` (
 
                 throw ex;
             }
-        }
+        } 
 
         private async Task CreateDatabaseAsync()
         {
@@ -244,7 +271,7 @@ CREATE TABLE IF NOT EXISTS `SysConfig` (
 
                 }, "请求数据保存失败");
             }
-        }
+        } 
 
         public async Task<List<UrlRequestCount>> GetUrlRequestStatisticsAsync(RequestInfoFilterOption filterOption)
         {
@@ -255,9 +282,7 @@ CREATE TABLE IF NOT EXISTS `SysConfig` (
             return await LoggingSqlOperation(async connection => (await connection.QueryAsync<UrlRequestCount>(sql)).ToList());
         }
 
-        public async Task<List<NodeInfo>> GetNodesAsync() =>
-            await LoggingSqlOperation(async connection => (await connection.QueryAsync<string>("Select Distinct Node FROM RequestInfo;")).Select(m => new NodeInfo { Name = m }).ToList(), "获取所有节点信息失败");
-
+       
 
         public async Task<List<RequestAvgResponeTime>> GetRequestAvgResponeTimeStatisticsAsync(RequestInfoFilterOption filterOption)
         {
@@ -477,6 +502,10 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             return result;
         }
+
+
+
+
 
         #region Monitor
 
@@ -775,8 +804,8 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
             job.Id = MD5_16(Guid.NewGuid().ToString());
 
             string sql = $@"Insert Into MonitorJob 
-            (Id,Title,Description,CronLike,Emails,WebHook,Mobiles,Status,Nodes,PayLoad,CreateTime)
-             Values (@Id,@Title,@Description,@CronLike,@Emails,@WebHook,@Mobiles,@Status,@Nodes,@PayLoad,@CreateTime)";
+            (Id,Title,Description,CronLike,Emails,WebHook,Mobiles,Status,Service,Instance,PayLoad,CreateTime)
+             Values (@Id,@Title,@Description,@CronLike,@Emails,@WebHook,@Mobiles,@Status,@Service,@Instance,@PayLoad,@CreateTime)";
 
             TraceLogSql(sql);
 
@@ -788,11 +817,30 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
         }
 
+        public async Task<bool> AddPerformanceAsync(IPerformance performance)
+        {
+            performance.Id = MD5_16(Guid.NewGuid().ToString());
+
+            string sql = $@"Insert Into Performance 
+            (Id,Service,Instance,GCGen0,GCGen1,GCGen2,HeapMemory,ProcessCPU,ProcessMemory,ThreadCount,PendingThreadCount,CreateTime)
+             Values (@Id,@Service,@Instance,@GCGen0,@GCGen1,@GCGen2,@HeapMemory,@ProcessCPU,@ProcessMemory,@ThreadCount,@PendingThreadCount,@CreateTime)";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => (
+
+            await connection.ExecuteAsync(sql, performance)
+
+            ) > 0); 
+
+        } 
+
+
         public async Task<bool> UpdateMonitorJob(IMonitorJob job)
         {
             string sql = $@"Update MonitorJob 
 
-                Set Title = @Title,Description = @Description,CronLike = @CronLike,Emails = @Emails,WebHook = @WebHook,Mobiles = @Mobiles,Status= @Status,Nodes = @Nodes,PayLoad = @PayLoad 
+                Set Title = @Title,Description = @Description,CronLike = @CronLike,Emails = @Emails,WebHook = @WebHook,Mobiles = @Mobiles,Status= @Status,Service = @Service,Instance = @Instance,PayLoad = @PayLoad 
 
                 Where Id = @Id ";
 
@@ -948,13 +996,22 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
         {
             string sql = "Delete From RequestInfo Where CreateTime <= @StartTime ";
 
-            TraceLogSql(sql);
+            TraceLogSql(sql);   
 
-            var result = await LoggingSqlOperation(async connection => (
+            await LoggingSqlOperation(async connection => (
 
              await connection.ExecuteAsync(sql, new { StartTime })
 
            ));
+
+            string performanceSql = "Delete From Performance Where CreateTime <= @StartTime ";
+
+            await LoggingSqlOperation(async connection => (
+
+             await connection.ExecuteAsync(performanceSql, new { StartTime })
+
+           ));
+
         }
 
         public async Task SetLanguage(string Language)
@@ -1000,7 +1057,36 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
                 Port = x.LocalPort
             
             }).ToList();
-        }   
+        }
+
+        public async Task<List<IPerformance>> GetPerformances(PerformanceFilterIOption option)
+        {
+            string where = " where  CreateTime >= @Start AND CreateTime < @End "; 
+
+            if (!option.Service.IsEmpty())
+            {
+                where = where + " AND Service = @Service ";
+            }
+
+            if (!option.Instance.IsEmpty())
+            {
+                where = where + " AND Instance = @Instance ";
+            }
+
+
+            string sql = " Select * From Performance " + where;
+
+            TraceLogSql(sql); 
+
+            var result = await LoggingSqlOperation(async connection => (
+
+               await connection.QueryAsync<Performance>(sql,option)
+
+           ));
+
+            return result.Select(x => x as IPerformance).ToList();
+
+        }
 
         #endregion Base
     }

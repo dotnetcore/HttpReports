@@ -10,8 +10,7 @@ namespace HttpReports.Storage.FilterOptions
     public class RequestCountFilterOption : INodeFilterOption, IStatusCodeFilterOption, ITakeFilterOption, ITimeSpanFilterOption
     {
         private int _page;
-        private int _pageSize;
-        public string[] Nodes { get; set; }
+        private int _pageSize; 
         public int[] StatusCodes { get; set; }
         public int Skip { get; set; }
         public int Take { get; set; }

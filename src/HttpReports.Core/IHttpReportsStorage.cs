@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using HttpReports.Core.Interface;
 using HttpReports.Core.Models;
+using HttpReports.Core.Storage.FilterOptions;
 using HttpReports.Models;
 using HttpReports.Monitor; 
 using HttpReports.Storage.FilterOptions;
@@ -17,20 +19,16 @@ namespace HttpReports
         /// 初始化储存库
         /// </summary>
         /// <returns></returns>
-        Task InitAsync();
+        Task InitAsync(); 
+
 
         /// <summary>
         /// 添加一条请求记录
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        Task AddRequestInfoAsync(IRequestInfo request,IRequestDetail requestDetail);
-
-        /// <summary>
-        /// 获取所有节点信息
-        /// </summary>
-        /// <returns></returns>
-        Task<List<NodeInfo>> GetNodesAsync();
+        Task AddRequestInfoAsync(IRequestInfo request,IRequestDetail requestDetail); 
+     
 
         Task<List<ServiceInstanceInfo>> GetServiceInstance(DateTime startTime); 
 
@@ -97,6 +95,8 @@ namespace HttpReports
          
         Task<bool> AddMonitorJob(IMonitorJob job);
 
+        Task<List<IPerformance>> GetPerformances(PerformanceFilterIOption option);
+
         Task<bool> UpdateMonitorJob(IMonitorJob job);
 
         Task<bool> DeleteMonitorJob(string Id);
@@ -150,7 +150,8 @@ namespace HttpReports
 
         Task SetLanguage(string Language);
 
-        Task<string> GetSysConfig(string Key); 
+        Task<string> GetSysConfig(string Key);
 
+        Task<bool> AddPerformanceAsync(IPerformance performance); 
     }
 }

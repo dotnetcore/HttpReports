@@ -4,9 +4,7 @@
 @{
     ViewData["Title"] = "EditMonitorRule";
 
-    string Id = ViewData["Id"] as string;
-
-    var nodes = ViewData["nodes"] as List<string>;
+    string Id = ViewData["Id"] as string; 
 
     var lang = ViewData["Language"] as HttpReports.Dashboard.Services.Localize;
 
@@ -44,6 +42,12 @@
         border-radius: 6px;
         border: 1px solid #ccc;
     }
+
+    .service {
+        margin-right:20px;
+    }
+
+
 </style>
 
 
@@ -84,17 +88,18 @@
 
                         </div>
 
-                        <div class="row" style="margin-left:0;margin-right:0;margin-top:15px;">
+                        <div class="col-sm-12 form-inline form service-form" style="margin-left:0;margin-right:0;margin-top:15px;margin-bottom:15px">
 
-                            <div class="col-lg-9 node-row">
-                                <label style="width:100px" class="form-label">@lang.Monitor_ServiceNode</label>
+                            <div class="col-sm-9" style="padding-left:0">
+                                <label style="width:100px" class="form-label">@lang.Index_ServiceNode</label>
+                                <select class="selectpicker service" data-live-search="true" data-style="btn-primary" data-width="220px" style="margin-right:20px">
+                                    <option>ALL</option>
+                                </select>
+                                <select class="selectpicker instance" data-live-search="true" data-style="btn-primary" data-width="220px">
+                                    <option>ALL</option>
+                                </select>
 
-                                @foreach (var item in nodes)
-                                {
-                                    <button onclick="check_node(this)" style="width:120px;margin-right:10px;border-radius:4px;" class="btn btn-info service-button">@item</button>
-                                }
-
-                            </div>
+                            </div> 
 
                         </div>
 

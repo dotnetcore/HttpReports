@@ -56,12 +56,10 @@ namespace HttpReports.Dashboard.Services
         {
             var start = (request.Start.IsEmpty() ? DateTime.Now.ToString("yyyy-MM-dd") : request.Start).ToDateTime();
             var end = (request.End.IsEmpty() ? DateTime.Now.AddDays(1).ToString("yyyy-MM-dd") : request.End).ToDateTime();
-
-            var nodes = request.Node.IsEmpty() ? null : request.Node.Split(',');
-
+             
             var topRequest = await _storage.GetUrlRequestStatisticsAsync(new RequestInfoFilterOption()
             {
-                Nodes = nodes,
+                Nodes = request.Node,
                 StartTime = start,
                 EndTime = end,
                 IsAscend = false,
@@ -72,7 +70,7 @@ namespace HttpReports.Dashboard.Services
 
             var topError500 = await _storage.GetUrlRequestStatisticsAsync(new RequestInfoFilterOption()
             {
-                Nodes = nodes,
+                Nodes = request.Node,
                 StartTime = start,
                 EndTime = end,
                 IsAscend = false,
@@ -84,7 +82,7 @@ namespace HttpReports.Dashboard.Services
 
             var fast = await _storage.GetRequestAvgResponeTimeStatisticsAsync(new RequestInfoFilterOption()
             {
-                Nodes = nodes,
+                Nodes = "",
                 StartTime = start,
                 EndTime = end,
                 IsAscend = true,
@@ -95,7 +93,7 @@ namespace HttpReports.Dashboard.Services
 
             var slow = await _storage.GetRequestAvgResponeTimeStatisticsAsync(new RequestInfoFilterOption()
             {
-                Nodes = nodes,
+                Nodes = "",
                 StartTime = start,
                 EndTime = end,
                 IsAscend = false,
@@ -111,8 +109,7 @@ namespace HttpReports.Dashboard.Services
             };
 
             var StatusCode = (await _storage.GetStatusCodeStatisticsAsync(new RequestInfoFilterOption()
-            {
-                Nodes = nodes,
+            { 
                 StartTime = start,
                 EndTime = end,
                 StatusCodes = new[] { 200, 301, 302, 303, 400, 401, 403, 404, 500, 502, 503 },
@@ -122,7 +119,7 @@ namespace HttpReports.Dashboard.Services
 
             var ResponseTime = (await _storage.GetGroupedResponeTimeStatisticsAsync(new GroupResponeTimeFilterOption()
             {
-                Nodes = nodes,
+               
                 StartTime = start,
                 EndTime = end,
                 StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
@@ -380,8 +377,7 @@ namespace HttpReports.Dashboard.Services
             var end = request.End.ToDateTime();
 
             var result = await _storage.GetIndexPageDataAsync(new IndexPageDataFilterOption()
-            {
-                Nodes = request.Node.IsEmpty() ? null : request.Node.Split(','),
+            { 
                 StartTime = start,
                 EndTime = end,
                 StartTimeFormat = "yyyy-MM-dd HH:mm:ss",

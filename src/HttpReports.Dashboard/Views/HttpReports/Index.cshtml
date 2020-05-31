@@ -3,10 +3,8 @@
 @using System.Collections.Generic
 @{
 
-    Layout = new HttpReports.Dashboard.Views.HttpReportsTemplate { Context = Context, ViewData = ViewData };
-
-    var nodes = ViewData["nodes"] as List<string>;
-
+    Layout = new HttpReports.Dashboard.Views.HttpReportsTemplate { Context = Context, ViewData = ViewData }; 
+  
     var lang = ViewData["Language"] as HttpReports.Dashboard.Services.Localize;
 }
 

@@ -1,21 +1,24 @@
 ﻿
 GoTop();
 
-function InitPage() {
+function InitPage() { 
 
-    if (lang.Language == "English") {
+    if (lang.LanguageFormat == "en-us") {
 
         laydate.render({ elem: '.start', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange(), lang: 'en' });
         laydate.render({ elem: '.end', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange(), lang: 'en' });
-
+      
     }
 
-    if (lang.Language == "Chinese") {
+
+    if (lang.LanguageFormat == "zh-cn") {
 
         laydate.render({ elem: '.start', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange() });
         laydate.render({ elem: '.end', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange() });
+        
 
-    }
+    }  
+
 
 }  
 
@@ -25,22 +28,7 @@ InitTimeRange();
 
 InitTable(); 
  
-function GetNodes() {
 
-    $.ajax({
-        url: "/HttpReportsData/GetNodes", 
-        success: function (result) {
-
-            $(".node-row").html("");
-
-            $.each(result.data, function (i, item) {
-
-                $(".node-row").append(' <button onclick="check_node(this)" style="width:120px;margin-left:20px;" class="btn btn-info">' + item + '</button>');
-
-            });
-        }
-    })
-} 
 
 // 初始化Table
 function InitTable() {

@@ -19,7 +19,7 @@
   "User_NotNull": "Cannot be empty",
   "User_OldNewPass": "Old and new passwords cannot be the same",
   "User_UpdateSuccess": "Success",
-  "Index_ServiceNode": "Service",
+  "Index_ServiceNode": "Service Instance",
   "Index_ServiceNodeTip": "You can click to select and deselect service",
   "Time_15m": "15min",
   "Time_30m": "30min",
@@ -38,6 +38,7 @@
   "ProcessingTime2": "processing time",
   "Mostrequests": "Most requests",
   "RequestError": "Request error",
+  "Monitor_InstanceName": "Instance",
   "Index_Fast": "Fast request",
   "Index_Slow": "Slow request",
   "AvgProcessingTime": "Average processing time",
@@ -58,7 +59,7 @@
   "Trend_MinuteTotalCount": "Requests per minute",
   "Trend_HourTotalCount": "Requests per hour",
   "Trend_DayTotalCount": "Requests per day",
-  "Request_RequestUrl": "Request url",
+  "Request_RequestUrl": "RequestUrl",
   "Request_IPAddress": "IP address",
   "Request_NotFound": "Not Found",
   "Request_BasicInfo": "Basic data",
@@ -159,5 +160,11 @@
   "Warning_Title": "Warning trigger notice",
   "Warning_TimeRange": "Time",
   "Warning_Current": "Current",
-  "Warning_Threshold": "Threshold"
+  "Warning_Threshold": "Threshold",
+  "Performance": "Performance",
+  "Granularity": "Granularity",
+  "Granularity_10Second": "10second",
+  "Granularity_1Minute": "1minute",
+  "Granularity_5Minute": "5minute",
+  "TimeRangeFormatError": "Time format error"
 }

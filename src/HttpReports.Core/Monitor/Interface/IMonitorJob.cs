@@ -20,9 +20,13 @@ namespace HttpReports.Monitor
 
          string Mobiles { get; set; }
 
-         int Status { get; set; }
+         int Status { get; set; } 
 
-         string Nodes { get; set; }
+
+         string Service { get; set; }
+
+         string Instance { get; set; }
+
 
          string Payload { get; set; }
 

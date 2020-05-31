@@ -104,15 +104,13 @@ namespace HttpReports.Dashboard.Services.Quartz
             _logger.LogInformation("CheckResponseTimeOutMonitor Start " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
             var timeoutCount = await _storage.GetTimeoutResponeCountAsync(new RequestCountFilterOption()
-            {
-                Nodes = job.Nodes.Split(','),
+            { 
                 StartTime = start,
                 EndTime = end,
             }, payload.ResponseTimeOutMonitor.TimeOutMs);
 
             var count = await _storage.GetRequestCountAsync(new RequestCountFilterOption()
-            {
-                Nodes = job.Nodes.Split(','),
+            { 
                 StartTime = start,
                 EndTime = end,
             });
@@ -140,7 +138,7 @@ namespace HttpReports.Dashboard.Services.Quartz
 
                           <p>{Localize.Monitor_Title}：{job.Title}</p>
 
-                          <p>{Localize.Monitor_ServiceNode}：{job.Nodes}</p>
+                          <p>{Localize.Monitor_ServiceNode}：{job.Service}</p>
 
                           <p>{Localize.Monitor_Frequency}：{_monitorService.ParseJobCronString(job.CronLike)} </p>
 
@@ -169,16 +167,15 @@ namespace HttpReports.Dashboard.Services.Quartz
             _logger.LogInformation("CheckErrorResponseMonitor Start " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
             var errorCount = await _storage.GetRequestCountAsync(new RequestCountFilterOption()
-            {
-                Nodes = job.Nodes.Split(','),
+            { 
+                
                 StartTime = start,
                 EndTime = end,
                 StatusCodes = payload.ErrorResponseMonitor.HttpCodeStatus.Split(',').Select(x => x.ToInt()).ToArray()
             });
 
             var count = await _storage.GetRequestCountAsync(new RequestCountFilterOption()
-            {
-                Nodes = job.Nodes.Split(','),
+            { 
                 StartTime = start,
                 EndTime = end,
             });
@@ -205,7 +202,7 @@ namespace HttpReports.Dashboard.Services.Quartz
 
                           <p>{Localize.Warning_Title}：{job.Title}</p>
 
-                          <p>{Localize.Monitor_ServiceNode}：{job.Nodes}</p>
+                          <p>{Localize.Monitor_ServiceNode}：{job.Service}</p>
 
                           <p>{Localize.Monitor_Frequency}：{_monitorService.ParseJobCronString(job.CronLike)} </p>
 
@@ -229,8 +226,7 @@ namespace HttpReports.Dashboard.Services.Quartz
             var (now, start, end) = GetNowTimes(_monitorService.ParseJobCron(job.CronLike));
 
             var (max, count) = await _storage.GetRequestCountWithWhiteListAsync(new RequestCountWithListFilterOption()
-            {
-                Nodes = job.Nodes.Split(','),
+            { 
                 StartTime = start,
                 EndTime = end,
                 InList = false,
@@ -259,7 +255,7 @@ namespace HttpReports.Dashboard.Services.Quartz
 
                           <p>{Localize.Warning_Title}：{job.Title}</p>
 
-                          <p>{Localize.Monitor_ServiceNode}：{job.Nodes}</p>
+                          <p>{Localize.Monitor_ServiceNode}：{job.Service}</p>
 
                           <p>{Localize.Monitor_Frequency}：{_monitorService.ParseJobCronString(job.CronLike)} </p>
 
@@ -282,8 +278,7 @@ namespace HttpReports.Dashboard.Services.Quartz
 
             var (now, start, end) = GetNowTimes(_monitorService.ParseJobCron(job.CronLike));
             var count = await _storage.GetRequestCountAsync(new RequestCountFilterOption()
-            {
-                Nodes = job.Nodes.Split(','),
+            { 
                 StartTime = start,
                 EndTime = end,
             });
@@ -304,7 +299,7 @@ namespace HttpReports.Dashboard.Services.Quartz
 
                           <p>{Localize.Warning_Title}：{job.Title}</p>
 
-                          <p>{Localize.Monitor_ServiceNode}：{job.Nodes}</p>
+                          <p>{Localize.Monitor_ServiceNode}：{job.Service}</p>
 
                           <p>{Localize.Monitor_Frequency}：{_monitorService.ParseJobCronString(job.CronLike)} </p>
 

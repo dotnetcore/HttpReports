@@ -37,21 +37,19 @@ WriteLiteral("\r\n");
 
             
             #line 4 "..\..\Views\HttpReports\Trend.cshtml"
-   
-    ViewData["Title"] = "Trend";
-
-    var nodes = ViewData["nodes"] as List<string>;
+  
+    ViewData["Title"] = "Trend"; 
 
     var lang = ViewData["Language"] as HttpReports.Dashboard.Services.Localize;
 
     Layout = new HttpReports.Dashboard.Views.HttpReportsTemplate { Context = Context, ViewData = ViewData };
 
- 
+
 
             
             #line default
             #line hidden
-WriteLiteral(@" 
+WriteLiteral(@"
 
 <div class=""panel panel-default"">
 
@@ -71,7 +69,7 @@ WriteLiteral(@"
 
 
             
-            #line 30 "..\..\Views\HttpReports\Trend.cshtml"
+            #line 28 "..\..\Views\HttpReports\Trend.cshtml"
                                                                                                                                Write(lang.ServiceTag);
 
             
@@ -89,7 +87,7 @@ WriteLiteral(@"</label>
 
 
             
-            #line 38 "..\..\Views\HttpReports\Trend.cshtml"
+            #line 36 "..\..\Views\HttpReports\Trend.cshtml"
                                                                                                                            Write(lang.InstanceTag);
 
             
@@ -99,10 +97,10 @@ WriteLiteral(@"</label>
                                 <select class=""selectpicker instance"" data-live-search=""true"" data-style=""btn-primary"" data-width=""220px"">
                                     <option>ALL</option>
                                 </select>
-                            </div> 
+                            </div>
 
-                        </div> 
-                       
+                        </div>
+
                     </div>
 
                     <div class=""col-sm-12"" style="""">
@@ -113,7 +111,7 @@ WriteLiteral(@"</label>
 
 
             
-            #line 52 "..\..\Views\HttpReports\Trend.cshtml"
+            #line 50 "..\..\Views\HttpReports\Trend.cshtml"
                                                                                                                     Write(lang.Query);
 
             

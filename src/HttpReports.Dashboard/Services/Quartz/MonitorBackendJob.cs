@@ -1,4 +1,5 @@
-﻿using HttpReports.Dashboard.Implements;
+﻿using HttpReports.Core.Config;
+using HttpReports.Dashboard.Implements;
 using HttpReports.Dashboard.Models; 
 using HttpReports.Models;
 using HttpReports.Monitor;
@@ -107,16 +108,40 @@ namespace HttpReports.Dashboard.Services.Quartz
 
             _logger.LogInformation("CheckResponseTimeOutMonitor Start " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
+
+            #region BuildService 
+
+            string LocalIP = "";
+            int LocalPort = 0;
+
+            if (job.Instance.IsEmpty() || job.Instance == "ALL")
+            {
+                LocalIP = "";
+                LocalPort = 0;
+            }
+            else
+            {
+                LocalIP = job.Instance.Substring(0, job.Instance.LastIndexOf(':'));
+                LocalPort = job.Instance.Substring(job.Instance.LastIndexOf(':') + 1).ToInt();
+            }
+
+            #endregion 
+
+
             var timeoutCount = await _storage.GetTimeoutResponeCountAsync(new RequestCountFilterOption()
             {
-                Nodes = job.Nodes.Split(','),
+                Service = job.Service,
+                LocalIP = LocalIP,
+                LocalPort = LocalPort,
                 StartTime = start,
                 EndTime = end,
             }, payload.ResponseTimeOutMonitor.TimeOutMs);
 
             var count = await _storage.GetRequestCountAsync(new RequestCountFilterOption()
             {
-                Nodes = job.Nodes.Split(','),
+                Service = job.Service,
+                LocalIP = LocalIP,
+                LocalPort = LocalPort,
                 StartTime = start,
                 EndTime = end,
             });
@@ -128,7 +153,7 @@ namespace HttpReports.Dashboard.Services.Quartz
 
             var percent = timeoutCount * 100.0 / count; 
 
-            _logger.LogInformation("CheckResponseTimeOutMonitor End  " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + $"  Result {(percent > payload.ResponseTimeOutMonitor.Percentage ? "预警":"正常")}");
+            _logger.LogInformation("CheckResponseTimeOutMonitor End  " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + $"   {(percent > payload.ResponseTimeOutMonitor.Percentage ? "Alert notification trigger" : "Pass")}");
 
             if (percent > payload.ResponseTimeOutMonitor.Percentage)
             { 
@@ -144,7 +169,9 @@ namespace HttpReports.Dashboard.Services.Quartz
 
                           <p>{_lang.Monitor_Title}：{job.Title}</p>
 
-                          <p>{_lang.Monitor_ServiceNode}：{job.Nodes}</p>
+                          <p>{_lang.Monitor_ServiceNode}：{job.Service}</p>
+
+                          <p>{_lang.Monitor_InstanceName}：{(job.Instance.IsEmpty() ? BasicConfig.ALLTag : job.Instance)}</p>
 
                           <p>{_lang.Monitor_Frequency}：{_monitorService.ParseJobCronString(job.CronLike)} </p>
 
@@ -174,9 +201,29 @@ namespace HttpReports.Dashboard.Services.Quartz
 
             _logger.LogInformation("CheckErrorResponseMonitor Start " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
+            #region BuildService 
+
+            string LocalIP = "";
+            int LocalPort = 0;
+
+            if (job.Instance.IsEmpty() || job.Instance == "ALL")
+            {
+                LocalIP = "";
+                LocalPort = 0;
+            }
+            else
+            {
+                LocalIP = job.Instance.Substring(0, job.Instance.LastIndexOf(':'));
+                LocalPort = job.Instance.Substring(job.Instance.LastIndexOf(':') + 1).ToInt();
+            }
+
+            #endregion 
+
             var errorCount = await _storage.GetRequestCountAsync(new RequestCountFilterOption()
             {
-                Nodes = job.Nodes.Split(','),
+                Service = job.Service,
+                LocalIP = LocalIP,
+                LocalPort = LocalPort,
                 StartTime = start,
                 EndTime = end,
                 StatusCodes = payload.ErrorResponseMonitor.HttpCodeStatus.Split(',').Select(x => x.ToInt()).ToArray()
@@ -184,7 +231,9 @@ namespace HttpReports.Dashboard.Services.Quartz
 
             var count = await _storage.GetRequestCountAsync(new RequestCountFilterOption()
             {
-                Nodes = job.Nodes.Split(','),
+                Service = job.Service,
+                LocalIP = LocalIP,
+                LocalPort = LocalPort,
                 StartTime = start,
                 EndTime = end,
             });
@@ -195,7 +244,7 @@ namespace HttpReports.Dashboard.Services.Quartz
             }
             var percent = errorCount * 100.0 / count;
 
-            _logger.LogInformation("CheckErrorResponseMonitor End  " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + $"  Result {(percent > payload.ErrorResponseMonitor.Percentage ? "预警" : "正常")}");
+            _logger.LogInformation("CheckErrorResponseMonitor End  " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + $"  {(percent > payload.ErrorResponseMonitor.Percentage ? "Alert notification trigger" : "Pass")}");
 
             if (percent > payload.ErrorResponseMonitor.Percentage)
             {
@@ -211,7 +260,9 @@ namespace HttpReports.Dashboard.Services.Quartz
 
                           <p>{_lang.Warning_Title}：{job.Title}</p>
 
-                          <p>{_lang.Monitor_ServiceNode}：{job.Nodes}</p>
+                          <p>{_lang.Monitor_ServiceNode}：{job.Service}</p>
+
+                          <p>{_lang.Monitor_InstanceName}：{(job.Instance.IsEmpty() ? BasicConfig.ALLTag : job.Instance)} </p>
 
                           <p>{_lang.Monitor_Frequency}：{_monitorService.ParseJobCronString(job.CronLike)} </p>
 
@@ -236,11 +287,31 @@ namespace HttpReports.Dashboard.Services.Quartz
 
             _logger.LogInformation("CheckIPMonitor Start " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
+            #region BuildService 
+
+            string LocalIP = "";
+            int LocalPort = 0;
+
+            if (job.Instance.IsEmpty() || job.Instance == "ALL")
+            {
+                LocalIP = "";
+                LocalPort = 0;
+            }
+            else
+            {
+                LocalIP = job.Instance.Substring(0, job.Instance.LastIndexOf(':'));
+                LocalPort = job.Instance.Substring(job.Instance.LastIndexOf(':') + 1).ToInt();
+            }
+
+            #endregion 
+
             var (now, start, end) = GetNowTimes(_monitorService.ParseJobCron(job.CronLike));
 
             var (max, count) = await _storage.GetRequestCountWithWhiteListAsync(new RequestCountWithListFilterOption()
             {
-                Nodes = job.Nodes.Split(','),
+                Service = job.Service,
+                LocalIP = LocalIP,
+                LocalPort = LocalPort,
                 StartTime = start,
                 EndTime = end,
                 InList = false,
@@ -253,7 +324,7 @@ namespace HttpReports.Dashboard.Services.Quartz
             }
             var percent = max * 100.0 / count;
 
-            _logger.LogInformation("CheckIPMonitor End  " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + $"  Result {(percent > payload.IPMonitor.Percentage ? "预警" : "正常")}");
+            _logger.LogInformation("CheckIPMonitor End  " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + $"   {(percent > payload.IPMonitor.Percentage ? "Alert notification trigger" : "Pass")}");
 
             if (percent > payload.IPMonitor.Percentage)
             {
@@ -269,7 +340,9 @@ namespace HttpReports.Dashboard.Services.Quartz
 
                           <p>{_lang.Warning_Title}：{job.Title}</p>
 
-                          <p>{_lang.Monitor_ServiceNode}：{job.Nodes}</p>
+                          <p>{_lang.Monitor_ServiceNode}：{job.Service}</p>
+
+                          <p>{_lang.Monitor_InstanceName}：{(job.Instance.IsEmpty() ? BasicConfig.ALLTag : job.Instance)} </p> 
 
                           <p>{_lang.Monitor_Frequency}：{_monitorService.ParseJobCronString(job.CronLike)} </p>
 
@@ -293,15 +366,35 @@ namespace HttpReports.Dashboard.Services.Quartz
 
             _logger.LogInformation("CheckRequestCountMonitor Start " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
+            #region BuildService 
+
+            string LocalIP = "";
+            int LocalPort = 0;
+
+            if (job.Instance.IsEmpty() || job.Instance == "ALL")
+            {
+                LocalIP = "";
+                LocalPort = 0;
+            }
+            else
+            {
+                LocalIP = job.Instance.Substring(0, job.Instance.LastIndexOf(':'));
+                LocalPort = job.Instance.Substring(job.Instance.LastIndexOf(':') + 1).ToInt();
+            }
+
+            #endregion 
+
             var (now, start, end) = GetNowTimes(_monitorService.ParseJobCron(job.CronLike));
             var count = await _storage.GetRequestCountAsync(new RequestCountFilterOption()
             {
-                Nodes = job.Nodes.Split(','),
+                Service = job.Service,
+                LocalIP = LocalIP,
+                LocalPort = LocalPort,
                 StartTime = start,
                 EndTime = end,
             });
 
-            _logger.LogInformation("CheckRequestCountMonitor End  " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + $"  Result {(count > payload.RequestCountMonitor.Max ? "预警" : "正常")}");
+            _logger.LogInformation("CheckRequestCountMonitor End  " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + $"  {(count > payload.RequestCountMonitor.Max ? "Alert notification trigger" : "Pass")}");
 
             if (count > payload.RequestCountMonitor.Max)
             {
@@ -317,7 +410,9 @@ namespace HttpReports.Dashboard.Services.Quartz
 
                           <p>{_lang.Warning_Title}：{job.Title}</p>
 
-                          <p>{_lang.Monitor_ServiceNode}：{job.Nodes}</p>
+                          <p>{_lang.Monitor_ServiceNode}：{job.Service}</p>
+
+                          <p>{_lang.Monitor_InstanceName}：{(job.Instance.IsEmpty() ? BasicConfig.ALLTag : job.Instance)} </p>
 
                           <p>{_lang.Monitor_Frequency}：{_monitorService.ParseJobCronString(job.CronLike)} </p>
 

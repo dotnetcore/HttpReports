@@ -28,9 +28,18 @@ namespace HttpReports.Dashboard
         public async Task InvokeAsync(HttpContext httpContext)
         {
             using var scope = httpContext.RequestServices.CreateScope();
-            var options = scope.ServiceProvider.GetService<DashboardOptions>();
+            var options = scope.ServiceProvider.GetService<DashboardOptions>(); 
 
             var requestUrl = httpContext.Request.Path.Value;
+
+            if (!requestUrl.StartsWith("/HttpReports"))
+            {
+                await _next(httpContext);
+                return;
+
+            } 
+
+
 
             //EmbeddedFile 
             if (requestUrl.Contains("."))

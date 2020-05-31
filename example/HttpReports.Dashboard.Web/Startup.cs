@@ -1,8 +1,12 @@
+using HttpReports.Storage.FilterOptions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace HttpReports.Dashboard.Web
 {
@@ -29,6 +33,20 @@ namespace HttpReports.Dashboard.Web
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            //Task.Run(()=> {
+
+            //    for (int i = 0; i < 100000; i++)
+            //    {
+            //        Task.Run(() => {
+
+            //            var str = new HttpClient().GetStringAsync("http://www.baidu.com").Result;
+
+            //        });
+            //    } 
+
+            //}); 
+
+
             app.UseHttpReports();
 
             app.UseHttpReportsDashboard();

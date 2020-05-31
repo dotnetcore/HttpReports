@@ -1,6 +1,8 @@
 ﻿using Dapper;
 using HttpReports.Core.Config;
+using HttpReports.Core.Interface;
 using HttpReports.Core.Models;
+using HttpReports.Core.Storage.FilterOptions;
 using HttpReports.Models;
 using HttpReports.Monitor;
 using HttpReports.Storage.FilterOptions;
@@ -104,8 +106,8 @@ namespace HttpReports.Storage.PostgreSQL
             job.Id = MD5_16(Guid.NewGuid().ToString());
 
             string sql = $@"Insert Into ""MonitorJob"" 
-            (Id,Title,Description,CronLike,Emails,WebHook,Mobiles,Status,Nodes,PayLoad,CreateTime)
-             Values (@Id,@Title,@Description,@CronLike,@Emails,@WebHook, @Mobiles,@Status,@Nodes,@PayLoad,@CreateTime)";
+            (Id,Title,Description,CronLike,Emails,WebHook,Mobiles,Status,Service,Instance,PayLoad,CreateTime)
+             Values (@Id,@Title,@Description,@CronLike,@Emails,@WebHook, @Mobiles,@Status,@Service,@Instance,@PayLoad,@CreateTime)";
 
             TraceLogSql(sql);
 
@@ -206,9 +208,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
             ).ToList().Select(x => x as IMonitorJob).ToList());
         }
 
-        public async Task<List<NodeInfo>> GetNodesAsync() =>
-            await LoggingSqlOperation(async connection => (await connection.QueryAsync<string>(@"Select Distinct Node FROM ""RequestInfo"" ")
-            ).Select(m => new NodeInfo { Name = m }).ToList(), "获取所有节点信息失败");
+         
 
         public async Task<List<RequestAvgResponeTime>> GetRequestAvgResponeTimeStatisticsAsync(RequestInfoFilterOption filterOption)
         {
@@ -424,6 +424,37 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
                         ");
                     }
 
+                    if (await con.QueryFirstOrDefaultAsync<int>("select count(1) from pg_class where relname = 'Performance' ") == 0)
+                    {
+                        await con.ExecuteAsync(@" 
+
+                            CREATE TABLE ""Performance"" ( 
+                                ID varchar(50) Primary Key,
+                                Service varchar(200),
+                                Instance varchar(200),
+                                GCGen0 Int,
+                                GCGen1 Int,
+                                GCGen2 Int,
+                                HeapMemory Numeric,
+                                ProcessCPU Numeric,
+                                ProcessMemory Numeric, 
+                                ThreadCount Int,
+                                PendingThreadCount Int, 
+                                CreateTime timestamp(3) without time zone 
+                            ); 
+                        ");
+                    }
+
+
+
+
+
+
+                    if (await con.QueryFirstOrDefaultAsync<int>($"select count(1) from information_schema.columns where table_catalog = '{ConnectionFactory.DataBase}' and table_name = 'MonitorJob' and column_name = 'nodes' ") > 0)
+                    {
+                        await con.ExecuteAsync($@"DROP TABLE ""MonitorJob"" ");
+                    } 
+
 
                     if (await con.QueryFirstOrDefaultAsync<int>("select count(1) from pg_class where relname = 'MonitorJob' ") == 0)
                     {
@@ -437,7 +468,8 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
                               WebHook varchar(1000),
                               Mobiles varchar(1000),
                               Status Int,
-                              Nodes varchar(255),
+                              Service varchar(255),
+                              Instance varchar(255),
                               PayLoad varchar(3000),  
                               CreateTime timestamp(3) without time zone
                             ); 
@@ -581,7 +613,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
         {
             string sql = $@"Update ""MonitorJob""
 
-                Set Title = @Title,Description = @Description,CronLike = @CronLike,Emails = @Emails,WebHook = @WebHook, Mobiles = @Mobiles,Status= @Status,Nodes = @Nodes,PayLoad = @PayLoad 
+                Set Title = @Title,Description = @Description,CronLike = @CronLike,Emails = @Emails,WebHook = @WebHook, Mobiles = @Mobiles,Status= @Status,Service = @Service, Instance = @Instance, PayLoad = @PayLoad 
 
                 Where Id = @Id " ; 
 
@@ -833,6 +865,17 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
              await connection.ExecuteAsync(sql, new { StartTime })
 
            ));
+
+
+            string performanceSql = @"Delete From ""Performance"" Where CreateTime <= @StartTime ";
+
+            await LoggingSqlOperation(async connection => (
+
+             await connection.ExecuteAsync(performanceSql, new { StartTime })
+
+           ));
+
+
         }
 
         public async Task SetLanguage(string Language)
@@ -883,6 +926,52 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
                 Port = x.LocalPort
 
             }).ToList();
+        }
+
+        public async Task<List<IPerformance>> GetPerformances(PerformanceFilterIOption option)
+        {
+            string where = " where  CreateTime >= @Start AND CreateTime < @End ";
+
+            if (!option.Service.IsEmpty())
+            {
+                where = where + " AND Service = @Service ";
+            }
+
+            if (!option.Instance.IsEmpty())
+            {
+                where = where + " AND Instance = @Instance ";
+            }
+
+
+            string sql = @" Select * From ""Performance"" " + where;
+
+            TraceLogSql(sql);
+
+            var result = await LoggingSqlOperation(async connection => (
+
+               await connection.QueryAsync<Performance>(sql, option)
+
+           ));
+
+            return result.Select(x => x as IPerformance).ToList();
+
+        }
+
+        public async Task<bool> AddPerformanceAsync(IPerformance performance)
+        {
+            performance.Id = MD5_16(Guid.NewGuid().ToString());
+
+            string sql = $@"Insert Into Performance (Id,Service,Instance,GCGen0,GCGen1,GCGen2,HeapMemory,ProcessCPU,ProcessMemory,ThreadCount,PendingThreadCount,CreateTime)
+             Values (@Id,@Service,@Instance,@GCGen0,@GCGen1,@GCGen2,@HeapMemory,@ProcessCPU,@ProcessMemory,@ThreadCount,@PendingThreadCount,@CreateTime)";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => (
+
+            await connection.ExecuteAsync(sql, performance)
+
+            ) > 0);
+
         }
 
         private class KVClass<TKey, TValue>

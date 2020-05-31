@@ -38,8 +38,8 @@ WriteLiteral("\r\n");
             
             #line 4 "..\..\Views\HttpReports\Trace.cshtml"
   
-    ViewData["Title"] = "Trace"; 
-  
+    ViewData["Title"] = "Trace";
+
     var lang = ViewData["Language"] as HttpReports.Dashboard.Services.Localize;
 
     Layout = new HttpReports.Dashboard.Views.HttpReportsTemplate { Context = Context, ViewData = ViewData };

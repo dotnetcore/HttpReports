@@ -6,6 +6,7 @@ using HttpReports.Models;
 using HttpReports.Monitor;
 
 using Newtonsoft.Json;
+using Org.BouncyCastle.Ocsp;
 
 namespace HttpReports.Dashboard.Services
 {
@@ -211,7 +212,8 @@ namespace HttpReports.Dashboard.Services
                 WebHook = request.WebHook,
                 Mobiles = (request.Mobiles ?? string.Empty).Replace("，", ","),
                 Status = request.Status,
-                Nodes = request.Nodes,
+                Service = request.Service,
+                Instance = request.Instance,
                 Payload = JsonConvert.SerializeObject(payload),
                 CreateTime = DateTime.Now
             };
@@ -232,7 +234,8 @@ namespace HttpReports.Dashboard.Services
                 Interval = ParseJobCron(job.CronLike),
                 Status = job.Status,
                 Mobiles = job.Mobiles,
-                Nodes = job.Nodes,
+                Service = job.Service,
+                Instance = job.Instance,
                 WebHook = job.WebHook
             };
 

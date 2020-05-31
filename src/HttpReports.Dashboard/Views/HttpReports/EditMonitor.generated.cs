@@ -40,9 +40,7 @@ WriteLiteral("\r\n");
   
     ViewData["Title"] = "EditMonitorRule";
 
-    string Id = ViewData["Id"] as string;
-
-    var nodes = ViewData["nodes"] as List<string>;
+    string Id = ViewData["Id"] as string; 
 
     var lang = ViewData["Language"] as HttpReports.Dashboard.Services.Localize;
 
@@ -87,6 +85,12 @@ WriteLiteral(@"@media screen and (min-width:1170px) {
         border-radius: 6px;
         border: 1px solid #ccc;
     }
+
+    .service {
+        margin-right:20px;
+    }
+
+
 </style>
 
 
@@ -100,7 +104,7 @@ WriteLiteral(@"@media screen and (min-width:1170px) {
 
 
             
-            #line 56 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 60 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                           Write(lang.Monitor_NavTitle);
 
             
@@ -110,7 +114,7 @@ WriteLiteral("</a></li>\r\n            <li><span href=\"#\">");
 
 
             
-            #line 57 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 61 "..\..\Views\HttpReports\EditMonitor.cshtml"
                            Write(Id == "" || Id == "0" ? lang.Monitor_Add :lang.Monitor_Edit);
 
             
@@ -120,7 +124,7 @@ WriteLiteral(" ");
 
 
             
-            #line 57 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 61 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                          Write(lang.Task);
 
             
@@ -130,7 +134,7 @@ WriteLiteral("</span></li>\r\n        </ol>\r\n\r\n        <h3 style=\"margin-bo
 
 
             
-            #line 60 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 64 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                     Write(Id == "" || Id == "0" ? lang.Monitor_Add : lang.Monitor_Edit);
 
             
@@ -140,7 +144,7 @@ WriteLiteral(" ");
 
 
             
-            #line 60 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 64 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                                    Write(lang.Monitor_Task);
 
             
@@ -162,7 +166,7 @@ WriteLiteral(@"</h3>
 
 
             
-            #line 72 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 76 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                          Write(lang.Monitor_Title);
 
             
@@ -173,7 +177,7 @@ WriteLiteral("</label>\r\n                                <input type=\"text\" c
 
 
             
-            #line 73 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 77 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                       Write(lang.Monitor_Title_Placeholder);
 
             
@@ -191,7 +195,7 @@ WriteLiteral(@""">
 
 
             
-            #line 81 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 85 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                          Write(lang.Monitor_Description);
 
             
@@ -202,7 +206,7 @@ WriteLiteral("</label>\r\n                                <input type=\"text\" c
 
 
             
-            #line 82 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 86 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                             Write(lang.Monitor_Desc_Placeholder);
 
             
@@ -213,54 +217,28 @@ WriteLiteral(@""">
 
                         </div>
 
-                        <div class=""row"" style=""margin-left:0;margin-right:0;margin-top:15px;"">
+                        <div class=""col-sm-12 form-inline form service-form"" style=""margin-left:0;margin-right:0;margin-top:15px;margin-bottom:15px"">
 
-                            <div class=""col-lg-9 node-row"">
+                            <div class=""col-sm-9"" style=""padding-left:0"">
                                 <label style=""width:100px"" class=""form-label"">");
 
 
             
-            #line 90 "..\..\Views\HttpReports\EditMonitor.cshtml"
-                                                                         Write(lang.Monitor_ServiceNode);
-
-            
-            #line default
-            #line hidden
-WriteLiteral("</label>\r\n\r\n");
-
-
-            
-            #line 92 "..\..\Views\HttpReports\EditMonitor.cshtml"
-                                 foreach (var item in nodes)
-                                {
-
-            
-            #line default
-            #line hidden
-WriteLiteral("                                    <button onclick=\"check_node(this)\" style=\"wid" +
-"th:120px;margin-right:10px;border-radius:4px;\" class=\"btn btn-info service-butto" +
-"n\">");
-
-
-            
             #line 94 "..\..\Views\HttpReports\EditMonitor.cshtml"
-                                                                                                                                                               Write(item);
+                                                                         Write(lang.Index_ServiceNode);
 
             
             #line default
             #line hidden
-WriteLiteral("</button>\r\n");
+WriteLiteral(@"</label>
+                                <select class=""selectpicker service"" data-live-search=""true"" data-style=""btn-primary"" data-width=""220px"" style=""margin-right:20px"">
+                                    <option>ALL</option>
+                                </select>
+                                <select class=""selectpicker instance"" data-live-search=""true"" data-style=""btn-primary"" data-width=""220px"">
+                                    <option>ALL</option>
+                                </select>
 
-
-            
-            #line 95 "..\..\Views\HttpReports\EditMonitor.cshtml"
-                                }
-
-            
-            #line default
-            #line hidden
-WriteLiteral(@"
-                            </div>
+                            </div> 
 
                         </div>
 
@@ -271,7 +249,7 @@ WriteLiteral(@"
 
 
             
-            #line 104 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 109 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                          Write(lang.Monitor_Email);
 
             
@@ -282,7 +260,7 @@ WriteLiteral("</label>\r\n                                <input type=\"text\" c
 
 
             
-            #line 105 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 110 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                       Write(lang.Monitor_Email_Placeholder);
 
             
@@ -300,7 +278,7 @@ WriteLiteral(@""">
 
 
             
-            #line 113 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 118 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                          Write(lang.Monitor_PushUrl);
 
             
@@ -311,7 +289,7 @@ WriteLiteral("</label>\r\n                                <input type=\"text\" c
 
 
             
-            #line 114 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 119 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                         Write(lang.Monitor_Push_Placeholder);
 
             
@@ -340,7 +318,7 @@ WriteLiteral(@"
 
 
             
-            #line 135 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 140 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                          Write(lang.Monitor_Frequency);
 
             
@@ -351,7 +329,7 @@ WriteLiteral("</label>\r\n                                <select class=\"form-c
 
 
             
-            #line 137 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 142 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                  Write(lang.Monitor_Time1Min);
 
             
@@ -361,7 +339,7 @@ WriteLiteral("</option>\r\n                                    <option value=\"3
 
 
             
-            #line 138 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 143 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                  Write(lang.Monitor_Time3Min);
 
             
@@ -371,7 +349,7 @@ WriteLiteral("</option>\r\n                                    <option value=\"5
 
 
             
-            #line 139 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 144 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                  Write(lang.Monitor_Time5Min);
 
             
@@ -381,7 +359,7 @@ WriteLiteral("</option>\r\n                                    <option value=\"1
 
 
             
-            #line 140 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 145 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                   Write(lang.Monitor_Time10Min);
 
             
@@ -391,7 +369,7 @@ WriteLiteral("</option>\r\n                                    <option value=\"3
 
 
             
-            #line 141 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 146 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                   Write(lang.Monitor_Time30Min);
 
             
@@ -401,7 +379,7 @@ WriteLiteral("</option>\r\n                                    <option value=\"6
 
 
             
-            #line 142 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 147 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                            Write(lang.Monitor_Time1Hour);
 
             
@@ -411,7 +389,7 @@ WriteLiteral("</option>\r\n                                    <option value=\"1
 
 
             
-            #line 143 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 148 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                    Write(lang.Monitor_Time2Hour);
 
             
@@ -421,7 +399,7 @@ WriteLiteral("</option>\r\n                                    <option value=\"2
 
 
             
-            #line 144 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 149 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                    Write(lang.Monitor_Time4Hour);
 
             
@@ -431,7 +409,7 @@ WriteLiteral("</option>\r\n                                    <option value=\"3
 
 
             
-            #line 145 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 150 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                    Write(lang.Monitor_Time6Hour);
 
             
@@ -441,7 +419,7 @@ WriteLiteral("</option>\r\n                                    <option value=\"4
 
 
             
-            #line 146 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 151 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                    Write(lang.Monitor_Time8Hour);
 
             
@@ -451,7 +429,7 @@ WriteLiteral("</option>\r\n                                    <option value=\"7
 
 
             
-            #line 147 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 152 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                    Write(lang.Monitor_Time12Hour);
 
             
@@ -461,7 +439,7 @@ WriteLiteral("</option>\r\n                                    <option value=\"1
 
 
             
-            #line 148 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 153 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                     Write(lang.Monitor_Time1Day);
 
             
@@ -480,7 +458,7 @@ WriteLiteral(@"</option>
 
 
             
-            #line 157 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 162 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                          Write(lang.Monitor_State);
 
             
@@ -491,7 +469,7 @@ WriteLiteral("</label>\r\n                                <input type=\"checkbox
 
 
             
-            #line 158 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 163 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                          Write(lang.Monitor_CheckBox_Open);
 
             
@@ -501,7 +479,7 @@ WriteLiteral("\" data-handle-width=\"30\" data-off-text=\"");
 
 
             
-            #line 158 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 163 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                                                                                             Write(lang.Monitor_CheckBox_Close);
 
             
@@ -528,7 +506,7 @@ WriteLiteral(@""" data-size=""mini"" value="""" />
 
 
             
-            #line 175 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 180 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                                                                                   Write(lang.Monitor_Type_Timeout);
 
             
@@ -540,7 +518,7 @@ WriteLiteral("</a></li>\r\n                                <li class=\"\"><a hre
 
 
             
-            #line 176 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 181 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                                                                                    Write(lang.Monitor_Type_RequestError);
 
             
@@ -551,7 +529,7 @@ WriteLiteral("</a></li>\r\n                                <li class=\"\"><a hre
 
 
             
-            #line 177 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 182 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                                                                                 Write(lang.Monitor_Type_IP);
 
             
@@ -562,7 +540,7 @@ WriteLiteral(" </a></li>\r\n                                <li class=\"\"><a hr
 
 
             
-            #line 178 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 183 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                                                                               Write(lang.Monitor_Type_RequestCount);
 
             
@@ -588,7 +566,7 @@ WriteLiteral(@"</a></li>
 
 
             
-            #line 194 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 199 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                            Write(lang.Monitor_State);
 
             
@@ -599,7 +577,7 @@ WriteLiteral("</label>\r\n\r\n                                            <input
 
 
             
-            #line 196 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 201 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                                          Write(lang.Monitor_CheckBox_Open);
 
             
@@ -609,7 +587,7 @@ WriteLiteral("\" data-handle-width=\"30\" data-off-text=\"");
 
 
             
-            #line 196 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 201 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                                                                                                             Write(lang.Monitor_CheckBox_Close);
 
             
@@ -629,7 +607,7 @@ WriteLiteral(@""" data-size=""mini"" value="""" />
 
 
             
-            #line 206 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 211 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                     Write(lang.Monitor_Timeout);
 
             
@@ -644,7 +622,7 @@ WriteLiteral(@"</label>
 
 
             
-            #line 211 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 216 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                  Write(lang.Monitor_Timeout_Percentage);
 
             
@@ -664,7 +642,7 @@ WriteLiteral(@"</label>
 
 
             
-            #line 221 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 226 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                              Write(lang.Monitor_Type_Timeout);
 
             
@@ -674,7 +652,7 @@ WriteLiteral("</b>：");
 
 
             
-            #line 221 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 226 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                             Write(lang.Monitor_Timeout_Description);
 
             
@@ -684,7 +662,7 @@ WriteLiteral(" </p>\r\n\r\n                                            <p>");
 
 
             
-            #line 223 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 228 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                           Write(lang.Monitor_Timeout_Info);
 
             
@@ -712,7 +690,7 @@ WriteLiteral(@"</p>
 
 
             
-            #line 241 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 246 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                            Write(lang.Monitor_State);
 
             
@@ -723,7 +701,7 @@ WriteLiteral("</label>\r\n\r\n                                            <input
 
 
             
-            #line 243 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 248 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                              Write(lang.Monitor_CheckBox_Open);
 
             
@@ -733,7 +711,7 @@ WriteLiteral("\" data-handle-width=\"30\" data-off-text=\"");
 
 
             
-            #line 243 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 248 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                                                                                                 Write(lang.Monitor_CheckBox_Close);
 
             
@@ -752,7 +730,7 @@ WriteLiteral(@""" data-size=""mini"" value="""" />
 
 
             
-            #line 252 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 257 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                  Write(lang.Monitor_HttpStatusCode);
 
             
@@ -763,7 +741,7 @@ WriteLiteral("</label>\r\n                                            <input typ
 
 
             
-            #line 253 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 258 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                                       Write(lang.Monitor_HttpStatusCode_Desc);
 
             
@@ -775,7 +753,7 @@ WriteLiteral("\">\r\n                                        </div>\r\n\r\n     
 
 
             
-            #line 257 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 262 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                  Write(lang.Monitor_Timeout_Percentage);
 
             
@@ -795,7 +773,7 @@ WriteLiteral(@"</label>
 
 
             
-            #line 267 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 272 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                              Write(lang.Monitor_Type_RequestError);
 
             
@@ -805,7 +783,7 @@ WriteLiteral("</b>：");
 
 
             
-            #line 267 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 272 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                  Write(lang.Monitor_Type_RequestError_Desc);
 
             
@@ -815,7 +793,7 @@ WriteLiteral(" </p>\r\n\r\n                                            <p>");
 
 
             
-            #line 269 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 274 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                           Write(lang.Monitor_Type_RequestError_Info);
 
             
@@ -843,7 +821,7 @@ WriteLiteral(@"</p>
 
 
             
-            #line 287 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 292 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                            Write(lang.Monitor_State);
 
             
@@ -854,7 +832,7 @@ WriteLiteral("</label>\r\n\r\n                                            <input
 
 
             
-            #line 289 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 294 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                              Write(lang.Monitor_CheckBox_Open);
 
             
@@ -864,7 +842,7 @@ WriteLiteral("\" data-handle-width=\"30\" data-off-text=\"");
 
 
             
-            #line 289 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 294 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                                                                                                 Write(lang.Monitor_CheckBox_Close);
 
             
@@ -884,7 +862,7 @@ WriteLiteral(@""" data-size=""mini"" value="""" />
 
 
             
-            #line 299 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 304 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                  Write(lang.Monitor_IPWhiteList);
 
             
@@ -895,7 +873,7 @@ WriteLiteral("</label>\r\n                                            <input typ
 
 
             
-            #line 300 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 305 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                                         Write(lang.Monitor_IPWhiteList_Placeholder);
 
             
@@ -907,7 +885,7 @@ WriteLiteral("\">\r\n                                        </div>\r\n\r\n     
 
 
             
-            #line 304 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 309 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                  Write(lang.Monitor_Timeout_Percentage);
 
             
@@ -927,7 +905,7 @@ WriteLiteral(@"</label>
 
 
             
-            #line 314 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 319 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                              Write(lang.Monitor_Type_IP);
 
             
@@ -937,7 +915,7 @@ WriteLiteral("</b>：");
 
 
             
-            #line 314 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 319 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                        Write(lang.Monitor_IP_Desc);
 
             
@@ -947,7 +925,7 @@ WriteLiteral("</p>\r\n\r\n                                            <p> ");
 
 
             
-            #line 316 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 321 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                            Write(lang.Monitor_IP_Info);
 
             
@@ -976,7 +954,7 @@ WriteLiteral(@" </p>
 
 
             
-            #line 335 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 340 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                            Write(lang.Monitor_State);
 
             
@@ -987,7 +965,7 @@ WriteLiteral("</label>\r\n\r\n                                            <input
 
 
             
-            #line 337 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 342 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                              Write(lang.Monitor_CheckBox_Open);
 
             
@@ -997,7 +975,7 @@ WriteLiteral("\" data-handle-width=\"30\" data-off-text=\"");
 
 
             
-            #line 337 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 342 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                                                                                                 Write(lang.Monitor_CheckBox_Close);
 
             
@@ -1016,7 +994,7 @@ WriteLiteral(@""" data-size=""mini"" value="""" />
 
 
             
-            #line 346 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 351 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                  Write(lang.Monitor_Max_Request);
 
             
@@ -1036,7 +1014,7 @@ WriteLiteral(@"</label>
 
 
             
-            #line 356 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 361 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                              Write(lang.Monitor_Type_RequestCount);
 
             
@@ -1046,7 +1024,7 @@ WriteLiteral("</b>：");
 
 
             
-            #line 356 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 361 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                  Write(lang.Monitor_Type_RequestCount_Desc);
 
             
@@ -1056,7 +1034,7 @@ WriteLiteral(" </p>\r\n\r\n                                            <p> ");
 
 
             
-            #line 358 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 363 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                            Write(lang.Monitor_Type_RequestCount_Info);
 
             
@@ -1078,7 +1056,7 @@ WriteLiteral(@" </p>
 
 
             
-            #line 370 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 375 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                            Write(Id);
 
             
@@ -1090,7 +1068,7 @@ WriteLiteral("\">\r\n\r\n                        <div class=\"actions\" style=\"
 
 
             
-            #line 373 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 378 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                                                                  Write(lang.Save);
 
             
@@ -1102,7 +1080,7 @@ WriteLiteral(" </button>\r\n\r\n                            <a href=\"/HttpRepor
 
 
             
-            #line 375 "..\..\Views\HttpReports\EditMonitor.cshtml"
+            #line 380 "..\..\Views\HttpReports\EditMonitor.cshtml"
                                                                                                                                                Write(lang.Back);
 
             

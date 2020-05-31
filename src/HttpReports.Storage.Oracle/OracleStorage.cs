@@ -1,7 +1,9 @@
 ﻿using Dapper;
 using Dapper.Contrib.Extensions;
 using HttpReports.Core.Config;
+using HttpReports.Core.Interface;
 using HttpReports.Core.Models;
+using HttpReports.Core.Storage.FilterOptions;
 using HttpReports.Models;
 using HttpReports.Monitor;
 using HttpReports.Storage.FilterOptions;
@@ -53,7 +55,7 @@ namespace HttpReports.Storage.Oracle
 
                             create table RequestInfo
                             (
-	                            Id varchar2(50),
+	                            Id varchar2(50) ,
                                 ParentId varchar2(50),
 	                            Node varchar2(50),
 	                            Route varchar2(120),
@@ -66,7 +68,7 @@ namespace HttpReports.Storage.Oracle
                                 Port number(15),
                                 LocalIP varchar2(50),
                                 LocalPort number(15), 
-	                            CreateTime date
+	                            CreateTime date 
                             )
 
                      ");  
@@ -92,7 +94,36 @@ namespace HttpReports.Storage.Oracle
                             )
 
                      ");
-                    }  
+                    }
+
+                    if (await con.QueryFirstOrDefaultAsync<int>($" Select count(*) from user_tables where table_name = upper('Performance') ") == 0)
+                    {
+                        await con.ExecuteAsync(@"   
+
+                            create table Performance
+                            ( 
+                                Id varchar2(50),
+                                Service varchar2(200),
+                                Instance varchar2(50), 
+                                GCGen0 number(8), 
+                                GCGen1 number(8), 
+                                GCGen2 number(8), 
+                                HeapMemory number,
+                                ProcessCPU number,
+                                ProcessMemory number,
+                                ThreadCount number(8),
+                                PendingThreadCount number(8), 
+                                CreateTime date            
+                            )
+
+                     ");
+                    }
+
+
+                    if (await con.QueryFirstOrDefaultAsync<int>("  select count(*) from user_tab_cols where table_name= upper('MonitorJob') and column_name= upper('nodes')  ") > 0 )
+                    {
+                        await con.ExecuteAsync("drop table MonitorJob purge");
+                    } 
 
                     if (await con.QueryFirstOrDefaultAsync<int>($" Select count(*) from user_tables where table_name = upper('MonitorJob') ") == 0)
                     {
@@ -108,7 +139,8 @@ namespace HttpReports.Storage.Oracle
                             WebHook varchar2(1000),
                             Mobiles varchar2(1000),
 	                        Status number(15),
-                            Nodes varchar2(255),
+                            Service varchar2(255),
+                            Instance varchar2(255),
                             PayLoad varchar2(2000), 
 	                        CreateTime date
                         )
@@ -306,21 +338,7 @@ namespace HttpReports.Storage.Oracle
 
             return detail; 
         } 
-
-        /// <summary>
-        /// 获取所有节点信息
-        /// </summary>
-        /// <returns></returns>
-        public async Task<List<NodeInfo>> GetNodesAsync()
-        {
-            string[] nodeNames = null;
-            await LoggingSqlOperation(async connection =>
-            {
-                nodeNames = (await connection.QueryAsync<string>("Select Distinct Node FROM RequestInfo")).ToArray();
-            }, "获取所有节点信息失败");
-
-            return nodeNames?.Select(m => new NodeInfo { Name = m }).ToList();
-        }
+ 
 
 
         /// <summary>
@@ -813,8 +831,8 @@ namespace HttpReports.Storage.Oracle
             job.Id = MD5_16(Guid.NewGuid().ToString());
 
             string sql = $@"Insert Into MonitorJob 
-            (Id,Title,Description,CronLike,Emails,WebHook,Mobiles,Status,Nodes,PayLoad,CreateTime)
-             Values ('{Guid.NewGuid().ToString()}',:Title,:Description,:CronLike,:Emails,:WebHook,:Mobiles,:Status,:Nodes,:Payload,to_date('{job.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','YYYY-MM-DD HH24:MI:SS'))";
+            (Id,Title,Description,CronLike,Emails,WebHook,Mobiles,Status,Service,Instance,PayLoad,CreateTime)
+             Values ('{Guid.NewGuid().ToString()}',:Title,:Description,:CronLike,:Emails,:WebHook,:Mobiles,:Status,:Service,:Instance,:Payload,to_date('{job.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")}','YYYY-MM-DD HH24:MI:SS'))";
 
             TraceLogSql(sql);
 
@@ -826,7 +844,7 @@ namespace HttpReports.Storage.Oracle
         {
             string sql = $@"Update MonitorJob 
 
-                Set Title = :Title ,Description = :Description,CronLike = :CronLike ,Emails = :Emails ,Mobiles = :Mobiles , WebHook = :WebHook, Status = :Status ,Nodes = :Nodes',PayLoad = :Payload' 
+                Set Title = :Title ,Description = :Description,CronLike = :CronLike ,Emails = :Emails ,Mobiles = :Mobiles , WebHook = :WebHook, Status = :Status , Service =:Service,Instance = :Instance ,PayLoad = :Payload' 
 
                 Where Id = :Id ";
 
@@ -985,9 +1003,17 @@ namespace HttpReports.Storage.Oracle
 
             TraceLogSql(sql);
 
-            var result = await LoggingSqlOperation(async connection => (
+             await LoggingSqlOperation(async connection => (
 
              await connection.ExecuteAsync(sql)
+
+           ));
+
+            string performanceSql = "Delete From Performance Where CreateTime <= :StartTime ";
+
+            await LoggingSqlOperation(async connection => (
+
+             await connection.ExecuteAsync(performanceSql, new { StartTime })
 
            ));
         }
@@ -1040,6 +1066,53 @@ namespace HttpReports.Storage.Oracle
 
             }).ToList();  
 
-        }  
+        }
+
+        public async Task<List<IPerformance>> GetPerformances(PerformanceFilterIOption option)
+        {
+            string where = " where  CreateTime >= :Start AND CreateTime < :End ";
+
+            if (!option.Service.IsEmpty())
+            {
+                where = where + " AND Service = :Service ";
+            }
+
+            if (!option.Instance.IsEmpty())
+            {
+                where = where + " AND Instance = :Instance ";
+            }
+
+
+            string sql = " Select * From Performance " + where;
+
+            TraceLogSql(sql);
+
+            var result = await LoggingSqlOperation(async connection => (
+
+               await connection.QueryAsync<Performance>(sql, option)
+
+           ));
+
+            return result.Select(x => x as IPerformance).ToList();
+
+        }
+
+        public async Task<bool> AddPerformanceAsync(IPerformance performance)
+        {
+            performance.Id = MD5_16(Guid.NewGuid().ToString());
+
+            string sql = $@"Insert Into MonitorJob 
+            (Id,Service,Instance,GCGen0,GCGen1,GCGen2,HeapMemory,ProcessCPU,ProcessMemory,ThreadCount,PendingThreadCount,CreateTime)
+             Values (:Id,:Service,:Instance,:GCGen0,:GCGen1,:GCGen2,:HeapMemory,:ProcessCPU,:ProcessMemory,:ThreadCount,:PendingThreadCount,:CreateTime)";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => (
+
+            await connection.ExecuteAsync(sql, performance)
+
+            ) > 0);
+
+        }
     }
 }

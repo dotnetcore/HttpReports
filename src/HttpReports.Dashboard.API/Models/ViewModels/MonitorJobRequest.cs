@@ -20,6 +20,10 @@
 
         public int Status { get; set; }
 
+        public string Service { get; set; }
+
+        public string Instance { get; set; }
+
         public ResponseTimeOutMonitorViewModel ResponseTimeOutMonitor { get; set; }
 
         public ErrorResponseMonitorViewModel ErrorResponseMonitor { get; set; }

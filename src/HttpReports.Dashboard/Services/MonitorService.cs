@@ -3,6 +3,7 @@ using HttpReports.Dashboard.ViewModels;
 using HttpReports.Models;
 using HttpReports.Monitor;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Ocsp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,12 +12,13 @@ using System.Threading.Tasks;
 namespace HttpReports.Dashboard.Services
 {
     public class MonitorService
-    {
-        private Localize _lang;
+    { 
+        private readonly LocalizeService _localizeService;
+        private Localize _lang => _localizeService.Current;
 
         public MonitorService(LocalizeService localizeService)
         {
-            _lang = localizeService.Current;
+            _localizeService = localizeService;
         }
 
 
@@ -31,7 +33,7 @@ namespace HttpReports.Dashboard.Services
             if (!request.Description.IsEmpty() && request.Description.Length > 100)
                 return _lang.Monitor_DescTooLong;
 
-            if (request.Nodes.IsEmpty())
+            if (request.Service.IsEmpty() || request.Service == "ALL")
                 return _lang.Monitor_MustSelectNode;
 
             if (request.Emails.IsEmpty() && request.WebHook.IsEmpty())
@@ -87,6 +89,8 @@ namespace HttpReports.Dashboard.Services
             {
                 return _lang.Monitor_MustSelectType;
             }
+
+            request.Instance = request.Instance == "ALL" ? string.Empty: request.Instance;
 
             return null;
         }
@@ -207,8 +211,7 @@ namespace HttpReports.Dashboard.Services
             }
 
             MonitorJob model = new MonitorJob()
-            {
-
+            { 
                 Id = request.Id,
                 Title = request.Title,
                 Description = (request.Description ?? string.Empty),
@@ -217,7 +220,8 @@ namespace HttpReports.Dashboard.Services
                 WebHook = request.WebHook,
                 Mobiles = (request.Mobiles ?? string.Empty).Replace("，", ","),
                 Status = request.Status,
-                Nodes = request.Nodes,
+                Service = request.Service,
+                Instance = request.Instance,
                 Payload = JsonConvert.SerializeObject(payload),
                 CreateTime = DateTime.Now
             };
@@ -238,7 +242,8 @@ namespace HttpReports.Dashboard.Services
                 Interval = ParseJobCron(job.CronLike),
                 Status = job.Status,
                 Mobiles = job.Mobiles,
-                Nodes = job.Nodes,
+                Service = job.Service,
+                Instance = job.Instance,
                 WebHook = job.WebHook
             };
 

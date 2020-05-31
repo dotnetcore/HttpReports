@@ -48,6 +48,7 @@
                                 <th>@lang.Monitor_Frequency</th>
                                 <th>@lang.Monitor_Email</th>
                                 <th>@lang.Monitor_ServiceNode</th>
+                                <th>@lang.Monitor_InstanceName</th>
                                 <th width="276">@lang.Monitor_Operation</th>
                             </tr>
                         </thead>
@@ -55,41 +56,42 @@
 
                             @foreach (var item in list)
                             {
-                                <tr>
-                                    <td>@item.Title</td>
-                                    <td>
+                            <tr>
+                                <td>@item.Title</td>
+                                <td>
 
-                                        @if (item.Status == 1)
-                                        {
-                                            <span style="width: 60px;padding-left:10px; padding-right:10px;margin-right: 8px;border-radius:0;" class="label label-success">@lang.Monitor_Runing</span>
-                                        }
-                                        else
-                                        {
-                                            <span style="width: 60px;padding-left:10px; padding-right:10px;margin-right: 8px;border-radius:0;" class="label label-danger">@lang.Monitor_Stoping</span>
-                                        }
+                                    @if (item.Status == 1)
+                                    {
+                                        <span style="width: 60px;padding-left:10px; padding-right:10px;margin-right: 8px;border-radius:0;" class="label label-success">@lang.Monitor_Runing</span>
+                                    }
+                                    else
+                                    {
+                                        <span style="width: 60px;padding-left:10px; padding-right:10px;margin-right: 8px;border-radius:0;" class="label label-danger">@lang.Monitor_Stoping</span>
+                                    }
 
-                                    </td>
-                                    <td>@item.CronLike</td>
-                                    <td>@item.Emails</td>
-                                    <td>@item.Nodes</td>
+                                </td>
+                                <td>@item.CronLike</td>
+                                <td>@item.Emails</td>
+                                <td>@item.Service</td>
+                                <td>@( string.IsNullOrEmpty(item.Instance) ? "ALL": item.Instance )</td>
 
-                                    <td>
+                                <td>
 
-                                        <a href="/HttpReports/EditMonitor?Id=@item.Id" style="margin:4px" type="button" class="btn btn-info btn-xs"><span class="glyphicon glyphicon-edit"></span> @lang.Monitor_Edit</a>
+                                    <a href="/HttpReports/EditMonitor?Id=@item.Id" style="margin:4px" type="button" class="btn btn-info btn-xs"><span class="glyphicon glyphicon-edit"></span> @lang.Monitor_Edit</a>
 
-                                        @if (item.Status == 1)
-                                        {
-                                            <button style="margin:4px" type="button" onclick="stopJob('@item.Id')" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-off"></span> @lang.Monitor_Stop</button>
-                                        }
-                                        else
-                                        {
-                                            <button style="margin:4px" type="button" onclick="startJob('@item.Id')" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-play-circle"></span> @lang.Monitor_Start</button>
-                                        }
+                                    @if (item.Status == 1)
+                                    {
+                                        <button style="margin:4px" type="button" onclick="stopJob('@item.Id')" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-off"></span> @lang.Monitor_Stop</button>
+                                    }
+                                    else
+                                    {
+                                        <button style="margin:4px" type="button" onclick="startJob('@item.Id')" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-play-circle"></span> @lang.Monitor_Start</button>
+                                    }
 
-                                        <button style="margin:4px" type="button" onclick="delJob('@item.Id')" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove-sign"></span> @lang.Monitor_Delete</button>
+                                    <button style="margin:4px" type="button" onclick="delJob('@item.Id')" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove-sign"></span> @lang.Monitor_Delete</button>
 
-                                    </td>
-                                </tr>
+                                </td>
+                            </tr>
 
                             }
 

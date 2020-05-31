@@ -1,7 +1,9 @@
 ﻿using Dapper;
 using Dapper.Contrib.Extensions;
 using HttpReports.Core.Config;
+using HttpReports.Core.Interface;
 using HttpReports.Core.Models;
+using HttpReports.Core.Storage.FilterOptions;
 using HttpReports.Models;
 using HttpReports.Monitor;
 using HttpReports.Storage.FilterOptions;
@@ -88,6 +90,12 @@ namespace HttpReports.Storage.SQLServer
                     ");
                     }
 
+                    if (await con.QueryFirstOrDefaultAsync<int>("Select  Count(1)  from  syscolumns Where id = object_id('MonitorJob') and  name = 'Nodes'") > 0)
+                    {
+                        await con.ExecuteAsync("Drop Table MonitorJob");
+                    } 
+
+
                     if (await con.QueryFirstOrDefaultAsync<int>($"Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.MonitorJob')") == 0)
                     {
                         await con.ExecuteAsync(@"  
@@ -100,7 +108,8 @@ namespace HttpReports.Storage.SQLServer
                                 [WebHook] [nvarchar](1000) NULL,
                                 [Mobiles] [nvarchar](1000) NULL,
                                 [Status] [int] NULL,
-                                [Nodes] [nvarchar](255) NULL,
+                                [Service] [nvarchar](255) NULL,
+                                [Instance] [nvarchar](255) NULL,
                                 [PayLoad] [nvarchar](2000) NULL, 
 	                            [CreateTime] [datetime] NULL )
                       ");
@@ -119,7 +128,27 @@ namespace HttpReports.Storage.SQLServer
                          ");
 
                     }
-                     
+
+
+                    if (await con.QueryFirstOrDefaultAsync<int>($"Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.Performance')") == 0)
+                    {
+                        await con.ExecuteAsync($@"  
+
+                           CREATE TABLE [Performance]( 
+	                            [Id] [varchar](50) NOT NULL PRIMARY KEY,
+	                            [Service] [nvarchar](100) NULL, 
+	                            [Instance] [nvarchar](100) NULL,
+                                [GCGen0] [int] NULL,
+                                [GCGen1] [int] NULL,
+                                [GCGen1] [int] NULL, 
+                                [HeapMemory] [double NULL,
+                                [ProcessCPU] [double] NULL,
+                                [ProcessMemory] [double] NULL, 
+                                [ThreadCount] [int] NULL,
+                                [PendingThreadCount] [int] NULL  )   ");
+
+                    }  
+
                     if (await con.QueryFirstOrDefaultAsync<int>($"Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.SysConfig')") == 0)
                     {
                         await con.ExecuteAsync($@"
@@ -251,21 +280,7 @@ namespace HttpReports.Storage.SQLServer
 
         }
 
-        /// <summary>
-        /// 获取所有节点信息
-        /// </summary>
-        /// <returns></returns>
-        public async Task<List<NodeInfo>> GetNodesAsync()
-        {
-            string[] nodeNames = null;
-            await LoggingSqlOperation(async connection =>
-            {
-                nodeNames = (await connection.QueryAsync<string>("Select Distinct Node FROM RequestInfo;")).ToArray();
-            }, "获取所有节点信息失败");
-
-            return nodeNames?.Select(m => new NodeInfo { Name = m }).ToList();
-        }
-
+        
 
         /// <summary>
         /// 获取Url的平均请求处理时间统计
@@ -788,8 +803,8 @@ namespace HttpReports.Storage.SQLServer
             job.Id = MD5_16(Guid.NewGuid().ToString());
 
             string sql = $@"Insert Into MonitorJob 
-            (Id,Title,Description,CronLike,Emails,WebHook,Mobiles,Status,Nodes,PayLoad,CreateTime)
-             Values (@Id,@Title,@Description,@CronLike,@Emails,@WebHook,@Mobiles,@Status,@Nodes,@PayLoad,@CreateTime)";
+            (Id,Title,Description,CronLike,Emails,WebHook,Mobiles,Status,Service,Instance,PayLoad,CreateTime)
+             Values (@Id,@Title,@Description,@CronLike,@Emails,@WebHook,@Mobiles,@Status,@Service,@Instance,@PayLoad,@CreateTime)";
 
             TraceLogSql(sql);
 
@@ -805,7 +820,7 @@ namespace HttpReports.Storage.SQLServer
         {
             string sql = $@"Update MonitorJob 
 
-                Set Title = @Title,Description = @Description,CronLike = @CronLike,Emails = @Emails,WebHook = @WebHook, Mobiles = @Mobiles,Status= @Status,Nodes = @Nodes,PayLoad = @PayLoad 
+                Set Title = @Title,Description = @Description,CronLike = @CronLike,Emails = @Emails,WebHook = @WebHook, Mobiles = @Mobiles,Status= @Status,Service = @Service,Instance = @Instance,PayLoad = @PayLoad 
 
                 Where Id = @Id ";
 
@@ -970,6 +985,14 @@ namespace HttpReports.Storage.SQLServer
              await connection.ExecuteAsync(sql, new { StartTime })
 
            ));
+
+            string performanceSql = "Delete From Performance Where CreateTime <= @StartTime ";
+
+            await LoggingSqlOperation(async connection => (
+
+             await connection.ExecuteAsync(performanceSql, new { StartTime })
+
+           ));
         }
 
 
@@ -1021,5 +1044,55 @@ namespace HttpReports.Storage.SQLServer
 
             }).ToList();
         }
+
+        public async Task<List<IPerformance>> GetPerformances(PerformanceFilterIOption option)
+        {
+            string where = " where  CreateTime >= @Start AND CreateTime < @End ";
+
+            if (!option.Service.IsEmpty())
+            {
+                where = where + " AND Service = @Service ";
+            }
+
+            if (!option.Instance.IsEmpty())
+            {
+                where = where + " AND Instance = @Instance ";
+            }
+
+
+            string sql = " Select * From Performance " + where;
+
+            TraceLogSql(sql);
+
+            var result = await LoggingSqlOperation(async connection => (
+
+               await connection.QueryAsync<Performance>(sql, option)
+
+           ));
+
+            return result.Select(x => x as IPerformance).ToList();
+
+        }
+
+
+        public async Task<bool> AddPerformanceAsync(IPerformance performance)
+        {
+            performance.Id = MD5_16(Guid.NewGuid().ToString());
+
+            string sql = $@"Insert Into [Performance] 
+            ([Id],[Service],[Instance],[GCGen0],[GCGen1],[GCGen2],[HeapMemory],[ProcessCPU],[ProcessMemory],[ThreadCount],[PendingThreadCount],[CreateTime])
+             Values (@Id,@Service,@Instance,@GCGen0,@GCGen1,@GCGen2,@HeapMemory,@ProcessCPU,@ProcessMemory,@ThreadCount,@PendingThreadCount,@CreateTime)";
+
+            TraceLogSql(sql);
+
+            return await LoggingSqlOperation(async connection => (
+
+            await connection.ExecuteAsync(sql, performance)
+
+            ) > 0);
+
+        }
+
+
     }
 }

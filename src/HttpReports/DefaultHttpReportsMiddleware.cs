@@ -262,18 +262,20 @@ namespace HttpReports
                 {
                     var rule = item.ToLowerInvariant();
 
-                    if (rule.Select(x => x == '%').Count() == 0)
+                    var ruleList = rule.ToList();
+
+                    if (ruleList.Where(x => x == '%').Count() == 0)
                     {
                         continue;
                     }
-                    else if (rule.Select(x => x == '%').Count() >= 2)
+                    else if (ruleList.Where(x => x == '%').Count() >= 2)
                     {
                         if (path.Contains(rule.Replace("%", "")))
                         {
                             return true;
                         }
                     }
-                    else if (rule.Select(x => x == '%').Count() == 1 && rule.LastOrDefault() == '%')
+                    else if (ruleList.Where(x => x == '%').Count() == 1 && rule.LastOrDefault() == '%')
                     {
                         if (path.StartsWith(rule.Replace("%", "")))
                         {
@@ -281,7 +283,7 @@ namespace HttpReports
                         }
                     }
 
-                    else if (rule.Select(x => x == '%').Count() == 1 && rule.FirstOrDefault() == '%')
+                    else if (ruleList.Where(x => x == '%').Count() == 1 && rule.FirstOrDefault() == '%')
                     {
                         if (path.EndsWith(rule.Replace("%", "")))
                         {

@@ -14,6 +14,9 @@ namespace HttpReports.Storage.FilterOptions
 
         public int LocalPort { get; set; }
 
+        public string Nodes { get; set; }
+
+
         public int[] StatusCodes { get; set; }
         public int Skip { get; set; }
         public int Take { get; set; }

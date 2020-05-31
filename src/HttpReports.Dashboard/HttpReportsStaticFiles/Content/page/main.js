@@ -1,4 +1,5 @@
 ﻿ 
+ 
 var httpreports = {};  
 httpreports.chart_theme = "macarons";
 httpreports.theme = "light";
@@ -19,41 +20,56 @@ function InitLanguage() {
 
 $(function () {  
 
-    $(".service-form").find(".service").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) { 
+    $(".service-form").find(".service").on('changed.bs.select', (e, clickedIndex, isSelected, previousValue) => BindInstanceSelect($(e.currentTarget).val()));
 
-        var service = $(e.currentTarget).val();   
-
-        $(".service-form").find(".instance").find("select").find("option").each(function (index, item) {
-
-            if ($(item).text() != "ALL") {
-
-                $(item).remove();
-            }  
-
-        });   
-
-
-        $.each(httpreports.serviceInstance, function (index,item) {
-
-            if (item.service == service) {
-
-                $.each(item.instance, function (i, k) { 
-
-                    $(".service-form").find(".instance").find("select").append('<option>' + k + '</option>'); 
-
-                }); 
-
-            } 
-
-        });  
-
-        $(".service-form").find(".instance").find("select").selectpicker('refresh');
-
-    });  
-
-    $(".service-form").find(".service").on('loaded.bs.select', (e, clickedIndex, isSelected, previousValue) => InitServiceInstance() );  
+    $(".service-form").find(".service").on('loaded.bs.select', (e, clickedIndex, isSelected, previousValue) => InitServiceInstance());   
 
 });  
+
+function BindInstanceSelect(service,instance = "") {  
+
+    $(".service-form").find(".instance").find("select").find("option").each(function (index, item) {
+
+        if ($(item).text() != "ALL") {
+
+            $(item).remove();
+        }
+
+    });
+
+    $.each(httpreports.serviceInstance, function (index, item) {
+
+        if (item.service == service) {
+
+            $.each(item.instance, function (i, k) {
+
+                $(".service-form").find(".instance").find("select").append('<option>' + k + '</option>');
+
+            });
+
+        }
+
+    }); 
+
+    if (instance.length > 0) {
+
+        $(".service-form").find(".instance").find("select").val(instance);
+
+    } 
+
+    $(".service-form").find(".instance").find("select").selectpicker('refresh');  
+
+}
+
+function BindServiceSelect(service) {
+
+    $(".service-form").find(".service").find("select").val(service);
+    $(".service-form").find(".service").find("select").selectpicker('refresh');  
+
+}
+
+
+
 
 function InitServiceInstance() {
 
@@ -72,8 +88,12 @@ function InitServiceInstance() {
 
             });  
 
-            $(".service-form").find(".service").find("select").selectpicker('refresh');
-           
+            $(".service-form").find(".service").find("select").selectpicker('refresh');  
+
+            if (typeof(InitServiceInstanceCallBack) == "function") { 
+
+                InitServiceInstanceCallBack();
+            } 
         }
     }); 
 }     
@@ -99,8 +119,7 @@ function RefreshTime() {
     } 
 
     timeChange(k,minute); 
-}
-
+} 
 
 
 function timeChange(k, minute) {  

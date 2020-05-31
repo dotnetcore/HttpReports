@@ -16,6 +16,19 @@ namespace HttpReports.Dashboard.Services
         public string AvgProcessingTime => GetValue();
         public string Back => GetValue();
         public string Button_Cancel => GetValue();
+
+        public string Granularity => GetValue();
+
+        public string TimeRangeFormatError => GetValue();
+
+
+        public string Granularity_10Second => GetValue();
+
+        public string Granularity_1Minute => GetValue();
+
+        public string Granularity_5Minute => GetValue();
+
+
         public string Button_OK => GetValue();
         public string EndTime => GetValue();
         public string Index_APICount => GetValue();
@@ -41,6 +54,9 @@ namespace HttpReports.Dashboard.Services
         public string Login_UserOrPassError => GetValue();
         public string Menu_BasicData => GetValue();
         public string Menu_Monitor => GetValue();
+
+        public string Performance => GetValue();
+
         public string Menu_RequestList => GetValue();
         public string Menu_TrendData => GetValue();
         public string Monitor_Add => GetValue();
@@ -81,6 +97,7 @@ namespace HttpReports.Dashboard.Services
         public string Monitor_Request_FormatError => GetValue();
         public string Monitor_Runing => GetValue();
         public string Monitor_ServiceNode => GetValue();
+        public string Monitor_InstanceName => GetValue();
         public string Monitor_Start => GetValue();
         public string Monitor_State => GetValue();
         public string Monitor_Stop => GetValue();

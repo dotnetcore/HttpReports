@@ -79,7 +79,7 @@ WriteLiteral("\r\n<!DOCTYPE html>\r\n<html lang=\"zh-cn\">\r\n<head>\r\n    <met
 "r=1.0.5\"></script>\r\n    <script src=\"/HttpReportsStaticFiles/Content/js/bootstra" +
 "p-treeview.js?ver=1.0.5\"></script>\r\n\r\n\r\n    <link href=\"/HttpReportsStaticFiles/" +
 "Content/message/message.css\" rel=\"stylesheet\" />\r\n    <script src=\"/HttpReportsS" +
-"taticFiles/Content/message/message.js\"></script> >\r\n\r\n    <script>  var langForm" +
+"taticFiles/Content/message/message.js\"></script>  \r\n\r\n    <script>  var langForm" +
 "at = \'");
 
 
@@ -192,52 +192,62 @@ WriteLiteral(@" </a>
 
                         <ul class=""nav nav-sidebar"">
 
-                            <li data-title=""HomePage1"" class=""meun1""><a href=""/HttpReports/Index""><i class=""fa fa-laptop""></i><span class=""text"">");
+                            <li class=""meun1""><a href=""/HttpReports/Index""><i class=""fa fa-laptop""></i><span class=""text"">");
 
 
             
             #line 151 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
-                                                                                                                                            Write(lang.Menu_BasicData);
+                                                                                                                     Write(lang.Menu_BasicData);
 
             
             #line default
             #line hidden
-WriteLiteral("</span></a></li>\r\n\r\n                            <li data-title=\"HomePage1\" class=" +
-"\"meun1\"><a href=\"/HttpReports/Trend\"><i class=\"fa fa-bar-chart-o\"></i><span clas" +
-"s=\"text\">");
+WriteLiteral("</span></a></li>\r\n\r\n                            <li class=\"meun1\"><a href=\"/HttpR" +
+"eports/Trend\"><i class=\"fa fa-bar-chart-o\"></i><span class=\"text\">");
 
 
             
             #line 153 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
-                                                                                                                                                 Write(lang.Menu_TrendData);
+                                                                                                                          Write(lang.Menu_TrendData);
 
             
             #line default
             #line hidden
-WriteLiteral("</span></a></li>\r\n\r\n                            <li data-title=\"HomePage1\" class=" +
-"\"\"><a href=\"/HttpReports/Detail\"><i class=\"fa fa-bars\"></i><span class=\"text\">");
+WriteLiteral("</span></a></li>\r\n\r\n                            <li class=\"\"><a href=\"/HttpReport" +
+"s/Detail\"><i class=\"fa fa-bars\"></i><span class=\"text\">");
 
 
             
             #line 155 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
-                                                                                                                                      Write(lang.Menu_RequestList);
+                                                                                                               Write(lang.Menu_RequestList);
 
             
             #line default
             #line hidden
-WriteLiteral("</span></a></li>\r\n\r\n                            <li data-title=\"HomePage1\" class=" +
-"\"\"><a href=\"/HttpReports/Monitor\"><i class=\"fa fa-rocket\"></i><span class=\"text\"" +
-">");
+WriteLiteral("</span></a></li>\r\n\r\n                            <li class=\"\"><a href=\"/HttpReport" +
+"s/Monitor\"><i class=\"fa fa-rocket\"></i><span class=\"text\">");
 
 
             
             #line 157 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
-                                                                                                                                         Write(lang.Menu_Monitor);
+                                                                                                                  Write(lang.Menu_Monitor);
+
+            
+            #line default
+            #line hidden
+WriteLiteral("</span></a></li>\r\n\r\n                            <li class=\"\"><a href=\"/HttpReport" +
+"s/Performance\"><i class=\"fa fa-flask\"></i><span class=\"text\">");
+
+
+            
+            #line 159 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+                                                                                                                     Write(lang.Performance);
 
             
             #line default
             #line hidden
 WriteLiteral(@"</span></a></li>
+
                         </ul>
                     </div>
                 </div>
@@ -252,7 +262,7 @@ WriteLiteral(@"</span></a></li>
 
 
             
-            #line 168 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 171 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
            Write(RenderBody());
 
             
@@ -279,7 +289,7 @@ WriteLiteral(@"
 
 
             
-            #line 185 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 188 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                          Write(lang.Template_EditAccount);
 
             
@@ -290,7 +300,7 @@ WriteLiteral("</span>\r\n                </div>\r\n                <div class=\"
 
 
             
-            #line 189 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 192 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                           Write(lang.Login_UserName);
 
             
@@ -302,7 +312,7 @@ WriteLiteral("</label>\r\n                        <input autocomplete=\"new-pass
 
 
             
-            #line 193 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 196 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                           Write(lang.Index_OldPwd);
 
             
@@ -314,7 +324,7 @@ WriteLiteral("</label>\r\n                        <input autocomplete=\"new-pass
 
 
             
-            #line 197 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 200 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                           Write(lang.Index_NewPwd);
 
             
@@ -327,7 +337,7 @@ WriteLiteral(@"</label>
 
 
             
-            #line 200 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 203 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                          Write(lang.Index_UserSave);
 
             

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks; 
 using HttpReports.Core.Config;
 using HttpReports.Core.Models;
+using HttpReports.Core.Storage.FilterOptions;
 using HttpReports.Dashboard.DTO;
 using HttpReports.Dashboard.Implements;
 using HttpReports.Dashboard.Models;
@@ -29,9 +30,8 @@ namespace HttpReports.Dashboard.Handle
 
         private readonly ScheduleService _scheduleService; 
 
-        private readonly LocalizeService _localizeService;
-
-        private readonly Localize _lang;
+        private readonly LocalizeService _localizeService;  
+        private Localize _lang => _localizeService.Current;
 
 
         public DashboardDataHandle(IServiceProvider serviceProvider, IHttpReportsStorage storage, MonitorService monitorService, ScheduleService scheduleService,LocalizeService localizeService) : base(serviceProvider)
@@ -39,8 +39,7 @@ namespace HttpReports.Dashboard.Handle
             _storage = storage;
             _monitorService = monitorService;
             _scheduleService = scheduleService; 
-            _localizeService = localizeService;
-            _lang = localizeService.Current;
+            _localizeService = localizeService; 
         }
 
         public async Task<string> GetServiceInstance()
@@ -65,8 +64,29 @@ namespace HttpReports.Dashboard.Handle
             } 
 
            return Json(new HttpResultEntity(1,"ok", response));  
-        } 
+        }
 
+
+        public async Task<string> GetPerformanceChart(PerformanceFilterIOption option)
+        {
+            if (option.Start > option.End)
+            {
+                return Json(new HttpResultEntity(-1,_lang.TimeRangeFormatError,null));
+            }
+
+            if (option.TimeFormat == 10)
+            {
+                if (option.Start <= option.End.AddSeconds(-10 * 60))
+                {
+                    option.Start = option.End.AddSeconds(-10 * 60);
+                } 
+            }   
+
+            var list =  await _storage.GetPerformances(option);
+
+            return Json(new HttpResultEntity(1, "ok", list));
+        }
+         
         public async Task<string> GetIndexChartData(GetIndexDataRequest request)
         {
             var start = (request.Start.IsEmpty() ? DateTime.Now.ToString("yyyy-MM-dd") : request.Start).ToDateTime();
