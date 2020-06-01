@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace HttpReports
 {
@@ -8,16 +6,9 @@ namespace HttpReports
     {
         public static int ToInt(this string str)
         {
-            try
-            {
-                return Convert.ToInt32(str);
-            }
-            catch (Exception ex)
-            {
-                return 0;
-            }
+            int.TryParse(str, out var num);
+            return num;
         }
-
 
         public static int ToInt(this double dou)
         {
@@ -26,39 +17,15 @@ namespace HttpReports
 
         public static bool IsInt(this string str)
         {
-            int i = 0;
-
-            try
-            {
-                i = Convert.ToInt32(str);
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-
-            return true;
+            return int.TryParse(str, out _);
         }
-
 
         public static bool IsNumber(this string str)
         {
-            double i = 0;
-
-            try
-            {
-                i = Convert.ToDouble(str);
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-
-            return true;
+            return double.TryParse(str, out _);
         }
 
-
-        public static float ToFloat(this string str,int digits = -1)
+        public static float ToFloat(this string str, int digits = -1)
         {
             try
             {
@@ -69,14 +36,13 @@ namespace HttpReports
                 else
                 {
                     return Convert.ToSingle(Math.Round(Convert.ToDouble(str), digits));
-                } 
+                }
             }
             catch (Exception)
             {
                 return 0;
             }
         }
-
 
         public static double ToDouble(this string str, int digits = -1)
         {
@@ -88,9 +54,8 @@ namespace HttpReports
                 }
                 else
                 {
-                    return Math.Round(Convert.ToDouble(str),digits);
+                    return Math.Round(Convert.ToDouble(str), digits);
                 }
-               
             }
             catch (Exception)
             {
@@ -99,7 +64,7 @@ namespace HttpReports
         }
 
         public static bool IsEmpty(this string str)
-        { 
+        {
             if (string.IsNullOrEmpty(str))
             {
                 return true;
@@ -120,27 +85,20 @@ namespace HttpReports
                 return null;
             }
 
-            try
+            if (DateTime.TryParse(str, out var time))
             {
-                return Convert.ToDateTime(str);
+                return time;
             }
-            catch (Exception)
-            {
-                return DateTime.Now;
-            }
+            return DateTime.Now;
         }
-
 
         public static DateTime ToDateTime(this string str)
         {
-            try
-            { 
-                return Convert.ToDateTime(str);
-            }
-            catch (Exception)
+            if (DateTime.TryParse(str, out var time))
             {
-                return DateTime.Now;
+                return time;
             }
+            return DateTime.Now;
         }
 
         public static DateTime ToDateTime(this object str)
@@ -154,6 +112,5 @@ namespace HttpReports
                 return DateTime.Now;
             }
         }
-
     }
 }

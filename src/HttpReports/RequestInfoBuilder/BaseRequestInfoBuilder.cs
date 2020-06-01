@@ -1,10 +1,8 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using HttpReports.Core.Config;
+﻿using HttpReports.Core.Config;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using System.Diagnostics;
+using System.Linq;
 
 namespace HttpReports
 {
@@ -17,19 +15,17 @@ namespace HttpReports
         {
             Options = options.Value;
             ModelCreator = modelCreator;
-        } 
-        
-        protected abstract (IRequestInfo,IRequestDetail) Build(HttpContext context,IRequestInfo request, string path); 
+        }
 
+        protected abstract (IRequestInfo, IRequestDetail) Build(HttpContext context, IRequestInfo request, string path);
 
-
-        public (IRequestInfo,IRequestDetail) Build(HttpContext context, Stopwatch stopwatch)
-        {  
+        public (IRequestInfo, IRequestDetail) Build(HttpContext context, Stopwatch stopwatch)
+        {
             var path = (context.Request.Path.Value ?? string.Empty).ToLowerInvariant();
 
-            if (IsFilterRequest(context)) return (null,null); 
+            if (IsFilterRequest(context)) return (null, null);
 
-            // Build RequestInfo 
+            // Build RequestInfo
             var request = ModelCreator.CreateRequestInfo();
             request.IP = context.Connection.RemoteIpAddress.ToString();
             request.Port = context.Connection.RemotePort;
@@ -42,34 +38,31 @@ namespace HttpReports
             request.Milliseconds = ToInt32(stopwatch.ElapsedMilliseconds);
             request.CreateTime = context.Items[BasicConfig.ActiveTraceCreateTime].ToDateTime();
 
-
             //Parse RequestInfo
             if (request.LocalIP == "::1") request.LocalIP = "127.0.0.1";
-            if (request.IP == "::1") request.IP = "127.0.0.1"; 
+            if (request.IP == "::1") request.IP = "127.0.0.1";
 
+            path = path.Replace(@"///", @"/").Replace(@"//", @"/");
 
-            path = path.Replace(@"///",@"/").Replace(@"//", @"/");  
+            var (requestInfo, requestDetail) = Build(context, request, path);
 
-            var (requestInfo,requestDetail) = Build(context, request, path);
+            return (ParseRequestInfo(requestInfo), ParseRequestDetail(requestDetail));
+        }
 
-            return (ParseRequestInfo(requestInfo),ParseRequestDetail(requestDetail));
-
-        } 
-        
         private IRequestInfo ParseRequestInfo(IRequestInfo request)
         {
             if (request.Node == null) request.Node = string.Empty;
             if (request.Route == null) request.Route = string.Empty;
             if (request.Url == null) request.Url = string.Empty;
             if (request.Method == null) request.Method = string.Empty;
-            if (request.IP == null) request.IP = string.Empty; 
+            if (request.IP == null) request.IP = string.Empty;
 
             return request;
         }
 
         private IRequestDetail ParseRequestDetail(IRequestDetail request)
         {
-            if (request.Scheme == null) request.Scheme = string.Empty; 
+            if (request.Scheme == null) request.Scheme = string.Empty;
             if (request.QueryString == null) request.QueryString = string.Empty;
             if (request.Header == null) request.Header = string.Empty;
             if (request.Cookie == null) request.Cookie = string.Empty;
@@ -82,7 +75,7 @@ namespace HttpReports
 
             if (request.QueryString.Length > max)
             {
-                request.QueryString = request.QueryString.Substring(0,max);
+                request.QueryString = request.QueryString.Substring(0, max);
             }
 
             if (request.Header.Length > max)
@@ -113,36 +106,36 @@ namespace HttpReports
             if (request.ErrorStack.Length > max)
             {
                 request.ErrorStack = request.ErrorStack.Substring(0, max - 10);
-            } 
+            }
 
             return request;
         }
 
         private bool IsFilterRequest(HttpContext context)
-        {  
+        {
             bool result = false;
 
             if (!context.Request.ContentType.IsEmpty() && context.Request.ContentType.Contains("application/grpc"))
-                return false; 
+                return false;
 
             if (context.Request.Method.ToLowerInvariant() == "options")
-                 return true;
+                return true;
 
             if (!Options.FilterStaticFile)
-                return false; 
-           
+                return false;
+
             var path = (context.Request.Path.Value ?? string.Empty).ToLowerInvariant();
 
             if (path.Contains("."))
             {
                 var fileType = path.Split('.').Last();
 
-                if (fileType != "html" && fileType!= "aspx")
-                    return true;   
-            }  
+                if (fileType != "html" && fileType != "aspx")
+                    return true;
+            }
 
-            return result;  
-        }  
+            return result;
+        }
 
         protected static int ToInt32(long value)
         {
@@ -150,21 +143,12 @@ namespace HttpReports
             {
                 return -1;
             }
-            return (int)value == 0 ? 1:(int)value;
-        } 
-      
+            return (int)value == 0 ? 1 : (int)value;
+        }
 
         protected static bool IsNumber(string str)
         {
-            try
-            {
-                int i = Convert.ToInt32(str);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return int.TryParse(str, out _);
         }
     }
 }
