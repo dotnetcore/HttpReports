@@ -34,11 +34,7 @@ InitTimeSelect();
 
 function QueryClick(item) {
 
-    GetPerformanceChart();
-
-    GetLatelyChart();
-
-    GetMinuteChart();
+    GetPerformanceChart();  
 }
 
 function GetPerformanceChart() {
@@ -64,7 +60,9 @@ function GetPerformanceChart() {
         data: JSON.stringify({
             service: service,
             instance: instance,
-            TimeFormat: format
+            TimeFormat: format,
+            start: start,
+            end: end
         }), 
         success: function (result) { 
 

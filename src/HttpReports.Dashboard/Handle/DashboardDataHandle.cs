@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks; 
 using HttpReports.Core.Config;
+using HttpReports.Core.Interface;
 using HttpReports.Core.Models;
 using HttpReports.Core.Storage.FilterOptions;
 using HttpReports.Dashboard.DTO;
@@ -18,6 +19,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Org.BouncyCastle.Math.EC.Rfc7748;
 using Org.BouncyCastle.Ocsp;
 
 namespace HttpReports.Dashboard.Handle
@@ -69,20 +71,38 @@ namespace HttpReports.Dashboard.Handle
 
         public async Task<string> GetPerformanceChart(PerformanceFilterIOption option)
         {
+            List<Performance> performances = new List<Performance>(); 
+
             if (option.Start > option.End)
             {
                 return Json(new HttpResultEntity(-1,_lang.TimeRangeFormatError,null));
             }
 
-            if (option.TimeFormat == 10)
-            {
-                if (option.Start <= option.End.AddSeconds(-10 * 60))
-                {
-                    option.Start = option.End.AddSeconds(-10 * 60);
-                } 
-            }   
+            int Times = (option.End - option.Start).TotalSeconds.ToInt() % option.TimeFormat;
 
-            var list =  await _storage.GetPerformances(option);
+            if (Times >= 60) Times = 60;
+
+            var list = await _storage.GetPerformances(option);
+
+            for (int i = 0; i < Times; i++)
+            {
+                var items = list.Where(x => x.CreateTime >= option.Start.AddSeconds(i * option.TimeFormat) && x.CreateTime < option.Start.AddSeconds(i * option.TimeFormat));
+
+                performances.Add(new Performance {
+
+                    Id = option.Start.AddSeconds(i * option.TimeFormat).ToString("mm"),
+                    GCGen0 = items.Average(x => x.GCGen0).ToInt(),
+                    GCGen1 = items.Average(x => x.GCGen1).ToInt(),
+                    GCGen2 = items.Average(x => x.GCGen2).ToInt(),
+                    HeapMemory = items.Average(x => x.HeapMemory).ToString().ToDouble(2),
+                    ProcessCPU = items.Average(x => x.ProcessCPU).ToString().ToDouble(2),
+                    ProcessMemory = items.Average(x => x.ProcessMemory).ToString().ToDouble(2),
+                    ThreadCount = items.Average(x => x.ThreadCount).ToInt(),
+                    PendingThreadCount = items.Average(x => x.PendingThreadCount).ToInt()
+
+                }); 
+
+            }  
 
             return Json(new HttpResultEntity(1, "ok", list));
         }
