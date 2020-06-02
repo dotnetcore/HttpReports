@@ -11,6 +11,13 @@ GetLatelyChart();
 
 function InitTimeSelect() {
 
+
+    var start = FormatDateToString(new Date(new Date().setMinutes(new Date().getMinutes() - 10)));
+    var end = FormatDateToString(new Date());
+
+    $(".start").val(start);
+    $(".end").val(end);   
+
     if (lang.LanguageFormat == "en-us") {
 
         laydate.render({ elem: '.start', theme: '#67c2ef', type: 'datetime', ready: ClearTimeRange(), lang: 'en' });
@@ -32,7 +39,19 @@ function InitTimeSelect() {
 
 InitTimeSelect();
 
+ 
 function QueryClick(item) {
+
+    var service = $(".service-form").find(".service").find("select").val();
+    var instance = $(".service-form").find(".instance").find("select").val();  
+
+    if (service.length == 0 || service == "ALL") {
+
+        alertError(lang.Monitor_MustSelectNode);
+        return;
+
+    } 
+   
 
     GetPerformanceChart();  
 }
@@ -71,22 +90,27 @@ function GetPerformanceChart() {
                 return;
             }
 
-            console.log(result)
-         
-            global.MinuteStateTimesBar.hideLoading();
-            global.MinuteStateTimesBarOption.xAxis.data = result.data.time;
-            global.MinuteStateTimesBarOption.series[0].data = result.data.timesList;
-            global.MinuteStateTimesBar.setOption(global.MinuteStateTimesBarOption);
+            console.log(result)   
 
-            global.MinuteStateTimesBar.hideLoading(); 
+            //reset
+            global.GCCountChartOption.xAxis.data = [];
+            global.GCCountChartOption.series[0].data = [];
+            global.GCCountChartOption.series[1].data = [];
+            global.GCCountChartOption.series[2].data = [];  
 
-           
-            global.MinuteStateAvgBar.hideLoading();
-            global.MinuteStateAvgBarOption.xAxis.data = result.data.time;
-            global.MinuteStateAvgBarOption.series[0].data = result.data.avgList;
-            global.MinuteStateAvgBar.setOption(global.MinuteStateAvgBarOption);
+            $.each(result.data, function (i, item) { 
 
-            global.MinuteStateAvgBar.hideLoading();
+                global.GCCountChartOption.xAxis.data.push(item.id);
+                global.GCCountChartOption.series[0].data.push(item.gcGen0);
+                global.GCCountChartOption.series[1].data.push(item.gcGen1); 
+                global.GCCountChartOption.series[2].data.push(item.gcGen2); 
+
+            }); 
+
+
+            global.GCCountChart.setOption(global.GCCountChartOption); 
+
+
         }
     })
 
@@ -119,8 +143,8 @@ function InitChart() {
             y: "2%"
         },
         xAxis: {
-            data: ['13:00', '13:05', '13:10', '13:15', '13:20', '13:25', '13:30', '13:35', '13:40', '13:45', '13:50', '13:55'],
-            boundaryGap: false
+            data: [],
+            boundaryGap: true
         },
         yAxis: {},
         series: [{
@@ -156,7 +180,7 @@ function InitChart() {
 
                 }
             },
-            data: [220, 182, 191, 134, 10, 120, 110, 125, 145, 122, 30, 122]
+            data: []
         }, {
             name: 'Gen1',
             type: 'line',
@@ -190,7 +214,7 @@ function InitChart() {
 
                 }
             },
-            data: [120, 110, 125, 20, 122, 165, 122, 220, 182, 191, 40, 150]
+            data: []
         }, {
             name: 'Gen2',
             type: 'line',
@@ -224,7 +248,7 @@ function InitChart() {
                     borderWidth: 12
                 }
             },
-            data: [220, 182, 125, 10, 122, 191, 134, 150, 120, 40, 165, 122]
+            data: []
         }]
     };
 

@@ -70,7 +70,18 @@ namespace HttpReports.Dashboard.Handle
 
 
         public async Task<string> GetPerformanceChart(PerformanceFilterIOption option)
-        {
+        { 
+            if (option.Service.IsEmpty() || option.Service == "ALL")
+            {
+                option.Service = "";
+            }
+
+            if (option.Instance.IsEmpty() || option.Instance == "ALL")
+            {
+                option.Instance = "";
+            }
+
+
             List<Performance> performances = new List<Performance>(); 
 
             if (option.Start > option.End)
@@ -78,7 +89,7 @@ namespace HttpReports.Dashboard.Handle
                 return Json(new HttpResultEntity(-1,_lang.TimeRangeFormatError,null));
             }
 
-            int Times = (option.End - option.Start).TotalSeconds.ToInt() % option.TimeFormat;
+            int Times = ((option.End - option.Start).TotalSeconds.ToInt() / option.TimeFormat);
 
             if (Times >= 60) Times = 60;
 
@@ -86,11 +97,16 @@ namespace HttpReports.Dashboard.Handle
 
             for (int i = 0; i < Times; i++)
             {
-                var items = list.Where(x => x.CreateTime >= option.Start.AddSeconds(i * option.TimeFormat) && x.CreateTime < option.Start.AddSeconds(i * option.TimeFormat));
+                var items = list.Where(x => x.CreateTime >= option.End.AddSeconds(-(i+1) * option.TimeFormat) && x.CreateTime < option.End.AddSeconds(-i * option.TimeFormat));
 
-                performances.Add(new Performance {
+                if (!items.Any())
+                {
+                    continue;
+                } 
 
-                    Id = option.Start.AddSeconds(i * option.TimeFormat).ToString("mm"),
+                performances.Insert(0,new Performance {
+
+                    Id = option.End.AddSeconds(- i * option.TimeFormat).ToString("mm:ss"),
                     GCGen0 = items.Average(x => x.GCGen0).ToInt(),
                     GCGen1 = items.Average(x => x.GCGen1).ToInt(),
                     GCGen2 = items.Average(x => x.GCGen2).ToInt(),
@@ -102,9 +118,9 @@ namespace HttpReports.Dashboard.Handle
 
                 }); 
 
-            }  
+            }   
 
-            return Json(new HttpResultEntity(1, "ok", list));
+            return Json(new HttpResultEntity(1, "ok", performances));
         }
          
         public async Task<string> GetIndexChartData(GetIndexDataRequest request)
