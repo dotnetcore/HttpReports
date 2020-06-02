@@ -1,13 +1,9 @@
-﻿ 
+﻿
 var global = {};
 
-InitChart(); 
+InitTimeSelect();
 
-GetDayChart(); 
-
-//GCCountChart();
-
-GetLatelyChart(); 
+InitChart();
 
 function InitTimeSelect() {
 
@@ -16,7 +12,7 @@ function InitTimeSelect() {
     var end = FormatDateToString(new Date());
 
     $(".start").val(start);
-    $(".end").val(end);   
+    $(".end").val(end);
 
     if (lang.LanguageFormat == "en-us") {
 
@@ -35,42 +31,32 @@ function InitTimeSelect() {
 
     }
 
-} 
+}
 
-InitTimeSelect();
 
- 
+$(function () {
+
+    $(".timeFormat-form").find(".timeFormat").on('loaded.bs.select', (e, clickedIndex, isSelected, previousValue) => {
+
+        GetPerformanceChart();
+
+    });
+
+});
+
+
 function QueryClick(item) {
 
-    var service = $(".service-form").find(".service").find("select").val();
-    var instance = $(".service-form").find(".instance").find("select").val();  
-
-    if (service.length == 0 || service == "ALL") {
-
-        alertError(lang.Monitor_MustSelectNode);
-        return;
-
-    } 
-   
-
-    GetPerformanceChart();  
+    GetPerformanceChart();
 }
 
 function GetPerformanceChart() {
 
     var service = $(".service-form").find(".service").find("select").val();
-    var instance = $(".service-form").find(".instance").find("select").val();  
-    var format = $(".timeFormat-form").find(".timeFormat").find("select").val();   
+    var instance = $(".service-form").find(".instance").find("select").val();
+    var format = $(".timeFormat-form").find(".timeFormat").find("select").val();
     var start = $(".start").val();
-    var end = $(".end").val();  
-
-    if (start.length == 0 || end.length == 0) { 
-        alertError(lang.TimeNotNull)
-        return;
-    } 
-
-    //Loading(global.MinuteStateTimesBar);
-    //Loading(global.MinuteStateAvgBar);
+    var end = $(".end").val();
 
     $.ajax({
         url: "/HttpReportsData/GetPerformanceChart",
@@ -82,33 +68,33 @@ function GetPerformanceChart() {
             TimeFormat: format,
             start: start,
             end: end
-        }), 
-        success: function (result) { 
+        }),
+        success: function (result) {
 
             if (result.code != 1) {
                 alertError(result.msg)
                 return;
             }
 
-            console.log(result)   
+            console.log(result)
 
             //reset
             global.GCCountChartOption.xAxis.data = [];
             global.GCCountChartOption.series[0].data = [];
             global.GCCountChartOption.series[1].data = [];
-            global.GCCountChartOption.series[2].data = [];  
+            global.GCCountChartOption.series[2].data = [];
 
-            $.each(result.data, function (i, item) { 
+            $.each(result.data, function (i, item) {
 
                 global.GCCountChartOption.xAxis.data.push(item.id);
                 global.GCCountChartOption.series[0].data.push(item.gcGen0);
-                global.GCCountChartOption.series[1].data.push(item.gcGen1); 
-                global.GCCountChartOption.series[2].data.push(item.gcGen2); 
+                global.GCCountChartOption.series[1].data.push(item.gcGen1);
+                global.GCCountChartOption.series[2].data.push(item.gcGen2);
 
-            }); 
+            });
 
 
-            global.GCCountChart.setOption(global.GCCountChartOption); 
+            global.GCCountChart.setOption(global.GCCountChartOption);
 
 
         }
@@ -116,19 +102,19 @@ function GetPerformanceChart() {
 
 }
 
-function InitChart() { 
-     
-    // GCChart
-    global.GCCountChart = echarts.init(document.getElementById('GCCountChart'), 'macarons'); 
+function InitChart() {
 
-    global.GCCountChartOption =   {
+    // GCChart
+    global.GCCountChart = echarts.init(document.getElementById('GCCountChart'), 'macarons');   
+
+    global.GCCountChartOption = {
         color: ['#af91e1'],
         tooltip: {},
         legend: {
             data: ['Gen0', 'Gen1', 'Gen2'],
             textStyle: {
                 fontSize: 12,
-                color: '#F1F1F3'
+                color: httpreports.index_chart_color
             }
         },
         grid: {
@@ -144,7 +130,7 @@ function InitChart() {
         },
         xAxis: {
             data: [],
-            boundaryGap: true
+            boundaryGap: false
         },
         yAxis: {},
         series: [{
@@ -252,15 +238,15 @@ function InitChart() {
         }]
     };
 
-    global.GCCountChart.setOption(global.GCCountChartOption);   
+    global.GCCountChart.setOption(global.GCCountChartOption);
 
-     
+
     // Hour
     global.DayStateTimesBar = echarts.init(document.getElementById('DayStateTimesBar'), 'macarons');
 
     global.DayStateTimesBarOption = {
         tooltip: {},
-        color:"#67c2ef",
+        color: "#67c2ef",
         legend: {
             data: []
         },
@@ -284,9 +270,9 @@ function InitChart() {
         }]
     };
 
-    global.DayStateTimesBar.setOption(global.DayStateTimesBarOption); 
-   
-  
+    global.DayStateTimesBar.setOption(global.DayStateTimesBarOption);
+
+
     global.DayStateAvgBar = echarts.init(document.getElementById('DayStateAvgBar'), 'macarons');
 
     global.DayStateAvgBarOption = {
@@ -315,7 +301,7 @@ function InitChart() {
         }]
     };
 
-    global.DayStateAvgBar.setOption(global.DayStateAvgBarOption);  
+    global.DayStateAvgBar.setOption(global.DayStateAvgBarOption);
 
     // Day
     global.LatelyDayChart = echarts.init(document.getElementById('LatelyDayChart'), 'macarons');
@@ -347,16 +333,16 @@ function InitChart() {
         }]
     };
 
-    global.LatelyDayChart.setOption(global.LatelyDayChartOption);   
+    global.LatelyDayChart.setOption(global.LatelyDayChartOption);
 
-} 
+}
 
-function GetLatelyChart() { 
+function GetLatelyChart() {
 
     var service = $(".service-form").find(".service").find("select").val();
-    var instance = $(".service-form").find(".instance").find("select").val();  
+    var instance = $(".service-form").find(".instance").find("select").val();
 
-    Loading(global.LatelyDayChart); 
+    Loading(global.LatelyDayChart);
 
     $.ajax({
         url: "/HttpReportsData/GetLatelyDayChart",
@@ -364,10 +350,10 @@ function GetLatelyChart() {
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify({
             service: service,
-            instance:instance
-        }), 
+            instance: instance
+        }),
         success: function (result) {
-             
+
             global.LatelyDayChartOption.xAxis.data = result.data.time;
             global.LatelyDayChartOption.series[0].data = result.data.value;
             global.LatelyDayChart.setOption(global.LatelyDayChartOption);
@@ -377,15 +363,15 @@ function GetLatelyChart() {
         }
     })
 
-} 
+}
 
 function GetDayChart() {
 
     var service = $(".service-form").find(".service").find("select").val();
-    var instance = $(".service-form").find(".instance").find("select").val();  
+    var instance = $(".service-form").find(".instance").find("select").val();
 
-    Loading(global.DayStateTimesBar); 
-    Loading(global.DayStateAvgBar); 
+    Loading(global.DayStateTimesBar);
+    Loading(global.DayStateAvgBar);
 
     $.ajax({
         url: "/HttpReportsData/GetDayStateBar",
@@ -394,7 +380,7 @@ function GetDayChart() {
         data: JSON.stringify({
             service: service,
             instance: instance
-        }), 
+        }),
         success: function (result) {
 
             // 24 小时请求次数
