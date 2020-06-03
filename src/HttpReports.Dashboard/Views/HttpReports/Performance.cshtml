@@ -37,7 +37,7 @@
                                 <select class="selectpicker instance" data-live-search="true" data-style="btn-primary" data-width="220px">
                                     <option>ALL</option>
                                 </select>
-                            </div> 
+                            </div>
                         </div>
 
                     </div>
@@ -50,7 +50,7 @@
 
                         <div class="col-sm-3">
                             <input style="width:220px" onfocus="ClearTimeRange()" type="text" class="form-control laydate end">
-                        </div> 
+                        </div>
 
                         <div class="col-sm-3 timeFormat-form">
                             <label class="form-label" style="min-width:34px">@(lang.Granularity)</label>
@@ -83,8 +83,8 @@
 
                         <div class="col-sm-12">
                             <div id="GCCountChart" style="height:360px"></div>
-                        </div> 
-                     
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -99,11 +99,7 @@
                     <div class="panel-body shadow-box" style="padding-top:20px;padding-bottom:14px">
 
                         <div class="col-sm-12">
-                            <div id="DayStateTimesBar" style="height:300px"></div>
-                        </div>
-
-                        <div class="col-sm-12" style="margin-top:12px">
-                            <div id="DayStateAvgBar" style="height:300px"></div>
+                            <div id="HeapMemoryChart" style="height:300px"></div>
                         </div>
                     </div>
                 </div>
@@ -115,17 +111,45 @@
             <div class="col-md-12">
 
                 <div class="panel panel-default">
-                    <div class="panel-body shadow-box">
+                    <div class="panel-body shadow-box" style="padding-top:20px;padding-bottom:14px">
 
                         <div class="col-sm-12">
-
-                            <div id="LatelyDayChart" style="height:360px"></div>
+                            <div id="ProcessCPUChart" style="height:300px"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <div class="row">
+
+            <div class="col-md-12">
+
+                <div class="panel panel-default">
+                    <div class="panel-body shadow-box" style="padding-top:20px;padding-bottom:14px">
+
+                        <div class="col-sm-12">
+                            <div id="ProcessMemoryChart" style="height:300px"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="col-md-12">
+
+                <div class="panel panel-default">
+                    <div class="panel-body shadow-box" style="padding-top:20px;padding-bottom:14px">
+
+                        <div class="col-sm-12">
+                            <div id="ThreadCountChart" style="height:300px"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
     </div>
 </div>
 

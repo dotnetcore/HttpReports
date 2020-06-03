@@ -97,7 +97,7 @@ WriteLiteral(@"</label>
                                 <select class=""selectpicker instance"" data-live-search=""true"" data-style=""btn-primary"" data-width=""220px"">
                                     <option>ALL</option>
                                 </select>
-                            </div> 
+                            </div>
                         </div>
 
                     </div>
@@ -110,7 +110,7 @@ WriteLiteral(@"</label>
 
                         <div class=""col-sm-3"">
                             <input style=""width:220px"" onfocus=""ClearTimeRange()"" type=""text"" class=""form-control laydate end"">
-                        </div> 
+                        </div>
 
                         <div class=""col-sm-3 timeFormat-form"">
                             <label class=""form-label"" style=""min-width:34px"">");
@@ -181,24 +181,33 @@ WriteLiteral("</button>\r\n                        </div>\r\n                   
 "default\">\r\n                    <div class=\"panel-body shadow-box\" style=\"padding" +
 "-top:20px;padding-bottom:14px\">\r\n\r\n                        <div class=\"col-sm-12" +
 "\">\r\n                            <div id=\"GCCountChart\" style=\"height:360px\"></di" +
-"v>\r\n                        </div> \r\n                     \r\n                    " +
-"</div>\r\n                </div>\r\n            </div>\r\n\r\n        </div>\r\n\r\n        " +
-"<div class=\"row\">\r\n\r\n            <div class=\"col-md-12\">\r\n\r\n                <div" +
-" class=\"panel panel-default\">\r\n                    <div class=\"panel-body shadow" +
-"-box\" style=\"padding-top:20px;padding-bottom:14px\">\r\n\r\n                        <" +
-"div class=\"col-sm-12\">\r\n                            <div id=\"DayStateTimesBar\" s" +
-"tyle=\"height:300px\"></div>\r\n                        </div>\r\n\r\n                  " +
-"      <div class=\"col-sm-12\" style=\"margin-top:12px\">\r\n                         " +
-"   <div id=\"DayStateAvgBar\" style=\"height:300px\"></div>\r\n                       " +
-" </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r" +
-"\n        </div>\r\n\r\n        <div class=\"row\">\r\n\r\n            <div class=\"col-md-1" +
-"2\">\r\n\r\n                <div class=\"panel panel-default\">\r\n                    <d" +
-"iv class=\"panel-body shadow-box\">\r\n\r\n                        <div class=\"col-sm-" +
-"12\">\r\n\r\n                            <div id=\"LatelyDayChart\" style=\"height:360px" +
-"\"></div>\r\n                        </div>\r\n                    </div>\r\n          " +
-"      </div>\r\n            </div>\r\n        </div>\r\n\r\n    </div>\r\n</div>\r\n\r\n<scrip" +
-"t src=\"/HttpReportsStaticFiles/Content/page/performance.js?ver=1.0.5\"></script>\r" +
-"\n");
+"v>\r\n                        </div>\r\n\r\n                    </div>\r\n              " +
+"  </div>\r\n            </div>\r\n\r\n        </div>\r\n\r\n        <div class=\"row\">\r\n\r\n " +
+"           <div class=\"col-md-12\">\r\n\r\n                <div class=\"panel panel-de" +
+"fault\">\r\n                    <div class=\"panel-body shadow-box\" style=\"padding-t" +
+"op:20px;padding-bottom:14px\">\r\n\r\n                        <div class=\"col-sm-12\">" +
+"\r\n                            <div id=\"HeapMemoryChart\" style=\"height:300px\"></d" +
+"iv>\r\n                        </div>\r\n                    </div>\r\n               " +
+" </div>\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"row\">\r\n\r\n    " +
+"        <div class=\"col-md-12\">\r\n\r\n                <div class=\"panel panel-defau" +
+"lt\">\r\n                    <div class=\"panel-body shadow-box\" style=\"padding-top:" +
+"20px;padding-bottom:14px\">\r\n\r\n                        <div class=\"col-sm-12\">\r\n " +
+"                           <div id=\"ProcessCPUChart\" style=\"height:300px\"></div>" +
+"\r\n                        </div>\r\n                    </div>\r\n                </" +
+"div>\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"row\">\r\n\r\n       " +
+"     <div class=\"col-md-12\">\r\n\r\n                <div class=\"panel panel-default\"" +
+">\r\n                    <div class=\"panel-body shadow-box\" style=\"padding-top:20p" +
+"x;padding-bottom:14px\">\r\n\r\n                        <div class=\"col-sm-12\">\r\n    " +
+"                        <div id=\"ProcessMemoryChart\" style=\"height:300px\"></div>" +
+"\r\n                        </div>\r\n                    </div>\r\n                </" +
+"div>\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"row\">\r\n\r\n       " +
+"     <div class=\"col-md-12\">\r\n\r\n                <div class=\"panel panel-default\"" +
+">\r\n                    <div class=\"panel-body shadow-box\" style=\"padding-top:20p" +
+"x;padding-bottom:14px\">\r\n\r\n                        <div class=\"col-sm-12\">\r\n    " +
+"                        <div id=\"ThreadCountChart\" style=\"height:300px\"></div>\r\n" +
+"                        </div>\r\n                    </div>\r\n                </di" +
+"v>\r\n            </div>\r\n        </div> \r\n    </div>\r\n</div>\r\n\r\n<script src=\"/Htt" +
+"pReportsStaticFiles/Content/page/performance.js?ver=1.0.5\"></script>\r\n");
 
 
         }

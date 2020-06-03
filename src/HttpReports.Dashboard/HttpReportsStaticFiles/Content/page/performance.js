@@ -84,6 +84,18 @@ function GetPerformanceChart() {
             global.GCCountChartOption.series[1].data = [];
             global.GCCountChartOption.series[2].data = [];
 
+            global.HeapMemoryChartOption.xAxis.data = [];
+            global.HeapMemoryChartOption.series[0].data = []; 
+
+            global.ProcessCPUChartOption.xAxis.data = [];
+            global.ProcessCPUChartOption.series[0].data = [];  
+
+            global.ProcessMemoryChartOption.xAxis.data = [];
+            global.ProcessMemoryChartOption.series[0].data = []; 
+
+            global.ThreadCountChartOption.xAxis.data = [];
+            global.ThreadCountChartOption.series[0].data = [];  
+
             $.each(result.data, function (i, item) {
 
                 global.GCCountChartOption.xAxis.data.push(item.id);
@@ -91,11 +103,26 @@ function GetPerformanceChart() {
                 global.GCCountChartOption.series[1].data.push(item.gcGen1);
                 global.GCCountChartOption.series[2].data.push(item.gcGen2);
 
-            });
 
+                global.HeapMemoryChartOption.xAxis.data.push(item.id)
+                global.HeapMemoryChartOption.series[0].data.push(item.heapMemory); 
 
-            global.GCCountChart.setOption(global.GCCountChartOption);
+                global.ProcessCPUChartOption.xAxis.data.push(item.id)
+                global.ProcessCPUChartOption.series[0].data.push(item.processCPU); 
 
+                global.ProcessMemoryChartOption.xAxis.data.push(item.id)
+                global.ProcessMemoryChartOption.series[0].data.push(item.processMemory); 
+
+                global.ThreadCountChartOption.xAxis.data.push(item.id)
+                global.ThreadCountChartOption.series[0].data.push(item.threadCount); 
+
+            }); 
+
+            global.GCCountChart.setOption(global.GCCountChartOption); 
+            global.HeapMemoryChart.setOption(global.HeapMemoryChartOption);  
+            global.ProcessCPUChart.setOption(global.ProcessCPUChartOption);  
+            global.ProcessMemoryChart.setOption(global.ProcessMemoryChartOption);  
+            global.ThreadCountChart.setOption(global.ThreadCountChartOption);  
 
         }
     })
@@ -238,13 +265,13 @@ function InitChart() {
         }]
     };
 
-    global.GCCountChart.setOption(global.GCCountChartOption);
+    global.GCCountChart.setOption(global.GCCountChartOption); 
+     
 
-
-    // Hour
-    global.DayStateTimesBar = echarts.init(document.getElementById('DayStateTimesBar'), 'macarons');
-
-    global.DayStateTimesBarOption = {
+    //HeapMemory
+    global.HeapMemoryChart = echarts.init(document.getElementById('HeapMemoryChart'), 'macarons');  
+      
+    global.HeapMemoryChartOption = {
         tooltip: {},
         color: "#67c2ef",
         legend: {
@@ -255,7 +282,7 @@ function InitChart() {
             right: '3%'
         },
         title: {
-            text: lang.Trend_HourTotalCount,
+            text: 'HeapMemory',
             x: "left",
             y: "2%"
         },
@@ -265,19 +292,20 @@ function InitChart() {
         yAxis: {},
         series: [{
             type: 'line',
-            name: lang.Index_RequestCount,
+            name: 'HeapMemory',
             data: []
         }]
     };
 
-    global.DayStateTimesBar.setOption(global.DayStateTimesBarOption);
+    global.HeapMemoryChart.setOption(global.HeapMemoryChartOption); 
 
 
-    global.DayStateAvgBar = echarts.init(document.getElementById('DayStateAvgBar'), 'macarons');
+    //ProcessCPUChart
+    global.ProcessCPUChart = echarts.init(document.getElementById('ProcessCPUChart'), 'macarons');
 
-    global.DayStateAvgBarOption = {
-        color: ['#af91e1'],
+    global.ProcessCPUChartOption = {
         tooltip: {},
+        color: "#67c2ef",
         legend: {
             data: []
         },
@@ -286,7 +314,7 @@ function InitChart() {
             right: '3%'
         },
         title: {
-            text: lang.Trend_HourAvgTime,
+            text: 'ProcessCPU',
             x: "left",
             y: "2%"
         },
@@ -296,44 +324,76 @@ function InitChart() {
         yAxis: {},
         series: [{
             type: 'line',
-            name: lang.ProcessingTime2,
+            name: 'ProcessCPU',
             data: []
         }]
     };
 
-    global.DayStateAvgBar.setOption(global.DayStateAvgBarOption);
+    global.ProcessCPUChart.setOption(global.ProcessCPUChartOption);   
 
-    // Day
-    global.LatelyDayChart = echarts.init(document.getElementById('LatelyDayChart'), 'macarons');
 
-    global.LatelyDayChartOption = {
+    //ProcessMemoryChart
+    global.ProcessMemoryChart = echarts.init(document.getElementById('ProcessMemoryChart'), 'macarons');
+
+    global.ProcessMemoryChartOption = {
         tooltip: {},
+        color: "#67c2ef",
         legend: {
-            data: [lang.Trend_DayTotalCount]
+            data: []
         },
         grid: {
             left: '7%',
-            top: '20%',
             right: '3%'
         },
         title: {
-            text: lang.Trend_DayTotalCount,
+            text: 'ProcessMemory',
             x: "left",
-            y: "2%",
-            subtext: ""
+            y: "2%"
         },
         xAxis: {
             data: []
         },
         yAxis: {},
         series: [{
-            type: 'bar',
-            name: lang.Index_RequestCount,
+            type: 'line',
+            name: 'ProcessMemor',
             data: []
         }]
     };
 
-    global.LatelyDayChart.setOption(global.LatelyDayChartOption);
+    global.ProcessMemoryChart.setOption(global.ProcessMemoryChartOption);   
+
+
+    //ThreadCountChart
+    global.ThreadCountChart = echarts.init(document.getElementById('ThreadCountChart'), 'macarons');
+
+    global.ThreadCountChartOption = {
+        tooltip: {},
+        color: "#67c2ef",
+        legend: {
+            data: []
+        },
+        grid: {
+            left: '7%',
+            right: '3%'
+        },
+        title: {
+            text: 'ThreadCount',
+            x: "left",
+            y: "2%"
+        },
+        xAxis: {
+            data: []
+        },
+        yAxis: {},
+        series: [{
+            type: 'line',
+            name: 'ThreadCount',
+            data: []
+        }]
+    };
+
+    global.ThreadCountChart.setOption(global.ThreadCountChartOption);    
 
 }
 
