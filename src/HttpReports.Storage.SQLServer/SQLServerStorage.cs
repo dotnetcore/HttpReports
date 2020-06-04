@@ -141,7 +141,7 @@ namespace HttpReports.Storage.SQLServer
                                 [GCGen0] [int] NULL,
                                 [GCGen1] [int] NULL,
                                 [GCGen1] [int] NULL, 
-                                [HeapMemory] [double NULL,
+                                [HeapMemory] [double] NULL,
                                 [ProcessCPU] [double] NULL,
                                 [ProcessMemory] [double] NULL, 
                                 [ThreadCount] [int] NULL,
