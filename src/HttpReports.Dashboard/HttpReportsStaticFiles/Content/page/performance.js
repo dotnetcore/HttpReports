@@ -76,8 +76,7 @@ function GetPerformanceChart() {
                 return;
             }
 
-            console.log(result)
-
+      
             //reset
             global.GCCountChartOption.xAxis.data = [];
             global.GCCountChartOption.series[0].data = [];
@@ -282,7 +281,7 @@ function InitChart() {
             right: '3%'
         },
         title: {
-            text: 'HeapMemory',
+            text: lang.HeapMemory,
             x: "left",
             y: "2%"
         },
@@ -292,7 +291,7 @@ function InitChart() {
         yAxis: {},
         series: [{
             type: 'line',
-            name: 'HeapMemory',
+            name: lang.HeapMemory,
             data: []
         }]
     };
@@ -314,7 +313,7 @@ function InitChart() {
             right: '3%'
         },
         title: {
-            text: 'ProcessCPU',
+            text: lang.ProcessCPU,
             x: "left",
             y: "2%"
         },
@@ -324,7 +323,7 @@ function InitChart() {
         yAxis: {},
         series: [{
             type: 'line',
-            name: 'ProcessCPU',
+            name: lang.ProcessCPU,
             data: []
         }]
     };
@@ -346,7 +345,7 @@ function InitChart() {
             right: '3%'
         },
         title: {
-            text: 'ProcessMemory',
+            text: lang.ProcessMemory,
             x: "left",
             y: "2%"
         },
@@ -356,7 +355,7 @@ function InitChart() {
         yAxis: {},
         series: [{
             type: 'line',
-            name: 'ProcessMemor',
+            name: lang.ProcessMemory,
             data: []
         }]
     };
@@ -378,7 +377,7 @@ function InitChart() {
             right: '3%'
         },
         title: {
-            text: 'ThreadCount',
+            text: lang.ThreadCount,
             x: "left",
             y: "2%"
         },
@@ -388,7 +387,7 @@ function InitChart() {
         yAxis: {},
         series: [{
             type: 'line',
-            name: 'ThreadCount',
+            name: lang.ThreadCount,
             data: []
         }]
     };

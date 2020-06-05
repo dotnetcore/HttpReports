@@ -14,15 +14,8 @@ namespace HttpReports.Dashboard.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            System.Threading.Thread.Sleep(new Random().Next(99, 4999));
-
-            using (var client = new HttpClient())
-            {
-                var result = await client.GetStringAsync("http://localhost:5010/api/Test/Index1");
-
-                return await Task.FromResult(Ok(result));
-            } 
-            
+            int a = Convert.ToInt32("CCC");
+            return await Task.FromResult(Ok(a));
         }
 
 

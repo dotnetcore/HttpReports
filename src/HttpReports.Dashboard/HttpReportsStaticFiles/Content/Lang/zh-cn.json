@@ -166,6 +166,9 @@
   "Granularity": "粒度",
   "Granularity_10Second": "10秒",
   "Granularity_1Minute": "1分钟",
-  "Granularity_5Minute": "5分钟"
-
+  "Granularity_5Minute": "5分钟",
+  "HeapMemory": "堆内存 M",
+  "ProcessCPU": "程序CPU占用",
+  "ProcessMemory": "程序内存占用 M",
+  "ThreadCount": "当前线程数" 
 }

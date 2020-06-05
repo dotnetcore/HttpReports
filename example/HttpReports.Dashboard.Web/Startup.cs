@@ -32,34 +32,11 @@ namespace HttpReports.Dashboard.Web
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            Task.Run(() =>
-            {
-
-                for (int i = 0; i < 100000; i++)
-                {
-                    Task.Run(() =>
-                    {
-                        var str = new HttpClient().GetStringAsync("http://www.baidu.com").Result;
-
-                    });
-                }
-
-            });
-
-
+        {  
             app.UseHttpReports();
 
-            app.UseHttpReportsDashboard();
-
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
+            app.UseHttpReportsDashboard(); 
+            
             app.UseStaticFiles();
 
             app.UseRouting();

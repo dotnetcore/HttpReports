@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 
 namespace HttpReports
 {
@@ -31,7 +32,7 @@ namespace HttpReports
             request.Port = context.Connection.RemotePort;
             request.LocalIP = context.Connection.LocalIpAddress.ToString();
             request.LocalPort = context.Connection.LocalPort;
-            request.StatusCode = context.Response.StatusCode;
+            request.StatusCode = context.Response.StatusCode; 
             request.Method = context.Request.Method;
             request.Url = context.Request.Path;
             request.RequestType = (context.Request.ContentType ?? string.Empty).Contains("grpc") ? "grpc" : "http";

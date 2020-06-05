@@ -190,6 +190,15 @@ namespace HttpReports.Dashboard.Services
         public string Warning_TimeRange => GetValue();
         public string Warning_Title => GetValue();
 
+        public string HeapMemory => GetValue();
+
+        public string ProcessCPU => GetValue();
+
+        public string ProcessMemory => GetValue();
+
+        public string ThreadCount => GetValue();
+
+
         public string this[string key] => _resource.TryGetValue(key, out var value) ? value : string.Empty;
 
         protected string GetValue([CallerMemberName]string key = "") => this[key];

@@ -70,17 +70,17 @@ WriteLiteral(@"
     <script src=""/HttpReportsStaticFiles/Content/login/js/jquery.min.js""></script>
     <script src=""/HttpReportsStaticFiles/Content/login/js/jquery.particleground.js""></script>
 
-    <script>  var lang = JSON.parse('");
+    <script>  var langFormat = '");
 
 
             
             #line 33 "..\..\Views\HttpReports\UserLogin.cshtml"
-                                 Write(Raw(Newtonsoft.Json.JsonConvert.SerializeObject(lang)));
+                            Write(lang.LanguageFormat);
 
             
             #line default
             #line hidden
-WriteLiteral(@"');   </script>
+WriteLiteral(@"';   </script>
 
     <script src=""/HttpReportsStaticFiles/Content/page/user_login.js?v=1.0.3""></script>
     <script src=""/HttpReportsStaticFiles/Content/page/main.js?ver=1.0.5""></script>

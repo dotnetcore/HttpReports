@@ -166,5 +166,9 @@
   "Granularity_10Second": "10second",
   "Granularity_1Minute": "1minute",
   "Granularity_5Minute": "5minute",
-  "TimeRangeFormatError": "Time format error"
+  "TimeRangeFormatError": "Time format error",
+  "HeapMemory": "HeapMemory M",
+  "ProcessCPU": "ProcessCPU",
+  "ProcessMemory": "ProcessMemory M",
+  "ThreadCount": "Current Thread Count"
 }

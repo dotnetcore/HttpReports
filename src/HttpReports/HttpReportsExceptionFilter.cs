@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 
 namespace HttpReports
@@ -13,6 +14,7 @@ namespace HttpReports
             if (context.Exception != null)
             {
                context.HttpContext.Items.Add(BasicConfig.HttpReportsGlobalException, context.Exception);
+                context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             } 
         }
     }
