@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using HttpReports.Core.Interface;
 using HttpReports.Core.Models;
@@ -27,8 +28,12 @@ namespace HttpReports
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        Task AddRequestInfoAsync(IRequestInfo request,IRequestDetail requestDetail); 
-     
+        Task AddRequestInfoAsync(IRequestInfo request,IRequestDetail requestDetail);
+
+
+        Task AddRequestInfoAsync(Dictionary<IRequestInfo, IRequestDetail> list, CancellationToken token);
+
+
 
         Task<List<ServiceInstanceInfo>> GetServiceInstance(DateTime startTime); 
 

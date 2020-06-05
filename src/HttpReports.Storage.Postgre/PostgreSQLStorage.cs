@@ -40,7 +40,7 @@ namespace HttpReports.Storage.PostgreSQL
             }
         }
 
-        private async Task AddRequestInfoAsync(Dictionary<IRequestInfo, IRequestDetail> list, System.Threading.CancellationToken token)
+        public async Task AddRequestInfoAsync(Dictionary<IRequestInfo, IRequestDetail> list, System.Threading.CancellationToken token)
         {
             await LoggingSqlOperation(async connection =>
             { 

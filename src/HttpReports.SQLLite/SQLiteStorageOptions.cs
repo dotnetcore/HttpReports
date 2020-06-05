@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace HttpReports.SQLLite
+namespace HttpReports.Storage.SQLite
 {
-    public class SQLLiteOptions
+    public class SQLiteStorageOptions : IOptions<SQLiteStorageOptions>
     { 
         public string ConnectionString { get; set; }
 
@@ -23,6 +24,6 @@ namespace HttpReports.SQLLite
         /// </summary>
         public int DeferThreshold { get; set; }
 
-        public SQLLiteOptions Value => this; 
+        public SQLiteStorageOptions Value => this; 
     }
 }

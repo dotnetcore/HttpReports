@@ -196,7 +196,7 @@ CREATE TABLE IF NOT EXISTS `Performance` (
 
         #endregion Init
 
-        private async Task AddRequestInfoAsync(Dictionary<IRequestInfo, IRequestDetail> list, CancellationToken token)
+        public async Task AddRequestInfoAsync(Dictionary<IRequestInfo, IRequestDetail> list, CancellationToken token)
         {
             await LoggingSqlOperation(async connection =>
             { 
