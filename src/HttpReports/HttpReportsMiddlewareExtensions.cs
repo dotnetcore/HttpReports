@@ -55,7 +55,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         public static IHttpReportsInitializer UseHttpReports(this IApplicationBuilder app)
-        {  
+        { 
             Activity.DefaultIdFormat = ActivityIdFormat.W3C; 
 
             IHttpReportsInitializer httpReportsInitializer = app.InitHttpReports().InitStorage();

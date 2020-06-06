@@ -140,12 +140,15 @@ namespace HttpReports.Storage.SQLServer
 	                            [Instance] [nvarchar](100) NULL,
                                 [GCGen0] [int] NULL,
                                 [GCGen1] [int] NULL,
-                                [GCGen1] [int] NULL, 
+                                [GCGen2] [int] NULL, 
                                 [HeapMemory] [double] NULL,
                                 [ProcessCPU] [double] NULL,
                                 [ProcessMemory] [double] NULL, 
                                 [ThreadCount] [int] NULL,
-                                [PendingThreadCount] [int] NULL  )   ");
+                                [PendingThreadCount] [int] NULL,
+                                [CreateTime] [datetime] NULL
+
+                            )");
 
                     }  
 
@@ -239,7 +242,7 @@ namespace HttpReports.Storage.SQLServer
             DynamicParameters parameters = new DynamicParameters();
 
             AddParameters<K>(data);
-
+            
             return parameters;
 
             void AddParameters<T>(List<T> list)

@@ -22,11 +22,11 @@ namespace HttpReports.Dashboard.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpReports()
-                    .UseMySqlStorage()
+                    .UseSQLiteStorage()
                     .UseGrpc()
                     .AddHttpReportsGrpcCollector();     //Add Grpc Collector
 
-            services.AddHttpReportsDashboard().UseMySqlStorage();
+            services.AddHttpReportsDashboard();
 
             services.AddControllersWithViews();
         }
