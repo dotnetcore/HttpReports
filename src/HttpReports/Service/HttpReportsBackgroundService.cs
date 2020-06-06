@@ -49,7 +49,7 @@ namespace HttpReports.Service
             }
             catch (Exception ex)
             { 
-                _logger.LogInformation($"HttpReports BackgroundService Error,ex:{ex.ToString()}");
+                _logger.LogError($"HttpReports BackgroundService Error,ex:{ex.ToString()}");
             } 
         }
 

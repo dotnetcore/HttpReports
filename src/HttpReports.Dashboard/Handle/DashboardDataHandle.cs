@@ -99,25 +99,19 @@ namespace HttpReports.Dashboard.Handle
             {
                 var items = list.Where(x => x.CreateTime >= option.End.AddSeconds(-(i+1) * option.TimeFormat) && x.CreateTime < option.End.AddSeconds(-i * option.TimeFormat));
 
-                if (!items.Any())
-                {
-                    continue;
-                } 
+                performances.Insert(0, new Performance
+                { 
+                    Id = option.End.AddSeconds(-i * option.TimeFormat).ToString("mm:ss"),
+                    GCGen0 = !items.Any() ? 0: items.Average(x => x.GCGen0).ToInt(),
+                    GCGen1 = !items.Any() ? 0 : items.Average(x => x.GCGen1).ToInt(),
+                    GCGen2 = !items.Any() ? 0 : items.Average(x => x.GCGen2).ToInt(),
+                    HeapMemory = !items.Any() ? 0 : items.Average(x => x.HeapMemory).ToString().ToDouble(2),
+                    ProcessCPU = !items.Any() ? 0 : items.Average(x => x.ProcessCPU).ToString().ToDouble(2),
+                    ProcessMemory = !items.Any() ? 0 : items.Average(x => x.ProcessMemory).ToString().ToDouble(2),
+                    ThreadCount = !items.Any() ? 0 : items.Average(x => x.ThreadCount).ToInt(),
+                    PendingThreadCount = !items.Any() ? 0 : items.Average(x => x.PendingThreadCount).ToInt() 
 
-                performances.Insert(0,new Performance {
-
-                    Id = option.End.AddSeconds(- i * option.TimeFormat).ToString("mm:ss"),
-                    GCGen0 = items.Average(x => x.GCGen0).ToInt(),
-                    GCGen1 = items.Average(x => x.GCGen1).ToInt(),
-                    GCGen2 = items.Average(x => x.GCGen2).ToInt(),
-                    HeapMemory = items.Average(x => x.HeapMemory).ToString().ToDouble(2),
-                    ProcessCPU = items.Average(x => x.ProcessCPU).ToString().ToDouble(2),
-                    ProcessMemory = items.Average(x => x.ProcessMemory).ToString().ToDouble(2),
-                    ThreadCount = items.Average(x => x.ThreadCount).ToInt(),
-                    PendingThreadCount = items.Average(x => x.PendingThreadCount).ToInt()
-
-                }); 
-
+                });
             }   
 
             return Json(new HttpResultEntity(1, "ok", performances));
@@ -128,10 +122,12 @@ namespace HttpReports.Dashboard.Handle
             var start = (request.Start.IsEmpty() ? DateTime.Now.ToString("yyyy-MM-dd") : request.Start).ToDateTime();
             var end = (request.End.IsEmpty() ? DateTime.Now.AddDays(1).ToString("yyyy-MM-dd") : request.End).ToDateTime();
 
+            #region BuildServiceRequest
+
             if (request.Service.IsEmpty() || request.Service == "ALL")
             {
                 request.Service = "";
-            }  
+            }
 
             if (request.Instance.IsEmpty() || request.Instance == "ALL")
             {
@@ -141,9 +137,11 @@ namespace HttpReports.Dashboard.Handle
             else
             {
                 request.LocalIP = request.Instance.Substring(0, request.Instance.LastIndexOf(':'));
-                request.LocalPort = request.Instance.Substring(request.Instance.LastIndexOf(':') + 1).ToInt(); 
-            } 
-             
+                request.LocalPort = request.Instance.Substring(request.Instance.LastIndexOf(':') + 1).ToInt();
+            }
+
+            #endregion
+
             var topRequest = await _storage.GetUrlRequestStatisticsAsync(new RequestInfoFilterOption()
             {
                 Service = request.Service, 
@@ -427,39 +425,7 @@ namespace HttpReports.Dashboard.Handle
             }
 
             return Json(new HttpResultEntity(1, "ok", new { time, value }));
-        }
-
-        public async Task<string> GetMonthDataByYear(GetIndexDataRequest request)
-        {
-            var startTime = $"{request.Year}-01-01".ToDateTimeOrDefault(() => new DateTime(DateTime.Now.Year, 1, 1));
-            var endTime = startTime.AddYears(1);
-            var nodes = request.Service?.Split(',');
-
-            var responseTimeStatistics = await _storage.GetRequestTimesStatisticsAsync(new TimeSpanStatisticsFilterOption()
-            {
-                StartTime = startTime,
-                EndTime = endTime,
-                Nodes = nodes,
-                Type = TimeUnit.Month,
-            });
-
-            List<string> time = new List<string>();
-            List<int> value = new List<int>();
-
-            string Range = $"{request.Year}-01-{request.Year}-12";
-
-            for (int i = 0; i < 12; i++)
-            {
-                var month = (i + 1).ToString();
-
-                var times = responseTimeStatistics.Items.TryGetValue(month, out var tTimes) ? tTimes : 0;
-
-                time.Add(month);
-                value.Add(times);
-            }
-
-            return Json(new HttpResultEntity(1, "ok", new { time, value, Range }));
-        }
+        } 
 
         public async Task<string> ChangeLanguage(ChangeLanguageRequest request)
         { 
@@ -533,9 +499,7 @@ namespace HttpReports.Dashboard.Handle
                 request.LocalPort = request.Instance.Substring(request.Instance.LastIndexOf(':') + 1).ToInt();
             }
 
-            #endregion
-
-
+            #endregion 
 
             var result = await _storage.SearchRequestInfoAsync(new RequestInfoSearchFilterOption()
             {

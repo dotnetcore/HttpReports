@@ -213,7 +213,7 @@ namespace HttpReports.Storage.Oracle
 
         public async Task AddRequestInfoAsync(Dictionary<IRequestInfo, IRequestDetail> list, CancellationToken token)
         {
-            await LoggingSqlOperation(async connection =>
+            await LoggingSqlOperation(async _ =>
             {
                 StringBuilder sb = new StringBuilder();
 
@@ -241,7 +241,7 @@ namespace HttpReports.Storage.Oracle
 
                 sb.AppendLine("end;");  
 
-                await connection.ExecuteAsync(sb.ToString(), Parameters);
+                await _.ExecuteAsync(sb.ToString(), Parameters);
             }, "请求数据批量保存失败");
         } 
 
@@ -282,15 +282,15 @@ namespace HttpReports.Storage.Oracle
             }
             else
             {
-                await LoggingSqlOperation(async connection =>
+                await LoggingSqlOperation(async _ =>
                 {
                     string requestSql = $@"Insert Into RequestInfo  Values (:Id,:ParentId, :Node, :Route, :Url,:RequestType,:Method, :Milliseconds, :StatusCode, :IP,:Port,:LocalIP,:LocalPort,:CreateTime) ";
 
-                    await connection.ExecuteAsync(requestSql, request);
+                    await _.ExecuteAsync(requestSql, request);
 
                     string detailSql = $@"Insert Into RequestDetail Values  (:Id,:RequestId,:Scheme,:QueryString,:Header,:Cookie,:RequestBody,:ResponseBody,:ErrorMessage,:ErrorStack,:CreateTime)  ";
 
-                    await connection.ExecuteAsync(detailSql, detail); 
+                    await _.ExecuteAsync(detailSql, detail); 
 
                 }, "请求数据保存失败");
 
@@ -355,9 +355,9 @@ namespace HttpReports.Storage.Oracle
             TraceLogSql(sql);
 
             List<RequestAvgResponeTime> result = null;
-            await LoggingSqlOperation(async connection =>
+            await LoggingSqlOperation(async _ =>
             {
-                result = (await connection.QueryAsync<RequestAvgResponeTime>(sql)).ToList();
+                result = (await _.QueryAsync<RequestAvgResponeTime>(sql)).ToList();
             }, "获取Url的平均请求处理时间统计异常");
 
             return result;
@@ -372,9 +372,9 @@ namespace HttpReports.Storage.Oracle
             TraceLogSql(sql);
 
             List<StatusCodeCount> result = null;
-            await LoggingSqlOperation(async connection =>
+            await LoggingSqlOperation(async _ =>
             {
-                result = (await connection.QueryAsync<StatusCodeCount>(sql)).ToList();
+                result = (await _.QueryAsync<StatusCodeCount>(sql)).ToList();
             }, "获取http状态码数量统计异常");
 
             return result;
@@ -407,9 +407,9 @@ namespace HttpReports.Storage.Oracle
             TraceLogSql(sql);
 
             List<ResponeTimeGroup> result = null;
-            await LoggingSqlOperation(async connection =>
+            await LoggingSqlOperation(async _ =>
             {
-                result = (await connection.QueryAsync<ResponeTimeGroup>(sql)).ToList();
+                result = (await _.QueryAsync<ResponeTimeGroup>(sql)).ToList();
             }, "获取http状态码分组统计异常");
 
             return result;
@@ -426,9 +426,9 @@ namespace HttpReports.Storage.Oracle
             TraceLogSql(sql);
 
             List<UrlRequestCount> result = null;
-            await LoggingSqlOperation(async connection =>
+            await LoggingSqlOperation(async _ =>
             {
-                result = (await connection.QueryAsync<UrlRequestCount>(sql)).ToList();
+                result = (await _.QueryAsync<UrlRequestCount>(sql)).ToList();
             });
 
             return result;
@@ -486,9 +486,9 @@ namespace HttpReports.Storage.Oracle
 
             IndexPageData result = new IndexPageData(); 
 
-            await LoggingSqlOperation(async connection =>
+            await LoggingSqlOperation(async _ =>
             {
-                var data = await connection.QueryAsync<KVClass<string,string>>(sql);
+                var data = await _.QueryAsync<KVClass<string,string>>(sql);
 
                 result.Total = data.Where(x => x.KeyField == "Total").FirstOrDefault().ValueField.ToInt();
                 result.NotFound = data.Where(x => x.KeyField == "Code404").FirstOrDefault().ValueField.ToInt();
@@ -626,11 +626,11 @@ namespace HttpReports.Storage.Oracle
                 Type = filterOption.Type,
             };
 
-            await LoggingSqlOperation(async connection =>
+            await LoggingSqlOperation(async _ =>
             {
                 result.Items = new Dictionary<string, int>();
 
-                var list = (await connection.QueryAsync<KVClass<string, int>>(sql)).ToList(); 
+                var list = (await _.QueryAsync<KVClass<string, int>>(sql)).ToList(); 
 
                 foreach (var item in list)
                 {
@@ -662,10 +662,10 @@ namespace HttpReports.Storage.Oracle
                 Type = filterOption.Type,
             };
 
-            await LoggingSqlOperation(async connection =>
+            await LoggingSqlOperation(async _ =>
             {
                 result.Items = new Dictionary<string, int>();
-                (await connection.QueryAsync<KVClass<string, int>>(sql)).ToList().ForEach(m =>
+                (await _.QueryAsync<KVClass<string, int>>(sql)).ToList().ForEach(m =>
                 {
                     result.Items.Add(m.KeyField, m.ValueField);
                 });
@@ -763,13 +763,13 @@ namespace HttpReports.Storage.Oracle
                 SearchOption = filterOption,
             };
 
-            await LoggingSqlOperation(async connection =>
+            await LoggingSqlOperation(async _ =>
             {
-                result.AllItemCount = connection.QueryFirstOrDefault<int>(countSql); 
+                result.AllItemCount = await _.QueryFirstOrDefaultAsync<int>(countSql); 
 
                 var listSql = GetListSql(sql, "CreateTime Desc",filterOption.Page,filterOption.PageSize);
 
-                result.List.AddRange((await connection.QueryAsync<RequestInfo>(listSql)).ToArray());
+                result.List.AddRange((await _.QueryAsync<RequestInfo>(listSql)).ToArray());
             }, "查询请求信息列表异常");
 
             return result;
@@ -781,7 +781,7 @@ namespace HttpReports.Storage.Oracle
 
             TraceLogSql(sql);
 
-            return await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql));
+            return await LoggingSqlOperation(async _ => await _.QueryFirstOrDefaultAsync<int>(sql));
         }
 
         /// <summary>
@@ -807,12 +807,12 @@ namespace HttpReports.Storage.Oracle
 
             TraceLogSql(sql);
 
-            var max = await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql));
+            var max = await LoggingSqlOperation(async _ => await _.QueryFirstOrDefaultAsync<int>(sql));
             sql = $"SELECT COUNT(1) TOTAL FROM RequestInfo {BuildSqlFilter(filterOption)} AND {ipFilter}";
 
 
             TraceLogSql(sql);
-            var all = await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql));
+            var all = await LoggingSqlOperation(async _ => await _.QueryFirstOrDefaultAsync<int>(sql));
             return (max, all);
         }
 
@@ -823,7 +823,7 @@ namespace HttpReports.Storage.Oracle
 
             TraceLogSql(sql);
 
-            return await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql));
+            return await LoggingSqlOperation(async _ => await _.QueryFirstOrDefaultAsync<int>(sql));
         }
 
         public async Task<bool> AddMonitorJob(IMonitorJob job)
@@ -836,7 +836,7 @@ namespace HttpReports.Storage.Oracle
 
             TraceLogSql(sql);
 
-            return await LoggingSqlOperation(async connection => ( await connection.ExecuteAsync(sql, job)  ) > 0);
+            return await LoggingSqlOperation(async _ => ( await _.ExecuteAsync(sql, job)  ) > 0);
 
         }
 
@@ -850,9 +850,9 @@ namespace HttpReports.Storage.Oracle
 
             TraceLogSql(sql);
 
-            return await LoggingSqlOperation(async connection => (
+            return await LoggingSqlOperation(async _ => (
 
-            await connection.ExecuteAsync(sql, job)
+            await _.ExecuteAsync(sql, job)
 
             ) > 0);
         }
@@ -863,9 +863,9 @@ namespace HttpReports.Storage.Oracle
 
             TraceLogSql(sql);
 
-            return await LoggingSqlOperation(async connection => (
+            return await LoggingSqlOperation(async _ => (
 
-              await connection.QueryFirstOrDefaultAsync<MonitorJob>(sql,new { Id })
+              await _.QueryFirstOrDefaultAsync<MonitorJob>(sql,new { Id })
 
             ));
         }
@@ -883,9 +883,9 @@ namespace HttpReports.Storage.Oracle
 
             TraceLogSql(sql);
 
-            return await LoggingSqlOperation(async connection => (
+            return await LoggingSqlOperation(async _ => (
 
-            await connection.QueryAsync<MonitorJob>(sql)
+            await _.QueryAsync<MonitorJob>(sql)
 
             ).ToList().Select(x => x as IMonitorJob).ToList());
         }
@@ -896,8 +896,8 @@ namespace HttpReports.Storage.Oracle
 
             TraceLogSql(sql);
 
-            return await LoggingSqlOperation(async connection =>
-            (await connection.ExecuteAsync(sql,new { Id })) > 0);
+            return await LoggingSqlOperation(async _ =>
+            (await _.ExecuteAsync(sql,new { Id })) > 0);
         }
 
         public async Task<SysUser> CheckLogin(string Username, string Password)
@@ -906,9 +906,9 @@ namespace HttpReports.Storage.Oracle
 
             TraceLogSql(sql);
 
-            return await LoggingSqlOperation(async connection => (
+            return await LoggingSqlOperation(async _ => (
 
-              await connection.QueryFirstOrDefaultAsync<SysUser>(sql, new { Username, Password })
+              await _.QueryFirstOrDefaultAsync<SysUser>(sql, new { Username, Password })
 
             ));
 
@@ -920,9 +920,9 @@ namespace HttpReports.Storage.Oracle
 
             TraceLogSql(sql);
 
-            return await LoggingSqlOperation(async connection => (
+            return await LoggingSqlOperation(async _ => (
 
-              await connection.ExecuteAsync(sql, model)
+              await _.ExecuteAsync(sql, model)
 
              ) > 0);
 
@@ -935,9 +935,9 @@ namespace HttpReports.Storage.Oracle
 
             TraceLogSql(sql);
 
-            return await LoggingSqlOperation(async connection => (
+            return await LoggingSqlOperation(async _ => (
 
-              await connection.QueryFirstOrDefaultAsync<SysUser>(sql, new { UserName })
+              await _.QueryFirstOrDefaultAsync<SysUser>(sql, new { UserName })
 
             ));
         }
@@ -948,9 +948,9 @@ namespace HttpReports.Storage.Oracle
 
             TraceLogSql(sql);
 
-            var requestInfo = await LoggingSqlOperation(async connection => (
+            var requestInfo = await LoggingSqlOperation(async _ => (
 
-             await connection.QueryFirstOrDefaultAsync<RequestInfo>(sql, new { Id })
+             await _.QueryFirstOrDefaultAsync<RequestInfo>(sql, new { Id })
 
            ));
 
@@ -958,9 +958,9 @@ namespace HttpReports.Storage.Oracle
 
             TraceLogSql(detailSql);
 
-            var requestDetail = await LoggingSqlOperation(async connection => (
+            var requestDetail = await LoggingSqlOperation(async _ => (
 
-             await connection.QueryFirstOrDefaultAsync<RequestDetail>(detailSql, new { Id })
+             await _.QueryFirstOrDefaultAsync<RequestDetail>(detailSql, new { Id })
 
            ));
 
@@ -973,9 +973,9 @@ namespace HttpReports.Storage.Oracle
 
             TraceLogSql(sql);
 
-            var requestInfo = await LoggingSqlOperation(async connection => (
+            var requestInfo = await LoggingSqlOperation(async _ => (
 
-             await connection.QueryFirstOrDefaultAsync<RequestInfo>(sql, new { Id })
+             await _.QueryFirstOrDefaultAsync<RequestInfo>(sql, new { Id })
 
            ));
 
@@ -988,9 +988,9 @@ namespace HttpReports.Storage.Oracle
 
             TraceLogSql(sql);
 
-            var requestInfo = await LoggingSqlOperation(async connection => (
+            var requestInfo = await LoggingSqlOperation(async _ => (
 
-             await connection.QueryAsync<RequestInfo>(sql,new { ParentId })
+             await _.QueryAsync<RequestInfo>(sql,new { ParentId })
 
            ));
 
@@ -1003,17 +1003,17 @@ namespace HttpReports.Storage.Oracle
 
             TraceLogSql(sql);
 
-             await LoggingSqlOperation(async connection => (
+             await LoggingSqlOperation(async _ => (
 
-             await connection.ExecuteAsync(sql)
+             await _.ExecuteAsync(sql)
 
            ));
 
-            string performanceSql = "Delete From Performance Where CreateTime <= :StartTime ";
+            string performanceSql = $"Delete From Performance Where CreateTime <= to_date('{StartTime}','YYYY-MM-DD') ";
 
-            await LoggingSqlOperation(async connection => (
+            await LoggingSqlOperation(async _ => (
 
-             await connection.ExecuteAsync(performanceSql, new { StartTime })
+             await _.ExecuteAsync(performanceSql, new { StartTime })
 
            ));
         }
@@ -1024,9 +1024,9 @@ namespace HttpReports.Storage.Oracle
 
             TraceLogSql(sql);
 
-            var result = await LoggingSqlOperation(async connection => (
+            var result = await LoggingSqlOperation(async _ => (
 
-             await connection.ExecuteAsync(sql,new { Language })
+             await _.ExecuteAsync(sql,new { Language })
 
            ));
         }
@@ -1037,9 +1037,9 @@ namespace HttpReports.Storage.Oracle
 
             TraceLogSql(sql);
 
-            var result = await LoggingSqlOperation(async connection => (
+            var result = await LoggingSqlOperation(async _ => (
 
-               await connection.QueryFirstOrDefaultAsync<string>(sql, new { Key })
+               await _.QueryFirstOrDefaultAsync<string>(sql, new { Key })
 
            ));
 
@@ -1052,9 +1052,9 @@ namespace HttpReports.Storage.Oracle
 
             TraceLogSql(sql);
 
-            var result = await LoggingSqlOperation(async connection => (
+            var result = await LoggingSqlOperation(async _ => (
 
-               await connection.QueryAsync<ServiceInstanceInfoModel>(sql, new { CreateTime = startTime })
+               await _.QueryAsync<ServiceInstanceInfoModel>(sql, new { CreateTime = startTime })
 
            ));
 
@@ -1070,7 +1070,7 @@ namespace HttpReports.Storage.Oracle
 
         public async Task<List<IPerformance>> GetPerformances(PerformanceFilterIOption option)
         {
-            string where = " where  CreateTime >= :Start AND CreateTime < :End ";
+            string where = $" where  CreateTime >= to_date('{option.Start:yyyy-MM-dd HH:mm:ss}','YYYY-MM-DD hh24:mi:ss') AND CreateTime < to_date('{option.End:yyyy-MM-dd HH:mm:ss}','YYYY-MM-DD hh24:mi:ss')  ";
 
             if (!option.Service.IsEmpty())
             {
@@ -1085,13 +1085,9 @@ namespace HttpReports.Storage.Oracle
 
             string sql = " Select * From Performance " + where;
 
-            TraceLogSql(sql);
+            TraceLogSql(sql); 
 
-            var result = await LoggingSqlOperation(async connection => (
-
-               await connection.QueryAsync<Performance>(sql, option)
-
-           ));
+            var result = await LoggingSqlOperation(async _ =>  await _.QueryAsync<Performance>(sql, option));
 
             return result.Select(x => x as IPerformance).ToList();
 
@@ -1101,15 +1097,15 @@ namespace HttpReports.Storage.Oracle
         {
             performance.Id = MD5_16(Guid.NewGuid().ToString());
 
-            string sql = $@"Insert Into MonitorJob 
+            string sql = $@"Insert Into Performance 
             (Id,Service,Instance,GCGen0,GCGen1,GCGen2,HeapMemory,ProcessCPU,ProcessMemory,ThreadCount,PendingThreadCount,CreateTime)
-             Values (:Id,:Service,:Instance,:GCGen0,:GCGen1,:GCGen2,:HeapMemory,:ProcessCPU,:ProcessMemory,:ThreadCount,:PendingThreadCount,:CreateTime)";
+             Values (:Id,:Service,:Instance,:GCGen0,:GCGen1,:GCGen2,:HeapMemory,:ProcessCPU,:ProcessMemory,:ThreadCount,:PendingThreadCount, to_date('{performance.CreateTime:yyyy-MM-dd HH:mm:ss}','YYYY-MM-DD hh24:mi:ss') )";
 
             TraceLogSql(sql);
 
-            return await LoggingSqlOperation(async connection => (
+            return await LoggingSqlOperation(async _ => (
 
-            await connection.ExecuteAsync(sql, performance)
+            await _.ExecuteAsync(sql, performance)
 
             ) > 0);
 

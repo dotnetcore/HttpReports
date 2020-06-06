@@ -101,23 +101,33 @@ WriteLiteral("\';   </script>\r\n\r\n    <script src=\"/HttpReportsStaticFiles/C
 "md visible-lg\"><a href=\"#\" style=\"padding:0 10px;\" id=\"main-menu-toggle\"><i clas" +
 "s=\"fa fa-th-large\"></i></a></li>\r\n                <li class=\"visible-xs visible-" +
 "sm\"><a href=\"#\" id=\"sidebar-menu\"><i class=\"fa fa-navicon\"></i></a></li>\r\n      " +
-"      </ul>\r\n\r\n            <ul class=\"nav navbar-nav navbar-right\">\r\n\r\n         " +
-"       <li class=\"dropdown\">\r\n                    <a href=\"#\" class=\"dropdown-to" +
-"ggle\" data-toggle=\"dropdown\"><i style=\"margin-top:24px;\" class=\"fa fa-language\">" +
-"</i></a>\r\n                    <ul class=\"dropdown-menu update-menu\" role=\"menu\">" +
-"\r\n                        <li>\r\n                            <a data-key=\"en-us\" " +
-"onclick=\"ChangeLanguage(this)\"> English </a>\r\n                        </li>\r\n   " +
-"                     <li>\r\n                            <a data-key=\"zh-cn\" oncli" +
-"ck=\"ChangeLanguage(this)\"> 中文</a>\r\n                        </li>\r\n              " +
-"      </ul>\r\n                </li>\r\n\r\n                <li class=\"dropdown\">\r\n   " +
-"                 <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\"><i c" +
-"lass=\"fa fa-dashboard\"></i></a>\r\n                    <ul class=\"dropdown-menu up" +
-"date-menu\" role=\"menu\">\r\n                        <li>\r\n                         " +
-"   <a data-key=\"light\" onclick=\"ChangeTheme(this)\"><i class=\"fa fa-sun-o\"></i> ");
+"      </ul>\r\n\r\n            <ul class=\"nav navbar-nav navbar-right\"> \r\n\r\n        " +
+"        <li class=\"dropdown\" style=\"display:none\">\r\n                    <a  styl" +
+"e=\"margin-top:2px\"  href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\"><i c" +
+"lass=\"fa fa-refresh\"></i></a>\r\n                    <ul class=\"dropdown-menu upda" +
+"te-menu\" role=\"menu\">\r\n                        <li>\r\n                           " +
+" <a data-stopPropagation=\"true\" class=\"auto_refresh_menu\">\r\n                    " +
+"            <select class=\"selectpicker service\"  data-style=\"btn-primary\" data-" +
+"width=\"220px\" style=\"margin-right:20px\">\r\n                                    <o" +
+"ption>ALL</option>\r\n                                </select>\r\n                 " +
+"           </a>\r\n                        </li> \r\n                    </ul>\r\n    " +
+"            </li> \r\n                \r\n\r\n\r\n                <li class=\"dropdown\">\r" +
+"\n                    <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">" +
+"<i style=\"margin-top:24px;\" class=\"fa fa-language\"></i></a>\r\n                   " +
+" <ul class=\"dropdown-menu update-menu\" role=\"menu\">\r\n                        <li" +
+">\r\n                            <a data-key=\"en-us\" onclick=\"ChangeLanguage(this)" +
+"\"> English </a>\r\n                        </li>\r\n                        <li>\r\n  " +
+"                          <a data-key=\"zh-cn\" onclick=\"ChangeLanguage(this)\"> 中文" +
+"</a>\r\n                        </li>\r\n                    </ul>\r\n                " +
+"</li>\r\n\r\n                <li class=\"dropdown\">\r\n                    <a href=\"#\" " +
+"class=\"dropdown-toggle\" data-toggle=\"dropdown\"><i class=\"fa fa-dashboard\"></i></" +
+"a>\r\n                    <ul class=\"dropdown-menu update-menu\" role=\"menu\">\r\n    " +
+"                    <li>\r\n                            <a data-key=\"light\" onclic" +
+"k=\"ChangeTheme(this)\"><i class=\"fa fa-sun-o\"></i> ");
 
 
             
-            #line 109 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 124 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                    Write(lang.Template_Light);
 
             
@@ -129,7 +139,7 @@ WriteLiteral(" </a>\r\n                        </li>\r\n                        
 
 
             
-            #line 112 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 127 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                    Write(lang.Template_Dark);
 
             
@@ -151,7 +161,7 @@ WriteLiteral(@" </a>
 
 
             
-            #line 124 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 139 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                            Write(lang.Template_EditAccount);
 
             
@@ -162,7 +172,7 @@ WriteLiteral(" </a>\r\n                        </li>\r\n                        
 
 
             
-            #line 127 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 142 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                           Write(lang.Template_Logout);
 
             
@@ -196,7 +206,7 @@ WriteLiteral(@" </a>
 
 
             
-            #line 151 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 166 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                                      Write(lang.Menu_BasicData);
 
             
@@ -207,7 +217,7 @@ WriteLiteral("</span></a></li>\r\n\r\n                            <li class=\"me
 
 
             
-            #line 153 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 168 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                                           Write(lang.Menu_TrendData);
 
             
@@ -218,7 +228,7 @@ WriteLiteral("</span></a></li>\r\n\r\n                            <li class=\"\"
 
 
             
-            #line 155 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 170 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                                Write(lang.Menu_RequestList);
 
             
@@ -229,7 +239,7 @@ WriteLiteral("</span></a></li>\r\n\r\n                            <li class=\"\"
 
 
             
-            #line 157 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 172 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                                   Write(lang.Menu_Monitor);
 
             
@@ -240,7 +250,7 @@ WriteLiteral("</span></a></li>\r\n\r\n                            <li class=\"\"
 
 
             
-            #line 159 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 174 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                                      Write(lang.Performance);
 
             
@@ -262,7 +272,7 @@ WriteLiteral(@"</span></a></li>
 
 
             
-            #line 171 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 186 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
            Write(RenderBody());
 
             
@@ -289,7 +299,7 @@ WriteLiteral(@"
 
 
             
-            #line 188 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 203 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                          Write(lang.Template_EditAccount);
 
             
@@ -300,7 +310,7 @@ WriteLiteral("</span>\r\n                </div>\r\n                <div class=\"
 
 
             
-            #line 192 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 207 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                           Write(lang.Login_UserName);
 
             
@@ -312,7 +322,7 @@ WriteLiteral("</label>\r\n                        <input autocomplete=\"new-pass
 
 
             
-            #line 196 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 211 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                           Write(lang.Index_OldPwd);
 
             
@@ -324,7 +334,7 @@ WriteLiteral("</label>\r\n                        <input autocomplete=\"new-pass
 
 
             
-            #line 200 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 215 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                           Write(lang.Index_NewPwd);
 
             
@@ -337,14 +347,14 @@ WriteLiteral(@"</label>
 
 
             
-            #line 203 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 218 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                          Write(lang.Index_UserSave);
 
             
             #line default
             #line hidden
 WriteLiteral("</button>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>" +
-"\r\n\r\n\r\n    <div class=\"clearfix\"></div>\r\n\r\n\r\n</body>\r\n    </html>\r\n");
+"\r\n\r\n\r\n    <div class=\"clearfix\"></div>  \r\n\r\n</body>\r\n</html>\r\n");
 
 
         }

@@ -23,7 +23,7 @@ namespace HttpReports.Storage.FilterOptions
         /// 响应时间分组
         /// </summary>
         public int[,] TimeGroup { get; set; } = DefaultTimeGroup;
-
+        
         /// <summary>
         /// 默认响应时间分组
         /// </summary>

@@ -441,6 +441,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
                                 ThreadCount Int,
                                 PendingThreadCount Int, 
                                 CreateTime timestamp(3) without time zone 
+
                             ); 
                         ");
                     }
@@ -653,8 +654,8 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Method: {method} Message: {message ?? "数据库操作异常"}");
-                throw;
-            }
+                return default(T);
+            } 
         }
 
 
@@ -961,7 +962,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
         {
             performance.Id = MD5_16(Guid.NewGuid().ToString());
 
-            string sql = $@"Insert Into Performance (Id,Service,Instance,GCGen0,GCGen1,GCGen2,HeapMemory,ProcessCPU,ProcessMemory,ThreadCount,PendingThreadCount,CreateTime)
+            string sql = $@"Insert Into ""Performance"" (Id,Service,Instance,GCGen0,GCGen1,GCGen2,HeapMemory,ProcessCPU,ProcessMemory,ThreadCount,PendingThreadCount,CreateTime)
              Values (@Id,@Service,@Instance,@GCGen0,@GCGen1,@GCGen2,@HeapMemory,@ProcessCPU,@ProcessMemory,@ThreadCount,@PendingThreadCount,@CreateTime)";
 
             TraceLogSql(sql);

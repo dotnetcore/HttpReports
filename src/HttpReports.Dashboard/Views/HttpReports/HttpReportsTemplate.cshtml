@@ -88,7 +88,22 @@
                 <li class="visible-xs visible-sm"><a href="#" id="sidebar-menu"><i class="fa fa-navicon"></i></a></li>
             </ul>
 
-            <ul class="nav navbar-nav navbar-right">
+            <ul class="nav navbar-nav navbar-right"> 
+
+                <li class="dropdown" style="display:none">
+                    <a  style="margin-top:2px"  href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-refresh"></i></a>
+                    <ul class="dropdown-menu update-menu" role="menu">
+                        <li>
+                            <a data-stopPropagation="true" class="auto_refresh_menu">
+                                <select class="selectpicker service"  data-style="btn-primary" data-width="220px" style="margin-right:20px">
+                                    <option>ALL</option>
+                                </select>
+                            </a>
+                        </li> 
+                    </ul>
+                </li> 
+                
+
 
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i style="margin-top:24px;" class="fa fa-language"></i></a>
@@ -207,8 +222,7 @@
     </div>
 
 
-    <div class="clearfix"></div>
-
+    <div class="clearfix"></div>  
 
 </body>
-    </html>
+</html>

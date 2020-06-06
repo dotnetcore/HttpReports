@@ -47,7 +47,7 @@ namespace HttpReports.Storage.SQLite
             {
                 using (var con = ConnectionFactory.GetConnection())
                 { 
-                    if (await con.QueryFirstOrDefaultAsync<int>($" Select count(1)  from sqlite_master where type='table' and name = 'RequestInfo' ") == 0)
+                    if (await con.QueryFirstOrDefaultAsync<int>($" Select count(1) from sqlite_master where type='table' and name = 'RequestInfo' ") == 0)
                     {
                         await con.ExecuteAsync(@"   
                             CREATE TABLE RequestInfo(
@@ -108,7 +108,7 @@ namespace HttpReports.Storage.SQLite
 
                     if (await con.QueryFirstOrDefaultAsync<int>($" Select count(1)  from sqlite_master where type='table' and name = 'SysUser' ") == 0)
                     {
-                        await con.ExecuteAsync($@"
+                       await con.ExecuteAsync($@"
 
                            CREATE TABLE SysUser( 
 	                            Id varchar(50) NOT NULL PRIMARY KEY,

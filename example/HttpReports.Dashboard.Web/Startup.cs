@@ -22,7 +22,7 @@ namespace HttpReports.Dashboard.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpReports()
-                    .UseSQLiteStorage()
+                    .UseSQLServerStorage()
                     .UseGrpc()
                     .AddHttpReportsGrpcCollector();     //Add Grpc Collector
 

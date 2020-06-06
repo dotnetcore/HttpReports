@@ -18,7 +18,12 @@ function InitLanguage() {
     }).responseJSON;    
 } 
 
-$(function () {  
+$(function () {   
+
+    $(".auto_refresh_menu").on("click", function (e) { 
+        e.stopPropagation();
+    }) 
+
 
     $(".service-form").find(".service").on('changed.bs.select', (e, clickedIndex, isSelected, previousValue) => BindInstanceSelect($(e.currentTarget).val()));
 

@@ -615,7 +615,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
                 }
             }
             catch (Exception ex)
-            {
+            { 
                 Logger.LogError(ex, $"Method: {method} Message: {message ?? "数据库操作异常"}");
             }
         }
@@ -710,7 +710,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
                 if (!nodeFilterOption.Service.IsEmpty())
                 {
                     CheckSqlWhere(builder).Append($"Node = '{nodeFilterOption.Service}' ");
-                }
+                }  
 
                 if (!nodeFilterOption.LocalIP.IsEmpty())
                 {
