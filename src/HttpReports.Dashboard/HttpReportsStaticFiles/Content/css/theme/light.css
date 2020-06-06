@@ -25,6 +25,41 @@
     color: #495057 !important;
 }
 
+.service-form .dropdown-menu {
+    background-color: black;
+    border: 1px solid #8e8e8e;
+}
+
+    .service-form .dropdown-menu a:hover {
+        background-color: #4b545d !important;
+        color: #FFF !important;
+    }
+
+.timeFormat-form .dropdown-menu {
+    background-color: black;
+    border: 1px solid #8e8e8e;
+}
+
+    .timeFormat-form .dropdown-menu a:hover {
+        background-color: #4b545d !important;
+        color: #FFF !important;
+    }
+
+.service-form .btn-primary {
+    background-color: #428bca !important;
+    border: 1px solid #428bca !important;
+}
+
+.timeFormat-form .btn-primary {
+    background-color: #428bca !important;
+    border: 1px solid #428bca !important;
+}
+
+.btn-info {
+    background-color: #428bca !important;
+    border: 1px solid #428bca !important;
+}
+
 .sidebar a {
     color: #495057 !important;
 }
