@@ -61,6 +61,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildScript", "build\BuildS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Storage.SQLite", "src\HttpReports.SQLLite\HttpReports.Storage.SQLite.csproj", "{C5EE153E-988A-46A0-BFB0-EAFE93BC99A6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Storage.ElasticSearch", "src\HttpReports.Storage.ElasticSearch\HttpReports.Storage.ElasticSearch.csproj", "{7F0B9FED-A910-4263-8F2C-AECF51D0C9AE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -151,6 +153,10 @@ Global
 		{C5EE153E-988A-46A0-BFB0-EAFE93BC99A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5EE153E-988A-46A0-BFB0-EAFE93BC99A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5EE153E-988A-46A0-BFB0-EAFE93BC99A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F0B9FED-A910-4263-8F2C-AECF51D0C9AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F0B9FED-A910-4263-8F2C-AECF51D0C9AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F0B9FED-A910-4263-8F2C-AECF51D0C9AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F0B9FED-A910-4263-8F2C-AECF51D0C9AE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -177,6 +183,7 @@ Global
 		{AFFD2462-0D3C-4642-82B0-8C1F99F8CE9D} = {BAF971BD-0546-4610-A9F6-6F6DC68E6FE7}
 		{DCA4DF60-2CE9-4F7F-8E09-538C27CE6AC9} = {92F075FE-55AD-4A3F-A210-7B019A2DA690}
 		{C5EE153E-988A-46A0-BFB0-EAFE93BC99A6} = {BAF971BD-0546-4610-A9F6-6F6DC68E6FE7}
+		{7F0B9FED-A910-4263-8F2C-AECF51D0C9AE} = {BAF971BD-0546-4610-A9F6-6F6DC68E6FE7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CF5EB1E6-E330-45DC-80A3-9A2CE692DDE5}

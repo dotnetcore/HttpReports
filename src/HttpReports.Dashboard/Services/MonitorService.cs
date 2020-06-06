@@ -31,10 +31,7 @@ namespace HttpReports.Dashboard.Services
                 return _lang.Monitor_TitleTooLong;
 
             if (!request.Description.IsEmpty() && request.Description.Length > 100)
-                return _lang.Monitor_DescTooLong;
-
-            if (request.Service.IsEmpty() || request.Service == "ALL")
-                return _lang.Monitor_MustSelectNode;
+                return _lang.Monitor_DescTooLong; 
 
             if (request.Emails.IsEmpty() && request.WebHook.IsEmpty())
             {
@@ -90,6 +87,8 @@ namespace HttpReports.Dashboard.Services
                 return _lang.Monitor_MustSelectType;
             }
 
+
+            request.Service = request.Service == "ALL" ? string.Empty : request.Service;
             request.Instance = request.Instance == "ALL" ? string.Empty: request.Instance;
 
             return null;
