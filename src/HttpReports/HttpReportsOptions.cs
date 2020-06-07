@@ -16,8 +16,8 @@ namespace HttpReports
 
         public string[] FilterRequest { get; set; } = new string[] { };
 
-        public string Urls { get; set; } = "http://localhost:80";
-
+        public string Urls { get; set; } = "http://localhost:80"; 
+       
         public HttpReportsOptions Value => this;
     } 
 }

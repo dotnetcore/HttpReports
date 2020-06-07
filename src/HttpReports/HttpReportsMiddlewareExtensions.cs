@@ -21,13 +21,22 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services)
         { 
-            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports"); 
+            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");
+
+            //var urls = Environment.GetEnvironmentVariable("HttpReports_Urls");
+
+            //if (!urls.IsEmpty())
+            //{
+            //    configuration["Urls"] = urls;
+            //}
             
             services.AddOptions();
-            services.Configure<HttpReportsOptions>(configuration);
+            services.Configure<HttpReportsOptions>(configuration); 
 
             return services.AddHttpReportsService(configuration);
-        }
+        }   
+
+
 
         public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services, Action<HttpReportsOptions> options)
         {
