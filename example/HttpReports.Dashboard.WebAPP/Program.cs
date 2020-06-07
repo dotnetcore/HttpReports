@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace HttpReports.Dashboard.Web
+namespace HttpReports.Dashboard.WebAPP
 {
     public class Program
     {

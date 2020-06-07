@@ -1,10 +1,9 @@
-﻿{
-
-  "profiles": {
-    "HttpReports.Dashboard.Web": {
+﻿{ 
+  "profiles": { 
+    "HttpReports.Dashboard.WebAPP": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "http://localhost:5010;https://localhost:5110",
+      "applicationUrl": "http://localhost:5010",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

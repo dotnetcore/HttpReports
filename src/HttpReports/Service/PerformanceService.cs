@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,9 +25,12 @@ namespace HttpReports.Service
 
             var process = Process.GetCurrentProcess();
 
-            MemoryCounter = new PerformanceCounter("Process", "Working Set - Private", process.ProcessName);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                MemoryCounter = new PerformanceCounter("Process", "Working Set - Private", process.ProcessName);
 
-            CPUCounter = new PerformanceCounter("Process","% Processor Time", process.ProcessName);
+                CPUCounter = new PerformanceCounter("Process","% Processor Time", process.ProcessName); 
+            }
         }
 
         public Task<IPerformance> GetPerformance(string Instance)
@@ -71,9 +75,9 @@ namespace HttpReports.Service
             return 0;
         }
 
-        public double ProcessMemory() => MemoryCounter.NextValue() / 1024 / 1024; 
+        public double ProcessMemory() => MemoryCounter == null ? 0 : MemoryCounter.NextValue() / 1024 / 1024; 
 
-        private double ProcessCPU() => CPUCounter.NextValue() / Environment.ProcessorCount;
+        private double ProcessCPU() => CPUCounter == null ? 0: CPUCounter.NextValue() / Environment.ProcessorCount;
 
     }
 }
