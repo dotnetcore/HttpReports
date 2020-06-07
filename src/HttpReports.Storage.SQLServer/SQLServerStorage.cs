@@ -217,9 +217,7 @@ namespace HttpReports.Storage.SQLServer
                 }));
 
                 await connection.ExecuteAsync($"Insert into [RequestInfo] ([Id],[ParentId],[Node],[Route],[Url],[RequestType],[Method],[Milliseconds],[StatusCode],[IP],[Port],[LocalIP],[LocalPort],[CreateTime]) VALUES {requestSql}", BuildParameters(requestInfos));
-
-
-
+                 
                 string detailSql = string.Join(",", requestDetails.Select(item =>
                 {
 

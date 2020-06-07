@@ -11,9 +11,7 @@ namespace HttpReports.Service
     { 
         Task StartAsync(IApplicationBuilder builder,CancellationToken Token = default);
 
-        Task ExecuteAsync(string localhost, CancellationToken Token = default);
-
-        void MapBackgroundService(IApplicationBuilder builder); 
-      
+        Task ExecuteAsync(CancellationToken Token = default); 
+       
     }
 }

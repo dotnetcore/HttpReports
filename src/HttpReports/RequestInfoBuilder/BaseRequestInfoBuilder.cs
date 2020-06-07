@@ -1,6 +1,7 @@
 ﻿using HttpReports.Core.Config;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -21,28 +22,27 @@ namespace HttpReports
         protected abstract (IRequestInfo, IRequestDetail) Build(HttpContext context, IRequestInfo request, string path);
 
         public (IRequestInfo, IRequestDetail) Build(HttpContext context, Stopwatch stopwatch)
-        {
+        {   
+
             var path = (context.Request.Path.Value ?? string.Empty).ToLowerInvariant();
 
-            if (IsFilterRequest(context)) return (null, null);
+            if (IsFilterRequest(context)) return (null, null); 
 
             // Build RequestInfo
+
+            Uri uri = new Uri(Options.Urls);
             var request = ModelCreator.CreateRequestInfo();
-            request.IP = context.Connection.RemoteIpAddress.ToString();
+            request.IP = context.Connection.RemoteIpAddress?.MapToIPv4()?.ToString();
             request.Port = context.Connection.RemotePort;
-            request.LocalIP = context.Connection.LocalIpAddress.ToString();
-            request.LocalPort = context.Connection.LocalPort;
+            request.LocalIP = uri.Host;
+            request.LocalPort = uri.Port;
             request.StatusCode = context.Response.StatusCode; 
             request.Method = context.Request.Method;
             request.Url = context.Request.Path;
             request.RequestType = (context.Request.ContentType ?? string.Empty).Contains("grpc") ? "grpc" : "http";
             request.Milliseconds = ToInt32(stopwatch.ElapsedMilliseconds);
-            request.CreateTime = context.Items[BasicConfig.ActiveTraceCreateTime].ToDateTime();
-
-            //Parse RequestInfo
-            if (request.LocalIP == "::1") request.LocalIP = "127.0.0.1";
-            if (request.IP == "::1") request.IP = "127.0.0.1";
-
+            request.CreateTime = context.Items[BasicConfig.ActiveTraceCreateTime].ToDateTime(); 
+           
             path = path.Replace(@"///", @"/").Replace(@"//", @"/");
 
             var (requestInfo, requestDetail) = Build(context, request, path);

@@ -20,21 +20,25 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class HttpReportsMiddlewareExtensions
     {
         public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services)
-        {
-            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");
+        { 
+            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports"); 
+            
             services.AddOptions();
             services.Configure<HttpReportsOptions>(configuration);
+
             return services.AddHttpReportsService(configuration);
         }
 
         public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services, Action<HttpReportsOptions> options)
         {
-            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");
-            services.AddOptions();
+            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");  
+
+            services.AddOptions(); 
             services.Configure<HttpReportsOptions>(options);
 
             return services.AddHttpReportsService(configuration);
-        }
+        }  
+
 
         private static IHttpReportsBuilder AddHttpReportsService(this IServiceCollection services, IConfiguration configuration)
         { 
@@ -60,9 +64,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             IHttpReportsInitializer httpReportsInitializer = app.InitHttpReports().InitStorage();
 
-            var backgroundService = app.ApplicationServices.GetRequiredService<IBackgroundService>(); 
-
-            backgroundService.MapBackgroundService(app);
+            var backgroundService = app.ApplicationServices.GetRequiredService<IBackgroundService>();  
             backgroundService.StartAsync(app); 
 
             var options = app.ApplicationServices.GetRequiredService<IOptions<HttpReportsOptions>>(); 

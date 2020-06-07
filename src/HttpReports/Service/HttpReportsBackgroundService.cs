@@ -4,9 +4,11 @@ using HttpReports.Core.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,31 +23,31 @@ namespace HttpReports.Service
     { 
         private ILogger<HttpReportsBackgroundService> _logger { get; }
        
-        private IHttpReportsStorage _storage;
-
-        private ServiceInstance serviceInstance;
-
-        private object locker = new object();
+        private IHttpReportsStorage _storage; 
 
         private IPerformanceService _performanceService;
 
+        private IConfiguration _config;
+
+        private HttpReportsOptions _options;
+
         
-        public HttpReportsBackgroundService(ILogger<HttpReportsBackgroundService> logger,IHttpContextAccessor contextAccessor,IHttpReportsStorage storage, IPerformanceService performanceService)
+        public HttpReportsBackgroundService(IOptions<HttpReportsOptions> options, IConfiguration configuration,ILogger<HttpReportsBackgroundService> logger,IHttpContextAccessor contextAccessor,IHttpReportsStorage storage, IPerformanceService performanceService)
         { 
             _logger = logger;
             _performanceService = performanceService;
             _storage = storage;
+            _config = configuration;
+            _options = options?.Value;
         }
 
         public async Task StartAsync(IApplicationBuilder builder, CancellationToken Token = default)
-        {
+        {  
             try
-            {
-                var localhost = builder.ServerFeatures?.Get<IServerAddressesFeature>()?.Addresses?.FirstOrDefault();
+            {  
+                _logger.LogInformation($"HttpReports BackgroundService Start...");
 
-                _logger.LogInformation("HttpReports BackgroundService Start...");
-
-                await ExecuteAsync(localhost);
+                await ExecuteAsync();
             }
             catch (Exception ex)
             { 
@@ -53,57 +55,24 @@ namespace HttpReports.Service
             } 
         }
 
-        public async Task ExecuteAsync(string localhost,CancellationToken Token = default)
+        public async Task ExecuteAsync(CancellationToken Token = default)
         {  
             while (!Token.IsCancellationRequested)
             {
-                if (serviceInstance == null)
-                {
-                    if (!localhost.IsEmpty()) 
-                       await new HttpClient().GetStringAsync($"{localhost}{BasicConfig.HttpReportsServerRegister}");
+                Uri uri = new Uri(_options.Urls);
 
-                    await Task.Delay(TimeSpan.FromSeconds(1), Token);
+                _logger.LogInformation($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} BackgroundService Execute... "); 
+
+                IPerformance performance = await _performanceService.GetPerformance(uri.Host+":"+uri.Port);
+
+                if (performance != null)
+                {
+                    await _storage.AddPerformanceAsync(performance);
                 }
-                else
-                {
-                    _logger.LogInformation($"HttpReportsBackgroundService Execute IP:{serviceInstance.LocalIP} Port:{serviceInstance.LocalPort}"); 
 
-                    IPerformance performance = await _performanceService.GetPerformance(serviceInstance.LocalIP+":"+serviceInstance.LocalPort);
-
-                    if (performance != null)
-                    {
-                        await _storage.AddPerformanceAsync(performance);
-                    }
-
-                    await Task.Delay(TimeSpan.FromSeconds(10), Token);
-                } 
+                await Task.Delay(TimeSpan.FromSeconds(10), Token); 
             }  
-        }
-
-        public void MapBackgroundService(IApplicationBuilder builder)
-        {
-             builder.Map(BasicConfig.HttpReportsServerRegister, _ => {
-
-                _.Run(async context => {
- 
-                    lock (locker)
-                    {
-                        serviceInstance = new ServiceInstance {
-                        
-                            LocalIP = context.Connection.LocalIpAddress.ToString(),
-                            LocalPort = context.Connection.LocalPort 
-
-                        };
-
-                        if (serviceInstance.LocalIP == "::1") serviceInstance.LocalIP = "127.0.0.1";
-                    } 
-
-                    await Task.CompletedTask;
-
-                });
-
-            }); 
-            
         } 
+
     }
 }
