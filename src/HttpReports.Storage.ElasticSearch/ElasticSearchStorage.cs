@@ -62,9 +62,7 @@ namespace HttpReports.Storage.ElasticSearch
                 requestDescriptor.Create<IRequestInfo>(op => op.Document(item));
             }
 
-            await Client.BulkAsync(requestDescriptor).ConfigureAwait(false);
-
-
+            await Client.BulkAsync(requestDescriptor).ConfigureAwait(false);  
 
             BulkDescriptor detailDescriptor = new BulkDescriptor(GetIndexName<RequestDetail>());
 
@@ -695,7 +693,7 @@ namespace HttpReports.Storage.ElasticSearch
                     Settings = new IndexSettings()
                     {
                         NumberOfReplicas = 1,
-                        NumberOfShards = 3
+                        NumberOfShards = 5
                     }
                 };
 
@@ -727,8 +725,42 @@ namespace HttpReports.Storage.ElasticSearch
                     await Client.Indices.CreateAsync(GetIndexName<MonitorJob>(), a => a.InitializeUsing(indexState));
 
                     await Client.MapAsync<Models.MonitorJob>(c => c.Index(GetIndexName<MonitorJob>()).AutoMap());
+                } 
+
+
+                var SysConfigIndex = await Client.Indices.ExistsAsync(GetIndexName<SysConfig>());
+
+                if (!SysConfigIndex.Exists)
+                {
+                    await Client.Indices.CreateAsync(GetIndexName<SysConfig>(), a => a.InitializeUsing(indexState));
+
+                    await Client.MapAsync<Models.SysConfig>(c => c.Index(GetIndexName<SysConfig>()).AutoMap());
+
                 }
 
+                var lang = await Client.SearchAsync<SysConfig>(s => s.Index(GetIndexName<SysConfig>()).Query(q => q.Term(c=> c.Key, BasicConfig.Language ) ));
+
+                if (lang.Documents.Count == 0)
+                {
+                    await Client.IndexAsync<SysConfig>(new SysConfig
+                    {
+                        Id = MD5_16(Guid.NewGuid().ToString()),
+                        Key = BasicConfig.Language,
+                        Value = "en-us"
+
+                    }, x => x.Index(GetIndexName<SysConfig>()));
+                } 
+                  
+
+                var PermanceIndex = await Client.Indices.ExistsAsync(GetIndexName<Performance>());
+
+                if (!PermanceIndex.Exists)
+                {
+                    await Client.Indices.CreateAsync(GetIndexName<Performance>(), a => a.InitializeUsing(indexState));
+
+                    await Client.MapAsync<Models.Performance>(c => c.Index(GetIndexName<Performance>()).AutoMap());
+
+                } 
 
                 var SysUserIndex = await Client.Indices.ExistsAsync(GetIndexName<SysUser>());
 
@@ -750,12 +782,12 @@ namespace HttpReports.Storage.ElasticSearch
                         Password = Core.Config.BasicConfig.DefaultPassword
 
                     }, x => x.Index(GetIndexName<SysUser>()));
-                } 
+                }  
                
             }
             catch (Exception ex)
             {
-                throw;
+                Logger.LogError("Init Error " + ex.ToString());
             }
         }
 
@@ -881,14 +913,25 @@ namespace HttpReports.Storage.ElasticSearch
             throw new NotImplementedException();
         }
 
-        public Task SetLanguage(string Language)
-        {
-            throw new NotImplementedException();
+        public async Task SetLanguage(string Language)
+        { 
+            var langResponse = await Client.SearchAsync<SysConfig>(a => a.Index(GetIndexName<SysConfig>()).Query(b =>  b.Term(c => c.Key, BasicConfig.Language)));
+
+            var lang = langResponse?.Documents?.FirstOrDefault(); 
+
+            await Client.IndexAsync<SysConfig>(lang, a => a.Index(GetIndexName<SysConfig>()).Id(lang.Id));  
         }
 
-        public Task<string> GetSysConfig(string Key)
+        public async Task<string> GetSysConfig(string Key)
         {
-            throw new NotImplementedException();
+            var lang = await Client.SearchAsync<SysConfig>(a => a.Index(GetIndexName<SysConfig>()).Query(b => b.Term(c => c.Key, BasicConfig.Language)));
+
+            if (lang != null && lang.IsValid && lang.Documents.Count > 0)
+            {
+                return lang.Documents.FirstOrDefault().Value;
+            }
+
+            return string.Empty;
         }
 
         public Task<bool> AddPerformanceAsync(IPerformance performance)

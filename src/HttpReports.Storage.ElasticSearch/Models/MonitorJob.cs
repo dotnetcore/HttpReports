@@ -31,17 +31,18 @@ namespace HttpReports.Storage.ElasticSearch.Models
         public string Mobiles { get; set; }
 
         [Nest.Text]
-        public int Status { get; set; }
-
-        [Nest.Text]
-        public string Nodes { get; set; }
+        public int Status { get; set; }  
 
         [Nest.Text]
         public string Payload { get; set; }
 
         [Nest.Keyword]
         public DateTime CreateTime { get; set; }
-        public string Service { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string Instance { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        [Nest.Text]
+        public string Service { get; set; }
+
+        [Nest.Text]
+        public string Instance { get; set; }
     }
 }

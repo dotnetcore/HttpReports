@@ -9,6 +9,7 @@
     <ProjectReference Include="..\..\src\HttpReports.Core\HttpReports.Core.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Dashboard\HttpReports.Dashboard.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Grpc\HttpReports.Grpc.csproj" />
+    <ProjectReference Include="..\..\src\HttpReports.Storage.ElasticSearch\HttpReports.Storage.ElasticSearch.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Storage.SQLServer\HttpReports.Storage.SQLServer.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Transport.Grpc\HttpReports.Transport.Grpc.csproj" />
     <ProjectReference Include="..\..\src\HttpReports\HttpReports.csproj" />

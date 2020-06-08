@@ -15,8 +15,7 @@ namespace HttpReports.Dashboard.WebAPP
        
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpReports()
-                    .UseSQLServerStorage()
+            services.AddHttpReports().UseElasticSearchStorage()
                     .UseGrpc()
                     .AddHttpReportsGrpcCollector();      
 
