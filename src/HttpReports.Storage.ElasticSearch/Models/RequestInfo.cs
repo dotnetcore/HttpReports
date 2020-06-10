@@ -7,37 +7,60 @@ namespace HttpReports.Storage.ElasticSearch.Models
 {
     [ElasticsearchType(RelationName = "requestinfo")]
     internal class RequestInfo : IRequestInfo
-    { 
+    {
         [Nest.Keyword]
         public string Id { get; set; }
 
-        [Nest.Keyword]
-        public string Node { get; set; }
 
         [Nest.Keyword]
-        public string Route { get; set; }
+        public string ParentId { get; set; }
 
-        [Nest.Keyword]
-        public string Url { get; set; }
-
-        [Nest.Text]
-        public string Method { get; set; }
-
-        [Nest.Number]
-        public int Milliseconds { get; set; }
-
-        [Nest.Keyword]
-        public int StatusCode { get; set; }
 
         [Nest.Keyword]
         public string IP { get; set; }
 
+
+        [Nest.Keyword]
+        public int Port { get; set; }
+
+
+        [Nest.Keyword]
+        public string LocalIP { get; set; }
+
+
+        [Nest.Keyword]
+        public int LocalPort { get; set; }
+
+
+        [Nest.Keyword]
+        public string Node { get; set; }
+
+
+        [Nest.Keyword]
+        public string Route { get; set; }
+
+
+        [Nest.Keyword]
+        public string Method { get; set; }
+
+
+        [Nest.Number]
+        public int Milliseconds { get; set; }
+
+
+        [Nest.Keyword]
+        public int StatusCode { get; set; }
+
+
+        [Nest.Keyword]
+        public string Url { get; set; }
+
+
+        [Nest.Keyword]
+        public string RequestType { get; set; }
+
+
         [Nest.Date]
-        public DateTime CreateTime { get; set; }
-        public string ParentId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public int Port { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string LocalIP { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public int LocalPort { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string RequestType { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public DateTime CreateTime { get; set; }  
     }
 }

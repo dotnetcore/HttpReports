@@ -71,8 +71,8 @@ namespace HttpReports.Storage.ElasticSearch.WhereExtension
             }); 
 
             return container; 
-        }
-
+        } 
+       
 
         public static DateHistogramAggregationDescriptor<T> AutoFormatTime<T>(this DateHistogramAggregationDescriptor<T> descriptor, FilterOptions.TimeUnit type) where T:class
         {

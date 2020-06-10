@@ -857,24 +857,15 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
         public async Task ClearData(string StartTime)
         {
-            string sql = @"Delete From ""RequestInfo"" Where CreateTime <= @StartTime ";
+            string sql = @"Delete From ""RequestInfo"" Where CreateTime <= @StartTime "; 
+            var result = await LoggingSqlOperation(async _ =>  await _.ExecuteAsync(sql, new { StartTime }) );
 
-            TraceLogSql(sql);
-
-            var result = await LoggingSqlOperation(async connection => (
-
-             await connection.ExecuteAsync(sql, new { StartTime })
-
-           ));
+            string detailSql = @"Delete From ""RequestDetail"" Where CreateTime <= @StartTime ";
+            var detailResult = await LoggingSqlOperation(async _ => await _.ExecuteAsync(detailSql, new { StartTime }));
 
 
-            string performanceSql = @"Delete From ""Performance"" Where CreateTime <= @StartTime ";
-
-            await LoggingSqlOperation(async connection => (
-
-             await connection.ExecuteAsync(performanceSql, new { StartTime })
-
-           ));
+            string performanceSql = @"Delete From ""Performance"" Where CreateTime <= @StartTime ";  
+            await LoggingSqlOperation(async _ => await _.ExecuteAsync(performanceSql, new { StartTime }));
 
 
         }

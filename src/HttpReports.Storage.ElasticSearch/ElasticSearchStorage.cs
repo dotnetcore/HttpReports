@@ -48,12 +48,12 @@ namespace HttpReports.Storage.ElasticSearch
 
             model.Id = MD5_16(Guid.NewGuid().ToString());
 
-            var response = await Client.IndexAsync<MonitorJob>(model, x => x.Index(GetIndexName<MonitorJob>())).ConfigureAwait(false);
+            var response = await Client.IndexAsync<MonitorJob>(model, x => x.Index(GetIndexName<MonitorJob>()));
 
             return response.IsValid;
         }
 
-        private async Task AddRequestInfoAsync(Dictionary<IRequestInfo, IRequestDetail> list, CancellationToken token)
+        public async Task AddRequestInfoAsync(Dictionary<IRequestInfo, IRequestDetail> list, CancellationToken token)
         {
             BulkDescriptor requestDescriptor = new BulkDescriptor(GetIndexName<RequestInfo>());
 
@@ -62,7 +62,7 @@ namespace HttpReports.Storage.ElasticSearch
                 requestDescriptor.Create<IRequestInfo>(op => op.Document(item));
             }
 
-            await Client.BulkAsync(requestDescriptor).ConfigureAwait(false);  
+            await Client.BulkAsync(requestDescriptor);  
 
             BulkDescriptor detailDescriptor = new BulkDescriptor(GetIndexName<RequestDetail>());
 
@@ -71,7 +71,7 @@ namespace HttpReports.Storage.ElasticSearch
                 detailDescriptor.Create<IRequestDetail>(op => op.Document(item));
             }
 
-            await Client.BulkAsync(detailDescriptor).ConfigureAwait(false);  
+            await Client.BulkAsync(detailDescriptor);  
 
         }
 
@@ -82,11 +82,10 @@ namespace HttpReports.Storage.ElasticSearch
                 _deferFlushCollection.Push(request, detail);
             }
             else
-            { 
+            {  
+                await Client.IndexAsync<RequestInfo>(request as RequestInfo, x => x.Index(GetIndexName<RequestInfo>()));
 
-                await Client.IndexAsync<RequestInfo>(request as RequestInfo, x => x.Index(GetIndexName<RequestInfo>())).ConfigureAwait(false);
-
-                await Client.IndexAsync<RequestDetail>(detail as RequestDetail, x => x.Index(GetIndexName<RequestDetail>())).ConfigureAwait(false); 
+                await Client.IndexAsync<RequestDetail>(detail as RequestDetail, x => x.Index(GetIndexName<RequestDetail>())); 
 
             }
         }
@@ -97,7 +96,7 @@ namespace HttpReports.Storage.ElasticSearch
 
             b.Term(c => c.UserName, Username) && b.Term(c => c.Password, Password)
 
-            )).ConfigureAwait(false);
+            ));
 
             if (response != null && response.IsValid)
             {
@@ -109,7 +108,7 @@ namespace HttpReports.Storage.ElasticSearch
 
         public async Task<bool> DeleteMonitorJob(string Id)
         {
-            var response = await Client.DeleteAsync<MonitorJob>(Id, a => a.Index(GetIndexName<MonitorJob>())).ConfigureAwait(false);
+            var response = await Client.DeleteAsync<MonitorJob>(Id, a => a.Index(GetIndexName<MonitorJob>()));
 
             if (response != null && response.IsValid)
             {
@@ -166,7 +165,7 @@ namespace HttpReports.Storage.ElasticSearch
 
               ))).Size(0)
 
-            ).ConfigureAwait(false);
+            );
 
             if (response != null && response.IsValid)
             {
@@ -201,7 +200,7 @@ namespace HttpReports.Storage.ElasticSearch
             var Total = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>())
             .Query(c => c.HasDateWhere(option.StartTime, option.EndTime) && c.Terms(f => f.Field(e => e.Node).Terms(option.Service)))
              .Aggregations(c => c.ValueCount("Id", d => d.Field(e => e.Id))).Size(0)
-            ).ConfigureAwait(false);
+            );
 
             if (Total != null && Total.IsValid)
             {
@@ -214,7 +213,7 @@ namespace HttpReports.Storage.ElasticSearch
              && c.Term(f => f.StatusCode, 404)
            )
             .Aggregations(c => c.ValueCount("Id", d => d.Field(e => e.Id))).Size(0)
-           ).ConfigureAwait(false);
+           );
 
             if (NotFound != null && NotFound.IsValid)
             {
@@ -227,7 +226,7 @@ namespace HttpReports.Storage.ElasticSearch
             && c.Term(f => f.StatusCode, 500)
           )
            .Aggregations(c => c.ValueCount("Id", d => d.Field(e => e.Id))).Size(0)
-          ).ConfigureAwait(false);
+          );
 
             if (ServerError != null && ServerError.IsValid)
             {
@@ -238,7 +237,7 @@ namespace HttpReports.Storage.ElasticSearch
            .Query(c => c.HasDateWhere(option.StartTime, option.EndTime) && c.Terms(f => f.Field(e => e.Node).Terms(option.Service)))
             .Aggregations(c => c.Cardinality("url", t => t.Field(e => e.Url)))
            .Size(0)
-           ).ConfigureAwait(false);
+           );
 
             if (APICount != null && APICount.IsValid)
             {
@@ -254,7 +253,7 @@ namespace HttpReports.Storage.ElasticSearch
            .Query(c => c.HasDateWhere(option.StartTime, option.EndTime) && c.Terms(f => f.Field(e => e.Node).Terms(option.Service)))
             .Aggregations(c => c.Average("average", d => d.Field(e => e.Milliseconds)))
             .Size(0)
-           ).ConfigureAwait(false);
+           );
 
             if (Avg != null && Avg.IsValid)
             {
@@ -273,7 +272,7 @@ namespace HttpReports.Storage.ElasticSearch
 
         public async Task<IMonitorJob> GetMonitorJob(string Id)
         {
-            var response = await Client.SearchAsync<MonitorJob>(x => x.Index(GetIndexName<MonitorJob>()).Query(a => a.Term(b => b.Id, Id))).ConfigureAwait(false);
+            var response = await Client.SearchAsync<MonitorJob>(x => x.Index(GetIndexName<MonitorJob>()).Query(a => a.Term(b => b.Id, Id)));
 
             if (response != null && response.IsValid)
             {
@@ -289,7 +288,7 @@ namespace HttpReports.Storage.ElasticSearch
         {
             List<IMonitorJob> jobs = new List<IMonitorJob>();
 
-            var response = await Client.SearchAsync<MonitorJob>(s => s.Index(GetIndexName<MonitorJob>()).MatchAll().Sort(a => a.Descending(b => b.CreateTime))).ConfigureAwait(false);
+            var response = await Client.SearchAsync<MonitorJob>(s => s.Index(GetIndexName<MonitorJob>()).MatchAll().Sort(a => a.Descending(b => b.CreateTime)));
 
             if (response != null && response.IsValid)
             {
@@ -311,7 +310,7 @@ namespace HttpReports.Storage.ElasticSearch
 
               )
 
-            ).ConfigureAwait(false);
+            );
 
             if (response != null && response.Documents != null)
             {
@@ -339,7 +338,7 @@ namespace HttpReports.Storage.ElasticSearch
 
               ).Size(option.Take))).Size(0)
 
-            ).ConfigureAwait(false);
+            );
 
             if (response != null && response.IsValid)
             {
@@ -381,7 +380,7 @@ namespace HttpReports.Storage.ElasticSearch
 
            && c.Terms(f => f.Field(e => e.Node).Terms(option.Service))
 
-           ).Size(0)).ConfigureAwait(false);
+           ).Size(0));
 
             if (response != null && response.IsValid)
             {
@@ -409,7 +408,7 @@ namespace HttpReports.Storage.ElasticSearch
 
              ))
 
-           ).Size(0)).ConfigureAwait(false);
+           ).Size(0));
 
             if (TotalResponse != null && TotalResponse.IsValid)
             {
@@ -428,7 +427,7 @@ namespace HttpReports.Storage.ElasticSearch
 
               b.Terms("ip", c => c.Field(e => e.IP).Order(e => e.CountDescending()).Size(1))
 
-           ).Size(0)).ConfigureAwait(false);
+           ).Size(0));
 
             if (MaxResponse != null && MaxResponse.IsValid)
             {
@@ -463,7 +462,7 @@ namespace HttpReports.Storage.ElasticSearch
              .TimeZone("+08:00").Order(HistogramOrder.KeyAscending)
             )).Size(0)
 
-            ).ConfigureAwait(false);
+            );
 
             var result = new RequestTimesStatisticsResult()
             {
@@ -513,7 +512,7 @@ namespace HttpReports.Storage.ElasticSearch
                .Aggregations(m => m.Average("Average", n => n.Field(k => k.Milliseconds)))
            )).Size(0)
 
-           ).ConfigureAwait(false);
+           );
 
             var result = new ResponseTimeStatisticsResult
             {
@@ -561,7 +560,7 @@ namespace HttpReports.Storage.ElasticSearch
 
               b.Terms("statusCode", c => c.Field("statusCode"))
 
-           ).Size(0)).ConfigureAwait(false);
+           ).Size(0));
 
             if (response != null && response.IsValid)
             {
@@ -606,7 +605,7 @@ namespace HttpReports.Storage.ElasticSearch
 
         public async Task<SysUser> GetSysUser(string UserName)
         {
-            var response = await Client.SearchAsync<SysUser>(x => x.Index(GetIndexName<SysUser>()).Query(d => d.Term(e => e.UserName, UserName))).ConfigureAwait(false);
+            var response = await Client.SearchAsync<SysUser>(x => x.Index(GetIndexName<SysUser>()).Query(d => d.Term(e => e.UserName, UserName)));
 
             if (response != null && response.IsValid)
             {
@@ -626,7 +625,7 @@ namespace HttpReports.Storage.ElasticSearch
               && d.Terms(f => f.Field(e => e.StatusCode).Terms(option.StatusCodes))
               && d.Range(f => f.Field(e => e.Milliseconds).GreaterThanOrEquals(timeoutThreshold))
 
-            ).Size(0)).ConfigureAwait(false);
+            ).Size(0));
 
             if (response != null && response.IsValid)
             {
@@ -651,7 +650,7 @@ namespace HttpReports.Storage.ElasticSearch
 
                b.Terms("url", c => c.Field("url").Order(d => option.IsAscend ? d.CountAscending() : d.CountDescending()).Size(option.Take))
 
-            ).Size(0)).ConfigureAwait(false);
+            ).Size(0));
 
             if (response != null && response.IsValid)
             {
@@ -734,14 +733,13 @@ namespace HttpReports.Storage.ElasticSearch
                 {
                     await Client.Indices.CreateAsync(GetIndexName<SysConfig>(), a => a.InitializeUsing(indexState));
 
-                    await Client.MapAsync<Models.SysConfig>(c => c.Index(GetIndexName<SysConfig>()).AutoMap());
+                    await Client.MapAsync<Models.SysConfig>(c => c.Index(GetIndexName<SysConfig>()).AutoMap()); 
+                } 
 
-                }
-
-                var lang = await Client.SearchAsync<SysConfig>(s => s.Index(GetIndexName<SysConfig>()).Query(q => q.Term(c=> c.Key, BasicConfig.Language ) ));
+                var lang = await Client.SearchAsync<SysConfig>(s => s.Index(GetIndexName<SysConfig>()).Query(d=> d.Term(c=> c.Key, BasicConfig.Language)));
 
                 if (lang.Documents.Count == 0)
-                {
+                { 
                     await Client.IndexAsync<SysConfig>(new SysConfig
                     {
                         Id = MD5_16(Guid.NewGuid().ToString()),
@@ -771,7 +769,7 @@ namespace HttpReports.Storage.ElasticSearch
                     await Client.MapAsync<Models.SysUser>(c => c.Index(GetIndexName<SysUser>()).AutoMap());
                 } 
 
-                var user = await Client.SearchAsync<SysUser>(s => s.Index(GetIndexName<SysUser>()).Query(q => q.MatchAll())).ConfigureAwait(false);
+                var user = await Client.SearchAsync<SysUser>(s => s.Index(GetIndexName<SysUser>()).Query(d => d.Term(c => c.UserName, BasicConfig.DefaultUserName)));
 
                 if (user.Documents.Count == 0)
                 {
@@ -805,7 +803,7 @@ namespace HttpReports.Storage.ElasticSearch
 
             ).From(option.Skip).Size(option.Take).Sort(c => c.Descending(e => e.CreateTime))
 
-            ).ConfigureAwait(false);
+            );
 
             RequestInfoSearchResult result = new RequestInfoSearchResult();
 
@@ -830,7 +828,7 @@ namespace HttpReports.Storage.ElasticSearch
 
         public async Task<bool> UpdateLoginUser(SysUser model)
         {
-            var response = await Client.IndexAsync<SysUser>(model, a => a.Index(GetIndexName<SysUser>()).Id(model.Id)).ConfigureAwait(false);
+            var response = await Client.IndexAsync<SysUser>(model, a => a.Index(GetIndexName<SysUser>()).Id(model.Id));
 
             if (response != null && response.IsValid)
             {
@@ -842,7 +840,7 @@ namespace HttpReports.Storage.ElasticSearch
 
         public async Task<bool> UpdateMonitorJob(IMonitorJob job)
         {
-            var response = await Client.IndexAsync<MonitorJob>(job as MonitorJob, a => a.Index(GetIndexName<MonitorJob>()).Id(job.Id)).ConfigureAwait(false);
+            var response = await Client.IndexAsync<MonitorJob>(job as MonitorJob, a => a.Index(GetIndexName<MonitorJob>()).Id(job.Id));
 
             if (response != null && response.IsValid)
             {
@@ -864,7 +862,7 @@ namespace HttpReports.Storage.ElasticSearch
             IRequestInfo request = new RequestInfo();
             IRequestDetail detail = new RequestDetail();
 
-            var requestResponse = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>()).Query(a => a.Term(b => b.Id, Id))).ConfigureAwait(false);
+            var requestResponse = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>()).Query(a => a.Term(b => b.Id, Id)));
 
             if (requestResponse != null && requestResponse.IsValid)
             {
@@ -872,7 +870,7 @@ namespace HttpReports.Storage.ElasticSearch
             }
 
 
-            var detailResponse = await Client.SearchAsync<RequestDetail>(x => x.Index(GetIndexName<RequestDetail>()).Query(a => a.Term(b => b.RequestId, Id))).ConfigureAwait(false);
+            var detailResponse = await Client.SearchAsync<RequestDetail>(x => x.Index(GetIndexName<RequestDetail>()).Query(a => a.Term(b => b.RequestId, Id)));
 
             if (detailResponse != null && detailResponse.IsValid)
             {
@@ -881,36 +879,73 @@ namespace HttpReports.Storage.ElasticSearch
 
             return (request,detail); 
 
+        } 
+      
+
+        public async Task<List<ServiceInstanceInfo>> GetServiceInstance(DateTime startTime)
+        {  
+            var response = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>())
+            .Query(d => d.HasDateWhere(startTime,null) )
+            .Aggregations(t=>t.Terms("serviceList",c => c.Aggregations(d => d.Cardinality("service",e=>e.Field(y=>y.Node)) && d.Cardinality("ip", e => e.Field(y => y.LocalIP)) && d.Cardinality("port", e => e.Field(y => y.LocalPort))))) 
+            .Sort(c=>c.Ascending(b=> b.Node).Ascending(b => b.LocalIP).Ascending(b => b.LocalPort))
+            .Size(0));
+
+            if (response != null && response.IsValid)
+            {
+                var cc =  response.Aggregations.ToList(); 
+            } 
+
+            return null; 
         }
 
-        Task IHttpReportsStorage.AddRequestInfoAsync(Dictionary<IRequestInfo, IRequestDetail> list, CancellationToken token)
+        public async Task<List<IPerformance>> GetPerformances(PerformanceFilterIOption option)
         {
-            throw new NotImplementedException();
+            List<IPerformance> performances = new List<IPerformance>(); 
+
+            var response = await Client.SearchAsync<Performance>(a => a.Index(GetIndexName<Performance>())
+            .Query(b=> b.HasDateWhere(option.Start,option.End) && b.Term(c => c.Instance, option.Instance) && b.Term(c=>c.Service,option.Service)));
+
+            if (response!=null && response.IsValid )
+            {
+                performances = response.Documents.Select(x => x as IPerformance).ToList();
+            }
+
+            return performances;
         }
 
-        public Task<List<ServiceInstanceInfo>> GetServiceInstance(DateTime startTime)
+        public async Task<IRequestInfo> GetRequestInfo(string Id)
         {
-            throw new NotImplementedException();
+            IRequestInfo requestInfo = new RequestInfo();
+
+            var response = await Client.SearchAsync<RequestInfo>(a => a.Index(GetIndexName<RequestInfo>()).Query(b => b.Term(c => c.Id, Id)));
+
+            if (response != null && response.IsValid && response.Documents.Count > 0)
+            {
+                return response.Documents.FirstOrDefault();
+            }
+
+            return requestInfo; 
         }
 
-        public Task<List<IPerformance>> GetPerformances(PerformanceFilterIOption option)
+        public async Task<List<IRequestInfo>> GetRequestInfoByParentId(string ParentId)
         {
-            throw new NotImplementedException();
+            var response = await Client.SearchAsync<RequestInfo>(a => a.Index(GetIndexName<RequestInfo>()).Query(b => b.Term(c => c.ParentId, ParentId)).Sort(c => c.Ascending(b=>b.CreateTime)) );
+
+            if (response != null)
+            {
+                return response.Documents.Select(x => x as IRequestInfo).ToList();
+            }
+
+            return null;
         }
 
-        public Task<IRequestInfo> GetRequestInfo(string Id)
+        public async Task ClearData(string StartTime)
         {
-            throw new NotImplementedException();
-        }
+            await Client.DeleteByQueryAsync<RequestInfo>(a => a.Index(GetIndexName<RequestInfo>()).Query(b => b.HasDateWhere(StartTime.ToDateTime(),null)) );
 
-        public Task<List<IRequestInfo>> GetRequestInfoByParentId(string ParentId)
-        {
-            throw new NotImplementedException();
-        }
+            await Client.DeleteByQueryAsync<RequestDetail>(a => a.Index(GetIndexName<RequestDetail>()).Query(b => b.HasDateWhere(StartTime.ToDateTime(), null)));
 
-        public Task ClearData(string StartTime)
-        {
-            throw new NotImplementedException();
+            await Client.DeleteByQueryAsync<Performance>(a => a.Index(GetIndexName<Performance>()).Query(b => b.HasDateWhere(StartTime.ToDateTime(), null))); 
         }
 
         public async Task SetLanguage(string Language)
@@ -934,9 +969,12 @@ namespace HttpReports.Storage.ElasticSearch
             return string.Empty;
         }
 
-        public Task<bool> AddPerformanceAsync(IPerformance performance)
-        {
-            throw new NotImplementedException();
+        public async Task<bool> AddPerformanceAsync(IPerformance performance)
+        { 
+            var response = await Client.IndexAsync<Performance>(performance as Performance, x => x.Index(GetIndexName<Performance>()));
+
+            return response.IsValid; 
+
         }
     }
 }

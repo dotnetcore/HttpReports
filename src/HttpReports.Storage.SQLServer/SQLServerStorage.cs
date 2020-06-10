@@ -977,23 +977,14 @@ namespace HttpReports.Storage.SQLServer
 
         public async Task ClearData(string StartTime)
         {
-            string sql = "Delete From RequestInfo Where CreateTime <= @StartTime ";
+             string sql = "Delete From RequestInfo Where CreateTime <= @StartTime ";  
+             await LoggingSqlOperation(async _ => await _.ExecuteAsync(sql, new { StartTime }));
 
-            TraceLogSql(sql);
+            string detailSql = "Delete From RequestDetail Where CreateTime <= @StartTime ";
+            await LoggingSqlOperation(async _ => await _.ExecuteAsync(detailSql, new { StartTime }));
 
-            var result = await LoggingSqlOperation(async connection => (
-
-             await connection.ExecuteAsync(sql, new { StartTime })
-
-           ));
-
-            string performanceSql = "Delete From Performance Where CreateTime <= @StartTime ";
-
-            await LoggingSqlOperation(async connection => (
-
-             await connection.ExecuteAsync(performanceSql, new { StartTime })
-
-           ));
+            string performanceSql = "Delete From Performance Where CreateTime <= @StartTime "; 
+            await LoggingSqlOperation(async _ => await _.ExecuteAsync(performanceSql, new { StartTime }));
         }
 
 

@@ -626,7 +626,7 @@ namespace HttpReports.Dashboard.Handle
 
         public async Task<string> GetTraceList(ByIdRequest req)
         {
-            var parent = await GetGrandParentRequestInfo(new ByIdRequest { Id   = req.Id });
+            var parent = await GetGrandParentRequestInfo(new ByIdRequest { Id  = req.Id });
 
             var tree = await GetRequestInfoTrace(new ByIdRequest { Id = parent.Id });
 
@@ -638,11 +638,9 @@ namespace HttpReports.Dashboard.Handle
             var (requestInfo, requestDetail) = await _storage.GetRequestInfoDetail(req.Id);
 
             return Json(new HttpResultEntity(1, "ok", new
-            {
-
+            { 
                 Info = requestInfo,
-                Detail = requestDetail
-
+                Detail = requestDetail 
             }));
         } 
       

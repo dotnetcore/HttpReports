@@ -999,23 +999,16 @@ namespace HttpReports.Storage.Oracle
 
         public async Task ClearData(string StartTime)
         {
-            string sql = $"Delete From RequestInfo Where CreateTime <= to_date('{StartTime}','YYYY-MM-DD') ";
+            string sql = $"Delete From RequestInfo Where CreateTime <= to_date('{StartTime}','YYYY-MM-DD') "; 
+            await LoggingSqlOperation(async _ => await _.ExecuteAsync(sql));
 
-            TraceLogSql(sql);
+            string detailSql = $"Delete From RequestDetail Where CreateTime <= to_date('{StartTime}','YYYY-MM-DD') ";
+            await LoggingSqlOperation(async _ => await _.ExecuteAsync(detailSql));
 
-             await LoggingSqlOperation(async _ => (
+            string performanceSql = $"Delete From Performance Where CreateTime <= to_date('{StartTime}','YYYY-MM-DD') "; 
+            await LoggingSqlOperation(async _ =>  await _.ExecuteAsync(performanceSql, new { StartTime }));
 
-             await _.ExecuteAsync(sql)
 
-           ));
-
-            string performanceSql = $"Delete From Performance Where CreateTime <= to_date('{StartTime}','YYYY-MM-DD') ";
-
-            await LoggingSqlOperation(async _ => (
-
-             await _.ExecuteAsync(performanceSql, new { StartTime })
-
-           ));
         }
 
         public async Task SetLanguage(string Language)
