@@ -94,7 +94,7 @@ namespace HttpReports.Storage.ElasticSearch
         {
             var response = await Client.SearchAsync<SysUser>(a => a.Index(GetIndexName<SysUser>()).Query(b =>
 
-            b.Term(c => c.UserName, Username) && b.Term(c => c.Password, Password)
+            b.Term(c => c.UserName, Username.ToLowerInvariant()) && b.Term(c => c.Password, Password.ToLowerInvariant())
 
             ));
 
@@ -157,7 +157,7 @@ namespace HttpReports.Storage.ElasticSearch
 
              && c.Terms(f => f.Field(e => e.StatusCode).Terms(option.StatusCodes))
 
-             && c.Terms(f => f.Field(e => e.Node).Terms(option.Service))
+             && c.Terms(f => f.Field(e => e.Node).Terms(option.Service.ToLowerInvariant()))
 
             ).Aggregations(a => a.Range("timeRange", b => b.Field(c => c.Milliseconds).Ranges(
 
@@ -198,7 +198,7 @@ namespace HttpReports.Storage.ElasticSearch
             IndexPageData result = new IndexPageData();
 
             var Total = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>())
-            .Query(c => c.HasDateWhere(option.StartTime, option.EndTime) && c.Terms(f => f.Field(e => e.Node).Terms(option.Service)))
+            .Query(c => c.HasDateWhere(option.StartTime, option.EndTime) && c.Terms(f => f.Field(e => e.Node).Terms(option.Service.ToLowerInvariant())))
              .Aggregations(c => c.ValueCount("Id", d => d.Field(e => e.Id))).Size(0)
             );
 
@@ -209,7 +209,7 @@ namespace HttpReports.Storage.ElasticSearch
 
             var NotFound = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>())
            .Query(c => c.HasDateWhere(option.StartTime, option.EndTime)
-             && c.Terms(f => f.Field(e => e.Node).Terms(option.Service))
+             && c.Terms(f => f.Field(e => e.Node).Terms(option.Service.ToLowerInvariant()))
              && c.Term(f => f.StatusCode, 404)
            )
             .Aggregations(c => c.ValueCount("Id", d => d.Field(e => e.Id))).Size(0)
@@ -222,7 +222,7 @@ namespace HttpReports.Storage.ElasticSearch
 
             var ServerError = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>())
           .Query(c => c.HasDateWhere(option.StartTime, option.EndTime)
-            && c.Terms(f => f.Field(e => e.Node).Terms(option.Service))
+            && c.Terms(f => f.Field(e => e.Node).Terms(option.Service.ToLowerInvariant()))
             && c.Term(f => f.StatusCode, 500)
           )
            .Aggregations(c => c.ValueCount("Id", d => d.Field(e => e.Id))).Size(0)
@@ -234,7 +234,7 @@ namespace HttpReports.Storage.ElasticSearch
             }
 
             var APICount = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>())
-           .Query(c => c.HasDateWhere(option.StartTime, option.EndTime) && c.Terms(f => f.Field(e => e.Node).Terms(option.Service)))
+           .Query(c => c.HasDateWhere(option.StartTime, option.EndTime) && c.Terms(f => f.Field(e => e.Node).Terms(option.Service.ToLowerInvariant())))
             .Aggregations(c => c.Cardinality("url", t => t.Field(e => e.Url)))
            .Size(0)
            );
@@ -250,7 +250,7 @@ namespace HttpReports.Storage.ElasticSearch
             }
 
             var Avg = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>())
-           .Query(c => c.HasDateWhere(option.StartTime, option.EndTime) && c.Terms(f => f.Field(e => e.Node).Terms(option.Service)))
+           .Query(c => c.HasDateWhere(option.StartTime, option.EndTime) && c.Terms(f => f.Field(e => e.Node).Terms(option.Service.ToLowerInvariant())))
             .Aggregations(c => c.Average("average", d => d.Field(e => e.Milliseconds)))
             .Size(0)
            );
@@ -272,7 +272,7 @@ namespace HttpReports.Storage.ElasticSearch
 
         public async Task<IMonitorJob> GetMonitorJob(string Id)
         {
-            var response = await Client.SearchAsync<MonitorJob>(x => x.Index(GetIndexName<MonitorJob>()).Query(a => a.Term(b => b.Id, Id)));
+            var response = await Client.SearchAsync<MonitorJob>(x => x.Index(GetIndexName<MonitorJob>()).Query(a => a.Term(b => b.Id, Id.ToLowerInvariant())));
 
             if (response != null && response.IsValid)
             {
@@ -330,7 +330,7 @@ namespace HttpReports.Storage.ElasticSearch
 
             && c.Terms(f => f.Field(e => e.StatusCode).Terms(option.StatusCodes))
 
-            && c.Terms(f => f.Field(e => e.Node).Terms(option.Nodes))
+            && c.Terms(f => f.Field(e => e.Node).Terms(option.Service.ToLowerInvariant()))
 
             ).Aggregations(c => c.Terms("url", cc => cc.Field("url").Order(d => option.IsAscend ? d.Ascending("Milliseconds") : d.Descending("Milliseconds")).Aggregations(h =>
 
@@ -378,7 +378,7 @@ namespace HttpReports.Storage.ElasticSearch
 
            && c.Terms(f => f.Field(e => e.StatusCode).Terms(option.StatusCodes))
 
-           && c.Terms(f => f.Field(e => e.Node).Terms(option.Service))
+           && c.Terms(f => f.Field(e => e.Node).Terms(option.Service.ToLowerInvariant()))
 
            ).Size(0));
 
@@ -400,7 +400,7 @@ namespace HttpReports.Storage.ElasticSearch
 
            && c.Terms(f => f.Field(e => e.StatusCode).Terms(option.StatusCodes))
 
-           && c.Terms(f => f.Field(e => e.Node).Terms(option.Service))
+           && c.Terms(f => f.Field(e => e.Node).Terms(option.Service.ToLowerInvariant()))
 
            && c.Bool(f => f.MustNot( 
 
@@ -679,7 +679,7 @@ namespace HttpReports.Storage.ElasticSearch
         private string GetIndexName<T>()
         {
             string Index = (BasicConfig.ElasticSearchIndexName + typeof(T).Name).ToLower();
-            return Index;
+            return Index.Normalize();
         }
 
 
@@ -736,11 +736,11 @@ namespace HttpReports.Storage.ElasticSearch
                     await Client.MapAsync<Models.SysConfig>(c => c.Index(GetIndexName<SysConfig>()).AutoMap()); 
                 } 
 
-                var lang = await Client.SearchAsync<SysConfig>(s => s.Index(GetIndexName<SysConfig>()).Query(d=> d.Term(c=> c.Key, BasicConfig.Language)));
+                var lang = await Client.SearchAsync<SysConfig>(s => s.Index(GetIndexName<SysConfig>()).Query(d=> d.Term(c=> c.Key, BasicConfig.Language.ToLowerInvariant())));
 
                 if (lang.Documents.Count == 0)
                 { 
-                    await Client.IndexAsync<SysConfig>(new SysConfig
+                   var result =  await Client.IndexAsync<SysConfig>(new SysConfig
                     {
                         Id = MD5_16(Guid.NewGuid().ToString()),
                         Key = BasicConfig.Language,
@@ -769,7 +769,7 @@ namespace HttpReports.Storage.ElasticSearch
                     await Client.MapAsync<Models.SysUser>(c => c.Index(GetIndexName<SysUser>()).AutoMap());
                 } 
 
-                var user = await Client.SearchAsync<SysUser>(s => s.Index(GetIndexName<SysUser>()).Query(d => d.Term(c => c.UserName, BasicConfig.DefaultUserName)));
+                var user = await Client.SearchAsync<SysUser>(s => s.Index(GetIndexName<SysUser>()).Query(d => d.Term(c => c.UserName, BasicConfig.DefaultUserName.ToLowerInvariant())));
 
                 if (user.Documents.Count == 0)
                 {
@@ -883,10 +883,11 @@ namespace HttpReports.Storage.ElasticSearch
       
 
         public async Task<List<ServiceInstanceInfo>> GetServiceInstance(DateTime startTime)
-        {  
-            var response = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>())
-            .Query(d => d.HasDateWhere(startTime,null) )
-            .Aggregations(t=>t.Terms("serviceList",c => c.Aggregations(d => d.Cardinality("service",e=>e.Field(y=>y.Node)) && d.Cardinality("ip", e => e.Field(y => y.LocalIP)) && d.Cardinality("port", e => e.Field(y => y.LocalPort))))) 
+        {   
+
+            var response = await Client.SearchAsync<RequestInfo>(x => x.Index(GetIndexName<RequestInfo>()) 
+            .Query(d => d.HasDateWhere(startTime,null)) 
+            .Aggregations(b=> b.Terms("service",d => d.Field("Node.keyword")) && b.Terms("ip", d => d.Field(e => "LocalIP.keyword")) && b.Terms("port", d => d.Field(e => "LocalPort.keyword"))) 
             .Sort(c=>c.Ascending(b=> b.Node).Ascending(b => b.LocalIP).Ascending(b => b.LocalPort))
             .Size(0));
 
@@ -917,7 +918,7 @@ namespace HttpReports.Storage.ElasticSearch
         {
             IRequestInfo requestInfo = new RequestInfo();
 
-            var response = await Client.SearchAsync<RequestInfo>(a => a.Index(GetIndexName<RequestInfo>()).Query(b => b.Term(c => c.Id, Id)));
+            var response = await Client.SearchAsync<RequestInfo>(a => a.Index(GetIndexName<RequestInfo>()).Query(b => b.Term(c => c.Id, Id.ToLowerInvariant())));
 
             if (response != null && response.IsValid && response.Documents.Count > 0)
             {
@@ -929,7 +930,7 @@ namespace HttpReports.Storage.ElasticSearch
 
         public async Task<List<IRequestInfo>> GetRequestInfoByParentId(string ParentId)
         {
-            var response = await Client.SearchAsync<RequestInfo>(a => a.Index(GetIndexName<RequestInfo>()).Query(b => b.Term(c => c.ParentId, ParentId)).Sort(c => c.Ascending(b=>b.CreateTime)) );
+            var response = await Client.SearchAsync<RequestInfo>(a => a.Index(GetIndexName<RequestInfo>()).Query(b => b.Term(c => c.ParentId, ParentId.ToLowerInvariant())).Sort(c => c.Ascending(b=>b.CreateTime)) );
 
             if (response != null)
             {
@@ -950,7 +951,7 @@ namespace HttpReports.Storage.ElasticSearch
 
         public async Task SetLanguage(string Language)
         { 
-            var langResponse = await Client.SearchAsync<SysConfig>(a => a.Index(GetIndexName<SysConfig>()).Query(b =>  b.Term(c => c.Key, BasicConfig.Language)));
+            var langResponse = await Client.SearchAsync<SysConfig>(a => a.Index(GetIndexName<SysConfig>()).Query(b =>  b.Term(c => c.Key, BasicConfig.Language.ToLowerInvariant())));
 
             var lang = langResponse?.Documents?.FirstOrDefault(); 
 
@@ -959,7 +960,7 @@ namespace HttpReports.Storage.ElasticSearch
 
         public async Task<string> GetSysConfig(string Key)
         {
-            var lang = await Client.SearchAsync<SysConfig>(a => a.Index(GetIndexName<SysConfig>()).Query(b => b.Term(c => c.Key, BasicConfig.Language)));
+            var lang = await Client.SearchAsync<SysConfig>(a => a.Index(GetIndexName<SysConfig>()).Query(b => b.Term(c => c.Key, BasicConfig.Language.ToLowerInvariant())));
 
             if (lang != null && lang.IsValid && lang.Documents.Count > 0)
             {

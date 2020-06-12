@@ -11,8 +11,9 @@ namespace HttpReports.Storage.ElasticSearch.Models
     public class SysConfig : ISysConfig
     {
         [Nest.Keyword]
-        public string Id { get; set; }
+        public string Id { get; set; } 
 
+        
         [Nest.Keyword]
         public string Key { get; set; }
 

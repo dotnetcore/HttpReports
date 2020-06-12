@@ -16,31 +16,32 @@ namespace HttpReports.Storage.ElasticSearch.Models
         public string ParentId { get; set; }
 
 
-        [Nest.Keyword]
+        [Nest.Text]
         public string IP { get; set; }
 
 
-        [Nest.Keyword]
+        [Nest.Number]
         public int Port { get; set; }
 
 
-        [Nest.Keyword]
+        [Nest.Text]
         public string LocalIP { get; set; }
 
 
-        [Nest.Keyword]
-        public int LocalPort { get; set; }
+        [Nest.Number]
+        public int LocalPort { get; set; } 
+
 
 
         [Nest.Keyword]
         public string Node { get; set; }
 
 
-        [Nest.Keyword]
+        [Nest.Text]
         public string Route { get; set; }
 
 
-        [Nest.Keyword]
+        [Nest.Text]
         public string Method { get; set; }
 
 
@@ -48,15 +49,15 @@ namespace HttpReports.Storage.ElasticSearch.Models
         public int Milliseconds { get; set; }
 
 
-        [Nest.Keyword]
+        [Nest.Text]
         public int StatusCode { get; set; }
 
 
-        [Nest.Keyword]
+        [Nest.Text]
         public string Url { get; set; }
 
 
-        [Nest.Keyword]
+        [Nest.Text]
         public string RequestType { get; set; }
 
 
