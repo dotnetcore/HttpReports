@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Ocelot.DependencyInjection;
+using Ocelot.Middleware;
 
 namespace OcelotWeb
 {
@@ -14,14 +16,19 @@ namespace OcelotWeb
     {
         
         public void ConfigureServices(IServiceCollection services)
-        {
+        { 
+            services.AddHttpReports().UseMySqlStorage();
 
-
+            services.AddOcelot(); 
         }
 
       
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseHttpReports();
+
+            app.UseOcelot().Wait();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

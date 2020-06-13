@@ -18,6 +18,11 @@ namespace OcelotWeb
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration((hostingContext, builder)=> {
+
+                builder.SetBasePath(hostingContext.HostingEnvironment.ContentRootPath).AddJsonFile("ocelot.json");
+
+            })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
