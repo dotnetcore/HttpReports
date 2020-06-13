@@ -75,7 +75,7 @@ namespace HttpReports.Service
             return 0;
         }
 
-        public double ProcessMemory() => MemoryCounter == null ? 0 : MemoryCounter.NextValue() / 1024 / 1024; 
+        public double ProcessMemory() => MemoryCounter == null ? 0 : MemoryCounter.NextValue() / Convert.ToDouble(1024 * 1024); 
 
         private double ProcessCPU() => CPUCounter == null ? 0: CPUCounter.NextValue() / Environment.ProcessorCount;
 

@@ -12,16 +12,14 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IHttpReportsBuilder UseGrpcReportsTransport(this IHttpReportsBuilder builder, IConfiguration configuration)
         {
-            builder.Services.AddOptions()
-                            .Configure<GrpcReportsTransportOptions>(configuration);
+            builder.Services.AddOptions().Configure<GrpcReportsTransportOptions>(configuration);
             return builder.UseGrpcReportsTransport();
         }
 
         public static IHttpReportsBuilder UseGrpcReportsTransport(this IHttpReportsBuilder builder, Action<GrpcReportsTransportOptions> options)
         {
-            builder.Services.AddOptions()
-                            .Configure(options);
-            return builder;
+            builder.Services.AddOptions().Configure(options);
+            return builder.UseGrpcReportsTransport();
         }
 
         public static IHttpReportsBuilder UseGrpcReportsTransport(this IHttpReportsBuilder builder)

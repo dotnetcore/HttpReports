@@ -2,8 +2,9 @@ syntax = "proto3";
 
 option csharp_namespace = "HttpReports.Collector.Grpc";
 
-service GrpcCollector {
- rpc Write (RequestInfoPack) returns (WriteReply);
+service GrpcCollector { 
+ rpc Write (RequestInfoPack) returns (WriteReply); 
+ rpc WritePerformance (Performance) returns (WriteReply);
 }
 
 message RequestInfoPack {
@@ -20,7 +21,7 @@ message RequestInfo {
  string ParentId = 2; 
  string IP = 3; 
  int32 Port = 4;
- string LocalIP = 5;
+ string LocalIP = 5; 
  int32 LocalPort = 6;
  string Method = 7;
  int32 Milliseconds = 8;
@@ -45,6 +46,23 @@ message RequestDetail {
  string ErrorStack = 10; 
  sint64 CreateTimeStamp = 11;
 }
+
+
+message Performance{
+   string Id = 1;
+   string Service = 2;
+   string Instance = 3;
+   int32 GCGen0 = 4;
+   int32 GCGen1 = 5;
+   int32 GCGen2 = 6;
+   double HeapMemory = 7;
+   double ProcessCPU = 8;
+   double ProcessMemory = 9;
+   int32 ThreadCount = 10;
+   int32 PendingThreadCount = 11;
+   sint64 CreateTimeStamp = 12; 
+}
+
 
 message WriteReply {
  int32 code = 1;

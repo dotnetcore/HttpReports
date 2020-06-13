@@ -1,8 +1,13 @@
-﻿using System;
+﻿using HttpReports.Collector.Grpc;
+using HttpReports.Core.Interface;
+using HttpReports.Core.Models;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace HttpReports.Collector.Grpc
 {
-    public partial class RequestInfo : IRequestInfo
+    public partial class Performance : IPerformance
     {
         private DateTime? _createTime = null;
 
@@ -22,5 +27,5 @@ namespace HttpReports.Collector.Grpc
                 CreateTimeStamp = value.Ticks;
             }
         }
-    } 
+    }
 }

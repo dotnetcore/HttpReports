@@ -6,9 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Grpc.Net.Client;
-
 using HttpReports.Collector.Grpc;
-
+using HttpReports.Core.Interface;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -20,7 +19,7 @@ namespace HttpReports.Transport.Grpc
 
         private GrpcCollector.GrpcCollectorClient _client = null;
 
-        private readonly AsyncCallbackDeferFlushCollection<HttpReports.Collector.Grpc.RequestInfo, HttpReports.Collector.Grpc.RequestDetail> _deferFlushCollection = null;
+        private readonly AsyncCallbackDeferFlushCollection<Collector.Grpc.RequestInfo, Collector.Grpc.RequestDetail> _deferFlushCollection = null;
         private readonly ILogger<GrpcReportsTransport> _logger;
 
         public GrpcReportsTransport(IOptions<GrpcReportsTransportOptions> options, ILogger<GrpcReportsTransport> logger)
@@ -51,7 +50,7 @@ namespace HttpReports.Transport.Grpc
             var channel = GrpcChannel.ForAddress(Options.CollectorAddress, grpcChannelOptions);
             _client = new GrpcCollector.GrpcCollectorClient(channel);
 
-            _deferFlushCollection = new AsyncCallbackDeferFlushCollection<HttpReports.Collector.Grpc.RequestInfo, HttpReports.Collector.Grpc.RequestDetail>(WriteToRemote, 50, 5);
+            _deferFlushCollection = new AsyncCallbackDeferFlushCollection<Collector.Grpc.RequestInfo, Collector.Grpc.RequestDetail>(WriteToRemote, 50, 5);
             _logger = logger;
         }
 
@@ -72,9 +71,23 @@ namespace HttpReports.Transport.Grpc
             }
         }
 
-        public void Write(IRequestInfo requestInfo, IRequestDetail requestDetail)
+        public Task Write(IRequestInfo requestInfo, IRequestDetail requestDetail)
         {
             _deferFlushCollection.Push(requestInfo as HttpReports.Collector.Grpc.RequestInfo, requestDetail as HttpReports.Collector.Grpc.RequestDetail);
+
+            return Task.CompletedTask;
+        }   
+
+        public async Task WritePerformanceAsync(IPerformance performance)
+        {
+            try
+            {
+                var reply = await _client.WritePerformanceAsync(performance as HttpReports.Collector.Grpc.Performance);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "ReportsTransport Error ");
+            }
         }
     }
 }

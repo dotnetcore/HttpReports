@@ -21,9 +21,8 @@ namespace HttpReports.Service
 {
     public class HttpReportsBackgroundService : IBackgroundService
     { 
-        private ILogger<HttpReportsBackgroundService> _logger { get; }
-       
-        private IHttpReportsStorage _storage; 
+        private ILogger<HttpReportsBackgroundService> _logger { get; } 
+        private IReportsTransport _transport { get; }
 
         private IPerformanceService _performanceService;
 
@@ -32,11 +31,11 @@ namespace HttpReports.Service
         private HttpReportsOptions _options;
 
         
-        public HttpReportsBackgroundService(IOptions<HttpReportsOptions> options, IConfiguration configuration,ILogger<HttpReportsBackgroundService> logger,IHttpContextAccessor contextAccessor,IHttpReportsStorage storage, IPerformanceService performanceService)
+        public HttpReportsBackgroundService(IOptions<HttpReportsOptions> options, IConfiguration configuration,ILogger<HttpReportsBackgroundService> logger,IHttpContextAccessor contextAccessor, IReportsTransport reportsTransport, IPerformanceService performanceService)
         { 
             _logger = logger;
             _performanceService = performanceService;
-            _storage = storage;
+            _transport = reportsTransport;
             _config = configuration;
             _options = options?.Value;
         }
@@ -67,7 +66,7 @@ namespace HttpReports.Service
 
                 if (performance != null)
                 {
-                    await _storage.AddPerformanceAsync(performance);
+                    await _transport.WritePerformanceAsync(performance);
                 }
 
                 await Task.Delay(TimeSpan.FromSeconds(10), Token); 

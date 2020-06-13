@@ -18,7 +18,7 @@ namespace WebApiServer
         public void ConfigureServices(IServiceCollection services)
         {
             //RemoteCollector
-            services.AddHttpReports().UseGrpcReportsTransport(Configuration.GetSection("HttpReports:Transport"));
+            services.AddHttpReports().UseGrpcReportsTransport();
 
             //DirectlyWrite
             //services.AddHttpReports().UseOracleStorage();
@@ -32,7 +32,7 @@ namespace WebApiServer
             app.UseHttpReports();
 
             //DirectlyWrite
-            //app.UseHttpReports().InitStorage();
+            app.UseHttpReports().InitStorage();
 
             if (env.IsDevelopment())
             {

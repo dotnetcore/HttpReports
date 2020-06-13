@@ -21,14 +21,8 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services)
         { 
-            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");
-
-            //var urls = Environment.GetEnvironmentVariable("HttpReports_Urls");
-
-            //if (!urls.IsEmpty())
-            //{
-            //    configuration["Urls"] = urls;
-            //}
+            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports"); 
+            
             
             services.AddOptions();
             services.Configure<HttpReportsOptions>(configuration); 
@@ -62,6 +56,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddMvcCore(x =>
             {
                 x.Filters.Add<HttpReportsExceptionFilter>();
+
             });
 
             return new HttpReportsBuilder(services, configuration);

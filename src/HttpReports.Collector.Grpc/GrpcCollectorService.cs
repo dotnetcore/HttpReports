@@ -22,5 +22,13 @@ namespace HttpReports.Collector.Grpc
 
             return new WriteReply() { Code = 0 };
         }
+
+        public override async Task<WriteReply> WritePerformance(Performance performance, ServerCallContext context)
+        { 
+            await Storage.AddPerformanceAsync(performance);  
+
+            return new WriteReply() { Code = 0 };
+        } 
+
     }
 }

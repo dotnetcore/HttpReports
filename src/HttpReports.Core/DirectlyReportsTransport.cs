@@ -1,4 +1,7 @@
-﻿namespace HttpReports
+﻿using HttpReports.Core.Interface;
+using System.Threading.Tasks;
+
+namespace HttpReports
 {
     public class DirectlyReportsTransport : IReportsTransport
     {
@@ -7,11 +10,20 @@
         public DirectlyReportsTransport(IHttpReportsStorage storage)
         {
             Storage = storage;
-        }
+        }  
 
-        public void Write(IRequestInfo requestInfo, IRequestDetail requestDetail)
+        public Task Write(IRequestInfo requestInfo, IRequestDetail requestDetail)
         {
             Storage.AddRequestInfoAsync(requestInfo, requestDetail).ConfigureAwait(false);
+
+            return Task.CompletedTask;
+        }
+
+        public Task WritePerformanceAsync(IPerformance performance)
+        {
+            Storage.AddPerformanceAsync(performance);
+
+            return Task.CompletedTask;
         }
     }
 }

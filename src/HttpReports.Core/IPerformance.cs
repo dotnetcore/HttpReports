@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace HttpReports.Core.Interface
+namespace HttpReports
 {
     public interface IPerformance
     {
