@@ -24,7 +24,7 @@ namespace HttpReports.Core.Config
 
         public const int HttpReportsFieldMaxLength = 10000;
 
-        public const int ExpireDay = 30;
+        public const int ExpireDay = 7;
 
         public const string ActiveTraceName = "HttpReports.Trace.Context";
 

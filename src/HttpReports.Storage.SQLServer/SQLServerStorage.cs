@@ -29,12 +29,14 @@ namespace HttpReports.Storage.SQLServer
 
         public ILogger<SQLServerStorage> Logger { get; }
 
+        private string Prefix { get; set; } = string.Empty;
+
         private readonly AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail> _deferFlushCollection = null;
 
         public SQLServerStorage(IOptions<SQLServerStorageOptions> options, SQLServerConnectionFactory connectionFactory, ILogger<SQLServerStorage> logger)
         {
             _options = options.Value;
-
+            if (!_options.TablePrefix.IsEmpty()) Prefix = _options.TablePrefix + ".";
             ConnectionFactory = connectionFactory;
             Logger = logger;
 
@@ -51,10 +53,10 @@ namespace HttpReports.Storage.SQLServer
                 using (var con = ConnectionFactory.GetConnection())
                 {
 
-                    if (await con.QueryFirstOrDefaultAsync<int>($" Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.RequestInfo') ") == 0)
+                    if (await con.QueryFirstOrDefaultAsync<int>($" Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.[{Prefix}RequestInfo]') ") == 0)
                     {
-                        await con.ExecuteAsync(@"   
-                            CREATE TABLE [dbo].[RequestInfo](
+                        await con.ExecuteAsync($@"   
+                            CREATE TABLE [dbo].[{Prefix}RequestInfo](
 	                            [Id] [varchar](50) NOT NULL PRIMARY KEY,
                                 [ParentId] [nvarchar](50) NULL,
 	                            [Node] [nvarchar](50) NULL,
@@ -72,10 +74,10 @@ namespace HttpReports.Storage.SQLServer
                     ");
                     }
 
-                    if (await con.QueryFirstOrDefaultAsync<int>($" Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.RequestDetail') ") == 0)
+                    if (await con.QueryFirstOrDefaultAsync<int>($" Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.[{Prefix}RequestDetail]') ") == 0)
                     {
-                        await con.ExecuteAsync(@"   
-                            CREATE TABLE [dbo].[RequestDetail](
+                        await con.ExecuteAsync($@"   
+                            CREATE TABLE [dbo].[{Prefix}RequestDetail](
 	                            [Id] [varchar](50) NOT NULL PRIMARY KEY,
 	                            [RequestId] [varchar](50) NOT NULL,
                                 [Scheme] [varchar](10) NULL,
@@ -90,16 +92,16 @@ namespace HttpReports.Storage.SQLServer
                     ");
                     }
 
-                    if (await con.QueryFirstOrDefaultAsync<int>("Select  Count(1)  from  syscolumns Where id = object_id('MonitorJob') and  name = 'Nodes'") > 0)
+                    if (await con.QueryFirstOrDefaultAsync<int>($"Select  Count(1)  from  syscolumns Where id = object_id('[{Prefix}MonitorJob]') and  name = 'Nodes'") > 0)
                     {
-                        await con.ExecuteAsync("Drop Table MonitorJob");
+                        await con.ExecuteAsync($"Drop Table [{Prefix}MonitorJob]");
                     } 
 
 
-                    if (await con.QueryFirstOrDefaultAsync<int>($"Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.MonitorJob')") == 0)
+                    if (await con.QueryFirstOrDefaultAsync<int>($"Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.[{Prefix}MonitorJob]')") == 0)
                     {
-                        await con.ExecuteAsync(@"  
-                            CREATE TABLE [dbo].[MonitorJob](
+                        await con.ExecuteAsync($@"  
+                            CREATE TABLE [dbo].[{Prefix}MonitorJob](
 	                            [Id] [varchar](50) NOT NULL PRIMARY KEY,
 	                            [Title] [nvarchar](255) NULL,
                                 [Description] [nvarchar](255) NULL,
@@ -115,11 +117,11 @@ namespace HttpReports.Storage.SQLServer
                       ");
                     }
 
-                    if (await con.QueryFirstOrDefaultAsync<int>($"Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.SysUser')") == 0)
+                    if (await con.QueryFirstOrDefaultAsync<int>($"Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.[{Prefix}SysUser]')") == 0)
                     {
                         await con.ExecuteAsync($@"
 
-                           CREATE TABLE [SysUser]( 
+                           CREATE TABLE [{Prefix}SysUser]( 
 	                            [Id] [varchar](50) NOT NULL PRIMARY KEY,
 	                            [UserName] [nvarchar](100) NOT NULL, 
 	                            [Password] [nvarchar](100) NOT NULL )
@@ -130,11 +132,11 @@ namespace HttpReports.Storage.SQLServer
                     }
 
 
-                    if (await con.QueryFirstOrDefaultAsync<int>($"Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.Performance')") == 0)
+                    if (await con.QueryFirstOrDefaultAsync<int>($"Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.[{Prefix}Performance]')") == 0)
                     {
                         await con.ExecuteAsync($@"  
 
-                           CREATE TABLE [Performance]( 
+                           CREATE TABLE [{Prefix}Performance]( 
 	                            [Id] [varchar](50) NOT NULL PRIMARY KEY,
 	                            [Service] [nvarchar](100) NULL, 
 	                            [Instance] [nvarchar](100) NULL,
@@ -152,11 +154,11 @@ namespace HttpReports.Storage.SQLServer
 
                     }  
 
-                    if (await con.QueryFirstOrDefaultAsync<int>($"Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.SysConfig')") == 0)
+                    if (await con.QueryFirstOrDefaultAsync<int>($"Select Count(*) from sysobjects where id = object_id('{ConnectionFactory.DataBase}.dbo.[{Prefix}SysConfig]')") == 0)
                     {
                         await con.ExecuteAsync($@"
 
-                           CREATE TABLE [SysConfig]( 
+                           CREATE TABLE [{Prefix}SysConfig]( 
 	                            [Id] [varchar](50) NOT NULL PRIMARY KEY,
 	                            [Key] [nvarchar](255) NOT NULL, 
 	                            [Value] [nvarchar](255) NOT NULL ) 
@@ -165,31 +167,31 @@ namespace HttpReports.Storage.SQLServer
 
                     }
 
-                    if (await con.QueryFirstOrDefaultAsync<int>("Select count(1) from [SysUser] ") == 0)
+                    if (await con.QueryFirstOrDefaultAsync<int>($"Select count(1) from [{Prefix}SysUser] ") == 0)
                     {
-                        await con.ExecuteAsync($"  Insert Into [SysUser] Values ('{MD5_16(Guid.NewGuid().ToString())}','{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ");
+                        await con.ExecuteAsync($"  Insert Into [{Prefix}SysUser] Values ('{MD5_16(Guid.NewGuid().ToString())}','{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ");
                     }
 
-                    if (await con.QueryFirstOrDefaultAsync<int>($"Select count(1) from [SysConfig] Where [Key] = '{BasicConfig.Language}' ") == 0)
+                    if (await con.QueryFirstOrDefaultAsync<int>($"Select count(1) from [{Prefix}SysConfig] Where [Key] = '{BasicConfig.Language}' ") == 0)
                     {
-                        await con.ExecuteAsync($" Insert Into [SysConfig] Values ('{MD5_16(Guid.NewGuid().ToString())}','{Core.Config.BasicConfig.Language}','English') ");
+                        await con.ExecuteAsync($" Insert Into [{Prefix}SysConfig] Values ('{MD5_16(Guid.NewGuid().ToString())}','{Core.Config.BasicConfig.Language}','English') ");
                     }
 
 
-                    var lang = await con.QueryFirstOrDefaultAsync<string>($"Select * from [SysConfig] Where [Key] =  '{BasicConfig.Language}' ");
+                    var lang = await con.QueryFirstOrDefaultAsync<string>($"Select * from [{Prefix}SysConfig] Where [Key] =  '{BasicConfig.Language}' ");
 
                     if (!lang.IsEmpty())
                     {
                         if (lang.ToLowerInvariant() == "chinese" || lang.ToLowerInvariant() == "english")
                         {
-                            await con.ExecuteAsync($@" Delete From [SysConfig] Where [Key] =  '{BasicConfig.Language}'  ");
+                            await con.ExecuteAsync($@" Delete From [{Prefix}SysConfig] Where [Key] =  '{BasicConfig.Language}'  ");
 
-                            await con.ExecuteAsync($@" Insert Into [SysConfig] Values ('{MD5_16(Guid.NewGuid().ToString())}','{BasicConfig.Language}','en-us') "); 
+                            await con.ExecuteAsync($@" Insert Into [{Prefix}SysConfig] Values ('{MD5_16(Guid.NewGuid().ToString())}','{BasicConfig.Language}','en-us') "); 
                         }
                     }
                     else
                     {
-                        await con.ExecuteAsync($" Insert Into [SysConfig] Values ('{MD5_16(Guid.NewGuid().ToString())}','{Core.Config.BasicConfig.Language}','en-us') "); 
+                        await con.ExecuteAsync($" Insert Into [{Prefix}SysConfig] Values ('{MD5_16(Guid.NewGuid().ToString())}','{Core.Config.BasicConfig.Language}','en-us') "); 
                     }
 
                 }
@@ -216,7 +218,7 @@ namespace HttpReports.Storage.SQLServer
 
                 }));
 
-                await connection.ExecuteAsync($"Insert into [RequestInfo] ([Id],[ParentId],[Node],[Route],[Url],[RequestType],[Method],[Milliseconds],[StatusCode],[IP],[Port],[LocalIP],[LocalPort],[CreateTime]) VALUES {requestSql}", BuildParameters(requestInfos));
+                await connection.ExecuteAsync($"Insert into [{Prefix}RequestInfo] ([Id],[ParentId],[Node],[Route],[Url],[RequestType],[Method],[Milliseconds],[StatusCode],[IP],[Port],[LocalIP],[LocalPort],[CreateTime]) VALUES {requestSql}", BuildParameters(requestInfos));
                  
                 string detailSql = string.Join(",", requestDetails.Select(item =>
                 {
@@ -228,7 +230,7 @@ namespace HttpReports.Storage.SQLServer
                 }));
 
 
-                await connection.ExecuteAsync($"Insert into [RequestDetail] (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime) VALUES {detailSql}", BuildParameters(requestDetails));
+                await connection.ExecuteAsync($"Insert into [{Prefix}RequestDetail] (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime) VALUES {detailSql}", BuildParameters(requestDetails));
 
 
 
@@ -271,9 +273,9 @@ namespace HttpReports.Storage.SQLServer
             {
                 await LoggingSqlOperation(async connection =>
                 {
-                    await connection.ExecuteAsync("INSERT INTO [RequestInfo] (Id,ParentId,Node,Route,Url,RequestType,Method,Milliseconds,StatusCode,IP,Port,LocalIP,LocalPort,CreateTime)  VALUES (@Id,@ParentId,@Node, @Route, @Url,@RequestType, @Method, @Milliseconds, @StatusCode, @IP,@Port,@LocalIP,@LocalPort,@CreateTime)", request);
+                    await connection.ExecuteAsync($"INSERT INTO [{Prefix}RequestInfo] (Id,ParentId,Node,Route,Url,RequestType,Method,Milliseconds,StatusCode,IP,Port,LocalIP,LocalPort,CreateTime)  VALUES (@Id,@ParentId,@Node, @Route, @Url,@RequestType, @Method, @Milliseconds, @StatusCode, @IP,@Port,@LocalIP,@LocalPort,@CreateTime)", request);
 
-                    await connection.ExecuteAsync("INSERT INTO [RequestDetail] (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime)  VALUES (@Id,@RequestId,@Scheme,@QueryString,@Header,@Cookie,@RequestBody,@ResponseBody,@ErrorMessage,@ErrorStack,@CreateTime)", detail);
+                    await connection.ExecuteAsync($"INSERT INTO [{Prefix}RequestDetail] (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime)  VALUES (@Id,@RequestId,@Scheme,@QueryString,@Header,@Cookie,@RequestBody,@ResponseBody,@ErrorMessage,@ErrorStack,@CreateTime)", detail);
 
                 }, "请求数据保存失败");
 
@@ -290,7 +292,7 @@ namespace HttpReports.Storage.SQLServer
         /// <returns></returns>
         public async Task<List<RequestAvgResponeTime>> GetRequestAvgResponeTimeStatisticsAsync(RequestInfoFilterOption filterOption)
         {
-            string sql = $"Select TOP {filterOption.Take} Url,Avg(Milliseconds) Time FROM RequestInfo {BuildSqlFilter(filterOption)} Group By Url order by Time {BuildSqlControl(filterOption)}";
+            string sql = $"Select TOP {filterOption.Take} Url,Avg(Milliseconds) Time FROM [{Prefix}RequestInfo] {BuildSqlFilter(filterOption)} Group By Url order by Time {BuildSqlControl(filterOption)}";
 
             TraceLogSql(sql);
 
@@ -307,7 +309,7 @@ namespace HttpReports.Storage.SQLServer
         {
             string where = BuildSqlFilter(filterOption, true);
 
-            var sql = string.Join(" Union ", filterOption.StatusCodes.Select(m => $"Select '{m}' Code,COUNT(1) Total From RequestInfo {where} AND StatusCode = {m}"));
+            var sql = string.Join(" Union ", filterOption.StatusCodes.Select(m => $"Select '{m}' Code,COUNT(1) Total From [{Prefix}RequestInfo] {where} AND StatusCode = {m}"));
 
             TraceLogSql(sql);
 
@@ -334,11 +336,11 @@ namespace HttpReports.Storage.SQLServer
                 var max = group[i, 1];
                 if (min < max)
                 {
-                    sqlBuilder.Append($"Select {i + 1} Id,'{min}-{max}' Name, Count(1) Total From RequestInfo {where} AND Milliseconds >= {min} AND Milliseconds < {max} union ");
+                    sqlBuilder.Append($"Select {i + 1} Id,'{min}-{max}' Name, Count(1) Total From [{Prefix}RequestInfo] {where} AND Milliseconds >= {min} AND Milliseconds < {max} union ");
                 }
                 else
                 {
-                    sqlBuilder.Append($"Select {i + 1} Id,'{min}以上' Name, Count(1) Total From RequestInfo {where} AND Milliseconds >= {min} union ");
+                    sqlBuilder.Append($"Select {i + 1} Id,'{min}以上' Name, Count(1) Total From [{Prefix}RequestInfo] {where} AND Milliseconds >= {min} union ");
                 }
             }
 
@@ -359,7 +361,7 @@ namespace HttpReports.Storage.SQLServer
 
         public async Task<List<UrlRequestCount>> GetUrlRequestStatisticsAsync(RequestInfoFilterOption filterOption)
         {
-            string sql = $"Select TOP {filterOption.Take} Url,COUNT(1) as Total From RequestInfo {BuildSqlFilter(filterOption)} Group By Url order by Total {BuildSqlControl(filterOption)};";
+            string sql = $"Select TOP {filterOption.Take} Url,COUNT(1) as Total From [{Prefix}RequestInfo] {BuildSqlFilter(filterOption)} Group By Url order by Total {BuildSqlControl(filterOption)};";
 
             TraceLogSql(sql);
 
@@ -407,11 +409,11 @@ namespace HttpReports.Storage.SQLServer
         {
             string where = BuildSqlFilter(filterOption);
 
-            string sql = $@"Select COUNT(1) Total From RequestInfo {where};
-                Select COUNT(1) Code404 From RequestInfo {where} AND StatusCode = 404;
-                Select COUNT(1) Code500 From RequestInfo {where} AND StatusCode = 500;
-                Select Count(1) From ( Select Distinct Url From RequestInfo ) A;
-                Select AVG(Milliseconds) ART From RequestInfo {where};";
+            string sql = $@"Select COUNT(1) Total From [{Prefix}RequestInfo] {where};
+                Select COUNT(1) Code404 From [{Prefix}RequestInfo] {where} AND StatusCode = 404;
+                Select COUNT(1) Code500 From [{Prefix}RequestInfo] {where} AND StatusCode = 500;
+                Select Count(1) From ( Select Distinct Url From [{Prefix}RequestInfo] ) A;
+                Select AVG(Milliseconds) ART From [{Prefix}RequestInfo] {where};";
 
             TraceLogSql(sql);
 
@@ -547,7 +549,7 @@ namespace HttpReports.Storage.SQLServer
         {
             var whereBuilder = new StringBuilder(BuildSqlFilter(filterOption), 512);
 
-            var sqlBuilder = new StringBuilder("Select * From RequestInfo ", 512);
+            var sqlBuilder = new StringBuilder($"Select * From [{Prefix}RequestInfo] ", 512);
 
             if (whereBuilder.Length == 0)
             {
@@ -590,7 +592,7 @@ namespace HttpReports.Storage.SQLServer
 
             TraceLogSql(sql);
 
-            var countSql = "Select count(1) From RequestInfo " + where;
+            var countSql = $"Select count(1) From [{Prefix}RequestInfo] " + where;
             TraceLogSql(countSql);
 
             var result = new RequestInfoSearchResult()
@@ -619,7 +621,7 @@ namespace HttpReports.Storage.SQLServer
 
             var dateFormat = GetDateFormat(filterOption);
 
-            string sql = $"Select {dateFormat} KeyField,COUNT(1) ValueField From RequestInfo {where} Group by {dateFormat};";
+            string sql = $"Select {dateFormat} KeyField,COUNT(1) ValueField From [{Prefix}RequestInfo] {where} Group by {dateFormat};";
 
             TraceLogSql(sql);
 
@@ -675,7 +677,7 @@ namespace HttpReports.Storage.SQLServer
 
             var dateFormat = GetDateFormat(filterOption);
 
-            string sql = $"Select {dateFormat} KeyField,AVG(Milliseconds) ValueField From RequestInfo {where} Group by {dateFormat};";
+            string sql = $"Select {dateFormat} KeyField,AVG(Milliseconds) ValueField From [{Prefix}RequestInfo] {where} Group by {dateFormat};";
 
             TraceLogSql(sql);
 
@@ -753,7 +755,7 @@ namespace HttpReports.Storage.SQLServer
 
         public async Task<int> GetRequestCountAsync(RequestCountFilterOption filterOption)
         {
-            var sql = $"SELECT COUNT(1) FROM RequestInfo {BuildSqlFilter(filterOption)}";
+            var sql = $"SELECT COUNT(1) FROM [{Prefix}RequestInfo] {BuildSqlFilter(filterOption)}";
 
             TraceLogSql(sql);
 
@@ -777,13 +779,13 @@ namespace HttpReports.Storage.SQLServer
                 ipFilter = "IP NOT IN " + ipFilter;
             }
 
-            var sql = $"SELECT TOP 1 COUNT(1) FROM RequestInfo {BuildSqlFilter(filterOption)} AND {ipFilter} Group By IP Order BY COUNT(1) Desc";
+            var sql = $"SELECT TOP 1 COUNT(1) FROM [{Prefix}RequestInfo] {BuildSqlFilter(filterOption)} AND {ipFilter} Group By IP Order BY COUNT(1) Desc";
             TraceLogSql(sql);
 
             var max = await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql));
 
 
-            sql = $"SELECT COUNT(1) TOTAL FROM RequestInfo {BuildSqlFilter(filterOption)} AND {ipFilter}";
+            sql = $"SELECT COUNT(1) TOTAL FROM [{Prefix}RequestInfo] {BuildSqlFilter(filterOption)} AND {ipFilter}";
             TraceLogSql(sql);
             var all = await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql));
             return (max, all);
@@ -792,7 +794,7 @@ namespace HttpReports.Storage.SQLServer
         public async Task<int> GetTimeoutResponeCountAsync(RequestCountFilterOption filterOption, int timeoutThreshold)
         {
             var where = BuildSqlFilter(filterOption);
-            var sql = $"SELECT COUNT(1) FROM RequestInfo {(string.IsNullOrWhiteSpace(where) ? "WHERE" : where)} AND Milliseconds >= {timeoutThreshold}";
+            var sql = $"SELECT COUNT(1) FROM [{Prefix}RequestInfo] {(string.IsNullOrWhiteSpace(where) ? "WHERE" : where)} AND Milliseconds >= {timeoutThreshold}";
 
             TraceLogSql(sql);
 
@@ -803,7 +805,7 @@ namespace HttpReports.Storage.SQLServer
         {
             job.Id = MD5_16(Guid.NewGuid().ToString());
 
-            string sql = $@"Insert Into MonitorJob 
+            string sql = $@"Insert Into [{Prefix}MonitorJob]
             (Id,Title,Description,CronLike,Emails,WebHook,Mobiles,Status,Service,Instance,PayLoad,CreateTime)
              Values (@Id,@Title,@Description,@CronLike,@Emails,@WebHook,@Mobiles,@Status,@Service,@Instance,@PayLoad,@CreateTime)";
 
@@ -819,7 +821,7 @@ namespace HttpReports.Storage.SQLServer
 
         public async Task<bool> UpdateMonitorJob(IMonitorJob job)
         {
-            string sql = $@"Update MonitorJob 
+            string sql = $@"Update [{Prefix}MonitorJob]
 
                 Set Title = @Title,Description = @Description,CronLike = @CronLike,Emails = @Emails,WebHook = @WebHook, Mobiles = @Mobiles,Status= @Status,Service = @Service,Instance = @Instance,PayLoad = @PayLoad 
 
@@ -836,7 +838,7 @@ namespace HttpReports.Storage.SQLServer
 
         public async Task<IMonitorJob> GetMonitorJob(string Id)
         {
-            string sql = $@"Select * From MonitorJob Where Id = '{Id}' ";
+            string sql = $@"Select * From [{Prefix}MonitorJob] Where Id = '{Id}' ";
 
             TraceLogSql(sql);
 
@@ -849,7 +851,7 @@ namespace HttpReports.Storage.SQLServer
 
         public async Task<List<IMonitorJob>> GetMonitorJobs()
         {
-            string sql = $@"Select * From MonitorJob ";
+            string sql = $@"Select * From [{Prefix}MonitorJob] ";
 
             TraceLogSql(sql);
 
@@ -862,7 +864,7 @@ namespace HttpReports.Storage.SQLServer
 
         public async Task<bool> DeleteMonitorJob(string Id)
         {
-            string sql = $@"Delete From MonitorJob Where Id = '{Id}' ";
+            string sql = $@"Delete From [{Prefix}MonitorJob] Where Id = '{Id}' ";
 
             TraceLogSql(sql);
 
@@ -872,7 +874,7 @@ namespace HttpReports.Storage.SQLServer
 
         public async Task<SysUser> CheckLogin(string Username, string Password)
         {
-            string sql = " Select * From SysUser Where UserName = @UserName AND Password = @Password ";
+            string sql = $" Select * From [{Prefix}SysUser] Where UserName = @UserName AND Password = @Password ";
 
             TraceLogSql(sql);
 
@@ -886,7 +888,7 @@ namespace HttpReports.Storage.SQLServer
 
         public async Task<bool> UpdateLoginUser(SysUser model)
         {
-            string sql = " Update SysUser Set UserName = @UserName , Password = @Password  Where Id = @Id ";
+            string sql = $" Update [{Prefix}SysUser] Set UserName = @UserName , Password = @Password  Where Id = @Id ";
 
             TraceLogSql(sql);
 
@@ -900,7 +902,7 @@ namespace HttpReports.Storage.SQLServer
 
         public async Task<SysUser> GetSysUser(string UserName)
         {
-            string sql = " Select * From SysUser Where UserName = @UserName";
+            string sql = $" Select * From [{Prefix}SysUser] Where UserName = @UserName";
 
             TraceLogSql(sql);
 
@@ -920,7 +922,7 @@ namespace HttpReports.Storage.SQLServer
 
         public async Task<(IRequestInfo, IRequestDetail)> GetRequestInfoDetail(string Id)
         {
-            string sql = " Select * From RequestInfo Where Id = @Id";
+            string sql = $" Select * From [{Prefix}RequestInfo] Where Id = @Id";
 
             TraceLogSql(sql);
 
@@ -930,7 +932,7 @@ namespace HttpReports.Storage.SQLServer
 
            ));
 
-            string detailSql = " Select * From RequestDetail Where RequestId = @Id";
+            string detailSql = $" Select * From [{Prefix}RequestDetail] Where RequestId = @Id";
 
             TraceLogSql(detailSql);
 
@@ -946,7 +948,7 @@ namespace HttpReports.Storage.SQLServer
 
         public async Task<IRequestInfo> GetRequestInfo(string Id)
         {
-            string sql = " Select * From RequestInfo Where Id = @Id";
+            string sql = $" Select * From [{Prefix}RequestInfo] Where Id = @Id";
 
             TraceLogSql(sql);
 
@@ -962,7 +964,7 @@ namespace HttpReports.Storage.SQLServer
 
         public async Task<List<IRequestInfo>> GetRequestInfoByParentId(string ParentId)
         {
-            string sql = "Select * From RequestInfo Where ParentId = @ParentId Order By CreateTime ";
+            string sql = $"Select * From [{Prefix}RequestInfo] Where ParentId = @ParentId Order By CreateTime ";
 
             TraceLogSql(sql);
 
@@ -977,20 +979,20 @@ namespace HttpReports.Storage.SQLServer
 
         public async Task ClearData(string StartTime)
         {
-             string sql = "Delete From RequestInfo Where CreateTime <= @StartTime ";  
+             string sql = $"Delete From [{Prefix}RequestInfo] Where CreateTime <= @StartTime ";  
              await LoggingSqlOperation(async _ => await _.ExecuteAsync(sql, new { StartTime }));
 
-            string detailSql = "Delete From RequestDetail Where CreateTime <= @StartTime ";
+            string detailSql = $"Delete From [{Prefix}RequestDetail] Where CreateTime <= @StartTime ";
             await LoggingSqlOperation(async _ => await _.ExecuteAsync(detailSql, new { StartTime }));
 
-            string performanceSql = "Delete From Performance Where CreateTime <= @StartTime "; 
+            string performanceSql = $"Delete From [{Prefix}Performance] Where CreateTime <= @StartTime "; 
             await LoggingSqlOperation(async _ => await _.ExecuteAsync(performanceSql, new { StartTime }));
         }
 
 
         public async Task SetLanguage(string Language)
         {
-            string sql = $" Update [SysConfig] Set [Value] = @Language Where [Key] = '{BasicConfig.Language}' ";
+            string sql = $" Update [{Prefix}SysConfig] Set [Value] = @Language Where [Key] = '{BasicConfig.Language}' ";
 
             TraceLogSql(sql);
 
@@ -1003,7 +1005,7 @@ namespace HttpReports.Storage.SQLServer
 
         public async Task<string> GetSysConfig(string Key)
         {
-            string sql = $@"Select [Value] From [SysConfig] Where [Key] = @Key ";
+            string sql = $@"Select [Value] From [{Prefix}SysConfig] Where [Key] = @Key ";
 
             TraceLogSql(sql);
 
@@ -1018,7 +1020,7 @@ namespace HttpReports.Storage.SQLServer
 
         public async Task<List<ServiceInstanceInfo>> GetServiceInstance(DateTime startTime)
         {
-            string sql = "Select [Node],[LocalIP],[LocalPort] from RequestInfo where CreateTime >= @CreateTime GROUP BY [Node],[LocalIP],[LocalPort]  ORDER BY [LocalIP],[LocalPort] ";
+            string sql = $"Select [Node],[LocalIP],[LocalPort] from [{Prefix}RequestInfo] where CreateTime >= @CreateTime GROUP BY [Node],[LocalIP],[LocalPort]  ORDER BY [LocalIP],[LocalPort] ";
 
             TraceLogSql(sql);
 
@@ -1052,7 +1054,7 @@ namespace HttpReports.Storage.SQLServer
             }
 
 
-            string sql = " Select * From Performance " + where;
+            string sql = $" Select * From [{Prefix}Performance] " + where;
 
             TraceLogSql(sql);
 
@@ -1071,7 +1073,7 @@ namespace HttpReports.Storage.SQLServer
         {
             performance.Id = MD5_16(Guid.NewGuid().ToString());
 
-            string sql = $@"Insert Into [Performance] 
+            string sql = $@"Insert Into [{Prefix}Performance] 
             ([Id],[Service],[Instance],[GCGen0],[GCGen1],[GCGen2],[HeapMemory],[ProcessCPU],[ProcessMemory],[ThreadCount],[PendingThreadCount],[CreateTime])
              Values (@Id,@Service,@Instance,@GCGen0,@GCGen1,@GCGen2,@HeapMemory,@ProcessCPU,@ProcessMemory,@ThreadCount,@PendingThreadCount,@CreateTime)";
 

@@ -27,12 +27,15 @@ namespace HttpReports.Storage.PostgreSQL
 
         public ILogger<PostgreSQLStorage> Logger { get; }
 
+        private string Prefix { get; set; } = string.Empty;
+
         private readonly AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail> _deferFlushCollection = null;
 
         public PostgreSQLStorage(IOptions<PostgreStorageOptions> options, PostgreConnectionFactory connectionFactory, ILogger<PostgreSQLStorage> logger)
         {
             Options = options.Value;
             ConnectionFactory = connectionFactory;
+            if (!Options.TablePrefix.IsEmpty()) Prefix = Options.TablePrefix + ".";
             Logger = logger;
             if (Options.EnableDefer)
             {
@@ -56,7 +59,7 @@ namespace HttpReports.Storage.PostgreSQL
                
                 }));
 
-                await connection.ExecuteAsync($@"INSERT INTO ""RequestInfo"" (Id,ParentId,Node, Route, Url,RequestType,Method, Milliseconds, StatusCode, IP,Port,LocalIP,LocalPort,CreateTime) VALUES {request}",BuildParameters(requestInfos));
+                await connection.ExecuteAsync($@"INSERT INTO ""{Prefix}RequestInfo"" (Id,ParentId,Node, Route, Url,RequestType,Method, Milliseconds, StatusCode, IP,Port,LocalIP,LocalPort,CreateTime) VALUES {request}",BuildParameters(requestInfos));
 
                 string detail = string.Join(",", requestDetails.Select(item => { 
 
@@ -67,7 +70,7 @@ namespace HttpReports.Storage.PostgreSQL
 
                 }));
 
-                await connection.ExecuteAsync($@"Insert into ""RequestDetail"" (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime) VALUES {detail}",BuildParameters(requestDetails));
+                await connection.ExecuteAsync($@"Insert into ""{Prefix}RequestDetail"" (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime) VALUES {detail}",BuildParameters(requestDetails));
  
 
             }, "请求数据批量保存失败");
@@ -105,7 +108,7 @@ namespace HttpReports.Storage.PostgreSQL
         {
             job.Id = MD5_16(Guid.NewGuid().ToString());
 
-            string sql = $@"Insert Into ""MonitorJob"" 
+            string sql = $@"Insert Into ""{Prefix}MonitorJob"" 
             (Id,Title,Description,CronLike,Emails,WebHook,Mobiles,Status,Service,Instance,PayLoad,CreateTime)
              Values (@Id,@Title,@Description,@CronLike,@Emails,@WebHook, @Mobiles,@Status,@Service,@Instance,@PayLoad,@CreateTime)";
 
@@ -129,9 +132,9 @@ namespace HttpReports.Storage.PostgreSQL
             {
                 await LoggingSqlOperation(async connection =>
                 { 
-                    await connection.ExecuteAsync(@"INSERT INTO ""RequestInfo"" (Id,ParentId,Node, Route,Url,RequestType, Method, Milliseconds, StatusCode, IP,Port,LocalIP,LocalPort,CreateTime) VALUES (@Id,@ParentId,@Node, @Route, @Url,@RequestType, @Method, @Milliseconds, @StatusCode, @IP,@Port,@LocalIP,@LocalPort,@CreateTime)", request);
+                    await connection.ExecuteAsync($@"INSERT INTO ""{Prefix}RequestInfo"" (Id,ParentId,Node, Route,Url,RequestType, Method, Milliseconds, StatusCode, IP,Port,LocalIP,LocalPort,CreateTime) VALUES (@Id,@ParentId,@Node, @Route, @Url,@RequestType, @Method, @Milliseconds, @StatusCode, @IP,@Port,@LocalIP,@LocalPort,@CreateTime)", request);
 
-                    await connection.ExecuteAsync(@"INSERT INTO ""RequestDetail"" (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime)  VALUES (@Id,@RequestId,@Scheme,@QueryString,@Header,@Cookie,@RequestBody,@ResponseBody,@ErrorMessage,@ErrorStack,@CreateTime)",detail);
+                    await connection.ExecuteAsync($@"INSERT INTO ""{Prefix}RequestDetail"" (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime)  VALUES (@Id,@RequestId,@Scheme,@QueryString,@Header,@Cookie,@RequestBody,@ResponseBody,@ErrorMessage,@ErrorStack,@CreateTime)", detail);
                      
                 }, "请求数据保存失败");
             }
@@ -139,7 +142,7 @@ namespace HttpReports.Storage.PostgreSQL
 
         public async Task<SysUser> CheckLogin(string Username, string Password)
         {
-            string sql = $@" Select * From ""SysUser"" Where UserName = @UserName AND Password = @Password ";
+            string sql = $@" Select * From ""{Prefix}SysUser"" Where UserName = @UserName AND Password = @Password ";
 
             TraceLogSql(sql);
 
@@ -153,7 +156,7 @@ namespace HttpReports.Storage.PostgreSQL
 
         public async Task<bool> DeleteMonitorJob(string Id)
         {
-            string sql = $@"Delete From ""MonitorJob"" Where Id = @Id ";
+            string sql = $@"Delete From ""{Prefix}MonitorJob"" Where Id = @Id ";
 
             TraceLogSql(sql);
 
@@ -168,11 +171,11 @@ namespace HttpReports.Storage.PostgreSQL
 
             string sql = $@"
 
-Select COUNT(1) AS Total From ""RequestInfo"" {where};
-Select COUNT(1) AS Code404 From ""RequestInfo"" {where} AND StatusCode = 404;
-Select COUNT(1) AS Code500 From ""RequestInfo"" {where} AND StatusCode = 500;
-Select Count(1)  From ( Select Distinct Url From ""RequestInfo"" ) A;
-Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
+Select COUNT(1) AS Total From ""{Prefix}RequestInfo"" {where};
+Select COUNT(1) AS Code404 From ""{Prefix}RequestInfo"" {where} AND StatusCode = 404;
+Select COUNT(1) AS Code500 From ""{Prefix}RequestInfo"" {where} AND StatusCode = 500;
+Select Count(1)  From ( Select Distinct Url From ""{Prefix}RequestInfo"" ) A;
+Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
 
             TraceLogSql(sql);
 
@@ -197,7 +200,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
         public async Task<List<IMonitorJob>> GetMonitorJobs()
         {
-            string sql = $@"Select * From ""MonitorJob"" ";
+            string sql = $@"Select * From ""{Prefix}MonitorJob"" ";
 
             TraceLogSql(sql);
 
@@ -212,7 +215,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
         public async Task<List<RequestAvgResponeTime>> GetRequestAvgResponeTimeStatisticsAsync(RequestInfoFilterOption filterOption)
         {
-            string sql = $@"Select Url,Avg(Milliseconds) AS Time FROM ""RequestInfo"" {BuildSqlFilter(filterOption)} Group By Url order by Time {BuildSqlControl(filterOption)}";
+            string sql = $@"Select Url,Avg(Milliseconds) AS Time FROM ""{Prefix}RequestInfo"" {BuildSqlFilter(filterOption)} Group By Url order by Time {BuildSqlControl(filterOption)}";
 
             TraceLogSql(sql);
 
@@ -221,7 +224,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
         public async Task<int> GetRequestCountAsync(RequestCountFilterOption filterOption)
         {
-            var sql = $@"SELECT COUNT(1) FROM ""RequestInfo"" {BuildSqlFilter(filterOption)}";
+            var sql = $@"SELECT COUNT(1) FROM ""{Prefix}RequestInfo"" {BuildSqlFilter(filterOption)}";
 
             TraceLogSql(sql);
 
@@ -240,10 +243,10 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
                 ipFilter = "IP NOT IN " + ipFilter;
             }
 
-            var sql = $@"SELECT COUNT(1) AS TOTAL FROM ""RequestInfo"" {BuildSqlFilter(filterOption)} AND {ipFilter} GROUP BY IP ORDER BY TOTAL DESC LIMIT 1";
+            var sql = $@"SELECT COUNT(1) AS TOTAL FROM ""{Prefix}RequestInfo"" {BuildSqlFilter(filterOption)} AND {ipFilter} GROUP BY IP ORDER BY TOTAL DESC LIMIT 1";
             TraceLogSql(sql);
             var max = await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql));
-            sql = $@"SELECT COUNT(1) AS TOTAL FROM ""RequestInfo"" {BuildSqlFilter(filterOption)} AND {ipFilter}";
+            sql = $@"SELECT COUNT(1) AS TOTAL FROM ""{Prefix}RequestInfo"" {BuildSqlFilter(filterOption)} AND {ipFilter}";
             TraceLogSql(sql);
             var all = await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql));
             return (max, all);
@@ -255,7 +258,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
             var dateFormat = GetDateFormat(filterOption);
 
-            string sql = $@"Select {dateFormat} AS KeyField,COUNT(1) AS ValueField From ""RequestInfo"" {where} Group by KeyField;";
+            string sql = $@"Select {dateFormat} AS KeyField,COUNT(1) AS ValueField From ""{Prefix}RequestInfo"" {where} Group by KeyField;";
 
             TraceLogSql(sql);
 
@@ -282,7 +285,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
             var dateFormat = GetDateFormat(filterOption);
 
-            string sql = $@"Select {dateFormat} AS KeyField,AVG(Milliseconds) AS ValueField From ""RequestInfo"" {where} Group by KeyField;";
+            string sql = $@"Select {dateFormat} AS KeyField,AVG(Milliseconds) AS ValueField From ""{Prefix}RequestInfo"" {where} Group by KeyField;";
 
             TraceLogSql(sql);
 
@@ -307,7 +310,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
         {
             string where = BuildSqlFilter(filterOption, true);
 
-            var sql = string.Join(" Union ", filterOption.StatusCodes.Select(m => $@"Select '{m}' AS Code,COUNT(1) AS Total From ""RequestInfo"" {where} AND StatusCode = {m}"));
+            var sql = string.Join(" Union ", filterOption.StatusCodes.Select(m => $@"Select '{m}' AS Code,COUNT(1) AS Total From ""{Prefix}RequestInfo"" {where} AND StatusCode = {m}"));
 
             TraceLogSql(sql);
 
@@ -328,11 +331,11 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
                 var max = group[i, 1];
                 if (min < max)
                 {
-                    sqlBuilder.Append($@"Select {i + 1} AS Id,'{min}-{max}' AS Name, Count(1) AS Total From ""RequestInfo"" {where} AND Milliseconds >= {min} AND Milliseconds < {max} union ");
+                    sqlBuilder.Append($@"Select {i + 1} AS Id,'{min}-{max}' AS Name, Count(1) AS Total From ""{Prefix}RequestInfo"" {where} AND Milliseconds >= {min} AND Milliseconds < {max} union ");
                 }
                 else
                 {
-                    sqlBuilder.Append($@"Select {i + 1} AS Id,'{min}以上' AS Name, Count(1) AS Total From ""RequestInfo"" {where} AND Milliseconds >= {min} union ");
+                    sqlBuilder.Append($@"Select {i + 1} AS Id,'{min}以上' AS Name, Count(1) AS Total From ""{Prefix}RequestInfo"" {where} AND Milliseconds >= {min} union ");
                 }
             }
 
@@ -347,7 +350,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
         public async Task<SysUser> GetSysUser(string UserName)
         {
-            string sql = $@" Select * From ""SysUser"" Where UserName = @UserName";
+            string sql = $@" Select * From ""{Prefix}SysUser"" Where UserName = @UserName";
 
             TraceLogSql(sql);
 
@@ -361,7 +364,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
         public async Task<int> GetTimeoutResponeCountAsync(RequestCountFilterOption filterOption, int timeoutThreshold)
         {
             var where = BuildSqlFilter(filterOption);
-            var sql = $@"SELECT COUNT(1) FROM  ""RequestInfo"" {(string.IsNullOrWhiteSpace(where) ? "WHERE" : where)} AND Milliseconds >= {timeoutThreshold}";
+            var sql = $@"SELECT COUNT(1) FROM  ""{Prefix}RequestInfo"" {(string.IsNullOrWhiteSpace(where) ? "WHERE" : where)} AND Milliseconds >= {timeoutThreshold}";
 
             TraceLogSql(sql);
 
@@ -370,7 +373,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
         public async Task<List<UrlRequestCount>> GetUrlRequestStatisticsAsync(RequestInfoFilterOption filterOption)
         {
-            string sql = $@"Select Url,COUNT(1) as Total From ""RequestInfo"" {BuildSqlFilter(filterOption)} Group By Url order by Total {BuildSqlControl(filterOption)};";
+            string sql = $@"Select Url,COUNT(1) as Total From ""{Prefix}RequestInfo"" {BuildSqlFilter(filterOption)} Group By Url order by Total {BuildSqlControl(filterOption)};";
 
             TraceLogSql(sql);
 
@@ -383,10 +386,10 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
             {
                 using (var con = ConnectionFactory.GetConnection())
                 {
-                    if (await con.QueryFirstOrDefaultAsync<int>("select count(1) from pg_class where relname = 'RequestInfo' ") == 0 )
+                    if (await con.QueryFirstOrDefaultAsync<int>($"select count(1) from pg_class where relname = '{Prefix}RequestInfo' ") == 0 )
                     {
-                        await con.ExecuteAsync(@"
-                            CREATE TABLE ""RequestInfo"" ( 
+                        await con.ExecuteAsync($@"
+                            CREATE TABLE ""{Prefix}RequestInfo"" ( 
                               ID varchar(50) Primary Key,
                               ParentId varchar(50),
                               Node varchar(50) ,
@@ -405,10 +408,10 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
                         "). ConfigureAwait(false); 
                     }
 
-                    if (await con.QueryFirstOrDefaultAsync<int>("select count(1) from pg_class where relname = 'RequestDetail' ") == 0)
+                    if (await con.QueryFirstOrDefaultAsync<int>($"select count(1) from pg_class where relname = '{Prefix}RequestDetail' ") == 0)
                     {
-                        await con.ExecuteAsync(@"
-                            CREATE TABLE ""RequestDetail"" ( 
+                        await con.ExecuteAsync($@"
+                            CREATE TABLE ""{Prefix}RequestDetail"" ( 
                                 ID varchar(50) Primary Key,
                                 RequestId varchar(50),
                                 Scheme varchar(10),
@@ -424,11 +427,11 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
                         ");
                     }
 
-                    if (await con.QueryFirstOrDefaultAsync<int>("select count(1) from pg_class where relname = 'Performance' ") == 0)
+                    if (await con.QueryFirstOrDefaultAsync<int>($"select count(1) from pg_class where relname = '{Prefix}Performance' ") == 0)
                     {
-                        await con.ExecuteAsync(@" 
+                        await con.ExecuteAsync($@" 
 
-                            CREATE TABLE ""Performance"" ( 
+                            CREATE TABLE ""{Prefix}Performance"" ( 
                                 ID varchar(50) Primary Key,
                                 Service varchar(200),
                                 Instance varchar(200),
@@ -451,16 +454,16 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
 
 
-                    if (await con.QueryFirstOrDefaultAsync<int>($"select count(1) from information_schema.columns where table_catalog = '{ConnectionFactory.DataBase}' and table_name = 'MonitorJob' and column_name = 'nodes' ") > 0)
+                    if (await con.QueryFirstOrDefaultAsync<int>($"select count(1) from information_schema.columns where table_catalog = '{ConnectionFactory.DataBase}' and table_name = '{Prefix}MonitorJob' and column_name = 'nodes' ") > 0)
                     {
-                        await con.ExecuteAsync($@"DROP TABLE ""MonitorJob"" ");
+                        await con.ExecuteAsync($@"DROP TABLE ""{Prefix}MonitorJob"" ");
                     } 
 
 
-                    if (await con.QueryFirstOrDefaultAsync<int>("select count(1) from pg_class where relname = 'MonitorJob' ") == 0)
+                    if (await con.QueryFirstOrDefaultAsync<int>($"select count(1) from pg_class where relname = '{Prefix}MonitorJob' ") == 0)
                     {
-                        await con.ExecuteAsync(@"
-                            CREATE TABLE ""MonitorJob"" ( 
+                        await con.ExecuteAsync($@"
+                            CREATE TABLE ""{Prefix}MonitorJob"" ( 
                               ID varchar(50) Primary Key,
                               Title varchar(255) ,
                               Description varchar(255),
@@ -477,10 +480,10 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
                         ");
                     }
 
-                    if (await con.QueryFirstOrDefaultAsync<int>("select count(1) from pg_class where relname = 'SysUser' ") == 0)
+                    if (await con.QueryFirstOrDefaultAsync<int>($"select count(1) from pg_class where relname = '{Prefix}SysUser' ") == 0)
                     {
-                        await con.ExecuteAsync(@"
-                            CREATE TABLE ""SysUser"" ( 
+                        await con.ExecuteAsync($@"
+                            CREATE TABLE ""{Prefix}SysUser"" ( 
                               ID varchar(50) Primary Key,
                               UserName varchar(255) ,
                               Password varchar(255) 
@@ -488,10 +491,10 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
                         ");
                     }
 
-                    if (await con.QueryFirstOrDefaultAsync<int>("select count(1) from pg_class where relname = 'SysConfig' ") == 0)
+                    if (await con.QueryFirstOrDefaultAsync<int>($"select count(1) from pg_class where relname = '{Prefix}SysConfig' ") == 0)
                     {
-                        await con.ExecuteAsync(@"
-                            CREATE TABLE ""SysConfig"" ( 
+                        await con.ExecuteAsync($@"
+                            CREATE TABLE ""{Prefix}SysConfig"" ( 
                               ID varchar(50) Primary Key,
                               Key varchar(255) ,
                               Value varchar(255) 
@@ -499,28 +502,28 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
                         ");
                     }
 
-                    if (await con.QueryFirstOrDefaultAsync<int>(@"Select count(1) from ""SysUser"" ") == 0)
+                    if (await con.QueryFirstOrDefaultAsync<int>($@"Select count(1) from ""{Prefix}SysUser"" ") == 0)
                     {
-                        await con.ExecuteAsync($@" Insert Into ""SysUser"" (Id,UserName,Password) Values ('{MD5_16(Guid.NewGuid().ToString())}', '{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ");
+                        await con.ExecuteAsync($@" Insert Into ""{Prefix}SysUser"" (Id,UserName,Password) Values ('{MD5_16(Guid.NewGuid().ToString())}', '{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ");
                     }
                      
 
 
-                    var lang = await con.QueryFirstOrDefaultAsync<string>($@"Select * from ""SysConfig"" Where Key =  '{BasicConfig.Language}' ");
+                    var lang = await con.QueryFirstOrDefaultAsync<string>($@"Select * from ""{Prefix}SysConfig"" Where Key =  '{BasicConfig.Language}' ");
 
                     if (!lang.IsEmpty())
                     {
                         if (lang.ToLowerInvariant() == "chinese" || lang.ToLowerInvariant() == "english")
                         {
-                            await con.ExecuteAsync($@" Delete From ""SysConfig"" Where Key =  '{BasicConfig.Language}'  ");
+                            await con.ExecuteAsync($@" Delete From ""{Prefix}SysConfig"" Where Key =  '{BasicConfig.Language}'  ");
 
-                            await con.ExecuteAsync($@" Insert Into ""SysConfig"" (Id,Key,Value) Values ('{MD5_16(Guid.NewGuid().ToString())}','{BasicConfig.Language}','en-us') ");
+                            await con.ExecuteAsync($@" Insert Into ""{Prefix}SysConfig"" (Id,Key,Value) Values ('{MD5_16(Guid.NewGuid().ToString())}','{BasicConfig.Language}','en-us') ");
 
                         }
                     }
                     else
                     {
-                        await con.ExecuteAsync($@" Insert Into ""SysConfig"" (Id,Key,Value) Values ('{MD5_16(Guid.NewGuid().ToString())}','{BasicConfig.Language}','en-us') ");
+                        await con.ExecuteAsync($@" Insert Into ""{Prefix}SysConfig"" (Id,Key,Value) Values ('{MD5_16(Guid.NewGuid().ToString())}','{BasicConfig.Language}','en-us') ");
                     }  
                 }
             }
@@ -534,7 +537,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
         {
             var whereBuilder = new StringBuilder(BuildSqlFilter(filterOption), 512);
 
-            var sqlBuilder = new StringBuilder(@"Select * From ""RequestInfo"" ", 512);
+            var sqlBuilder = new StringBuilder($@"Select * From ""{Prefix}RequestInfo"" ", 512);
 
             if (whereBuilder.Length == 0)
             {
@@ -578,7 +581,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
             TraceLogSql(sql);
 
-            var countSql = @"Select count(1) From ""RequestInfo"" " + where;
+            var countSql = $@"Select count(1) From ""{Prefix}RequestInfo"" " + where;
             TraceLogSql(countSql);
 
             var result = new RequestInfoSearchResult()
@@ -598,7 +601,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
         public async Task<bool> UpdateLoginUser(SysUser model)
         {
-            string sql = $@" Update ""SysUser"" Set UserName = @UserName , Password = @Password  Where Id = @Id ";
+            string sql = $@" Update ""{Prefix}SysUser"" Set UserName = @UserName , Password = @Password  Where Id = @Id ";
 
             TraceLogSql(sql);
 
@@ -612,7 +615,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
         public async Task<bool> UpdateMonitorJob(IMonitorJob job)
         {
-            string sql = $@"Update ""MonitorJob""
+            string sql = $@"Update ""{Prefix}MonitorJob""
 
                 Set Title = @Title,Description = @Description,CronLike = @CronLike,Emails = @Emails,WebHook = @WebHook, Mobiles = @Mobiles,Status= @Status,Service = @Service, Instance = @Instance, PayLoad = @PayLoad 
 
@@ -789,7 +792,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
         public async Task<IMonitorJob> GetMonitorJob(string Id)
         {
-            string sql = $@"Select * From ""MonitorJob"" Where Id = @Id ";
+            string sql = $@"Select * From ""{Prefix}MonitorJob"" Where Id = @Id ";
 
             TraceLogSql(sql);
 
@@ -802,7 +805,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
         public async Task<(IRequestInfo, IRequestDetail)> GetRequestInfoDetail(string Id)
         {
-            string sql = $@" Select * From ""RequestInfo"" Where Id = @Id";
+            string sql = $@" Select * From ""{Prefix}RequestInfo"" Where Id = @Id";
 
             TraceLogSql(sql);
 
@@ -812,7 +815,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
            ));
 
-            string detailSql = $@" Select * From ""RequestDetail"" Where RequestId = @Id";
+            string detailSql = $@" Select * From ""{Prefix}RequestDetail"" Where RequestId = @Id";
 
             TraceLogSql(detailSql);
 
@@ -827,7 +830,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
         public async Task<IRequestInfo> GetRequestInfo(string Id)
         {
-            string sql = $@" Select * From ""RequestInfo"" Where Id = @Id";
+            string sql = $@" Select * From ""{Prefix}RequestInfo"" Where Id = @Id";
 
             TraceLogSql(sql);
 
@@ -842,7 +845,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
         public async Task<List<IRequestInfo>> GetRequestInfoByParentId(string ParentId)
         {
-            string sql = $@"Select * From ""RequestInfo"" Where ParentId = @ParentId Order By CreateTime ";
+            string sql = $@"Select * From ""{Prefix}RequestInfo"" Where ParentId = @ParentId Order By CreateTime ";
 
             TraceLogSql(sql);
 
@@ -857,14 +860,14 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
         public async Task ClearData(string StartTime)
         {
-            string sql = @"Delete From ""RequestInfo"" Where CreateTime <= @StartTime "; 
+            string sql = $@"Delete From ""{Prefix}RequestInfo"" Where CreateTime <= @StartTime "; 
             var result = await LoggingSqlOperation(async _ =>  await _.ExecuteAsync(sql, new { StartTime }) );
 
-            string detailSql = @"Delete From ""RequestDetail"" Where CreateTime <= @StartTime ";
+            string detailSql =$@"Delete From ""{Prefix}RequestDetail"" Where CreateTime <= @StartTime ";
             var detailResult = await LoggingSqlOperation(async _ => await _.ExecuteAsync(detailSql, new { StartTime }));
 
 
-            string performanceSql = @"Delete From ""Performance"" Where CreateTime <= @StartTime ";  
+            string performanceSql = $@"Delete From ""{Prefix}Performance"" Where CreateTime <= @StartTime ";  
             await LoggingSqlOperation(async _ => await _.ExecuteAsync(performanceSql, new { StartTime }));
 
 
@@ -872,7 +875,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
         public async Task SetLanguage(string Language)
         {
-            string sql = $@"Update ""SysConfig"" Set Value = @Language Where Key = '{BasicConfig.Language}' ";
+            string sql = $@"Update ""{Prefix}SysConfig"" Set Value = @Language Where Key = '{BasicConfig.Language}' ";
 
             TraceLogSql(sql);
 
@@ -886,7 +889,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
         public async Task<string> GetSysConfig(string Key)
         {
-            string sql = $@"Select Value From ""SysConfig"" Where Key = @Key ";
+            string sql = $@"Select Value From ""{Prefix}SysConfig"" Where Key = @Key ";
 
             TraceLogSql(sql);
 
@@ -901,7 +904,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
 
         public async Task<List<ServiceInstanceInfo>> GetServiceInstance(DateTime startTime)
         {
-            string sql = $@"Select Node,LocalIP,LocalPort from ""RequestInfo"" where CreateTime >= @CreateTime GROUP BY Node,LocalIP,LocalPort ORDER BY LocalIP,LocalPort";
+            string sql = $@"Select Node,LocalIP,LocalPort from ""{Prefix}RequestInfo"" where CreateTime >= @CreateTime GROUP BY Node,LocalIP,LocalPort ORDER BY LocalIP,LocalPort";
 
             TraceLogSql(sql);
 
@@ -935,7 +938,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
             }
 
 
-            string sql = @" Select * From ""Performance"" " + where;
+            string sql = $@" Select * From ""{Prefix}Performance"" " + where;
 
             TraceLogSql(sql);
 
@@ -953,7 +956,7 @@ Select AVG(Milliseconds) AS ART From ""RequestInfo"" {where};";
         {
             performance.Id = MD5_16(Guid.NewGuid().ToString());
 
-            string sql = $@"Insert Into ""Performance"" (Id,Service,Instance,GCGen0,GCGen1,GCGen2,HeapMemory,ProcessCPU,ProcessMemory,ThreadCount,PendingThreadCount,CreateTime)
+            string sql = $@"Insert Into ""{Prefix}Performance"" (Id,Service,Instance,GCGen0,GCGen1,GCGen2,HeapMemory,ProcessCPU,ProcessMemory,ThreadCount,PendingThreadCount,CreateTime)
              Values (@Id,@Service,@Instance,@GCGen0,@GCGen1,@GCGen2,@HeapMemory,@ProcessCPU,@ProcessMemory,@ThreadCount,@PendingThreadCount,@CreateTime)";
 
             TraceLogSql(sql);

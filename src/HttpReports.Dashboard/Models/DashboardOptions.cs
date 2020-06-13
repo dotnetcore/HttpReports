@@ -15,6 +15,9 @@ namespace HttpReports.Dashboard
 
         public int ExpireDay { get; set; } = BasicConfig.ExpireDay;
 
+        public string  TablePrefix { get; set; }
+
+
         public DashboardOptions Value => this; 
     }  
 }

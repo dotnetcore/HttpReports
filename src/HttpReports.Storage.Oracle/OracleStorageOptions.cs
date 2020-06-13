@@ -5,8 +5,7 @@ namespace HttpReports.Storage.Oracle
 {
     public class OracleStorageOptions : IOptions<OracleStorageOptions>
     {
-        public string ConnectionString { get; set; }
-
+        public string ConnectionString { get; set; } 
 
         /// <summary>
         /// 是否启用延时写入

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
+using Google.Protobuf.WellKnownTypes;
 using HttpReports.Core.Config;
 using HttpReports.Core.Interface;
 using HttpReports.Core.Models;
@@ -28,6 +29,8 @@ namespace HttpReports.Storage.MySql
 
         public MySqlConnectionFactory ConnectionFactory { get; }
 
+        private string TablePrefix { get; set; } = string.Empty;
+
         public ILogger<MySqlStorage> Logger { get; }
 
         private readonly AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail> _deferFlushCollection = null;
@@ -35,6 +38,7 @@ namespace HttpReports.Storage.MySql
         public MySqlStorage(IOptions<MySqlStorageOptions> options, MySqlConnectionFactory connectionFactory, ILogger<MySqlStorage> logger)
         {
             Options = options.Value;
+            if (!Options.TablePrefix.IsEmpty()) TablePrefix = Options.TablePrefix + ".";
             ConnectionFactory = connectionFactory;
             Logger = logger;
             if (Options.EnableDefer)
@@ -51,7 +55,7 @@ namespace HttpReports.Storage.MySql
             { 
                 using (var connection = ConnectionFactory.GetConnection())
                 {
-                    await connection.ExecuteAsync(@"CREATE TABLE IF NOT EXISTS `RequestInfo` (
+                    await connection.ExecuteAsync($@"CREATE TABLE IF NOT EXISTS `{TablePrefix}RequestInfo` (
   `Id` varchar(50) NOT NULL,
   `ParentId` varchar(50) NOT NULL,
   `Node` varchar(50) DEFAULT NULL,
@@ -69,7 +73,7 @@ namespace HttpReports.Storage.MySql
   PRIMARY KEY (`Id`) 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
-                    await connection.ExecuteAsync($@"CREATE TABLE IF NOT EXISTS `RequestDetail` (
+                    await connection.ExecuteAsync($@"CREATE TABLE IF NOT EXISTS `{TablePrefix}RequestDetail` (
   `Id` varchar(50) NOT NULL,
   `RequestId` varchar(50) DEFAULT NULL,
   `Scheme` varchar(10) DEFAULT NULL,
@@ -85,13 +89,13 @@ namespace HttpReports.Storage.MySql
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
 
-                if (await connection.QueryFirstOrDefaultAsync<int>($"select  COUNT(1) from information_schema.columns WHERE  TABLE_SCHEMA = '{ConnectionFactory.DataBase}' and table_name = 'MonitorJob' and column_name = 'Nodes' ") > 0)
+                if (await connection.QueryFirstOrDefaultAsync<int>($"select  COUNT(1) from information_schema.columns WHERE  TABLE_SCHEMA = '{ConnectionFactory.DataBase}' and table_name = '{TablePrefix}MonitorJob' and column_name = 'Nodes' ") > 0)
                 {
-                    await connection.ExecuteAsync("DROP TABLE `MonitorJob` ");
+                    await connection.ExecuteAsync($"DROP TABLE `{TablePrefix}MonitorJob` ");
                 }
 
-                        await connection.ExecuteAsync(@"
-CREATE TABLE IF NOT EXISTS `MonitorJob` (
+                        await connection.ExecuteAsync($@"
+CREATE TABLE IF NOT EXISTS `{TablePrefix}MonitorJob` (
   `Id` varchar(50) NOT NULL,
   `Title` varchar(255) DEFAULT NULL,
   `Description` varchar(255) DEFAULT NULL,
@@ -107,8 +111,8 @@ CREATE TABLE IF NOT EXISTS `MonitorJob` (
   PRIMARY KEY (`Id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
 
-                    await connection.ExecuteAsync(@"
-CREATE TABLE IF NOT EXISTS `SysUser` (
+                    await connection.ExecuteAsync($@"
+CREATE TABLE IF NOT EXISTS `{TablePrefix}SysUser` (
   `Id` varchar(50) NOT NULL,
   `UserName` varchar(255) DEFAULT NULL,
   `Password` varchar(255) DEFAULT NULL, 
@@ -116,16 +120,16 @@ CREATE TABLE IF NOT EXISTS `SysUser` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
 
 
-                    await connection.ExecuteAsync(@"
-CREATE TABLE IF NOT EXISTS `SysConfig` (
+                    await connection.ExecuteAsync($@"
+CREATE TABLE IF NOT EXISTS `{TablePrefix}SysConfig` (
   `Id` varchar(50) NOT NULL,
   `Key` varchar(255) DEFAULT NULL,
   `Value` varchar(255) DEFAULT NULL, 
   PRIMARY KEY (`Id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
 
-                    await connection.ExecuteAsync(@"
-CREATE TABLE IF NOT EXISTS `Performance` (
+                    await connection.ExecuteAsync($@"
+CREATE TABLE IF NOT EXISTS `{TablePrefix}Performance` (
   `Id` varchar(50) NOT NULL,
   `Service` varchar(255) DEFAULT NULL,
   `Instance` varchar(255) DEFAULT NULL,
@@ -142,31 +146,31 @@ CREATE TABLE IF NOT EXISTS `Performance` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;"); 
 
 
-                    if (await connection.QueryFirstOrDefaultAsync<int>("Select count(1) from `SysUser`") == 0)
+                    if (await connection.QueryFirstOrDefaultAsync<int>($"Select count(1) from `{TablePrefix}SysUser`") == 0)
                     {
-                        await connection.ExecuteAsync($@" Insert Into `SysUser` (`Id`,`UserName`,`Password`) Values ('{MD5_16(Guid.NewGuid().ToString())}','{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ");
+                        await connection.ExecuteAsync($@" Insert Into `{TablePrefix}SysUser` (`Id`,`UserName`,`Password`) Values ('{MD5_16(Guid.NewGuid().ToString())}','{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ");
                     }
 
-                    var lang = await connection.QueryFirstOrDefaultAsync<string>($"Select * from `SysConfig` Where `Key` =  '{BasicConfig.Language}' ");
+                    var lang = await connection.QueryFirstOrDefaultAsync<string>($"Select * from `{TablePrefix}SysConfig` Where `Key` =  '{BasicConfig.Language}' ");
                      
                     if (!lang.IsEmpty())
                     {
                         if (lang.ToLowerInvariant() == "chinese" || lang.ToLowerInvariant() == "english")
                         {
-                            await connection.ExecuteAsync($@" Delete From `SysConfig` Where `Key` =  '{BasicConfig.Language}'  ");
+                            await connection.ExecuteAsync($@" Delete From `{TablePrefix}SysConfig` Where `Key` =  '{BasicConfig.Language}'  ");
 
-                            await connection.ExecuteAsync($@" Insert Into `SysConfig` Values ('{MD5_16(Guid.NewGuid().ToString())}','{BasicConfig.Language}','en-us') ");
+                            await connection.ExecuteAsync($@" Insert Into `{TablePrefix}SysConfig` Values ('{MD5_16(Guid.NewGuid().ToString())}','{BasicConfig.Language}','en-us') ");
 
                         }  
                     }
                     else
                     {
-                        await connection.ExecuteAsync($@" Insert Into `SysConfig` Values ('{MD5_16(Guid.NewGuid().ToString())}','{BasicConfig.Language}','en-us') ");
+                        await connection.ExecuteAsync($@" Insert Into `{TablePrefix}SysConfig` Values ('{MD5_16(Guid.NewGuid().ToString())}','{BasicConfig.Language}','en-us') ");
                     } 
 
-                    if (await connection.QueryFirstOrDefaultAsync<string>($" SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS where table_schema ='{ConnectionFactory.DataBase}' AND table_name  = 'RequestInfo'  AND COLUMN_NAME = 'Route'") != "varchar(120)")
+                    if (await connection.QueryFirstOrDefaultAsync<string>($" SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS where table_schema ='{ConnectionFactory.DataBase}' AND table_name  = '{TablePrefix}RequestInfo'  AND COLUMN_NAME = 'Route'") != "varchar(120)")
                     {
-                        await connection.ExecuteAsync($" Alter Table `RequestInfo` modify column `Route` varchar(120)");
+                        await connection.ExecuteAsync($" Alter Table `{TablePrefix}RequestInfo` modify column `Route` varchar(120)");
                     }
                 }
             }
@@ -212,7 +216,7 @@ CREATE TABLE IF NOT EXISTS `Performance` (
 
                 }));
 
-                await connection.ExecuteAsync($"INSERT INTO `RequestInfo` (`Id`,`ParentId`,`Node`, `Route`, `Url`,`RequestType`,`Method`, `Milliseconds`, `StatusCode`, `IP`,`Port`,`LocalIP`,`LocalPort`,`CreateTime`) VALUES {requestSql}",BuildParameters(requestInfos));
+                await connection.ExecuteAsync($"INSERT INTO `{TablePrefix}RequestInfo` (`Id`,`ParentId`,`Node`, `Route`, `Url`,`RequestType`,`Method`, `Milliseconds`, `StatusCode`, `IP`,`Port`,`LocalIP`,`LocalPort`,`CreateTime`) VALUES {requestSql}",BuildParameters(requestInfos));
 
                 string detailSql = string.Join(",", requestDetails.Select(detail => {
 
@@ -222,7 +226,7 @@ CREATE TABLE IF NOT EXISTS `Performance` (
                      
                 }));
 
-                await connection.ExecuteAsync($"Insert into `RequestDetail` (`Id`,`RequestId`,`Scheme`,`QueryString`,`Header`,`Cookie`,`RequestBody`,`ResponseBody`,`ErrorMessage`,`ErrorStack`,`CreateTime`) VALUES {detailSql}",BuildParameters(requestDetails));
+                await connection.ExecuteAsync($"Insert into `{TablePrefix}RequestDetail` (`Id`,`RequestId`,`Scheme`,`QueryString`,`Header`,`Cookie`,`RequestBody`,`ResponseBody`,`ErrorMessage`,`ErrorStack`,`CreateTime`) VALUES {detailSql}",BuildParameters(requestDetails));
 
 
             }, "请求数据批量保存失败");
@@ -265,9 +269,9 @@ CREATE TABLE IF NOT EXISTS `Performance` (
             {
                 await LoggingSqlOperation(async connection =>
                 {
-                    await connection.ExecuteAsync("INSERT INTO `RequestInfo` (`Id`,`ParentId`,`Node`, `Route`, `Url`, `RequestType`, `Method`, `Milliseconds`, `StatusCode`, `IP`,`Port`,`LocalIP`,`LocalPort`,`CreateTime`) VALUES (@Id,@ParentId, @Node, @Route, @Url,@RequestType, @Method, @Milliseconds, @StatusCode, @IP,@Port,@LocalIP,@LocalPort, @CreateTime)", request);
+                    await connection.ExecuteAsync($"INSERT INTO `{TablePrefix}RequestInfo` (`Id`,`ParentId`,`Node`, `Route`, `Url`, `RequestType`, `Method`, `Milliseconds`, `StatusCode`, `IP`,`Port`,`LocalIP`,`LocalPort`,`CreateTime`) VALUES (@Id,@ParentId, @Node, @Route, @Url,@RequestType, @Method, @Milliseconds, @StatusCode, @IP,@Port,@LocalIP,@LocalPort, @CreateTime)", request);
 
-                    await connection.ExecuteAsync("INSERT INTO `RequestDetail` (`Id`,`RequestId`,`Scheme`,`QueryString`,`Header`,`Cookie`,`RequestBody`,`ResponseBody`,`ErrorMessage`,`ErrorStack`,`CreateTime`)  VALUES (@Id,@RequestId,@Scheme,@QueryString,@Header,@Cookie,@RequestBody,@ResponseBody,@ErrorMessage,@ErrorStack,@CreateTime)", detail);
+                    await connection.ExecuteAsync($"INSERT INTO `{TablePrefix}RequestDetail` (`Id`,`RequestId`,`Scheme`,`QueryString`,`Header`,`Cookie`,`RequestBody`,`ResponseBody`,`ErrorMessage`,`ErrorStack`,`CreateTime`)  VALUES (@Id,@RequestId,@Scheme,@QueryString,@Header,@Cookie,@RequestBody,@ResponseBody,@ErrorMessage,@ErrorStack,@CreateTime)", detail);
 
                 }, "请求数据保存失败");
             }
@@ -275,7 +279,7 @@ CREATE TABLE IF NOT EXISTS `Performance` (
 
         public async Task<List<UrlRequestCount>> GetUrlRequestStatisticsAsync(RequestInfoFilterOption filterOption)
         {
-            string sql = $"Select Url,COUNT(1) as Total From RequestInfo {BuildSqlFilter(filterOption)} Group By Url order by Total {BuildSqlControl(filterOption)};";
+            string sql = $"Select Url,COUNT(1) as Total From {TablePrefix}RequestInfo {BuildSqlFilter(filterOption)} Group By Url order by Total {BuildSqlControl(filterOption)};";
 
             TraceLogSql(sql);
 
@@ -286,7 +290,7 @@ CREATE TABLE IF NOT EXISTS `Performance` (
 
         public async Task<List<RequestAvgResponeTime>> GetRequestAvgResponeTimeStatisticsAsync(RequestInfoFilterOption filterOption)
         {
-            string sql = $"Select Url,Avg(Milliseconds) Time FROM RequestInfo {BuildSqlFilter(filterOption)} Group By Url order by Time {BuildSqlControl(filterOption)}";
+            string sql = $"Select Url,Avg(Milliseconds) Time FROM {TablePrefix}RequestInfo {BuildSqlFilter(filterOption)} Group By Url order by Time {BuildSqlControl(filterOption)}";
 
             TraceLogSql(sql);
 
@@ -297,7 +301,7 @@ CREATE TABLE IF NOT EXISTS `Performance` (
         {
             string where = BuildSqlFilter(filterOption, true);
 
-            var sql = string.Join(" Union ", filterOption.StatusCodes.Select(m => $"Select '{m}' Code,COUNT(1) Total From RequestInfo {where} AND StatusCode = {m}"));
+            var sql = string.Join(" Union ", filterOption.StatusCodes.Select(m => $"Select '{m}' Code,COUNT(1) Total From {TablePrefix}RequestInfo {where} AND StatusCode = {m}"));
 
             TraceLogSql(sql);
 
@@ -318,11 +322,11 @@ CREATE TABLE IF NOT EXISTS `Performance` (
                 var max = group[i, 1];
                 if (min < max)
                 {
-                    sqlBuilder.Append($"Select {i + 1} Id,'{min}-{max}' Name, Count(1) Total From RequestInfo {where} AND Milliseconds >= {min} AND Milliseconds < {max} union ");
+                    sqlBuilder.Append($"Select {i + 1} Id,'{min}-{max}' Name, Count(1) Total From {TablePrefix}RequestInfo {where} AND Milliseconds >= {min} AND Milliseconds < {max} union ");
                 }
                 else
                 {
-                    sqlBuilder.Append($"Select {i + 1} Id,'{min}以上' Name, Count(1) Total From RequestInfo {where} AND Milliseconds >= {min} union ");
+                    sqlBuilder.Append($"Select {i + 1} Id,'{min}以上' Name, Count(1) Total From {TablePrefix}RequestInfo {where} AND Milliseconds >= {min} union ");
                 }
             }
 
@@ -342,11 +346,11 @@ CREATE TABLE IF NOT EXISTS `Performance` (
         {
             string where = BuildSqlFilter(filterOption);
 
-            string sql = $@"Select COUNT(1) Total From RequestInfo {where};
-Select COUNT(1) Code404 From RequestInfo {where} AND StatusCode = 404;
-Select COUNT(1) Code500 From RequestInfo {where} AND StatusCode = 500;
-Select Count(1) From ( Select Distinct Url From RequestInfo ) A;
-Select AVG(Milliseconds) ART From RequestInfo {where};";
+            string sql = $@"Select COUNT(1) Total From {TablePrefix}RequestInfo {where};
+Select COUNT(1) Code404 From {TablePrefix}RequestInfo {where} AND StatusCode = 404;
+Select COUNT(1) Code500 From {TablePrefix}RequestInfo {where} AND StatusCode = 500;
+Select Count(1) From ( Select Distinct Url From {TablePrefix}RequestInfo ) A;
+Select AVG(Milliseconds) ART From {TablePrefix}RequestInfo {where};";
 
             TraceLogSql(sql);
 
@@ -377,7 +381,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
         {
             var whereBuilder = new StringBuilder(BuildSqlFilter(filterOption), 512);
 
-            var sqlBuilder = new StringBuilder("Select * From RequestInfo ", 512);
+            var sqlBuilder = new StringBuilder($"Select * From {TablePrefix}RequestInfo ", 512);
 
             if (whereBuilder.Length == 0)
             {
@@ -423,7 +427,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             TraceLogSql(sql);
 
-            var countSql = "Select count(1) From RequestInfo " + where;
+            var countSql = $"Select count(1) From {TablePrefix}RequestInfo " + where;
             TraceLogSql(countSql);
 
             var result = new RequestInfoSearchResult()
@@ -448,7 +452,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             var dateFormat = GetDateFormat(filterOption);
 
-            string sql = $"Select {dateFormat} KeyField,COUNT(1) ValueField From RequestInfo {where} Group by KeyField;";
+            string sql = $"Select {dateFormat} KeyField,COUNT(1) ValueField From {TablePrefix}RequestInfo {where} Group by KeyField;";
 
             TraceLogSql(sql);
 
@@ -482,7 +486,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
             var dateFormat = GetDateFormat(filterOption);
 
-            string sql = $"Select {dateFormat} KeyField,AVG(Milliseconds) ValueField From RequestInfo {where} Group by KeyField;";
+            string sql = $"Select {dateFormat} KeyField,AVG(Milliseconds) ValueField From {TablePrefix}RequestInfo {where} Group by KeyField;";
 
             TraceLogSql(sql);
 
@@ -515,7 +519,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
         public async Task<int> GetRequestCountAsync(RequestCountFilterOption filterOption)
         {
-            var sql = $"SELECT COUNT(1) FROM RequestInfo {BuildSqlFilter(filterOption)}";
+            var sql = $"SELECT COUNT(1) From {TablePrefix}RequestInfo {BuildSqlFilter(filterOption)}";
 
             TraceLogSql(sql);
 
@@ -539,10 +543,10 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
                 ipFilter = "IP NOT IN " + ipFilter;
             }
 
-            var sql = $"SELECT COUNT(1) TOTAL FROM RequestInfo {BuildSqlFilter(filterOption)} AND {ipFilter} GROUP BY IP ORDER BY TOTAL DESC LIMIT 1";
+            var sql = $"SELECT COUNT(1) TOTAL From {TablePrefix}RequestInfo {BuildSqlFilter(filterOption)} AND {ipFilter} GROUP BY IP ORDER BY TOTAL DESC LIMIT 1";
             TraceLogSql(sql);
             var max = await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql));
-            sql = $"SELECT COUNT(1) TOTAL FROM RequestInfo {BuildSqlFilter(filterOption)} AND {ipFilter}";
+            sql = $"SELECT COUNT(1) TOTAL From {TablePrefix}RequestInfo {BuildSqlFilter(filterOption)} AND {ipFilter}";
             TraceLogSql(sql);
             var all = await LoggingSqlOperation(async connection => await connection.QueryFirstOrDefaultAsync<int>(sql));
             return (max, all);
@@ -551,7 +555,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
         public async Task<int> GetTimeoutResponeCountAsync(RequestCountFilterOption filterOption, int timeoutThreshold)
         {
             var where = BuildSqlFilter(filterOption);
-            var sql = $"SELECT COUNT(1) FROM  RequestInfo {(string.IsNullOrWhiteSpace(where) ? "WHERE" : where)} AND Milliseconds >= {timeoutThreshold}";
+            var sql = $"SELECT COUNT(1) FROM  {TablePrefix}RequestInfo {(string.IsNullOrWhiteSpace(where) ? "WHERE" : where)} AND Milliseconds >= {timeoutThreshold}";
 
             TraceLogSql(sql);
 
@@ -803,7 +807,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
         {
             job.Id = MD5_16(Guid.NewGuid().ToString());
 
-            string sql = $@"Insert Into MonitorJob 
+            string sql = $@"Insert Into {TablePrefix}MonitorJob 
             (Id,Title,Description,CronLike,Emails,WebHook,Mobiles,Status,Service,Instance,PayLoad,CreateTime)
              Values (@Id,@Title,@Description,@CronLike,@Emails,@WebHook,@Mobiles,@Status,@Service,@Instance,@PayLoad,@CreateTime)";
 
@@ -821,7 +825,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
         {
             performance.Id = MD5_16(Guid.NewGuid().ToString());
 
-            string sql = $@"Insert Into Performance 
+            string sql = $@"Insert Into {TablePrefix}Performance 
             (Id,Service,Instance,GCGen0,GCGen1,GCGen2,HeapMemory,ProcessCPU,ProcessMemory,ThreadCount,PendingThreadCount,CreateTime)
              Values (@Id,@Service,@Instance,@GCGen0,@GCGen1,@GCGen2,@HeapMemory,@ProcessCPU,@ProcessMemory,@ThreadCount,@PendingThreadCount,@CreateTime)";
 
@@ -838,7 +842,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
         public async Task<bool> UpdateMonitorJob(IMonitorJob job)
         {
-            string sql = $@"Update MonitorJob 
+            string sql = $@"Update {TablePrefix}MonitorJob 
 
                 Set Title = @Title,Description = @Description,CronLike = @CronLike,Emails = @Emails,WebHook = @WebHook,Mobiles = @Mobiles,Status= @Status,Service = @Service,Instance = @Instance,PayLoad = @PayLoad 
 
@@ -855,7 +859,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
         public async Task<IMonitorJob> GetMonitorJob(string Id)
         {
-            string sql = $@"Select * From MonitorJob Where Id = @Id ";
+            string sql = $@"Select * From {TablePrefix}MonitorJob Where Id = @Id ";
 
             TraceLogSql(sql);
 
@@ -868,7 +872,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
         public async Task<List<IMonitorJob>> GetMonitorJobs()
         {
-            string sql = $@"Select * From MonitorJob ";
+            string sql = $@"Select * From {TablePrefix}MonitorJob ";
 
             TraceLogSql(sql);
 
@@ -881,7 +885,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
         public async Task<bool> DeleteMonitorJob(string Id)
         {
-            string sql = $@"Delete From MonitorJob Where Id = @Id ";
+            string sql = $@"Delete From {TablePrefix}MonitorJob Where Id = @Id ";
 
             TraceLogSql(sql);
 
@@ -891,7 +895,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
         public async Task<SysUser> CheckLogin(string Username, string Password)
         {
-            string sql = " Select * From SysUser Where UserName = @UserName AND Password = @Password ";
+            string sql = $" Select * From {TablePrefix}SysUser Where UserName = @UserName AND Password = @Password ";
 
             TraceLogSql(sql);
 
@@ -905,7 +909,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
         public async Task<bool> UpdateLoginUser(SysUser model)
         {
-            string sql = " Update SysUser Set UserName = @UserName , Password = @Password  Where Id = @Id ";
+            string sql = $" Update {TablePrefix}SysUser Set UserName = @UserName , Password = @Password  Where Id = @Id ";
 
             TraceLogSql(sql);
 
@@ -919,7 +923,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
         public async Task<SysUser> GetSysUser(string UserName)
         {
-            string sql = " Select * From SysUser Where UserName = @UserName";
+            string sql = $" Select * From {TablePrefix}SysUser Where UserName = @UserName";
 
             TraceLogSql(sql);
 
@@ -932,7 +936,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
         public async Task<(IRequestInfo, IRequestDetail)> GetRequestInfoDetail(string Id)
         {
-            string sql = " Select * From RequestInfo Where Id = @Id";
+            string sql = $" Select * From {TablePrefix}RequestInfo Where Id = @Id";
 
             TraceLogSql(sql);
 
@@ -942,7 +946,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
            ));
 
-            string detailSql = " Select * From RequestDetail Where RequestId = @Id";
+            string detailSql = $" Select * From {TablePrefix}RequestDetail Where RequestId = @Id";
 
             TraceLogSql(detailSql);
 
@@ -964,7 +968,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
         public async Task<IRequestInfo> GetRequestInfo(string Id)
         {
-            string sql = " Select * From RequestInfo Where Id = @Id";
+            string sql = $" Select * From {TablePrefix}RequestInfo Where Id = @Id";
 
             TraceLogSql(sql);
 
@@ -979,7 +983,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
         public async Task<List<IRequestInfo>> GetRequestInfoByParentId(string ParentId)
         {
-            string sql = "Select * From RequestInfo Where ParentId = @ParentId Order By CreateTime ";
+            string sql = $"Select * From {TablePrefix}RequestInfo Where ParentId = @ParentId Order By CreateTime ";
 
             TraceLogSql(sql);
 
@@ -994,20 +998,20 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
         public async Task ClearData(string StartTime)
         {
-            string sql = "Delete From RequestInfo Where CreateTime <= @StartTime ";  
+            string sql = $"Delete From {TablePrefix}RequestInfo Where CreateTime <= @StartTime ";  
             await LoggingSqlOperation(async _ =>  await _.ExecuteAsync(sql, new { StartTime }));  
 
-            string DetailSql = "Delete From RequestDetail Where CreateTime <= @StartTime ";  
+            string DetailSql = $"Delete From {TablePrefix}RequestDetail Where CreateTime <= @StartTime ";  
             await LoggingSqlOperation(async _ => await _.ExecuteAsync(DetailSql, new { StartTime })); 
 
-            string performanceSql = "Delete From Performance Where CreateTime <= @StartTime "; 
+            string performanceSql = $"Delete From {TablePrefix}Performance Where CreateTime <= @StartTime "; 
             await LoggingSqlOperation(async _ =>  await _.ExecuteAsync(performanceSql, new { StartTime }));
 
         }
 
         public async Task SetLanguage(string Language)
         {
-            string sql = $"Update `SysConfig` Set `Value` = @Language Where `Key` = '{BasicConfig.Language}' ";
+            string sql = $"Update `{TablePrefix}SysConfig` Set `Value` = @Language Where `Key` = '{BasicConfig.Language}' ";
 
             TraceLogSql(sql);
 
@@ -1020,7 +1024,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
         public async Task<string> GetSysConfig(string Key)
         {
-            string sql = $"Select `Value` From `SysConfig` Where `Key` = @Key ";
+            string sql = $"Select `Value` From `{TablePrefix}SysConfig` Where `Key` = @Key ";
 
             TraceLogSql(sql);
 
@@ -1035,7 +1039,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
 
         public async Task<List<ServiceInstanceInfo>> GetServiceInstance(DateTime startTime)
         { 
-            string sql = "Select `Node`,`LocalIP`,`LocalPort` from RequestInfo where CreateTime >= @CreateTime GROUP BY `Node`,`LocalIP`,`LocalPort`  ORDER BY `LocalIP`,`LocalPort`  ";
+            string sql = $"Select `Node`,`LocalIP`,`LocalPort` From {TablePrefix}RequestInfo where CreateTime >= @CreateTime GROUP BY `Node`,`LocalIP`,`LocalPort`  ORDER BY `LocalIP`,`LocalPort`  ";
 
             TraceLogSql(sql);  
 
@@ -1065,7 +1069,7 @@ Select AVG(Milliseconds) ART From RequestInfo {where};";
             }
 
 
-            string sql = " Select * From Performance " + where;
+            string sql = $" Select * From {TablePrefix}Performance " + where;
 
             TraceLogSql(sql); 
 

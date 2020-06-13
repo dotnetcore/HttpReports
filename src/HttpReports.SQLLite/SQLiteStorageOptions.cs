@@ -9,6 +9,9 @@ namespace HttpReports.Storage.SQLite
     { 
         public string ConnectionString { get; set; }
 
+        public string TablePrefix { get; set; }
+
+
         /// <summary>
         /// 是否启用延时写入
         /// </summary>
