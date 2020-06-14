@@ -20,6 +20,14 @@ Github地址：**https://github.com/dotnetcore/HttpReports**
 
 开源不易，感兴趣的同学欢迎 Github Star 一波...
 
+
+## 在线文档
+
+**https://www.yuque.com/httpreports/docs **  
+
+
+
+
 ## 主要功能
 
 - 接口调用指标分析

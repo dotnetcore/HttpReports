@@ -5,14 +5,14 @@
     <Authors>SpringLee</Authors>
     <Description>HttpReports is an lightweight APM system for microservice in .Net Core 
 
-github: https://github.com/SpringLeee/HttpReports   
+     github: https://github.com/SpringLeee/HttpReports   
 
 </Description>
     <PackageLicenseExpression></PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
     <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
     <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>
-    <Version>1.3.0</Version>
+    <Version>1.5.1</Version>
     <PackageLicenseFile></PackageLicenseFile>
     <PackageId>HttpReports</PackageId>
   </PropertyGroup>

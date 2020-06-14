@@ -15,15 +15,14 @@ namespace HttpReports.Dashboard.WebAPP
        
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpReports().UseSQLiteStorage().UseGrpc();  
+            services.AddHttpReports().UseSQLServerStorage();
 
             services.AddHttpReportsDashboard();
-
         }
 
       
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {  
+        { 
             app.UseHttpReports();
 
             app.UseHttpReportsDashboard();
@@ -37,11 +36,14 @@ namespace HttpReports.Dashboard.WebAPP
 
             app.UseEndpoints(endpoints =>
             { 
-                endpoints.MapHttpReportsGrpcCollector();
+                //endpoints.MapHttpReportsGrpcCollector();
 
-                endpoints.MapGet("/", async context =>
+                endpoints.MapGet("/Test", async context =>
                 {
+                    throw new Exception("error");
+
                     await context.Response.WriteAsync("Hello World!");
+
                 });
             });
         }

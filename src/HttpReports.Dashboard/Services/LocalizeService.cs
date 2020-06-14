@@ -32,11 +32,17 @@ namespace HttpReports.Dashboard.Services
             var files = assembly.GetManifestResourceNames().Where(m => m.StartsWith("HttpReports.Dashboard.HttpReportsStaticFiles.Content.Lang.") && m.EndsWith(".json"));
             foreach (var item in files)
             {
-                var name = item.Replace("HttpReports.Dashboard.HttpReportsStaticFiles.Content.Lang.", string.Empty).Replace(".json", string.Empty);
-                using var memory = new MemoryStream();
-                using var stream = assembly.GetManifestResourceStream(item);
-                await stream.CopyToAsync(memory);
-                LoadLocalize(name, Encoding.UTF8.GetString(memory.ToArray()));
+                var name = item.Replace("HttpReports.Dashboard.HttpReportsStaticFiles.Content.Lang.", string.Empty).Replace(".json", string.Empty); 
+                using (var memory = new MemoryStream())
+                {
+                    using (var stream = assembly.GetManifestResourceStream(item))
+                    {
+                        await stream.CopyToAsync(memory);
+                    }
+
+                    LoadLocalize(name, Encoding.UTF8.GetString(memory.ToArray()));
+
+                }   
             }
 
             Current = _localize.First().Value;

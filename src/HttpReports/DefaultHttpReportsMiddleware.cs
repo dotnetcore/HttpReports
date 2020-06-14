@@ -76,7 +76,7 @@ namespace HttpReports
 
                 await _next(context);
 
-            }
+            } 
             finally
             {
                 stopwatch.Stop();

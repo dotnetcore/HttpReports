@@ -2,7 +2,6 @@
   "profiles": {
     "HttpReports.Dashboard.WebAPP": {
       "commandName": "Project",
-      "commandLineArgs": " --HttpReports__Urls=\"http://localhost:7002\"",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

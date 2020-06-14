@@ -106,7 +106,7 @@ namespace HttpReports
 
             if (request.ErrorStack.Length > max)
             {
-                request.ErrorStack = request.ErrorStack.Substring(0, max - 10);
+                request.ErrorStack = request.ErrorStack.Substring(0, max);
             }
 
             return request;

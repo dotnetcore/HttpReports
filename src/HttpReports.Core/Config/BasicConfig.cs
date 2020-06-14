@@ -22,7 +22,7 @@ namespace HttpReports.Core.Config
 
         public const string HttpReportsResponseBody = "HttpReportsResponseBody";
 
-        public const int HttpReportsFieldMaxLength = 10000;
+        public const int HttpReportsFieldMaxLength = 80000;
 
         public const int ExpireDay = 7;
 

@@ -92,11 +92,23 @@ namespace Microsoft.Extensions.DependencyInjection
             app.Use(async (context, next) =>
             {  
                 if (context.Request.Path.HasValue)
-                { 
-                    if (context.Request.Path.Value.ToLower() == (options.UseHome ? "/" : "dashboard"))
+                {
+                    string Route = context.Request.Path.Value.ToLowerInvariant();
+
+                    if (options.UseHome)
                     {
-                        context.Request.Path = "/HttpReports/Index";
-                    }    
+                        if (Route == "/")
+                        {
+                            context.Request.Path = "/HttpReports/Index";
+                        }  
+                    }
+                    else
+                    {
+                        if (Route == "dashboard" || Route == "/dashboard")
+                        {
+                            context.Request.Path = "/HttpReports/Index";
+                        } 
+                    }   
                 }
 
                 await next(); 

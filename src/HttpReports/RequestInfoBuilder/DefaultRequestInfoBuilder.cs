@@ -27,7 +27,7 @@ namespace HttpReports.RequestInfoBuilder
                 Options.Service = Options.Node.IsEmpty() ? "Default":Options.Node;
             }
 
-            request.Node = Options.Service.Substring(0, 1).ToUpper() + Options.Service.Substring(1).ToLower();
+            request.Node = Options.Service.Substring(0, 1).ToUpper() + Options.Service.Substring(1);
             request.Route = GetRoute(path);
 
             IRequestDetail requestDetail = GetRequestDetail(context, request);
