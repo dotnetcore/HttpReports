@@ -58,8 +58,8 @@ WriteLiteral(@"
     <meta name=""viewport"" content=""width=device-width, initial-scale=1"">
     <title>HttpReports</title>
 
-    <link class=""theme"" id=""theme_light"" href=""/HttpReportsStaticFiles/Content/css/theme/light.css?ver=1.0.5"" rel=""stylesheet"" />
-    <link class=""theme"" id=""theme_dark"" href=""/HttpReportsStaticFiles/Content/css/theme/dark.css?ver=1.0.5"" rel=""stylesheet"" />
+    <link class=""theme"" id=""theme_light"" href=""/HttpReportsStaticFiles/Content/css/theme/light.css?ver=1.0.6"" rel=""stylesheet"" />
+    <link class=""theme"" id=""theme_dark"" href=""/HttpReportsStaticFiles/Content/css/theme/dark.css?ver=1.0.6"" rel=""stylesheet"" />
 
     <link href=""/HttpReportsStaticFiles/Content/login/bootstrap/css/bootstrap.css"" rel=""stylesheet"" />
     <link rel=""stylesheet"" type=""text/css"" href=""/HttpReportsStaticFiles/Content/login/css/my-login.css"">
@@ -83,13 +83,13 @@ WriteLiteral(@"
 WriteLiteral(@"';   </script>
 
     <script src=""/HttpReportsStaticFiles/Content/page/user_login.js?v=1.0.3""></script>
-    <script src=""/HttpReportsStaticFiles/Content/page/main.js?ver=1.0.5""></script>
-    <link href=""/HttpReportsStaticFiles/Content/alert/alert.css?ver=1.0.5"" rel=""stylesheet"" />
-    <script src=""/HttpReportsStaticFiles/Content/alert/alert.js?ver=1.0.5""></script>
+    <script src=""/HttpReportsStaticFiles/Content/page/main.js?ver=1.0.6""></script>
+    <link href=""/HttpReportsStaticFiles/Content/alert/alert.css?ver=1.0.6"" rel=""stylesheet"" />
+    <script src=""/HttpReportsStaticFiles/Content/alert/alert.js?ver=1.0.6""></script>
 
     <link href=""/HttpReportsStaticFiles/Content/message/message.css"" rel=""stylesheet"" />
     <script src=""/HttpReportsStaticFiles/Content/message/message.js""></script>
-    <script src=""/HttpReportsStaticFiles/Content/common/basic.js?ver=1.0.5""></script>
+    <script src=""/HttpReportsStaticFiles/Content/common/basic.js?ver=1.0.6""></script>
     <link rel=""icon"" href=""/HttpReportsStaticFiles/Content/assets/img/img.ico"" type=""image/x-icon"" />
 
 

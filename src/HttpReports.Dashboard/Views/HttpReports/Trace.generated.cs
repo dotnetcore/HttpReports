@@ -324,7 +324,7 @@ WriteLiteral(@"</h3>
             #line default
             #line hidden
 WriteLiteral("\" class=\"trace_id\" />\r\n\r\n<script src=\"/HttpReportsStaticFiles/Content/page/trace." +
-"js?ver=1.0.5\"></script> ");
+"js?ver=1.0.6\"></script> ");
 
 
         }

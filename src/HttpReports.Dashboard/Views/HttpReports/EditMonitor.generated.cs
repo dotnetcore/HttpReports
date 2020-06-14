@@ -1088,7 +1088,7 @@ WriteLiteral(" </button>\r\n\r\n                            <a href=\"/HttpRepor
             #line hidden
 WriteLiteral(" </a>\r\n\r\n                        </div>\r\n\r\n\r\n                    </div>\r\n\r\n      " +
 "          </div>\r\n            </div>\r\n\r\n        </div>\r\n\r\n    </div>\r\n\r\n</div>\r\n" +
-"\r\n<script src=\"/HttpReportsStaticFiles/Content/page/edit_monitor.js?ver=1.0.5\"><" +
+"\r\n<script src=\"/HttpReportsStaticFiles/Content/page/edit_monitor.js?ver=1.0.6\"><" +
 "/script>\r\n\r\n\r\n");
 
 

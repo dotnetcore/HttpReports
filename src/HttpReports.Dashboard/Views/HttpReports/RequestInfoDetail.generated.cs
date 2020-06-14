@@ -443,7 +443,7 @@ WriteLiteral("</td>\r\n                                </tr>\r\n\r\n\r\n        
             #line hidden
 WriteLiteral("\r\n\r\n                </div>\r\n\r\n            </div>\r\n\r\n        </div>\r\n\r\n\r\n    </div" +
 ">\r\n\r\n</div>\r\n\r\n\r\n<script src=\"/HttpReportsStaticFiles/Content/page/requestinfo_d" +
-"etail.js?ver=1.0.5\"></script>\r\n");
+"etail.js?ver=1.0.6\"></script>\r\n");
 
 
         }

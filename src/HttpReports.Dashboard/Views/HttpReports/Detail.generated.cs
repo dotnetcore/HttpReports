@@ -532,7 +532,7 @@ WriteLiteral("</h3>\r\n\r\n    <table class=\"table table-striped table-bordered
 "        <td>ErrorStack</td>\r\n                <td class=\"context_errorStack\" styl" +
 "e=\"text-align:left;font-size:12px\"></td>\r\n            </tr>\r\n\r\n\r\n        </tbody" +
 ">\r\n    </table>\r\n\r\n</div>\r\n\r\n<script src=\"/HttpReportsStaticFiles/Content/page/d" +
-"etail.js?ver=1.0.5\"></script>");
+"etail.js?ver=1.0.6\"></script>");
 
 
         }

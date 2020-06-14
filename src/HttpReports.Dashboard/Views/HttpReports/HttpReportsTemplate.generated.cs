@@ -45,12 +45,12 @@ WriteLiteral("\r\n<!DOCTYPE html>\r\n<html lang=\"zh-cn\">\r\n<head>\r\n    <met
 "rel=\"stylesheet\">\r\n    <link href=\"/HttpReportsStaticFiles/Content/assets/css/fo" +
 "nt-awesome.min.css\" rel=\"stylesheet\">\r\n    <link href=\"/HttpReportsStaticFiles/C" +
 "ontent/assets/css/jquery.mmenu.css\" rel=\"stylesheet\" />\r\n    <link id=\"theme\" hr" +
-"ef=\"/HttpReportsStaticFiles/Content/assets/css/style.min.css?ver=1.0.5\" rel=\"sty" +
+"ef=\"/HttpReportsStaticFiles/Content/assets/css/style.min.css?ver=1.0.6\" rel=\"sty" +
 "lesheet\">\r\n    <link href=\"/HttpReportsStaticFiles/Content/assets/css/add-ons.mi" +
-"n.css?ver=1.0.5\" rel=\"stylesheet\">\r\n    <link href=\"/HttpReportsStaticFiles/Cont" +
+"n.css?ver=1.0.6\" rel=\"stylesheet\">\r\n    <link href=\"/HttpReportsStaticFiles/Cont" +
 "ent/bootstrap/bootstrap_switch/_3._3._4/bootstrap-switch.css\" rel=\"stylesheet\" /" +
 ">\r\n\r\n\r\n    <link class=\"theme\" id=\"theme_light\" href=\"/HttpReportsStaticFiles/Co" +
-"ntent/css/theme/light.css?ver=1.0.5\" rel=\"stylesheet\" />\r\n    <link class=\"theme" +
+"ntent/css/theme/light.css?ver=1.0.6\" rel=\"stylesheet\" />\r\n    <link class=\"theme" +
 "\" id=\"theme_dark\" href=\"/HttpReportsStaticFiles/Content/css/theme/dark.css?ver=1" +
 ".0.5\" rel=\"stylesheet\" />\r\n    <link href=\"/HttpReportsStaticFiles/Content/css/a" +
 "nimate/_3._5._2/animate.min.css\" rel=\"stylesheet\" />\r\n\r\n\r\n    <script src=\"/Http" +
@@ -70,14 +70,14 @@ WriteLiteral("\r\n<!DOCTYPE html>\r\n<html lang=\"zh-cn\">\r\n<head>\r\n    <met
 "\n    <script src=\"/HttpReportsStaticFiles/Content/echarts/_4._3._0/macarons.js\">" +
 "</script>\r\n    <script src=\"/HttpReportsStaticFiles/Content/echarts/_4._3._0/dar" +
 "k.js\"></script>\r\n\r\n    <link href=\"/HttpReportsStaticFiles/Content/busyload/app." +
-"css?ver=1.0.5\" rel=\"stylesheet\" />\r\n    <script src=\"/HttpReportsStaticFiles/Con" +
-"tent/busyload/app.js?ver=1.0.5\"></script>\r\n\r\n    <!-- CSS 引入 -->\r\n    <script sr" +
+"css?ver=1.0.6\" rel=\"stylesheet\" />\r\n    <script src=\"/HttpReportsStaticFiles/Con" +
+"tent/busyload/app.js?ver=1.0.6\"></script>\r\n\r\n    <!-- CSS 引入 -->\r\n    <script sr" +
 "c=\"/HttpReportsStaticFiles/Content/laydate/laydate.js\"></script>\r\n\r\n    <script " +
 "src=\"/HttpReportsStaticFiles/Content/assets/js/jquery.goup.js\"></script>\r\n\r\n    " +
-"<link href=\"/HttpReportsStaticFiles/Content/alert/alert.css?ver=1.0.5\" rel=\"styl" +
+"<link href=\"/HttpReportsStaticFiles/Content/alert/alert.css?ver=1.0.6\" rel=\"styl" +
 "esheet\" />\r\n\r\n    <script src=\"/HttpReportsStaticFiles/Content/alert/alert.js?ve" +
 "r=1.0.5\"></script>\r\n    <script src=\"/HttpReportsStaticFiles/Content/js/bootstra" +
-"p-treeview.js?ver=1.0.5\"></script>\r\n\r\n\r\n    <link href=\"/HttpReportsStaticFiles/" +
+"p-treeview.js?ver=1.0.6\"></script>\r\n\r\n\r\n    <link href=\"/HttpReportsStaticFiles/" +
 "Content/message/message.css\" rel=\"stylesheet\" />\r\n    <script src=\"/HttpReportsS" +
 "taticFiles/Content/message/message.js\"></script>  \r\n\r\n    <script>  var langForm" +
 "at = \'");
@@ -91,9 +91,9 @@ WriteLiteral("\r\n<!DOCTYPE html>\r\n<html lang=\"zh-cn\">\r\n<head>\r\n    <met
             #line default
             #line hidden
 WriteLiteral("\';   </script>\r\n\r\n    <script src=\"/HttpReportsStaticFiles/Content/common/basic.j" +
-"s?ver=1.0.5\"></script>\r\n    <link href=\"/HttpReportsStaticFiles/Content/common/b" +
-"asic.css?ver=1.0.5\" rel=\"stylesheet\" />\r\n\r\n\r\n    <script src=\"/HttpReportsStatic" +
-"Files/Content/page/main.js?ver=1.0.5\"></script>\r\n\r\n\r\n    <link rel=\"icon\" href=\"" +
+"s?ver=1.0.6\"></script>\r\n    <link href=\"/HttpReportsStaticFiles/Content/common/b" +
+"asic.css?ver=1.0.6\" rel=\"stylesheet\" />\r\n\r\n\r\n    <script src=\"/HttpReportsStatic" +
+"Files/Content/page/main.js?ver=1.0.6\"></script>\r\n\r\n\r\n    <link rel=\"icon\" href=\"" +
 "/HttpReportsStaticFiles/Content/assets/img/img.ico\" type=\"image/x-icon\" />\r\n\r\n</" +
 "head>\r\n\r\n<body> \r\n\r\n\r\n    <!-- start: Header -->\r\n    <div class=\"navbar\" role=\"" +
 "navigation\">\r\n\r\n        <div class=\"container-fluid\">\r\n\r\n            <ul class=\"" +
