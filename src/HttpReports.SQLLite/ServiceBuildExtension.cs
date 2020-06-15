@@ -15,7 +15,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder.UseSQLiteStorageService();
         }
 
-        public static IHttpReportsBuilder UseMySqlStorage(this IHttpReportsBuilder builder, Action<SQLiteStorageOptions> options)
+        public static IHttpReportsBuilder UseSQLiteStorage(this IHttpReportsBuilder builder, Action<SQLiteStorageOptions> options)
         {
             builder.Services.AddOptions();
             builder.Services.Configure<SQLiteStorageOptions>(options);

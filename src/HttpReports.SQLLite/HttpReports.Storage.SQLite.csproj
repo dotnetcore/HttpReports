@@ -1,9 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+ 
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.5.0</Version>
+    <PackageId>HttpReports.SQLite</PackageId>
+    <Version>1.5.3.1</Version>
     <Authors>SpringLee</Authors>
+    <Description>HttpReports.SQLite Storage</Description>
+    <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>
+    <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup> 
