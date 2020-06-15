@@ -22,10 +22,9 @@ namespace HttpReports.Dashboard
         private readonly RequestDelegate _next;
        
 
-        public DashboardMiddleware(RequestDelegate next )
+        public DashboardMiddleware(RequestDelegate next)
         {
-            _next = next;
-           
+            _next = next; 
         }
 
 
@@ -139,18 +138,16 @@ namespace HttpReports.Dashboard
 
                           
 
-                        }
-
-
-                        await httpContext.Response.WriteAsync(html);
+                        }  
                     }
+
+                    await httpContext.Response.WriteAsync(html);
+
                 }
                 catch (Exception ex)
                 {
-                    //_logger.LogError("&&&&&&&&&&&&&&&&");
-                    //_logger.LogError(ex.ToString());
-                    throw ex;
-                }  
+                    
+                } 
             }  
         }
 

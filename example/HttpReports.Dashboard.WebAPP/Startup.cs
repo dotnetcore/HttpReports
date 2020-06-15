@@ -15,9 +15,9 @@ namespace HttpReports.Dashboard.WebAPP
        
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpReports().UseSQLServerStorage();
+            services.AddHttpReports().UseMySqlStorage();
 
-            services.AddHttpReportsDashboard();
+            services.AddHttpReportsDashboard().UseMySqlStorage();
         }
 
       
@@ -39,9 +39,7 @@ namespace HttpReports.Dashboard.WebAPP
                 //endpoints.MapHttpReportsGrpcCollector();
 
                 endpoints.MapGet("/Test", async context =>
-                {
-                    throw new Exception("error");
-
+                { 
                     await context.Response.WriteAsync("Hello World!");
 
                 });

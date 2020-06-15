@@ -5,8 +5,8 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5010
+          "Host": "https://www.yuque.com/httpreports/docs",
+          "Port": 80
         }
       ],
       "UpstreamPathTemplate": "/{url}",
