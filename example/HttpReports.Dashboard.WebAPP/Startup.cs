@@ -15,7 +15,7 @@ namespace HttpReports.Dashboard.WebAPP
        
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpReports().UseMySqlStorage();
+            services.AddHttpReports().UseMySqlStorage().UseGrpcReportsTransport();
 
             services.AddHttpReportsDashboard().UseMySqlStorage();
         }
@@ -36,7 +36,7 @@ namespace HttpReports.Dashboard.WebAPP
 
             app.UseEndpoints(endpoints =>
             { 
-                //endpoints.MapHttpReportsGrpcCollector();
+                endpoints.MapHttpReportsGrpcCollector();
 
                 endpoints.MapGet("/Test", async context =>
                 { 
