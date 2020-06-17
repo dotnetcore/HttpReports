@@ -25,12 +25,12 @@ namespace HttpReports.Service
 
             var process = Process.GetCurrentProcess();
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                MemoryCounter = new PerformanceCounter("Process", "Working Set - Private", process.ProcessName);
+            //if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            //{
+            //    MemoryCounter = new PerformanceCounter("Process", "Working Set - Private", process.ProcessName);
 
-                CPUCounter = new PerformanceCounter("Process","% Processor Time", process.ProcessName); 
-            }
+            //    CPUCounter = new PerformanceCounter("Process","% Processor Time", process.ProcessName); 
+            //}
         }
 
         public Task<IPerformance> GetPerformance(string Instance)
