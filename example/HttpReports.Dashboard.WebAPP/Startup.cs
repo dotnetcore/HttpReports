@@ -18,6 +18,9 @@ namespace HttpReports.Dashboard.WebAPP
             services.AddHttpReports().UseMySqlStorage().UseGrpcReportsTransport();
 
             services.AddHttpReportsDashboard().UseMySqlStorage();
+
+            services.AddHttpClient();
+
         }
 
       

@@ -73,7 +73,7 @@ namespace HttpReports.Transport.Grpc
 
         public Task Write(IRequestInfo requestInfo, IRequestDetail requestDetail)
         {
-            _deferFlushCollection.Push(requestInfo as HttpReports.Collector.Grpc.RequestInfo, requestDetail as HttpReports.Collector.Grpc.RequestDetail);
+            _deferFlushCollection.Flush(requestInfo as HttpReports.Collector.Grpc.RequestInfo, requestDetail as HttpReports.Collector.Grpc.RequestDetail);
 
             return Task.CompletedTask;
         }   

@@ -267,7 +267,7 @@ namespace HttpReports.Storage.SQLServer
         {
             if (_options.EnableDefer)
             {
-                _deferFlushCollection.Push(request, detail);
+                _deferFlushCollection.Flush(request, detail);
             }
             else
             {
