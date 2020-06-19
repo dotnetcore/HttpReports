@@ -67,9 +67,7 @@ namespace HttpReports.Service
                  ProcessMemory = ProcessMemory().ToString().ToDouble(2),
                  ProcessCPU = ProcessCPU().ToString().ToDouble(2),
                  CreateTime = DateTime.Now 
-            };
-
-            _logger.LogInformation($" CLR ProcessMemory {performance.ProcessMemory}  ProcessCPU {performance.ProcessCPU}  ");
+            }; 
 
             return Task.FromResult(performance); 
         }
