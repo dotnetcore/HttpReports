@@ -51,6 +51,8 @@ namespace HttpReports.Dashboard.WebAPP
 
         public void MapRoute(IApplicationBuilder app)
         {
+            string address = "http://moa.hengyinfs.com";
+
             app.Map("/Trace", builder =>
             {
                 builder.Run(async context =>
@@ -58,7 +60,7 @@ namespace HttpReports.Dashboard.WebAPP
                     System.Threading.Thread.Sleep(new Random().Next(111, 5555));
 
                     HttpClient client = new HttpClient();
-                    var response = await client.GetStringAsync("http://localhost:" + context.Connection.LocalPort + "/Test1");
+                    var response = await client.GetStringAsync(address +"/Test1");
                     await context.Response.WriteAsync(response);
 
                 });
@@ -72,7 +74,7 @@ namespace HttpReports.Dashboard.WebAPP
                     System.Threading.Thread.Sleep(new Random().Next(111,5555));
 
                     HttpClient client = new HttpClient();
-                    var response = await client.GetStringAsync("http://localhost:"+context.Connection.LocalPort+"/Test2");
+                    var response = await client.GetStringAsync(address + "/Test2");
                     await context.Response.WriteAsync(response);
 
                 });
@@ -86,7 +88,7 @@ namespace HttpReports.Dashboard.WebAPP
                     System.Threading.Thread.Sleep(new Random().Next(111, 5555));
 
                     HttpClient client = new HttpClient();
-                    var response = await client.GetStringAsync("http://localhost:" + context.Connection.LocalPort + "/Test3");
+                    var response = await client.GetStringAsync(address + "/Test3");
                     await context.Response.WriteAsync(response);
 
                 });
@@ -100,7 +102,7 @@ namespace HttpReports.Dashboard.WebAPP
                     System.Threading.Thread.Sleep(new Random().Next(111, 5555));
 
                     HttpClient client = new HttpClient();
-                    var response = await client.GetStringAsync("http://localhost:" + context.Connection.LocalPort + "/Test4");
+                    var response = await client.GetStringAsync(address + "/Test4");
                     await context.Response.WriteAsync(response);
 
                 });
@@ -115,7 +117,7 @@ namespace HttpReports.Dashboard.WebAPP
                     System.Threading.Thread.Sleep(new Random().Next(111, 5555));
 
                     HttpClient client = new HttpClient();
-                    var response = await client.GetStringAsync("http://localhost:" + context.Connection.LocalPort + "/Test5");
+                    var response = await client.GetStringAsync(address + "/Test5");
                     await context.Response.WriteAsync(response);
 
                 });
