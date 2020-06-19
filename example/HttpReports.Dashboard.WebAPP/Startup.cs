@@ -23,7 +23,7 @@ namespace HttpReports.Dashboard.WebAPP
 
       
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        { 
+        {   
             app.UseHttpReports();
 
             app.UseHttpReportsDashboard();

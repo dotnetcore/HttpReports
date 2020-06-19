@@ -90,7 +90,7 @@ namespace HttpReports
             Task.Run(AutoFlushAsync, _autoFlushCTS.Token);
         }
 
-        public void Push(T t,K k)
+        public void Flush(T t,K k)
         {
             lock (_syncRoot)
             {

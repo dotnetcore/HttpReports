@@ -32,8 +32,7 @@ namespace HttpReports
 
         public virtual IRequestDetail CreateRequestDetail() => new RequestDetail();
 
-        public virtual IRequestInfo CreateRequestInfo() => new RequestInfo();
-
+        public virtual IRequestInfo CreateRequestInfo() => new RequestInfo(); 
 
         public virtual IPerformance CreatePerformance() => new Performance();
     }

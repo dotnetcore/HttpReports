@@ -263,7 +263,7 @@ CREATE TABLE IF NOT EXISTS `{TablePrefix}Performance` (
         {
             if (Options.EnableDefer)
             {
-                _deferFlushCollection.Push(request, detail);
+                _deferFlushCollection.Flush(request, detail);
             }
             else
             {

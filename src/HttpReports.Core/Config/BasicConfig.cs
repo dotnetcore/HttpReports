@@ -34,6 +34,8 @@ namespace HttpReports.Core.Config
 
         public const string ActiveTraceCreateTime = "HttpReports.Trace.CreateTime";
 
+        public const string HttpReportsHttpClient = "HttpReports.HttpClient";
+
         public const string ClearDataCornLike = "0 0 0 * * ? ";
 
         public const string HttpReportsGrpcRequest = "HttpReports.GrpcRequest";
@@ -45,6 +47,8 @@ namespace HttpReports.Core.Config
         public const string StaticFilesRoot = "HttpReports.Dashboard";
 
         public const string HttpReportsServerRegister = "/HttpReportsServerRegister";
+
+        public const int PerformanceInerval = 10000;
 
     }
 }
