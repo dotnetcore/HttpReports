@@ -48,5 +48,7 @@ namespace HttpReports.Core.Config
 
         public const string HttpReportsServerRegister = "/HttpReportsServerRegister";
 
+        public const int PerformanceInerval = 10000;
+
     }
 }
