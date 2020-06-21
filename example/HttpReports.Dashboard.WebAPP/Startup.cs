@@ -75,17 +75,11 @@ namespace HttpReports.Dashboard.WebAPP
             {
                 builder.Run(async context =>  
                 {  
-                    var a = System.Diagnostics.Activity.Current;  
+                    var a = System.Diagnostics.Activity.Current;
 
-                    Task.Run(()=> {
+                    HttpClient client = new HttpClient();
+                    var response = client.GetStringAsync("http://www.baidu.com").Result;
 
-                        System.Threading.Thread.Sleep(10000); 
-                        HttpClient client = new HttpClient();
-                        var response =  client.GetStringAsync("http://www.baidu.com").Result;
-
-                    });
-
-                   
                     await context.Response.WriteAsync("OK"); 
 
                 });

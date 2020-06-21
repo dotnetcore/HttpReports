@@ -11,16 +11,18 @@ namespace HttpReports.Core.Diagnostics
 {
     public class HttpClientDiagnosticListener : IDiagnosticListener 
     {
-        private ILogger<HttpClientDiagnosticListener> _logger;
-
-        private HttpContext _context;
+        private ILogger<HttpClientDiagnosticListener> _logger; 
 
         private IReportsTransport _transport;
 
-        public HttpClientDiagnosticListener(ILogger<HttpClientDiagnosticListener> logger,IReportsTransport transport)
+        private ISegmentContext _context;
+
+
+        public HttpClientDiagnosticListener(ILogger<HttpClientDiagnosticListener> logger,IReportsTransport transport, ISegmentContext context)
         {
             _logger = logger;
             _transport = transport;
+            _context = context;
         }
 
 
@@ -37,27 +39,33 @@ namespace HttpReports.Core.Diagnostics
         }
 
         public void OnNext(KeyValuePair<string, object> value)
-        {
-            _context = ServiceContainer.Provider.GetRequiredService<IHttpContextAccessor>()?.HttpContext;
-
+        { 
             if (value.Key == "System.Net.Http.HttpRequestOut.Start")
             {
-                var a = System.Diagnostics.Activity.Current;
+                var activity = System.Diagnostics.Activity.Current; 
+                
+                var request = value.Value.GetType().GetProperty("Request").GetValue(value.Value) as System.Net.Http.HttpRequestMessage;
 
-                _ = a.TraceId;
-                _ = a.ParentSpanId;
-                _ = a.SpanId; 
-
-                var request = value.Value.GetType().GetProperty("Request").GetValue(value.Value) as System.Net.Http.HttpRequestMessage; 
-
-                //request.Headers.Add(BasicConfig.ActiveTraceId,_context.GetTraceId()); 
+                _context.Push(activity.SpanId.ToHexString(),new Segment { 
+                
+                    activity = activity,
+                    CreateTime = DateTime.Now,
+                    Value = request
+                
+                }); 
+              
             } 
 
             if (value.Key == "System.Net.Http.HttpRequestOut.Stop")
             {
-                var a = System.Diagnostics.Activity.Current; 
+                var activity = System.Diagnostics.Activity.Current; 
 
-                var request = value.Value.GetType().GetProperty("Response").GetValue(value.Value) as System.Net.Http.HttpRequestMessage;  
+                var response = value.Value.GetType().GetProperty("Response").GetValue(value.Value) as System.Net.Http.HttpRequestMessage;
+
+                var request = _context.Get(activity.SpanId.ToHexString());  
+
+
+
             }
 
             _logger.LogInformation(value.Key);   

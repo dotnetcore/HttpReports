@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace HttpReports.Core
 {
     public interface ISegmentContext
     {
-        string Component { get; set; }
+        bool Push(string activity,Segment segment);
 
-        string OperateName { get; set; }
+        Segment Get(string Id);
+
     }
 }

@@ -6,5 +6,6 @@ namespace HttpReports.Core.Diagnostics
 {
     public class HttpClientDiagnosticSegment
     {
+
     }
 }
