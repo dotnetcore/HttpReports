@@ -1,9 +1,11 @@
-﻿using System;
+﻿using System; 
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using HttpReports;
+using HttpReports.Core;
+using HttpReports.Core.Diagnostics;
 using HttpReports.RequestInfoBuilder;
 using HttpReports.Service;
 using Microsoft.AspNetCore.Authentication;
@@ -50,7 +52,11 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IRequestInfoBuilder, DefaultRequestInfoBuilder>();
             services.AddSingleton<IBackgroundService, HttpReportsBackgroundService>();
             services.AddSingleton<IPerformanceService,PerformanceService>();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); 
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IDiagnosticListener, HttpClientDiagnosticListener>();
+            services.AddSingleton<IDiagnosticListener, GrpcDiagnosticListener>();
+            services.AddSingleton<TraceDiagnsticListenerObserver>();  
+           
 
             services.AddMvcCore(x =>
             {
@@ -62,7 +68,9 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         public static IHttpReportsInitializer UseHttpReports(this IApplicationBuilder app)
-        { 
+        {
+            ServiceContainer.Provider = app.ApplicationServices.GetRequiredService<IServiceProvider>() ?? throw new ArgumentNullException("ServiceProvider Init Faild"); 
+
             Activity.DefaultIdFormat = ActivityIdFormat.W3C; 
 
             IHttpReportsInitializer httpReportsInitializer = app.InitHttpReports().InitStorage();
@@ -74,7 +82,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
             if (!options.Value.Switch) return null; 
 
-            app.UseMiddleware<DefaultHttpReportsMiddleware>();
+            app.UseMiddleware<DefaultHttpReportsMiddleware>(); 
+
+            TraceDiagnsticListenerObserver observer = app.ApplicationServices.GetRequiredService<TraceDiagnsticListenerObserver>();  
+
+            System.Diagnostics.DiagnosticListener.AllListeners.Subscribe(observer); 
+
 
             return httpReportsInitializer;
         }

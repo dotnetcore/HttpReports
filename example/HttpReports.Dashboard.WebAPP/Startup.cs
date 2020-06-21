@@ -16,9 +16,9 @@ namespace HttpReports.Dashboard.WebAPP
        
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpReports().UseSQLServerStorage();
+            services.AddHttpReports().UseMySqlStorage();
 
-            services.AddHttpReportsDashboard().UseSQLServerStorage();
+            services.AddHttpReportsDashboard().UseMySqlStorage();
         }
 
       
@@ -51,17 +51,50 @@ namespace HttpReports.Dashboard.WebAPP
 
         public void MapRoute(IApplicationBuilder app)
         {
-            string address = "http://moa.hengyinfs.com";
+            //string address = "http://moa.hengyinfs.com";
+
+            string address = "http://localhost:5010";
+
+            app.Map("/Trace1", builder =>
+            {
+                builder.Run(async context =>
+                { 
+                    HttpClient client = new HttpClient();
+                    var response = await client.GetStringAsync("http://www.baidu.com");
+                    await context.Response.WriteAsync(response);
+
+                   
+                    response = await client.GetStringAsync("http://www.youku.com");
+                    await context.Response.WriteAsync(response);
+
+                 
+                    response = await client.GetStringAsync("http://www.qq.com");
+                    await context.Response.WriteAsync(response);
+
+                });
+
+            });
+
+
 
             app.Map("/Trace", builder =>
             {
                 builder.Run(async context =>
                 {
-                    System.Threading.Thread.Sleep(new Random().Next(111, 5555));
+                    //System.Threading.Thread.Sleep(new Random().Next(111, 5555));
 
-                    HttpClient client = new HttpClient();
-                    var response = await client.GetStringAsync(address +"/Test1");
-                    await context.Response.WriteAsync(response);
+                    //HttpClient client = new HttpClient();
+                    //var response = await client.GetStringAsync(address +"/Test1");
+                    //await context.Response.WriteAsync(response);
+
+                    System.Net.HttpWebRequest req = (System.Net.HttpWebRequest)System.Net.HttpWebRequest.Create(address + "/Test1");
+
+                    req.Timeout = 5000000;
+
+                    using (System.Net.WebResponse wr = await req.GetResponseAsync()) 
+                    {
+                        await context.Response.WriteAsync("ok");
+                    }  
 
                 });
 

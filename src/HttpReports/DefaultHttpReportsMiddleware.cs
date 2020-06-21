@@ -195,6 +195,23 @@ namespace HttpReports
 
         private void ConfigTrace(HttpContext context)
         {
+            var a = Activity.Current; 
+
+            return;
+
+            if (context.Request.Headers.ContainsKey(BasicConfig.HttpClientTraceId))
+            {
+                var HttpClientTraceId = context.Request.Headers[BasicConfig.HttpClientTraceId];
+
+                Activity activity = new Activity(BasicConfig.ActiveTraceName);
+                activity.SetParentId(HttpClientTraceId);
+                activity.Start();
+                activity.AddBaggage(BasicConfig.ActiveTraceId, activity.Id);
+                context.Items.Add(BasicConfig.ActiveTraceCreateTime, DateTime.Now);
+                context.Response.Headers.Add(BasicConfig.ActiveTraceId, activity.SpanId.ToString());
+            } 
+
+
             if (Activity.Current == null)
             {
                 Activity activity = new Activity(BasicConfig.ActiveTraceName);
