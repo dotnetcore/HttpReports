@@ -9,15 +9,18 @@ using System.Text;
 
 namespace HttpReports.Core.Diagnostics
 {
-    public class HttpClientDiagnosticListener : IDiagnosticListener, IObserver<KeyValuePair<string, object>>
+    public class HttpClientDiagnosticListener : IDiagnosticListener 
     {
         private ILogger<HttpClientDiagnosticListener> _logger;
 
         private HttpContext _context;
 
-        public HttpClientDiagnosticListener(ILogger<HttpClientDiagnosticListener> logger)
+        private IReportsTransport _transport;
+
+        public HttpClientDiagnosticListener(ILogger<HttpClientDiagnosticListener> logger,IReportsTransport transport)
         {
-            _logger = logger;  
+            _logger = logger;
+            _transport = transport;
         }
 
 
@@ -25,12 +28,12 @@ namespace HttpReports.Core.Diagnostics
 
         public void OnCompleted()
         {
-            throw new NotImplementedException();
+             
         }
 
         public void OnError(Exception error)
         {
-            throw new NotImplementedException();
+             
         }
 
         public void OnNext(KeyValuePair<string, object> value)
@@ -39,16 +42,22 @@ namespace HttpReports.Core.Diagnostics
 
             if (value.Key == "System.Net.Http.HttpRequestOut.Start")
             {
-                var request = value.Value.GetType().GetProperty("Request").GetValue(value.Value) as System.Net.Http.HttpRequestMessage;
+                var a = System.Diagnostics.Activity.Current;
 
-                request.Headers.Add(BasicConfig.HttpClientTraceId,System.Diagnostics.Activity.Current.Id);   
+                _ = a.TraceId;
+                _ = a.ParentSpanId;
+                _ = a.SpanId; 
+
+                var request = value.Value.GetType().GetProperty("Request").GetValue(value.Value) as System.Net.Http.HttpRequestMessage; 
+
+                //request.Headers.Add(BasicConfig.ActiveTraceId,_context.GetTraceId()); 
             } 
 
             if (value.Key == "System.Net.Http.HttpRequestOut.Stop")
             {
-                var request = value.Value.GetType().GetProperty("Response").GetValue(value.Value) as System.Net.Http.HttpRequestMessage;
+                var a = System.Diagnostics.Activity.Current; 
 
-                request.Headers.Add(BasicConfig.HttpClientTraceId, System.Diagnostics.Activity.Current.Id);
+                var request = value.Value.GetType().GetProperty("Response").GetValue(value.Value) as System.Net.Http.HttpRequestMessage;  
             }
 
             _logger.LogInformation(value.Key);   

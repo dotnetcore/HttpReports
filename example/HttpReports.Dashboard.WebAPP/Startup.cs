@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Dapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -53,23 +55,38 @@ namespace HttpReports.Dashboard.WebAPP
         {
             //string address = "http://moa.hengyinfs.com";
 
-            string address = "http://localhost:5010";
+            string address = "http://localhost:5010"; 
 
-            app.Map("/Trace1", builder =>
+            app.Map("/SqlClient", builder => {
+
+                builder.Run(async context => 
+                {
+                    SqlConnection connection = new SqlConnection("");
+                    var count = await connection.QueryFirstOrDefaultAsync<int>("select count(1) from requestinfo");
+
+                    await context.Response.WriteAsync(count.ToString()); 
+
+                }); 
+            
+            }); 
+
+
+            app.Map("/HttpClient", builder =>
             {
-                builder.Run(async context =>
-                { 
-                    HttpClient client = new HttpClient();
-                    var response = await client.GetStringAsync("http://www.baidu.com");
-                    await context.Response.WriteAsync(response);
+                builder.Run(async context =>  
+                {  
+                    var a = System.Diagnostics.Activity.Current;  
+
+                    Task.Run(()=> {
+
+                        System.Threading.Thread.Sleep(10000); 
+                        HttpClient client = new HttpClient();
+                        var response =  client.GetStringAsync("http://www.baidu.com").Result;
+
+                    });
 
                    
-                    response = await client.GetStringAsync("http://www.youku.com");
-                    await context.Response.WriteAsync(response);
-
-                 
-                    response = await client.GetStringAsync("http://www.qq.com");
-                    await context.Response.WriteAsync(response);
+                    await context.Response.WriteAsync("OK"); 
 
                 });
 

@@ -21,11 +21,11 @@ namespace HttpReports
 
         public void Process(HttpContext context, Stopwatch stopwatch)
         {
-            var (requestInfo, requestDetail) = RequestInfoBuilder.Build(context, stopwatch);
+            var (requestInfo, requestDetail,requestChains) = RequestInfoBuilder.Build(context, stopwatch);
 
             if (requestInfo != null && requestDetail != null)
             {
-                ReportsTransport.Write(requestInfo, requestDetail);
+                ReportsTransport.Write(requestInfo, requestDetail);  
             }
         }
     }

@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\HttpReports.Collector.Grpc\HttpReports.Collector.Grpc.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Core\HttpReports.Core.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Dashboard\HttpReports.Dashboard.csproj" />

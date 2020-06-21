@@ -55,6 +55,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IDiagnosticListener, HttpClientDiagnosticListener>();
             services.AddSingleton<IDiagnosticListener, GrpcDiagnosticListener>();
+            services.AddSingleton<IDiagnosticListener, SqlClientDiagnosticListener>();
             services.AddSingleton<TraceDiagnsticListenerObserver>();  
            
 

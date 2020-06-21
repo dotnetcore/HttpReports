@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-
+using HttpReports.Core;
 using HttpReports.Core.Config;
 
 using Microsoft.AspNetCore.Http;
@@ -15,12 +15,13 @@ using Newtonsoft.Json;
 namespace HttpReports.RequestInfoBuilder
 {
     internal class DefaultRequestInfoBuilder : BaseRequestInfoBuilder
-    {
+    {  
         public DefaultRequestInfoBuilder(IModelCreator modelCreator, IOptions<HttpReportsOptions> options) : base(modelCreator, options)
         {
+
         }
 
-        protected override (IRequestInfo, IRequestDetail) Build(HttpContext context, IRequestInfo request, string path)
+        protected override (IRequestInfo, IRequestDetail,IEnumerable<IRequestChain>) Build(HttpContext context, IRequestInfo request, string path)
         {
             if (Options.Service.IsEmpty())
             {
@@ -32,11 +33,13 @@ namespace HttpReports.RequestInfoBuilder
 
             IRequestDetail requestDetail = GetRequestDetail(context, request);
 
-            requestDetail.RequestId = request.Id = Activity.Current.SpanId.ToHexString();
+            requestDetail.RequestId = request.Id = context.GetTraceId();
 
-            request.ParentId = Activity.Current.ParentId == null ? string.Empty : Activity.Current.ParentSpanId.ToHexString();
+            request.ParentId = context.GetTraceParentId();
 
-            return (request, requestDetail);
+            IEnumerable<IRequestChain> chains = GetRequestChains(context,request); 
+
+            return (request, requestDetail, chains);
         }
 
         private IRequestDetail GetRequestDetail(HttpContext context, IRequestInfo request)
@@ -45,7 +48,7 @@ namespace HttpReports.RequestInfoBuilder
 
             if (context.Request != null)
             {
-                model.Id = MD5_16(Guid.NewGuid().ToString());
+                model.Id = context.GetUniqueId();
                 model.RequestId = request.Id;
 
                 Dictionary<string, string> cookies = context.Request.Cookies.ToList().ToDictionary(x => x.Key, x => x.Value);
@@ -107,6 +110,15 @@ namespace HttpReports.RequestInfoBuilder
 
             return model;
         }
+
+
+        private IEnumerable<IRequestChain> GetRequestChains(HttpContext context, IRequestInfo request)
+        {
+            var list = context.Items.ToList();    
+
+            return null; 
+        }
+
 
         private string GetRoute(string path)
         {

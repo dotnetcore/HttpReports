@@ -1,5 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using HttpReports.Core;
 using Microsoft.AspNetCore.Http;
 
 namespace HttpReports
@@ -15,6 +18,6 @@ namespace HttpReports
         /// <param name="context"></param>
         /// <param name="stopwatch"></param>
         /// <returns></returns>
-        (IRequestInfo,IRequestDetail) Build(HttpContext context, Stopwatch stopwatch); 
+        (IRequestInfo,IRequestDetail,IEnumerable<IRequestChain> chains) Build(HttpContext context, Stopwatch stopwatch); 
     }
 }

@@ -194,11 +194,7 @@ namespace HttpReports
         }
 
         private void ConfigTrace(HttpContext context)
-        {
-            var a = Activity.Current; 
-
-            return;
-
+        { 
             if (context.Request.Headers.ContainsKey(BasicConfig.HttpClientTraceId))
             {
                 var HttpClientTraceId = context.Request.Headers[BasicConfig.HttpClientTraceId];

@@ -1,7 +1,9 @@
-﻿using HttpReports.Core.Config;
+﻿using HttpReports.Core;
+using HttpReports.Core.Config;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -19,14 +21,13 @@ namespace HttpReports
             ModelCreator = modelCreator;
         }
 
-        protected abstract (IRequestInfo, IRequestDetail) Build(HttpContext context, IRequestInfo request, string path);
+        protected abstract (IRequestInfo, IRequestDetail,IEnumerable<IRequestChain>) Build(HttpContext context, IRequestInfo request, string path);
 
-        public (IRequestInfo, IRequestDetail) Build(HttpContext context, Stopwatch stopwatch)
-        {   
-
+        public (IRequestInfo, IRequestDetail,IEnumerable<IRequestChain> chains) Build(HttpContext context, Stopwatch stopwatch)
+        {    
             var path = (context.Request.Path.Value ?? string.Empty).ToLowerInvariant();
 
-            if (IsFilterRequest(context)) return (null, null); 
+            if (IsFilterRequest(context)) return (null, null, null ); 
 
             // Build RequestInfo
 
@@ -45,9 +46,9 @@ namespace HttpReports
            
             path = path.Replace(@"///", @"/").Replace(@"//", @"/");
 
-            var (requestInfo, requestDetail) = Build(context, request, path);
+            var (requestInfo, requestDetail, requestChains) = Build(context, request, path);
 
-            return (ParseRequestInfo(requestInfo), ParseRequestDetail(requestDetail));
+            return (ParseRequestInfo(requestInfo), ParseRequestDetail(requestDetail),ParseRequestChains(requestChains));
         }
 
         private IRequestInfo ParseRequestInfo(IRequestInfo request)
@@ -111,6 +112,15 @@ namespace HttpReports
 
             return request;
         }
+
+        private IEnumerable<IRequestChain> ParseRequestChains(IEnumerable<IRequestChain> chains)
+        {
+            foreach (var item in chains)
+            {
+                yield return item;
+            } 
+        }  
+
 
         private bool IsFilterRequest(HttpContext context)
         {
