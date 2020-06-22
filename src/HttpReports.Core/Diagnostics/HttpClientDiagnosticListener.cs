@@ -76,8 +76,14 @@ namespace HttpReports.Core.Diagnostics
         }
 
         public IRequestChain Build(string Id)
-        {
+        { 
             var Segments = _context.GetSegments(Id); 
+
+            if (Segments.Count != 2 ||  Segments[0] == null || Segments[1] == null)
+            {
+                return null;
+            }  
+            
 
             _context.Release(Id);
 
