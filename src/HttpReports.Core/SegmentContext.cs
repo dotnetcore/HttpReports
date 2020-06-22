@@ -27,24 +27,23 @@ namespace HttpReports.Core
 
         public bool Push(string Id, Segment segment)
         {
-            if (!_concurrent.ContainsKey(Id))
+            if (_concurrent.ContainsKey(Id))
             {
-                List<Segment> segments = new List<Segment>(); 
+                List<Segment> segments;
 
                 _concurrent.TryGetValue(Id,out segments);
 
-                if (!segments.Any())
-                { 
-                    _concurrent.TryAdd(Id, segments);
-                }
-                 
                 _concurrent.TryRemove(Id,out _);
 
                 segments.Add(segment);
-                return _concurrent.TryAdd(Id, segments);  
-            }
 
-            return false; 
+                return _concurrent.TryAdd(Id, segments); 
+
+            }
+            else
+            {
+                return _concurrent.TryAdd(Id,new List<Segment> { segment });
+            }  
         }
 
         public bool Release(string Id) => _concurrent.TryRemove(Id, out _); 

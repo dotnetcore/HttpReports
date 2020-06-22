@@ -60,7 +60,7 @@ namespace HttpReports.Core.Diagnostics
             {
                 var activity = System.Diagnostics.Activity.Current; 
 
-                var response = value.Value.GetType().GetProperty("Response").GetValue(value.Value) as System.Net.Http.HttpRequestMessage;
+                var response = value.Value.GetType().GetProperty("Response").GetValue(value.Value) as System.Net.Http.HttpResponseMessage;
 
                 _context.Push(activity?.SpanId.ToHexString(), new Segment
                 { 
@@ -82,12 +82,13 @@ namespace HttpReports.Core.Diagnostics
             if (Segments.Count != 2 ||  Segments[0] == null || Segments[1] == null)
             {
                 return null;
-            }  
-            
+            }
+
+            IRequestChain requestChain = new RequestChain(); 
 
             _context.Release(Id);
 
-            return new RequestChain();
+            return requestChain;
         }
     }
 }

@@ -8,6 +8,11 @@ namespace HttpReports.Core.Diagnostics
     {
         public string ListenerName => "Grpc.Net.Client";
 
+        public IRequestChain Build(string Id)
+        {
+            return null;
+        }
+
         public void OnCompleted()
         {
             throw new NotImplementedException();

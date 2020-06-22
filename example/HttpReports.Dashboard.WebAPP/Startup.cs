@@ -61,10 +61,10 @@ namespace HttpReports.Dashboard.WebAPP
 
                 builder.Run(async context => 
                 {
-                    SqlConnection connection = new SqlConnection("");
-                    var count = await connection.QueryFirstOrDefaultAsync<int>("select count(1) from requestinfo");
+                    SqlConnection connection = new SqlConnection("Max Pool Size = 512;server=localhost;uid=sa;pwd=123456;database=HttpReports;");
+                    var count = await connection.QueryFirstOrDefaultAsync<dynamic>("select * from requestinfo");
 
-                    await context.Response.WriteAsync(count.ToString()); 
+                    await context.Response.WriteAsync("ok"); 
 
                 }); 
             
