@@ -9,31 +9,46 @@ namespace HttpReports.Core
 {
     public class SegmentContext:ISegmentContext
     {
-        private ConcurrentDictionary<string,Segment> _concurrent;
+        private ConcurrentDictionary<string,List<Segment>> _concurrent;
 
         public SegmentContext()
         {
-            _concurrent = new ConcurrentDictionary<string, Segment>(); 
+            _concurrent = new ConcurrentDictionary<string,List<Segment>>();
         }
 
-        public Segment Get(string Id)
+        public List<Segment> GetSegments(string Id)
         {
-            Segment entity;
+            List<Segment> segments = new List<Segment>();
 
-            _concurrent.TryGetValue(Id,out entity);
+            _concurrent.TryGetValue(Id,out segments);
 
-            return entity;
+            return segments;
         }
 
         public bool Push(string Id, Segment segment)
         {
             if (!_concurrent.ContainsKey(Id))
             {
-               return _concurrent.TryAdd(Id, segment);
+                List<Segment> segments = new List<Segment>(); 
+
+                _concurrent.TryGetValue(Id,out segments);
+
+                if (!segments.Any())
+                { 
+                    _concurrent.TryAdd(Id, segments);
+                }
+                 
+                _concurrent.TryRemove(Id,out _);
+
+                segments.Add(segment);
+                return _concurrent.TryAdd(Id, segments);  
             }
 
             return false; 
         }
+
+        public bool Release(string Id) => _concurrent.TryRemove(Id, out _); 
+         
     }
 
     public class Segment
@@ -42,8 +57,7 @@ namespace HttpReports.Core
 
         public object Value { get; set; }
 
-        public Activity activity { get; set; }
-
+        public Activity activity { get; set; } 
 
     }
 

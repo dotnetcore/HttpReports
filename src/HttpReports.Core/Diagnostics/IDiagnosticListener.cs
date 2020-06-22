@@ -8,7 +8,7 @@ namespace HttpReports.Core.Diagnostics
     {
         string ListenerName { get; } 
 
-        IRequestChain Release(string Id);  
+        IRequestChain Build(string Id);  
 
     }
 }

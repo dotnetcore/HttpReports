@@ -9,7 +9,9 @@ namespace HttpReports.Core
     {
         bool Push(string activity,Segment segment);
 
-        Segment Get(string Id);
+        List<Segment> GetSegments(string Id);
+
+        bool Release(string Id);
 
     }
 }

@@ -44,9 +44,9 @@ namespace HttpReports.Core.Diagnostics
             {
                 var activity = System.Diagnostics.Activity.Current; 
                 
-                var request = value.Value.GetType().GetProperty("Request").GetValue(value.Value) as System.Net.Http.HttpRequestMessage;
+                var request = value.Value.GetType().GetProperty("Request").GetValue(value.Value) as System.Net.Http.HttpRequestMessage; 
 
-                _context.Push(activity.SpanId.ToHexString(),new Segment { 
+                _context.Push(activity?.SpanId.ToHexString(),new Segment { 
                 
                     activity = activity,
                     CreateTime = DateTime.Now,
@@ -62,13 +62,26 @@ namespace HttpReports.Core.Diagnostics
 
                 var response = value.Value.GetType().GetProperty("Response").GetValue(value.Value) as System.Net.Http.HttpRequestMessage;
 
-                var request = _context.Get(activity.SpanId.ToHexString());  
+                _context.Push(activity?.SpanId.ToHexString(), new Segment
+                { 
+                    activity = activity,
+                    CreateTime = DateTime.Now,
+                    Value = response 
+                }); 
 
-
-
+                Build(activity?.SpanId.ToHexString()); 
             }
 
             _logger.LogInformation(value.Key);   
+        }
+
+        public IRequestChain Build(string Id)
+        {
+            var Segments = _context.GetSegments(Id); 
+
+            _context.Release(Id);
+
+            return new RequestChain();
         }
     }
 }
