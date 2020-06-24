@@ -7,8 +7,7 @@ using System.Text;
 namespace HttpReports.Core.Diagnostics
 {
     public class SqlClientDiagnosticListener : IDiagnosticListener
-    {
-
+    { 
         private ILogger<SqlClientDiagnosticListener> _logger;
 
         private IReportsTransport _transport;

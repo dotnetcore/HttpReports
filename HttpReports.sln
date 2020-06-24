@@ -65,9 +65,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Dashboard.WebAP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OcelotWeb", "example\OcelotWeb\OcelotWeb.csproj", "{B7451C91-07B1-46AB-A25C-2914038826AD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpReports.Transport.Http", "HttpReports.Transport.Http\HttpReports.Transport.Http.csproj", "{4CB227D7-9ED3-4A7A-A51B-C5849522F3F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Transport.Http", "HttpReports.Transport.Http\HttpReports.Transport.Http.csproj", "{4CB227D7-9ED3-4A7A-A51B-C5849522F3F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpReprots.Collector.Http", "src\HttpReprots.Collector.Http\HttpReprots.Collector.Http.csproj", "{74DEF44B-821F-4352-9808-6AA56CF63569}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReprots.Collector.Http", "src\HttpReprots.Collector.Http\HttpReprots.Collector.Http.csproj", "{74DEF44B-821F-4352-9808-6AA56CF63569}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpReports.Diagnostic.MySql.Data", "src\HttpReports.Diagnostic.MySql.Data\HttpReports.Diagnostic.MySql.Data.csproj", "{97AEEF52-FF9B-4DFC-A41C-D35EDCB53DF9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -175,6 +177,10 @@ Global
 		{74DEF44B-821F-4352-9808-6AA56CF63569}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74DEF44B-821F-4352-9808-6AA56CF63569}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74DEF44B-821F-4352-9808-6AA56CF63569}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97AEEF52-FF9B-4DFC-A41C-D35EDCB53DF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97AEEF52-FF9B-4DFC-A41C-D35EDCB53DF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97AEEF52-FF9B-4DFC-A41C-D35EDCB53DF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97AEEF52-FF9B-4DFC-A41C-D35EDCB53DF9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -205,6 +211,7 @@ Global
 		{B7451C91-07B1-46AB-A25C-2914038826AD} = {CDCA953E-391F-422A-85A0-2057B8F2ED96}
 		{4CB227D7-9ED3-4A7A-A51B-C5849522F3F1} = {BAF971BD-0546-4610-A9F6-6F6DC68E6FE7}
 		{74DEF44B-821F-4352-9808-6AA56CF63569} = {BAF971BD-0546-4610-A9F6-6F6DC68E6FE7}
+		{97AEEF52-FF9B-4DFC-A41C-D35EDCB53DF9} = {BAF971BD-0546-4610-A9F6-6F6DC68E6FE7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CF5EB1E6-E330-45DC-80A3-9A2CE692DDE5}

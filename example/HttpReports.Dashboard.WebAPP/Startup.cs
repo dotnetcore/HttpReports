@@ -5,11 +5,14 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Dapper;
+using HttpReports.Core.Diagnostics;
+using HttpReports.Diagnostic.MySql.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MySql.Data.MySqlClient;
 
 namespace HttpReports.Dashboard.WebAPP
 {
@@ -17,8 +20,10 @@ namespace HttpReports.Dashboard.WebAPP
     {
        
         public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddHttpReports().UseMySqlStorage();
+        { 
+            services.AddSingleton<IDiagnosticListener, MySqlDataDiagnosticListener>();
+
+            services.AddHttpReports().UseMySqlStorage(); 
 
             services.AddHttpReportsDashboard().UseMySqlStorage();
         }
@@ -68,7 +73,21 @@ namespace HttpReports.Dashboard.WebAPP
 
                 }); 
             
-            }); 
+            });
+
+
+            app.Map("/MySqlData", builder => {
+
+                builder.Run(async context =>
+                {
+                    MySqlConnection connection = new MySqlConnection("DataBase=HttpReports;Data Source=localhost;User Id=root;Password=123456;");
+                    var count = await connection.QueryFirstOrDefaultAsync<dynamic>("select * from requestinfo");
+
+                    await context.Response.WriteAsync("ok");
+
+                });
+
+            });
 
 
             app.Map("/HttpClient", builder =>
