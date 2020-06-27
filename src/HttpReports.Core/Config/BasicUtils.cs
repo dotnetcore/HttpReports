@@ -24,7 +24,7 @@ namespace HttpReports.Core.Config
         }
 
         public static string GetTraceId(this HttpContext context)
-        { 
+        {  
             if (context.Items.ContainsKey(BasicConfig.ActiveTraceId))
             {
                 return context.Items[BasicConfig.ActiveTraceId].ToString();
@@ -37,14 +37,14 @@ namespace HttpReports.Core.Config
 
         public static string GetTraceParentId(this HttpContext context)
         {
-            if (context.Request.Headers.ContainsKey(BasicConfig.ActiveTraceId))
+            if (context.Items.ContainsKey(BasicConfig.ActiveTraceParentId))
             {
-                return context.Request.Headers[BasicConfig.ActiveTraceId].ToString();
+                return context.Items[BasicConfig.ActiveTraceParentId].ToString();
             }
             else
             {
                 return string.Empty;
-            }  
+            }
         }   
 
     }

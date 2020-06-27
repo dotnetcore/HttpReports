@@ -5,8 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Dapper;
-using HttpReports.Core.Diagnostics;
-using HttpReports.Diagnostic.MySql.Data;
+using HttpReports.Core.Diagnostics; 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -20,12 +19,10 @@ namespace HttpReports.Dashboard.WebAPP
     {
        
         public void ConfigureServices(IServiceCollection services)
-        { 
-            services.AddSingleton<IDiagnosticListener, MySqlDataDiagnosticListener>();
+        {  
+            services.AddHttpReports().UseSQLServerStorage(); 
 
-            services.AddHttpReports().UseMySqlStorage(); 
-
-            services.AddHttpReportsDashboard().UseMySqlStorage();
+            services.AddHttpReportsDashboard().UseSQLServerStorage();
         }
 
       
@@ -76,7 +73,7 @@ namespace HttpReports.Dashboard.WebAPP
             });
 
 
-            app.Map("/MySqlData", builder => {
+            app.Map("/MySql", builder => {
 
                 builder.Run(async context =>
                 {
@@ -87,7 +84,7 @@ namespace HttpReports.Dashboard.WebAPP
 
                 });
 
-            });
+            }); 
 
 
             app.Map("/HttpClient", builder =>

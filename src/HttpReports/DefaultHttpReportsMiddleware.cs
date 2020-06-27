@@ -194,50 +194,27 @@ namespace HttpReports
         }
 
         private void ConfigTrace(HttpContext context)
-        { 
-            if (context.Request.Headers.ContainsKey(BasicConfig.HttpClientTraceId))
+        {
+            var parentId = context.Request.Headers.ContainsKey(BasicConfig.HttpClientTraceId) ?
+                context.Request.Headers[BasicConfig.ActiveTraceParentId].ToString() : string.Empty;
+
+            Activity activity = new Activity(BasicConfig.ActiveTraceName);
+
+            if (!parentId.IsEmpty())
             {
-                var HttpClientTraceId = context.Request.Headers[BasicConfig.HttpClientTraceId];
-
-                Activity activity = new Activity(BasicConfig.ActiveTraceName);
-                activity.SetParentId(HttpClientTraceId);
-                activity.Start();
-                activity.AddBaggage(BasicConfig.ActiveTraceId, activity.Id);
-                context.Items.Add(BasicConfig.ActiveTraceCreateTime, DateTime.Now);
-                context.Response.Headers.Add(BasicConfig.ActiveTraceId, activity.SpanId.ToString());
-            } 
-
-
-            if (Activity.Current == null)
-            {
-                Activity activity = new Activity(BasicConfig.ActiveTraceName);
-                activity.Start();
-                activity.AddBaggage(BasicConfig.ActiveTraceId, activity.Id);
-                context.Items.Add(BasicConfig.ActiveTraceCreateTime, DateTime.Now);
-                context.Response.Headers.Add(BasicConfig.ActiveTraceId, activity.SpanId.ToString());
-                return;
-            }
-
-            var parentId = Activity.Current.GetBaggageItem(BasicConfig.ActiveTraceId);
-
-            if (string.IsNullOrEmpty(parentId))
-            {
-                Activity.Current = null;
-                Activity activity = new Activity(BasicConfig.ActiveTraceName);
-                activity.Start();
-                activity.AddBaggage(BasicConfig.ActiveTraceId, activity.Id);
-                context.Items.Add(BasicConfig.ActiveTraceCreateTime, DateTime.Now);
-                context.Response.Headers.Add(BasicConfig.ActiveTraceId, activity.SpanId.ToString());
-            }
-            else
-            {
-                Activity activity = new Activity(BasicConfig.ActiveTraceName);
                 activity.SetParentId(parentId);
-                activity.Start();
-                activity.AddBaggage(BasicConfig.ActiveTraceId, activity.Id);
-                context.Items.Add(BasicConfig.ActiveTraceCreateTime, DateTime.Now);
-                context.Response.Headers.Add(BasicConfig.ActiveTraceId, activity.SpanId.ToString());
-            }
+            } 
+           
+            activity.Start();
+            activity.AddBaggage(BasicConfig.ActiveTraceId, activity.SpanId.ToHexString());
+            activity.AddBaggage(BasicConfig.ActiveTraceParentId, activity.ParentSpanId.ToHexString());
+            context.Response.Headers.Add(BasicConfig.ActiveTraceId, activity.SpanId.ToString());
+
+
+            context.Items.Add(BasicConfig.ActiveTraceCreateTime, DateTime.Now);
+            context.Items.Add(BasicConfig.ActiveTraceId,activity.SpanId.ToHexString());
+            context.Items.Add(BasicConfig.ActiveTraceParentId, activity.ParentSpanId.ToHexString());
+
         }
 
         private bool FilterStaticFiles(HttpContext context)

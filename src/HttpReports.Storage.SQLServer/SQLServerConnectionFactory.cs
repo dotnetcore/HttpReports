@@ -17,6 +17,11 @@ namespace HttpReports.Storage.SQLServer
             DataBase = new SqlConnectionStringBuilder(Options.ConnectionString).InitialCatalog;
         }
 
-        public IDbConnection GetConnection() => new SqlConnection(Options.ConnectionString);
+        public IDbConnection GetConnection()
+        {
+            SqlConnection connection = new SqlConnection(Options.ConnectionString); 
+
+            return connection;
+        }  
     }
 }

@@ -21,7 +21,7 @@ namespace HttpReports.RequestInfoBuilder
 
         }
 
-        protected override (IRequestInfo, IRequestDetail,IEnumerable<IRequestChain>) Build(HttpContext context, IRequestInfo request, string path)
+        protected override (IRequestInfo, IRequestDetail) Build(HttpContext context, IRequestInfo request, string path)
         {
             if (Options.Service.IsEmpty())
             {
@@ -35,11 +35,9 @@ namespace HttpReports.RequestInfoBuilder
 
             requestDetail.RequestId = request.Id = context.GetTraceId();
 
-            request.ParentId = context.GetTraceParentId();
+            request.ParentId = context.GetTraceParentId(); 
 
-            IEnumerable<IRequestChain> chains = GetRequestChains(context,request); 
-
-            return (request, requestDetail, chains);
+            return (request, requestDetail);
         }
 
         private IRequestDetail GetRequestDetail(HttpContext context, IRequestInfo request)

@@ -29,7 +29,10 @@ namespace HttpReports.Storage.MySql
                 Database = null,
             };
 
-            return new MySqlConnection(builder.ToString());
+            MySqlConnection connection = new MySqlConnection(builder.ToString());
+             
+
+            return connection;
         }
     }
 }

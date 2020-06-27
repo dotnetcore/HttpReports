@@ -1,5 +1,4 @@
-﻿using AspectCore.Extensions.Reflection;
-using HttpReports.Core.Config;
+﻿using HttpReports.Core.Config;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

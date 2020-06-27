@@ -18,6 +18,6 @@ namespace HttpReports
         /// <param name="context"></param>
         /// <param name="stopwatch"></param>
         /// <returns></returns>
-        (IRequestInfo,IRequestDetail,IEnumerable<IRequestChain> chains) Build(HttpContext context, Stopwatch stopwatch); 
+        (IRequestInfo,IRequestDetail ) Build(HttpContext context, Stopwatch stopwatch); 
     }
 }

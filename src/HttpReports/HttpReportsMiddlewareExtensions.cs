@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using HttpReports;
 using HttpReports.Core;
 using HttpReports.Core.Diagnostics;
+using HttpReports.Diagnostic.SqlClient;
 using HttpReports.RequestInfoBuilder;
 using HttpReports.Service;
 using Microsoft.AspNetCore.Authentication;
@@ -88,8 +89,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             TraceDiagnsticListenerObserver observer = app.ApplicationServices.GetRequiredService<TraceDiagnsticListenerObserver>();  
 
-            System.Diagnostics.DiagnosticListener.AllListeners.Subscribe(observer); 
-
+            System.Diagnostics.DiagnosticListener.AllListeners.Subscribe(observer);  
 
             return httpReportsInitializer;
         }

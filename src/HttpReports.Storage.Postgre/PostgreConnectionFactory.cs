@@ -30,7 +30,9 @@ namespace HttpReports.Storage.PostgreSQL
                 Database = null,
             };
 
-            return new NpgsqlConnection(builder.ToString());
+            NpgsqlConnection connection = new NpgsqlConnection(builder.ToString());  
+
+            return connection;
         } 
 
     }
