@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using HttpReports.Core.Config;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -153,7 +154,7 @@ namespace HttpReports
 
                 context.Request.Body.Position = 0;
 
-                return result;
+                return HttpUtility.UrlDecode(result);
             }
             catch (Exception ex)
             {
@@ -183,7 +184,7 @@ namespace HttpReports
 
                 context.Response.Body.Seek(0, SeekOrigin.Begin);
 
-                return result;
+                return HttpUtility.UrlDecode(result);
 
             }
             catch (Exception ex)
