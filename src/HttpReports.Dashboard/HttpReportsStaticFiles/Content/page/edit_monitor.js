@@ -155,10 +155,10 @@ function BindMonitorJob() {
                 $(".HttpPercent").val(job.errorResponseMonitor.percentage); 
             } 
 
-            if (job.ipMonitor != null) {
+            if (job.ipMonitor != null) { 
 
                 $('.checkbox').eq(3).bootstrapSwitch('state', job.ipMonitor.status > 0);
-                $(".IPWhiteList").val(job.ipMonitor.WhiteList);
+                $(".IPWhiteList").val(job.ipMonitor.whiteList);
                 $(".IPPercent").val(job.ipMonitor.percentage); 
             }  
 

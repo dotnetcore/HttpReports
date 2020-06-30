@@ -198,14 +198,11 @@ namespace HttpReports
             var parentId = context.Request.Headers.ContainsKey(BasicConfig.HttpClientTraceId) ?
                 context.Request.Headers[BasicConfig.ActiveTraceParentId].ToString() : string.Empty;
 
-            Activity activity = new Activity(BasicConfig.ActiveTraceName);
+            Activity activity = new Activity(BasicConfig.ActiveTraceName);  
 
-            if (!parentId.IsEmpty())
-            {
-                activity.SetParentId(parentId);
-            } 
-           
             activity.Start();
+            activity.SetParentId(parentId);
+
             activity.AddBaggage(BasicConfig.ActiveTraceId, activity.SpanId.ToHexString());
             activity.AddBaggage(BasicConfig.ActiveTraceParentId, activity.ParentSpanId.ToHexString());
             context.Response.Headers.Add(BasicConfig.ActiveTraceId, activity.SpanId.ToString());

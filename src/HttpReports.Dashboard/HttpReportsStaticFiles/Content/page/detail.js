@@ -107,7 +107,12 @@ function InitTable() {
             {
                 field: 'ip',
                 title: lang.Request_RemoteIP,
-                align: 'center'
+                align: 'center',
+                formatter: function (value, row, index) {
+
+                    var btn = `<span>${row.localIP}:${row.localPort}</span>`;
+                    return btn;
+                }
 
             },
 
@@ -128,7 +133,7 @@ function InitTable() {
                 width: '80px',
                 formatter: function (value, row, index) {
 
-                    var btn = `<a href="#"> <i onclick="bind_context('${value}')" class="request-info fa fa-exchange" ></i></a>`;
+                    var btn = `<a style="cursor:pointer"> <i onclick="bind_context('${value}')" class="request-info fa fa-exchange" ></i></a>`;
                     return btn;
                 }
             },
@@ -258,10 +263,10 @@ function bind_context(Id) {
 
 } 
 
-function show_modal() {
-
+function show_modal() {  
   
     $(".contextBox").show();
+
     new mSlider({
         dom: ".contextBox",
         distance: "40%",
@@ -271,8 +276,8 @@ function show_modal() {
             $(".contextBox").getNiceScroll().remove();
             
         }
-    }).open();
-
+    }).open(); 
+   
 
     $('.contextBox').niceScroll({
         cursorcolor: "#ccc",

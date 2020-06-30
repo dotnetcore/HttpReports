@@ -41,50 +41,54 @@ WriteLiteral("\r\n");
 WriteLiteral("\r\n<!DOCTYPE html>\r\n<html lang=\"zh-cn\">\r\n<head>\r\n    <meta charset=\"utf-8\">\r\n    <" +
 "meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\r\n    <meta name=\"viewport\" " +
 "content=\"width=device-width, initial-scale=1\">\r\n    <title>HttpReports</title>\r\n" +
-"\r\n    <link href=\"/HttpReportsStaticFiles/Content/assets/css/bootstrap.min.css\" " +
-"rel=\"stylesheet\">\r\n    <link href=\"/HttpReportsStaticFiles/Content/assets/css/fo" +
-"nt-awesome.min.css\" rel=\"stylesheet\">\r\n    <link href=\"/HttpReportsStaticFiles/C" +
-"ontent/assets/css/jquery.mmenu.css\" rel=\"stylesheet\" />\r\n    <link id=\"theme\" hr" +
-"ef=\"/HttpReportsStaticFiles/Content/assets/css/style.min.css?ver=1.0.6\" rel=\"sty" +
-"lesheet\">\r\n    <link href=\"/HttpReportsStaticFiles/Content/assets/css/add-ons.mi" +
-"n.css?ver=1.0.6\" rel=\"stylesheet\">\r\n    <link href=\"/HttpReportsStaticFiles/Cont" +
-"ent/bootstrap/bootstrap_switch/_3._3._4/bootstrap-switch.css\" rel=\"stylesheet\" /" +
-">\r\n\r\n\r\n    <link class=\"theme\" id=\"theme_light\" href=\"/HttpReportsStaticFiles/Co" +
-"ntent/css/theme/light.css?ver=1.0.6\" rel=\"stylesheet\" />\r\n    <link class=\"theme" +
-"\" id=\"theme_dark\" href=\"/HttpReportsStaticFiles/Content/css/theme/dark.css?ver=1" +
-".0.5\" rel=\"stylesheet\" />\r\n    <link href=\"/HttpReportsStaticFiles/Content/css/a" +
-"nimate/_3._5._2/animate.min.css\" rel=\"stylesheet\" />\r\n\r\n\r\n    <script src=\"/Http" +
-"ReportsStaticFiles/Content/assets/js/jquery-2.1.1.min.js\"></script>\r\n    <script" +
-" src=\"/HttpReportsStaticFiles/Content/js/jquery.cookie.js\"></script>\r\n    <scrip" +
-"t src=\"/HttpReportsStaticFiles/Content/assets/js/jquery.mmenu.min.js\"></script>\r" +
-"\n    <script src=\"/HttpReportsStaticFiles/Content/assets/js/core.min.js?ver=1.0." +
-"5\"></script>\r\n    <script src=\"/HttpReportsStaticFiles/Content/bootstrap/bootstr" +
-"ap_table/_1._14._2/bootstrap-table.js\"></script>\r\n\r\n    <script src=\"/HttpReport" +
-"sStaticFiles/Content/assets/js/bootstrap-table-zh-CN.js\"></script>\r\n    <script " +
-"src=\"/HttpReportsStaticFiles/Content/bootstrap/bootstrap_switch/_3._3._4/bootstr" +
-"ap-switch.js\"></script>\r\n\r\n\r\n    <script src=\"/HttpReportsStaticFiles/Content/as" +
-"sets/js/bootstrap.min.js\"></script>\r\n\r\n    <link rel=\"stylesheet\" href=\"/HttpRep" +
-"ortsStaticFiles/Content/bootstrap/select/select.css\"> \r\n    <script src=\"/HttpRe" +
-"portsStaticFiles/Content/bootstrap/select/select.js\"></script>\r\n\r\n\r\n    <script " +
-"src=\"/HttpReportsStaticFiles/Content/echarts/_4._3._0/echarts.min.js\"></script>\r" +
-"\n    <script src=\"/HttpReportsStaticFiles/Content/echarts/_4._3._0/macarons.js\">" +
-"</script>\r\n    <script src=\"/HttpReportsStaticFiles/Content/echarts/_4._3._0/dar" +
-"k.js\"></script>\r\n\r\n    <link href=\"/HttpReportsStaticFiles/Content/busyload/app." +
-"css?ver=1.0.6\" rel=\"stylesheet\" />\r\n    <script src=\"/HttpReportsStaticFiles/Con" +
-"tent/busyload/app.js?ver=1.0.6\"></script>\r\n\r\n    <!-- CSS 引入 -->\r\n    <script sr" +
-"c=\"/HttpReportsStaticFiles/Content/laydate/laydate.js\"></script>\r\n\r\n    <script " +
-"src=\"/HttpReportsStaticFiles/Content/assets/js/jquery.goup.js\"></script>\r\n\r\n    " +
-"<link href=\"/HttpReportsStaticFiles/Content/alert/alert.css?ver=1.0.6\" rel=\"styl" +
-"esheet\" />\r\n\r\n    <script src=\"/HttpReportsStaticFiles/Content/alert/alert.js?ve" +
-"r=1.0.5\"></script>\r\n    <script src=\"/HttpReportsStaticFiles/Content/js/bootstra" +
-"p-treeview.js?ver=1.0.6\"></script>\r\n\r\n\r\n    <link href=\"/HttpReportsStaticFiles/" +
-"Content/message/message.css\" rel=\"stylesheet\" />\r\n    <script src=\"/HttpReportsS" +
-"taticFiles/Content/message/message.js\"></script>  \r\n\r\n    <script>  var langForm" +
-"at = \'");
+"\r\n    <link href=\"/HttpReportsStaticFiles/Content/assets/css/bootstrap.min.css?v" +
+"er=1.0.6\" rel=\"stylesheet\">\r\n    <link href=\"/HttpReportsStaticFiles/Content/ass" +
+"ets/css/font-awesome.min.css?ver=1.0.6\" rel=\"stylesheet\">\r\n    <link href=\"/Http" +
+"ReportsStaticFiles/Content/assets/css/jquery.mmenu.css?ver=1.0.6\" rel=\"styleshee" +
+"t\" />\r\n    <link id=\"theme\" href=\"/HttpReportsStaticFiles/Content/assets/css/sty" +
+"le.min.css?ver=1.0.6\" rel=\"stylesheet\">\r\n    <link href=\"/HttpReportsStaticFiles" +
+"/Content/assets/css/add-ons.min.css?ver=1.0.6\" rel=\"stylesheet\">\r\n    <link href" +
+"=\"/HttpReportsStaticFiles/Content/bootstrap/bootstrap_switch/_3._3._4/bootstrap-" +
+"switch.css\" rel=\"stylesheet\" />\r\n\r\n\r\n    <link class=\"theme\" id=\"theme_light\" hr" +
+"ef=\"/HttpReportsStaticFiles/Content/css/theme/light.css?ver=1.0.6\" rel=\"styleshe" +
+"et\" />\r\n    <link class=\"theme\" id=\"theme_dark\" href=\"/HttpReportsStaticFiles/Co" +
+"ntent/css/theme/dark.css?ver=1.0.6\" rel=\"stylesheet\" />\r\n    <link href=\"/HttpRe" +
+"portsStaticFiles/Content/css/animate/_3._5._2/animate.min.css?ver=1.0.6\" rel=\"st" +
+"ylesheet\" />\r\n\r\n\r\n    <script src=\"/HttpReportsStaticFiles/Content/assets/js/jqu" +
+"ery-2.1.1.min.js?ver=1.0.6\"></script>\r\n    <script src=\"/HttpReportsStaticFiles/" +
+"Content/js/jquery.cookie.js?ver=1.0.6\"></script>\r\n    <script src=\"/HttpReportsS" +
+"taticFiles/Content/assets/js/jquery.mmenu.min.js?ver=1.0.6\"></script>\r\n    <scri" +
+"pt src=\"/HttpReportsStaticFiles/Content/assets/js/core.min.js?ver=1.0.6\"></scrip" +
+"t>\r\n    <script src=\"/HttpReportsStaticFiles/Content/bootstrap/bootstrap_table/_" +
+"1._14._2/bootstrap-table.js?ver=1.0.6\"></script>\r\n\r\n    <script src=\"/HttpReport" +
+"sStaticFiles/Content/assets/js/bootstrap-table-zh-CN.js?ver=1.0.6\"></script>\r\n  " +
+"  <script src=\"/HttpReportsStaticFiles/Content/bootstrap/bootstrap_switch/_3._3." +
+"_4/bootstrap-switch.js\"></script>\r\n\r\n\r\n    <script src=\"/HttpReportsStaticFiles/" +
+"Content/assets/js/bootstrap.min.js?ver=1.0.6\"></script>\r\n\r\n    <link rel=\"styles" +
+"heet\" href=\"/HttpReportsStaticFiles/Content/bootstrap/select/select.css?ver=1.0." +
+"6\">\r\n    <script src=\"/HttpReportsStaticFiles/Content/bootstrap/select/select.js" +
+"?ver=1.0.6\"></script>\r\n\r\n\r\n    <script src=\"/HttpReportsStaticFiles/Content/echa" +
+"rts/_4._3._0/echarts.min.js?ver=1.0.6\"></script>\r\n    <script src=\"/HttpReportsS" +
+"taticFiles/Content/echarts/_4._3._0/macarons.js?ver=1.0.6\"></script>\r\n    <scrip" +
+"t src=\"/HttpReportsStaticFiles/Content/echarts/_4._3._0/dark.js?ver=1.0.6\"></scr" +
+"ipt>\r\n\r\n    <link href=\"/HttpReportsStaticFiles/Content/busyload/app.css?ver=1.0" +
+".6\" rel=\"stylesheet\" />\r\n    <script src=\"/HttpReportsStaticFiles/Content/busylo" +
+"ad/app.js?ver=1.0.6\"></script>\r\n\r\n    <!-- CSS 引入 -->\r\n    <script src=\"/HttpRep" +
+"ortsStaticFiles/Content/laydate/laydate.js?ver=1.0.6\"></script>\r\n\r\n    <script s" +
+"rc=\"/HttpReportsStaticFiles/Content/assets/js/jquery.goup.js?ver=1.0.6\"></script" +
+">\r\n\r\n    <link href=\"/HttpReportsStaticFiles/Content/alert/alert.css?ver=1.0.6\" " +
+"rel=\"stylesheet\" />\r\n\r\n    <script src=\"/HttpReportsStaticFiles/Content/alert/al" +
+"ert.js?ver=1.0.6\"></script>\r\n    <script src=\"/HttpReportsStaticFiles/Content/js" +
+"/bootstrap-treeview.js?ver=1.0.6\"></script>\r\n\r\n    <script src=\"/HttpReportsStat" +
+"icFiles/Content/js/mSlider.min.js\"></script>\r\n    <script src=\"/HttpReportsStati" +
+"cFiles/Content/js/jquery.nicescroll.js\"></script>\r\n\r\n\r\n    <link href=\"/HttpRepo" +
+"rtsStaticFiles/Content/message/message.css?ver=1.0.6\" rel=\"stylesheet\" />\r\n    <" +
+"script src=\"/HttpReportsStaticFiles/Content/message/message.js?ver=1.0.6\"></scri" +
+"pt>\r\n\r\n    <script>  var langFormat = \'");
 
 
             
-            #line 65 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 68 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                             Write(lang.LanguageFormat);
 
             
@@ -93,41 +97,41 @@ WriteLiteral("\r\n<!DOCTYPE html>\r\n<html lang=\"zh-cn\">\r\n<head>\r\n    <met
 WriteLiteral("\';   </script>\r\n\r\n    <script src=\"/HttpReportsStaticFiles/Content/common/basic.j" +
 "s?ver=1.0.6\"></script>\r\n    <link href=\"/HttpReportsStaticFiles/Content/common/b" +
 "asic.css?ver=1.0.6\" rel=\"stylesheet\" />\r\n\r\n\r\n    <script src=\"/HttpReportsStatic" +
-"Files/Content/page/main.js?ver=1.0.6\"></script>\r\n\r\n\r\n    <link rel=\"icon\" href=\"" +
-"/HttpReportsStaticFiles/Content/assets/img/img.ico\" type=\"image/x-icon\" />\r\n\r\n</" +
-"head>\r\n\r\n<body> \r\n\r\n\r\n    <!-- start: Header -->\r\n    <div class=\"navbar\" role=\"" +
-"navigation\">\r\n\r\n        <div class=\"container-fluid\">\r\n\r\n            <ul class=\"" +
-"nav navbar-nav navbar-actions navbar-left\">\r\n                <li class=\"visible-" +
-"md visible-lg\"><a href=\"#\" style=\"padding:0 10px;\" id=\"main-menu-toggle\"><i clas" +
-"s=\"fa fa-th-large\"></i></a></li>\r\n                <li class=\"visible-xs visible-" +
-"sm\"><a href=\"#\" id=\"sidebar-menu\"><i class=\"fa fa-navicon\"></i></a></li>\r\n      " +
-"      </ul>\r\n\r\n            <ul class=\"nav navbar-nav navbar-right\"> \r\n\r\n        " +
-"        <li class=\"dropdown\" style=\"display:none\">\r\n                    <a  styl" +
-"e=\"margin-top:2px\"  href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\"><i c" +
-"lass=\"fa fa-refresh\"></i></a>\r\n                    <ul class=\"dropdown-menu upda" +
-"te-menu\" role=\"menu\">\r\n                        <li>\r\n                           " +
-" <a data-stopPropagation=\"true\" class=\"auto_refresh_menu\">\r\n                    " +
-"            <select class=\"selectpicker service\"  data-style=\"btn-primary\" data-" +
-"width=\"220px\" style=\"margin-right:20px\">\r\n                                    <o" +
-"ption>ALL</option>\r\n                                </select>\r\n                 " +
-"           </a>\r\n                        </li> \r\n                    </ul>\r\n    " +
-"            </li> \r\n                \r\n\r\n\r\n                <li class=\"dropdown\">\r" +
-"\n                    <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">" +
-"<i style=\"margin-top:24px;\" class=\"fa fa-language\"></i></a>\r\n                   " +
-" <ul class=\"dropdown-menu update-menu\" role=\"menu\">\r\n                        <li" +
-">\r\n                            <a data-key=\"en-us\" onclick=\"ChangeLanguage(this)" +
-"\"> English </a>\r\n                        </li>\r\n                        <li>\r\n  " +
-"                          <a data-key=\"zh-cn\" onclick=\"ChangeLanguage(this)\"> 中文" +
-"</a>\r\n                        </li>\r\n                    </ul>\r\n                " +
-"</li>\r\n\r\n                <li class=\"dropdown\">\r\n                    <a href=\"#\" " +
-"class=\"dropdown-toggle\" data-toggle=\"dropdown\"><i class=\"fa fa-dashboard\"></i></" +
-"a>\r\n                    <ul class=\"dropdown-menu update-menu\" role=\"menu\">\r\n    " +
-"                    <li>\r\n                            <a data-key=\"light\" onclic" +
-"k=\"ChangeTheme(this)\"><i class=\"fa fa-sun-o\"></i> ");
+"Files/Content/page/main.js?ver=1.0.6\"></script>\r\n\r\n\r\n\r\n    <link rel=\"icon\" href" +
+"=\"/HttpReportsStaticFiles/Content/assets/img/img.ico?ver=1.0.6\" type=\"image/x-ic" +
+"on\" />\r\n\r\n</head>\r\n\r\n<body> \r\n\r\n\r\n    <!-- start: Header -->\r\n    <div class=\"na" +
+"vbar\" role=\"navigation\">\r\n\r\n        <div class=\"container-fluid\">\r\n\r\n           " +
+" <ul class=\"nav navbar-nav navbar-actions navbar-left\">\r\n                <li cla" +
+"ss=\"visible-md visible-lg\"><a href=\"#\" style=\"padding:0 10px;\" id=\"main-menu-tog" +
+"gle\"><i class=\"fa fa-th-large\"></i></a></li>\r\n                <li class=\"visible" +
+"-xs visible-sm\"><a href=\"#\" id=\"sidebar-menu\"><i class=\"fa fa-navicon\"></i></a><" +
+"/li>\r\n            </ul>\r\n\r\n            <ul class=\"nav navbar-nav navbar-right\"> " +
+"\r\n\r\n                <li class=\"dropdown\" style=\"display:none\">\r\n                " +
+"    <a  style=\"margin-top:2px\"  href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dr" +
+"opdown\"><i class=\"fa fa-refresh\"></i></a>\r\n                    <ul class=\"dropdo" +
+"wn-menu update-menu\" role=\"menu\">\r\n                        <li>\r\n               " +
+"             <a data-stopPropagation=\"true\" class=\"auto_refresh_menu\">\r\n        " +
+"                        <select class=\"selectpicker service\"  data-style=\"btn-pr" +
+"imary\" data-width=\"220px\" style=\"margin-right:20px\">\r\n                          " +
+"          <option>ALL</option>\r\n                                </select>\r\n     " +
+"                       </a>\r\n                        </li> \r\n                   " +
+" </ul>\r\n                </li> \r\n                \r\n\r\n\r\n                <li class=" +
+"\"dropdown\">\r\n                    <a href=\"#\" class=\"dropdown-toggle\" data-toggle" +
+"=\"dropdown\"><i style=\"margin-top:24px;\" class=\"fa fa-language\"></i></a>\r\n       " +
+"             <ul class=\"dropdown-menu update-menu\" role=\"menu\">\r\n               " +
+"         <li>\r\n                            <a data-key=\"en-us\" onclick=\"ChangeLa" +
+"nguage(this)\"> English </a>\r\n                        </li>\r\n                    " +
+"    <li>\r\n                            <a data-key=\"zh-cn\" onclick=\"ChangeLanguag" +
+"e(this)\"> 中文</a>\r\n                        </li>\r\n                    </ul>\r\n    " +
+"            </li>\r\n\r\n                <li class=\"dropdown\">\r\n                    " +
+"<a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\"><i class=\"fa fa-dashb" +
+"oard\"></i></a>\r\n                    <ul class=\"dropdown-menu update-menu\" role=\"" +
+"menu\">\r\n                        <li>\r\n                            <a data-key=\"l" +
+"ight\" onclick=\"ChangeTheme(this)\"><i class=\"fa fa-sun-o\"></i> ");
 
 
             
-            #line 124 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 128 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                    Write(lang.Template_Light);
 
             
@@ -139,7 +143,7 @@ WriteLiteral(" </a>\r\n                        </li>\r\n                        
 
 
             
-            #line 127 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 131 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                    Write(lang.Template_Dark);
 
             
@@ -161,7 +165,7 @@ WriteLiteral(@" </a>
 
 
             
-            #line 139 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 143 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                            Write(lang.Template_EditAccount);
 
             
@@ -172,7 +176,7 @@ WriteLiteral(" </a>\r\n                        </li>\r\n                        
 
 
             
-            #line 142 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 146 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                           Write(lang.Template_Logout);
 
             
@@ -206,7 +210,7 @@ WriteLiteral(@" </a>
 
 
             
-            #line 166 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 170 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                                      Write(lang.Menu_BasicData);
 
             
@@ -217,7 +221,7 @@ WriteLiteral("</span></a></li>\r\n\r\n                            <li class=\"me
 
 
             
-            #line 168 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 172 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                                           Write(lang.Menu_TrendData);
 
             
@@ -228,7 +232,7 @@ WriteLiteral("</span></a></li>\r\n\r\n                            <li class=\"\"
 
 
             
-            #line 170 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 174 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                                Write(lang.Menu_RequestList);
 
             
@@ -239,7 +243,7 @@ WriteLiteral("</span></a></li>\r\n\r\n                            <li class=\"\"
 
 
             
-            #line 172 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 176 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                                   Write(lang.Menu_Monitor);
 
             
@@ -250,7 +254,7 @@ WriteLiteral("</span></a></li>\r\n\r\n                            <li class=\"\"
 
 
             
-            #line 174 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 178 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                                      Write(lang.Performance);
 
             
@@ -272,7 +276,7 @@ WriteLiteral(@"</span></a></li>
 
 
             
-            #line 186 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 190 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
            Write(RenderBody());
 
             
@@ -299,7 +303,7 @@ WriteLiteral(@"
 
 
             
-            #line 203 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 207 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                          Write(lang.Template_EditAccount);
 
             
@@ -310,7 +314,7 @@ WriteLiteral("</span>\r\n                </div>\r\n                <div class=\"
 
 
             
-            #line 207 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 211 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                           Write(lang.Login_UserName);
 
             
@@ -322,7 +326,7 @@ WriteLiteral("</label>\r\n                        <input autocomplete=\"new-pass
 
 
             
-            #line 211 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 215 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                           Write(lang.Index_OldPwd);
 
             
@@ -334,7 +338,7 @@ WriteLiteral("</label>\r\n                        <input autocomplete=\"new-pass
 
 
             
-            #line 215 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 219 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                           Write(lang.Index_NewPwd);
 
             
@@ -347,7 +351,7 @@ WriteLiteral(@"</label>
 
 
             
-            #line 218 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
+            #line 222 "..\..\Views\HttpReports\HttpReportsTemplate.cshtml"
                                                                                                          Write(lang.Index_UserSave);
 
             

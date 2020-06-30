@@ -29,6 +29,21 @@ $(function () {
 
     $(".service-form").find(".service").on('loaded.bs.select', (e, clickedIndex, isSelected, previousValue) => InitServiceInstance());   
 
+
+
+    $('body').niceScroll({
+        cursorcolor: "rgb(103, 194, 239)",
+        cursoropacitymax: 1,
+        touchbehavior: false,
+        cursorwidth: "3px",
+        cursorborder: "0",
+        cursorborderradius: "5px",
+        autohidemode: false
+    });
+
+
+
+
 });  
 
 function BindInstanceSelect(service,instance = "") {  
@@ -71,9 +86,7 @@ function BindServiceSelect(service) {
     $(".service-form").find(".service").find("select").val(service);
     $(".service-form").find(".service").find("select").selectpicker('refresh');  
 
-}
-
-
+} 
 
 
 function InitServiceInstance() {

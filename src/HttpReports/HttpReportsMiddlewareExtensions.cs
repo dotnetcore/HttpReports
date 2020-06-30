@@ -54,11 +54,11 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IBackgroundService, HttpReportsBackgroundService>();
             services.AddSingleton<IPerformanceService,PerformanceService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton<IDiagnosticListener, HttpClientDiagnosticListener>();
-            services.AddSingleton<IDiagnosticListener, GrpcDiagnosticListener>();
-            services.AddSingleton<IDiagnosticListener, SqlClientDiagnosticListener>();
-            services.AddSingleton<ISegmentContext, SegmentContext>();
-            services.AddSingleton<TraceDiagnsticListenerObserver>();  
+            //services.AddSingleton<IDiagnosticListener, HttpClientDiagnosticListener>();
+            //services.AddSingleton<IDiagnosticListener, GrpcDiagnosticListener>();
+            //services.AddSingleton<IDiagnosticListener, SqlClientDiagnosticListener>();
+            //services.AddSingleton<ISegmentContext, SegmentContext>();
+            //services.AddSingleton<TraceDiagnsticListenerObserver>();  
            
 
             services.AddMvcCore(x =>
@@ -87,9 +87,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
             app.UseMiddleware<DefaultHttpReportsMiddleware>(); 
 
-            TraceDiagnsticListenerObserver observer = app.ApplicationServices.GetRequiredService<TraceDiagnsticListenerObserver>();  
+            //TraceDiagnsticListenerObserver observer = app.ApplicationServices.GetRequiredService<TraceDiagnsticListenerObserver>();  
 
-            System.Diagnostics.DiagnosticListener.AllListeners.Subscribe(observer);  
+            //System.Diagnostics.DiagnosticListener.AllListeners.Subscribe(observer);  
 
             return httpReportsInitializer;
         }

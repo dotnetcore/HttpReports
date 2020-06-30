@@ -70,7 +70,7 @@
   "Request_Connection": "通信方式",
   "Request_Time": "请求耗时",
   "Request_StatusCode": "响应状态码",
-  "Request_RemoteIP": "远程IP",
+  "Request_RemoteIP": "远程地址",
   "Request_RemotePort": "远程端口",
   "Request_LocalIP": "本地IP",
   "Request_LocalPort": "本地端口",
