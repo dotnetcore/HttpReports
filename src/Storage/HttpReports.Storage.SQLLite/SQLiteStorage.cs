@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using HttpReports.Core;
 using HttpReports.Core.Config;
 using HttpReports.Core.Interface;
 using HttpReports.Core.Models;
@@ -30,7 +31,7 @@ namespace HttpReports.Storage.SQLite
 
         public ILogger<SQLiteStorage> Logger { get; }
 
-        private readonly AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail> _deferFlushCollection = null;
+        private readonly AsyncCallbackDeferFlushCollection<RequestBag> _deferFlushCollection = null;
 
         public SQLiteStorage(IOptions<SQLiteStorageOptions> options, SQLiteConnectionFactory connectionFactory, ILogger<SQLiteStorage> logger)
         {
@@ -40,7 +41,7 @@ namespace HttpReports.Storage.SQLite
             Logger = logger;
             if (Options.EnableDefer)
             {
-                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail>(AddRequestInfoAsync, Options.DeferThreshold, Options.DeferSecond);
+                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<RequestBag>(AddRequestInfoAsync, Options.DeferThreshold, Options.DeferSecond);
             }
         }
 
@@ -188,13 +189,13 @@ namespace HttpReports.Storage.SQLite
         }
 
 
-        public async Task AddRequestInfoAsync(Dictionary<IRequestInfo, IRequestDetail> list, CancellationToken token)
+        public async Task AddRequestInfoAsync(List<RequestBag> list, CancellationToken token)
         {
             await LoggingSqlOperation(async connection =>
             {
-                List<IRequestInfo> requestInfos = list.Select(x => x.Key).ToList();
+                List<IRequestInfo> requestInfos = list.Select(x => x.RequestInfo).ToList();
 
-                List<IRequestDetail> requestDetails = list.Select(x => x.Value).ToList();
+                List<IRequestDetail> requestDetails = list.Select(x => x.RequestDetail).ToList();
 
                 string requestSql = string.Join(",", requestInfos.Select(request => {
 
@@ -251,7 +252,7 @@ namespace HttpReports.Storage.SQLite
         {
             if (Options.EnableDefer)
             {
-                _deferFlushCollection.Flush(request, detail);
+                _deferFlushCollection.Flush(new RequestBag(request,detail));
             }
             else
             {

@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using HttpReports.Core;
 using HttpReports.Core.Config;
 using HttpReports.Core.Interface;
 using HttpReports.Core.Models;
@@ -29,7 +30,7 @@ namespace HttpReports.Storage.PostgreSQL
 
         private string Prefix { get; set; } = string.Empty;
 
-        private readonly AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail> _deferFlushCollection = null;
+        private readonly AsyncCallbackDeferFlushCollection<RequestBag> _deferFlushCollection = null;
 
         public PostgreSQLStorage(IOptions<PostgreStorageOptions> options, PostgreConnectionFactory connectionFactory, ILogger<PostgreSQLStorage> logger)
         {
@@ -39,17 +40,17 @@ namespace HttpReports.Storage.PostgreSQL
             Logger = logger;
             if (Options.EnableDefer)
             {
-                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail>(AddRequestInfoAsync, Options.DeferThreshold, Options.DeferSecond);
+                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<RequestBag>(AddRequestInfoAsync, Options.DeferThreshold, Options.DeferSecond);
             }
         }
 
-        public async Task AddRequestInfoAsync(Dictionary<IRequestInfo, IRequestDetail> list, System.Threading.CancellationToken token)
+        public async Task AddRequestInfoAsync(List<RequestBag> list, System.Threading.CancellationToken token)
         {
             await LoggingSqlOperation(async connection =>
             { 
-                List<IRequestInfo> requestInfos = list.Select(x => x.Key).ToList();
+                List<IRequestInfo> requestInfos = list.Select(x => x.RequestInfo).ToList();
 
-                List<IRequestDetail> requestDetails = list.Select(x => x.Value).ToList();
+                List<IRequestDetail> requestDetails = list.Select(x => x.RequestDetail).ToList();
 
                 var request = string.Join(",", requestInfos.Select(item => {
 
@@ -126,7 +127,7 @@ namespace HttpReports.Storage.PostgreSQL
         {
             if (Options.EnableDefer)
             {
-                _deferFlushCollection.Flush(request,detail);
+                _deferFlushCollection.Flush(new RequestBag(request,detail));
             }
             else
             {

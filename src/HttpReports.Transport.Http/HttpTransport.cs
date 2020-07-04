@@ -1,4 +1,5 @@
-﻿using HttpReports.Core.Config;
+﻿using HttpReports.Core;
+using HttpReports.Core.Config;
 using HttpReports.Core.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options; 
@@ -15,7 +16,7 @@ namespace HttpReports.Transport.Http
     {
         public HttpTransportOptions _options { get; } 
 
-        private readonly AsyncCallbackDeferFlushCollection<RequestInfo,RequestDetail> _deferFlushCollection;
+        private readonly AsyncCallbackDeferFlushCollection<RequestBag> _deferFlushCollection;
         private readonly ILogger<HttpTransport> _logger;
         private readonly IHttpClientFactory _httpClientFactory; 
 
@@ -24,10 +25,10 @@ namespace HttpReports.Transport.Http
             _options = options.Value ?? throw new ArgumentNullException();
             _logger = logger;
             _httpClientFactory = httpClientFactory;
-            _deferFlushCollection = new AsyncCallbackDeferFlushCollection<RequestInfo,RequestDetail>(WriteToRemote, _options.DeferThreshold,_options.DeferSecond); 
+            _deferFlushCollection = new AsyncCallbackDeferFlushCollection<RequestBag>(WriteToRemote, _options.DeferThreshold,_options.DeferSecond); 
         } 
 
-         private async Task WriteToRemote(Dictionary<RequestInfo,RequestDetail> list, CancellationToken token)
+         private async Task WriteToRemote(List<RequestBag> list, CancellationToken token)
          {
             try
             {
@@ -45,7 +46,7 @@ namespace HttpReports.Transport.Http
 
         public Task Write(IRequestInfo requestInfo, IRequestDetail requestDetail)
         {
-            _deferFlushCollection.Flush(requestInfo as RequestInfo,requestDetail as RequestDetail);
+            _deferFlushCollection.Flush(new RequestBag(requestInfo,requestDetail));
 
             return Task.CompletedTask;
         }

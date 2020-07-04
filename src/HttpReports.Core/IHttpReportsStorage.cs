@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using HttpReports.Core;
 using HttpReports.Core.Interface;
 using HttpReports.Core.Models;
 using HttpReports.Core.Storage.FilterOptions;
@@ -31,7 +32,7 @@ namespace HttpReports
         Task AddRequestInfoAsync(IRequestInfo request,IRequestDetail requestDetail);
 
 
-        Task AddRequestInfoAsync(Dictionary<IRequestInfo, IRequestDetail> list, CancellationToken token);
+        Task AddRequestInfoAsync(List<RequestBag> list, CancellationToken token);
 
 
 

@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using Google.Protobuf.WellKnownTypes;
+using HttpReports.Core;
 using HttpReports.Core.Config;
 using HttpReports.Core.Interface;
 using HttpReports.Core.Models;
@@ -33,7 +34,7 @@ namespace HttpReports.Storage.MySql
 
         public ILogger<MySqlStorage> Logger { get; }
 
-        private readonly AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail> _deferFlushCollection = null;
+        private readonly AsyncCallbackDeferFlushCollection<RequestBag> _deferFlushCollection = null;
 
         public MySqlStorage(IOptions<MySqlStorageOptions> options, MySqlConnectionFactory connectionFactory, ILogger<MySqlStorage> logger)
         {
@@ -43,7 +44,7 @@ namespace HttpReports.Storage.MySql
             Logger = logger;
             if (Options.EnableDefer)
             {
-                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail>(AddRequestInfoAsync, Options.DeferThreshold, Options.DeferSecond);
+                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<RequestBag>(AddRequestInfoAsync, Options.DeferThreshold, Options.DeferSecond);
             }
         }
 
@@ -200,13 +201,13 @@ CREATE TABLE IF NOT EXISTS `{TablePrefix}Performance` (
 
         #endregion Init
 
-        public async Task AddRequestInfoAsync(Dictionary<IRequestInfo, IRequestDetail> list, CancellationToken token)
+        public async Task AddRequestInfoAsync(List<RequestBag> list, CancellationToken token)
         {
             await LoggingSqlOperation(async connection =>
             { 
-                List<IRequestInfo> requestInfos = list.Select(x => x.Key).ToList();
+                List<IRequestInfo> requestInfos = list.Select(x => x.RequestInfo).ToList();
 
-                List<IRequestDetail> requestDetails = list.Select(x => x.Value).ToList();
+                List<IRequestDetail> requestDetails = list.Select(x => x.RequestDetail).ToList();
 
                 string requestSql = string.Join(",", requestInfos.Select(request => {
 
@@ -263,7 +264,7 @@ CREATE TABLE IF NOT EXISTS `{TablePrefix}Performance` (
         {
             if (Options.EnableDefer)
             {
-                _deferFlushCollection.Flush(request, detail);
+                _deferFlushCollection.Flush(new RequestBag(request, detail));
             }
             else
             {

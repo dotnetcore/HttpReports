@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Dapper.Contrib.Extensions;
+using HttpReports.Core;
 using HttpReports.Core.Config;
 using HttpReports.Core.Interface;
 using HttpReports.Core.Models;
@@ -27,7 +28,7 @@ namespace HttpReports.Storage.Oracle
 
         public ILogger<OracleStorage> Logger { get; }
 
-        private readonly AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail> _deferFlushCollection = null;
+        private readonly AsyncCallbackDeferFlushCollection<RequestBag> _deferFlushCollection = null;
 
         public OracleStorageOptions _options;
 
@@ -39,7 +40,7 @@ namespace HttpReports.Storage.Oracle
 
             if (_options.EnableDefer)
             {
-                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail>(AddRequestInfoAsync, _options.DeferThreshold, _options.DeferSecond);
+                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<RequestBag>(AddRequestInfoAsync, _options.DeferThreshold, _options.DeferSecond);
             } 
         }
 
@@ -211,7 +212,7 @@ namespace HttpReports.Storage.Oracle
          
         } 
 
-        public async Task AddRequestInfoAsync(Dictionary<IRequestInfo, IRequestDetail> list, CancellationToken token)
+        public async Task AddRequestInfoAsync(List<RequestBag> list, CancellationToken token)
         {
             await LoggingSqlOperation(async _ =>
             {
@@ -221,9 +222,9 @@ namespace HttpReports.Storage.Oracle
 
                 DynamicParameters Parameters = BuildParameters(list);
 
-                List<IRequestInfo> requestInfos = list.Select(x => x.Key).ToList();
+                List<IRequestInfo> requestInfos = list.Select(x => x.RequestInfo).ToList();
 
-                List<IRequestDetail> requestDetails = list.Select(x => x.Value).ToList(); 
+                List<IRequestDetail> requestDetails = list.Select(x => x.RequestDetail).ToList(); 
 
                 foreach (var request in requestInfos)
                 {
@@ -245,13 +246,13 @@ namespace HttpReports.Storage.Oracle
             }, "请求数据批量保存失败");
         } 
 
-        private DynamicParameters BuildParameters(Dictionary<IRequestInfo,IRequestDetail> dic)
+        private DynamicParameters BuildParameters(List<RequestBag> bags)
         {
             DynamicParameters parameters = new DynamicParameters();
 
-            AddParameters(dic.Select(x => x.Key).ToList(),"m");
+            AddParameters(bags.Select(x => x.RequestInfo).ToList(),"m");
 
-            AddParameters(dic.Select(x => x.Value).ToList(),"n");
+            AddParameters(bags.Select(x => x.RequestDetail).ToList(),"n");
 
             return parameters;
 
@@ -278,7 +279,7 @@ namespace HttpReports.Storage.Oracle
 
             if (_options.EnableDefer)
             {
-                _deferFlushCollection.Flush(request,detail);
+                _deferFlushCollection.Flush(new RequestBag(request,detail));
             }
             else
             {

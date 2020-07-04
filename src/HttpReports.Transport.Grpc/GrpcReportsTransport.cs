@@ -19,7 +19,7 @@ namespace HttpReports.Transport.Grpc
 
         private GrpcCollector.GrpcCollectorClient _client = null;
 
-        private readonly AsyncCallbackDeferFlushCollection<Collector.Grpc.RequestInfo, Collector.Grpc.RequestDetail> _deferFlushCollection = null;
+        private readonly AsyncCallbackDeferFlushCollection<Collector.Grpc.RequestInfoWithDetail> _deferFlushCollection = null;
         private readonly ILogger<GrpcReportsTransport> _logger;
 
         public GrpcReportsTransport(IOptions<GrpcReportsTransportOptions> options, ILogger<GrpcReportsTransport> logger)
@@ -50,16 +50,16 @@ namespace HttpReports.Transport.Grpc
             var channel = GrpcChannel.ForAddress(Options.CollectorAddress, grpcChannelOptions);
             _client = new GrpcCollector.GrpcCollectorClient(channel);
 
-            _deferFlushCollection = new AsyncCallbackDeferFlushCollection<Collector.Grpc.RequestInfo, Collector.Grpc.RequestDetail>(WriteToRemote, 50, 5);
+            _deferFlushCollection = new AsyncCallbackDeferFlushCollection<Collector.Grpc.RequestInfoWithDetail>(WriteToRemote, 50, 5);
             _logger = logger;
         }
 
-        private async Task WriteToRemote(Dictionary<HttpReports.Collector.Grpc.RequestInfo, HttpReports.Collector.Grpc.RequestDetail> list, CancellationToken token)
+        private async Task WriteToRemote(List<HttpReports.Collector.Grpc.RequestInfoWithDetail> list, CancellationToken token)
         {
             try
             {
                 var pack = new RequestInfoPack();
-                var data = list.Select(m => new RequestInfoWithDetail() { Info = m.Key, Detail = m.Value }).ToArray();
+                var data = list.Select(m => new RequestInfoWithDetail() { Info = m.Info, Detail = m.Detail }).ToArray();
                 pack.Data.AddRange(data);
 
                 var reply = await _client.WriteAsync(pack);
@@ -73,7 +73,12 @@ namespace HttpReports.Transport.Grpc
 
         public Task Write(IRequestInfo requestInfo, IRequestDetail requestDetail)
         {
-            _deferFlushCollection.Flush(requestInfo as HttpReports.Collector.Grpc.RequestInfo, requestDetail as HttpReports.Collector.Grpc.RequestDetail);
+            _deferFlushCollection.Flush(new RequestInfoWithDetail { 
+            
+                Info = requestInfo as HttpReports.Collector.Grpc.RequestInfo,
+                Detail = requestDetail as HttpReports.Collector.Grpc.RequestDetail 
+
+            });
 
             return Task.CompletedTask;
         }   

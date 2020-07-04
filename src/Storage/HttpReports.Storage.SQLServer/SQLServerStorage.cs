@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Dapper.Contrib.Extensions;
+using HttpReports.Core;
 using HttpReports.Core.Config;
 using HttpReports.Core.Interface;
 using HttpReports.Core.Models;
@@ -31,7 +32,7 @@ namespace HttpReports.Storage.SQLServer
 
         private string Prefix { get; set; } = string.Empty;
 
-        private readonly AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail> _deferFlushCollection = null;
+        private readonly AsyncCallbackDeferFlushCollection<RequestBag> _deferFlushCollection = null;
 
         public SQLServerStorage(IOptions<SQLServerStorageOptions> options, SQLServerConnectionFactory connectionFactory, ILogger<SQLServerStorage> logger)
         {
@@ -42,7 +43,7 @@ namespace HttpReports.Storage.SQLServer
 
             if (_options.EnableDefer)
             {
-                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<IRequestInfo, IRequestDetail>(AddRequestInfoAsync, _options.DeferThreshold, _options.DeferSecond);
+                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<RequestBag>(AddRequestInfoAsync, _options.DeferThreshold, _options.DeferSecond);
             }
         }
 
@@ -202,13 +203,13 @@ namespace HttpReports.Storage.SQLServer
             }
         }
 
-        public async Task AddRequestInfoAsync(Dictionary<IRequestInfo, IRequestDetail> list, CancellationToken token)
+        public async Task AddRequestInfoAsync(List<RequestBag> list, CancellationToken token)
         {
             await LoggingSqlOperation(async connection =>
             {
-                List<IRequestInfo> requestInfos = list.Select(x => x.Key).ToList();
+                List<IRequestInfo> requestInfos = list.Select(x => x.RequestInfo).ToList();
 
-                List<IRequestDetail> requestDetails = list.Select(x => x.Value).ToList();
+                List<IRequestDetail> requestDetails = list.Select(x => x.RequestDetail).ToList();
 
                 string requestSql = string.Join(",", requestInfos.Select(item =>
                 { 
@@ -267,7 +268,7 @@ namespace HttpReports.Storage.SQLServer
         {
             if (_options.EnableDefer)
             {
-                _deferFlushCollection.Flush(request, detail);
+                _deferFlushCollection.Flush(new RequestBag(request,detail));
             }
             else
             {
