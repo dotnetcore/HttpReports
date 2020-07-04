@@ -17,7 +17,7 @@ namespace HttpReports.Collector.Grpc
         {
             foreach (var item in request.Data)
             {
-                await Storage.AddRequestInfoAsync(item.Info, item.Detail);
+                await Storage.AddRequestInfoAsync(new Core.RequestBag(item.Info,item.Detail));
             }
 
             return new WriteReply() { Code = 0 };

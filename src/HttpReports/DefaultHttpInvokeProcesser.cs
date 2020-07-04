@@ -25,7 +25,7 @@ namespace HttpReports
 
             if (requestInfo != null && requestDetail != null)
             {
-                ReportsTransport.Write(requestInfo, requestDetail);  
+                ReportsTransport.Transport(new Core.RequestBag(requestInfo,requestDetail));  
             }
         }
     }

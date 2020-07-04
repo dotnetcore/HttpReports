@@ -38,7 +38,7 @@ namespace HttpReports.Test
                     StatusCode = 200
                 };
 
-                await Storage.AddRequestInfoAsync(request,new RequestDetail());
+                await Storage.AddRequestInfoAsync(new Core.RequestBag(request,null));
 
                 await Task.Delay(random.Next(1, 5));
             }

@@ -29,7 +29,7 @@ namespace HttpReports
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        Task AddRequestInfoAsync(IRequestInfo request,IRequestDetail requestDetail);
+        Task AddRequestInfoAsync(RequestBag bag);
 
 
         Task AddRequestInfoAsync(List<RequestBag> list, CancellationToken token);

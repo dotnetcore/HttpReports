@@ -66,7 +66,7 @@ namespace HttpReports.Service
 
                 if (performance != null)
                 {
-                    await _transport.WritePerformanceAsync(performance);
+                    await _transport.Transport(performance);
                 }
 
                 await Task.Delay(TimeSpan.FromSeconds(10), Token); 

@@ -248,19 +248,19 @@ namespace HttpReports.Storage.SQLite
         }
 
 
-        public async Task AddRequestInfoAsync(IRequestInfo request, IRequestDetail detail)
+        public async Task AddRequestInfoAsync(RequestBag bag)
         {
             if (Options.EnableDefer)
             {
-                _deferFlushCollection.Flush(new RequestBag(request,detail));
+                _deferFlushCollection.Flush(bag);
             }
             else
             {
                 await LoggingSqlOperation(async connection =>
                 {
-                    await connection.ExecuteAsync($"INSERT INTO '{Prefix}RequestInfo' (`Id`,`ParentId`,`Node`, `Route`, `Url`, `RequestType`, `Method`, `Milliseconds`, `StatusCode`, `IP`,`Port`,`LocalIP`,`LocalPort`,`CreateTime`) VALUES (@Id,@ParentId, @Node, @Route, @Url,@RequestType, @Method, @Milliseconds, @StatusCode, @IP,@Port,@LocalIP,@LocalPort, @CreateTime)", request);
+                    await connection.ExecuteAsync($"INSERT INTO '{Prefix}RequestInfo' (`Id`,`ParentId`,`Node`, `Route`, `Url`, `RequestType`, `Method`, `Milliseconds`, `StatusCode`, `IP`,`Port`,`LocalIP`,`LocalPort`,`CreateTime`) VALUES (@Id,@ParentId, @Node, @Route, @Url,@RequestType, @Method, @Milliseconds, @StatusCode, @IP,@Port,@LocalIP,@LocalPort, @CreateTime)",bag.RequestInfo);
 
-                    await connection.ExecuteAsync($"INSERT INTO '{Prefix}RequestDetail' (`Id`,`RequestId`,`Scheme`,`QueryString`,`Header`,`Cookie`,`RequestBody`,`ResponseBody`,`ErrorMessage`,`ErrorStack`,`CreateTime`)  VALUES (@Id,@RequestId,@Scheme,@QueryString,@Header,@Cookie,@RequestBody,@ResponseBody,@ErrorMessage,@ErrorStack,@CreateTime)", detail);
+                    await connection.ExecuteAsync($"INSERT INTO '{Prefix}RequestDetail' (`Id`,`RequestId`,`Scheme`,`QueryString`,`Header`,`Cookie`,`RequestBody`,`ResponseBody`,`ErrorMessage`,`ErrorStack`,`CreateTime`)  VALUES (@Id,@RequestId,@Scheme,@QueryString,@Header,@Cookie,@RequestBody,@ResponseBody,@ErrorMessage,@ErrorStack,@CreateTime)",bag.RequestDetail);
 
                 }, "请求数据保存失败");
             }
@@ -1063,7 +1063,8 @@ Select AVG(Milliseconds) ART From '{Prefix}RequestInfo' {where};";
 
             return result.Select(x => x as IPerformance).ToList();
 
-        }
+        } 
+       
 
         #endregion Base
 

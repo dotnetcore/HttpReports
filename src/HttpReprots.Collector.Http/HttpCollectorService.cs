@@ -1,4 +1,5 @@
 ﻿using HttpReports;
+using HttpReports.Core;
 using HttpReports.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -16,11 +17,11 @@ namespace HttpReprots.Collector.Http
             Storage = storage;
         }
 
-        public async Task<string> Write(Dictionary<IRequestInfo,IRequestDetail> data)
+        public async Task<string> Write(List<RequestBag> list)
         {
-            foreach (var item in data)
+            foreach (var item in list)
             {
-                await Storage.AddRequestInfoAsync(item.Key, item.Value);
+                await Storage.AddRequestInfoAsync(item);
             }
 
             return "Ok";
@@ -31,7 +32,6 @@ namespace HttpReprots.Collector.Http
             await Storage.AddPerformanceAsync(performance);
 
             return "Ok";
-        } 
-
+        }  
     }
 }

@@ -1,13 +1,14 @@
-﻿using HttpReports.Core.Interface;
+﻿using HttpReports.Core;
+using HttpReports.Core.Interface;
 using System.Threading.Tasks;
 
 namespace HttpReports
 {
     public interface IReportsTransport
     {
-        Task Write(IRequestInfo requestInfo, IRequestDetail requestDetail);
+        Task Transport(RequestBag bag);
 
-        Task WritePerformanceAsync(IPerformance performance);
+        Task Transport(IPerformance performance); 
 
     }
 }

@@ -1,4 +1,5 @@
-﻿using HttpReports.Core.Interface;
+﻿using HttpReports.Core;
+using HttpReports.Core.Interface;
 using System.Threading.Tasks;
 
 namespace HttpReports
@@ -12,14 +13,14 @@ namespace HttpReports
             Storage = storage;
         }  
 
-        public Task Write(IRequestInfo requestInfo, IRequestDetail requestDetail)
+        public Task Transport(RequestBag bag)
         {
-            Storage.AddRequestInfoAsync(requestInfo, requestDetail).ConfigureAwait(false);
+            Storage.AddRequestInfoAsync(bag).ConfigureAwait(false);
 
             return Task.CompletedTask;
         }
 
-        public Task WritePerformanceAsync(IPerformance performance)
+        public Task Transport(IPerformance performance)
         {
             Storage.AddPerformanceAsync(performance);
 

@@ -273,13 +273,13 @@ namespace HttpReports.Storage.Oracle
             }  
         }  
 
-        public async Task AddRequestInfoAsync(IRequestInfo request, IRequestDetail detail)
+        public async Task AddRequestInfoAsync(RequestBag bag)
         {
-            detail = CutRequestDetail(detail);
+            bag.RequestDetail = CutRequestDetail(bag.RequestDetail);
 
             if (_options.EnableDefer)
             {
-                _deferFlushCollection.Flush(new RequestBag(request,detail));
+                _deferFlushCollection.Flush(bag);
             }
             else
             {
@@ -287,11 +287,11 @@ namespace HttpReports.Storage.Oracle
                 {
                     string requestSql = $@"Insert Into RequestInfo  Values (:Id,:ParentId, :Node, :Route, :Url,:RequestType,:Method, :Milliseconds, :StatusCode, :IP,:Port,:LocalIP,:LocalPort,:CreateTime) ";
 
-                    await _.ExecuteAsync(requestSql, request);
+                    await _.ExecuteAsync(requestSql,bag.RequestInfo);
 
                     string detailSql = $@"Insert Into RequestDetail Values  (:Id,:RequestId,:Scheme,:QueryString,:Header,:Cookie,:RequestBody,:ResponseBody,:ErrorMessage,:ErrorStack,:CreateTime)  ";
 
-                    await _.ExecuteAsync(detailSql, detail); 
+                    await _.ExecuteAsync(detailSql,bag.RequestDetail); 
 
                 }, "请求数据保存失败");
 
