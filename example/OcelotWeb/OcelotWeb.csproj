@@ -10,8 +10,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\HttpReports.Core\HttpReports.Core.csproj" />
-    <ProjectReference Include="..\..\src\HttpReports.Storage.MySQL\HttpReports.Storage.MySQL.csproj" />
     <ProjectReference Include="..\..\src\HttpReports\HttpReports.csproj" />
+    <ProjectReference Include="..\..\src\Storage\HttpReports.Storage.MySQL\HttpReports.Storage.MySql.csproj" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="https://json.schemastore.org/asmdef" ocelot_1json__JsonSchema="https://batect.dev/configSchema.json" /></VisualStudio></ProjectExtensions>

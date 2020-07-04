@@ -1,31 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
- 
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>HttpReports.SQLite</PackageId>
-    <Version>1.5.3.1</Version>
+    <PackageId>HttpReports.MySQL</PackageId>
+    <Version>1.5.0</Version>
     <Authors>SpringLee</Authors>
-    <Description>HttpReports.SQLite Storage</Description>
+    <Description>HttpReports.MySQL Storage</Description>
     <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>
     <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
+    <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>
   </PropertyGroup>
 
-  <ItemGroup> 
-  
+  <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.30" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
-     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.1" />
+    <PackageReference Include="MySql.Data" Version="8.0.20" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-  
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
+    <ProjectReference Include="..\..\HttpReports.Core\HttpReports.Core.csproj" />
   </ItemGroup>
 
 </Project>

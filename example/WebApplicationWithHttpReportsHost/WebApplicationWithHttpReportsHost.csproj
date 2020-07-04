@@ -13,7 +13,7 @@
     <ProjectReference Include="..\..\src\HttpReports.Collector.Grpc\HttpReports.Collector.Grpc.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Dashboard.API\HttpReports.Dashboard.API.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Dashboard.UI\HttpReports.Dashboard.UI.csproj" />
-    <ProjectReference Include="..\..\src\HttpReports.Storage.MySQL\HttpReports.Storage.MySQL.csproj" />
+    <ProjectReference Include="..\..\src\Storage\HttpReports.Storage.MySQL\HttpReports.Storage.MySql.csproj" />
   </ItemGroup>
 
 </Project>

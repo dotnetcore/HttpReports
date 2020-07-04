@@ -197,17 +197,17 @@ namespace HttpReports
         private void ConfigTrace(HttpContext context)
         {
             var parentId = context.Request.Headers.ContainsKey(BasicConfig.HttpClientTraceId) ?
-                context.Request.Headers[BasicConfig.ActiveTraceParentId].ToString() : string.Empty;
+                context.Request.Headers[BasicConfig.HttpClientTraceId].ToString() : string.Empty;
 
+            Activity.Current = null;
             Activity activity = new Activity(BasicConfig.ActiveTraceName);  
 
-            activity.Start();
-            activity.SetParentId(parentId);
-
+            activity.Start();  
+            activity.SetParentId(parentId); 
             activity.AddBaggage(BasicConfig.ActiveTraceId, activity.SpanId.ToHexString());
             activity.AddBaggage(BasicConfig.ActiveTraceParentId, activity.ParentSpanId.ToHexString());
-            context.Response.Headers.Add(BasicConfig.ActiveTraceId, activity.SpanId.ToString());
 
+            context.Response.Headers.Add(BasicConfig.ActiveTraceId, activity.SpanId.ToString()); 
 
             context.Items.Add(BasicConfig.ActiveTraceCreateTime, DateTime.Now);
             context.Items.Add(BasicConfig.ActiveTraceId,activity.SpanId.ToHexString());
@@ -269,8 +269,7 @@ namespace HttpReports
                         {
                             return true;
                         }
-                    }
-
+                    } 
                     else if (ruleList.Where(x => x == '%').Count() == 1 && rule.FirstOrDefault() == '%')
                     {
                         if (path.EndsWith(rule.Replace("%", "")))

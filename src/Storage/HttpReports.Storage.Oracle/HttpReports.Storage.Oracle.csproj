@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>HttpReports.SQLServer</PackageId>
+    <PackageId>HttpReports.Oracle</PackageId>
     <Version>1.5.0</Version>
     <Authors>SpringLee</Authors>
     <Company>SpringLee</Company>
-    <Description>HttpReports.SQLServer Storage</Description>
+    <Description>HttpReports.Oracle Storage</Description>
     <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
     <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
     <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>
@@ -19,11 +19,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.1" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.60" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
+    <ProjectReference Include="..\..\HttpReports.Core\HttpReports.Core.csproj" />
   </ItemGroup>
 
 </Project>

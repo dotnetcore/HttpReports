@@ -1,8 +1,10 @@
-﻿using System;
+﻿using HttpReports.Core;
+using HttpReports.Core.Diagnostics;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace HttpReports.Core.Diagnostics
+namespace HttpReports.Diagnostic.Grpc
 {
     public class GrpcDiagnosticListener : IDiagnosticListener
     {
@@ -29,17 +31,15 @@ namespace HttpReports.Core.Diagnostics
 
             if (value.Key == "Grpc.Net.Client.GrpcOut.Start")
             {
-                var cc = value.Value.GetType();  
+                var cc = value.Value.GetType();
 
                 var request = value.Value.GetType().GetProperty("Request").GetValue(value.Value) as System.Net.Http.HttpRequestMessage;
-                 
-
             }
 
             if (value.Key == "Grpc.Net.Client.GrpcOut.Stop")
             {
 
-            } 
+            }
         }
     }
 }

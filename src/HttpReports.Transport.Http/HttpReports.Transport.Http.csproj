@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\HttpReports.Core\HttpReports.Core.csproj" />
+    <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
   </ItemGroup>
 
 </Project>

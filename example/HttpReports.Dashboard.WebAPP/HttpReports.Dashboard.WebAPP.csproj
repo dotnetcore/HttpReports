@@ -6,18 +6,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Diagnostics\HttpReports.Diagnostic.MySqlConnector\HttpReports.Diagnostic.MySqlConnector.csproj" />
     <ProjectReference Include="..\..\src\Diagnostics\HttpReports.Diagnostic.SqlClient\HttpReports.Diagnostic.SqlClient.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Collector.Grpc\HttpReports.Collector.Grpc.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Core\HttpReports.Core.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Dashboard\HttpReports.Dashboard.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Grpc\HttpReports.Grpc.csproj" />
-    <ProjectReference Include="..\..\src\HttpReports.SQLLite\HttpReports.Storage.SQLite.csproj" />
-    <ProjectReference Include="..\..\src\HttpReports.Storage.Oracle\HttpReports.Storage.Oracle.csproj" />
-    <ProjectReference Include="..\..\src\HttpReports.Storage.Postgre\HttpReports.Storage.PostgreSQL.csproj" />
-    <ProjectReference Include="..\..\src\HttpReports.Storage.SQLServer\HttpReports.Storage.SQLServer.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Transport.Grpc\HttpReports.Transport.Grpc.csproj" />
     <ProjectReference Include="..\..\src\HttpReports\HttpReports.csproj" />
+    <ProjectReference Include="..\..\src\Storage\HttpReports.Storage.MySQL\HttpReports.Storage.MySql.csproj" />
+    <ProjectReference Include="..\..\src\Storage\HttpReports.Storage.Oracle\HttpReports.Storage.Oracle.csproj" />
+    <ProjectReference Include="..\..\src\Storage\HttpReports.Storage.Postgre\HttpReports.Storage.PostgreSQL.csproj" />
+    <ProjectReference Include="..\..\src\Storage\HttpReports.Storage.SQLLite\HttpReports.Storage.SQLite.csproj" />
+    <ProjectReference Include="..\..\src\Storage\HttpReports.Storage.SQLServer\HttpReports.Storage.SQLServer.csproj" />
   </ItemGroup>
 
   <ItemGroup>
