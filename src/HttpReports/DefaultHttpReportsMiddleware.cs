@@ -195,23 +195,33 @@ namespace HttpReports
         }
 
         private void ConfigTrace(HttpContext context)
-        {
-            var parentId = context.Request.Headers.ContainsKey(BasicConfig.HttpClientTraceId) ?
-                context.Request.Headers[BasicConfig.HttpClientTraceId].ToString() : string.Empty;
+        { 
+            var parentId = context.Request.Headers.ContainsKey(BasicConfig.ActiveTraceId) ?
+                context.Request.Headers[BasicConfig.ActiveTraceId].ToString() : string.Empty;
 
             Activity.Current = null;
             Activity activity = new Activity(BasicConfig.ActiveTraceName);  
 
             activity.Start();  
-            activity.SetParentId(parentId); 
-            activity.AddBaggage(BasicConfig.ActiveTraceId, activity.SpanId.ToHexString());
-            activity.AddBaggage(BasicConfig.ActiveTraceParentId, activity.ParentSpanId.ToHexString());
+            activity.SetParentId(parentId);   
 
-            context.Response.Headers.Add(BasicConfig.ActiveTraceId, activity.SpanId.ToString()); 
+            activity.AddBaggage(BasicConfig.ActiveTraceId, activity.Id);  
+            activity.AddBaggage(BasicConfig.ActiveSpanId,activity.SpanId.ToHexString()); 
+            if (!parentId.IsEmpty())
+            {
+                activity.AddBaggage(BasicConfig.ActiveParentSpanId, activity.ParentSpanId.ToHexString());
+            }
+                
 
             context.Items.Add(BasicConfig.ActiveTraceCreateTime, DateTime.Now);
-            context.Items.Add(BasicConfig.ActiveTraceId,activity.SpanId.ToHexString());
-            context.Items.Add(BasicConfig.ActiveTraceParentId, activity.ParentSpanId.ToHexString());
+            context.Items.Add(BasicConfig.ActiveTraceId, activity.Id);
+            context.Items.Add(BasicConfig.ActiveSpanId, activity.SpanId.ToHexString()); 
+            if (!parentId.IsEmpty())
+            {
+                context.Items.Add(BasicConfig.ActiveParentSpanId, activity.ParentSpanId.ToHexString());
+            }  
+
+            context.Response.Headers.Add(BasicConfig.ActiveSpanId, activity.SpanId.ToHexString());
 
         }
 
@@ -252,9 +262,13 @@ namespace HttpReports
 
                     var ruleList = rule.ToList();
 
-                    if (ruleList.Where(x => x == '%').Count() == 0)
+                    if (!ruleList.Where(x => x == '%').Any())
                     {
-                        continue;
+                        if (path == rule)
+                        {
+                            return true;
+                        } 
+
                     }
                     else if (ruleList.Where(x => x == '%').Count() >= 2)
                     {

@@ -71,6 +71,8 @@
   "Request_Time": "请求耗时",
   "Request_StatusCode": "响应状态码",
   "Request_RemoteIP": "远程地址",
+  "RequestBody": "请求内容",
+  "ResponseBody": "响应内容",
   "Request_RemotePort": "远程端口",
   "Request_LocalIP": "本地IP",
   "Request_LocalPort": "本地端口",
@@ -170,5 +172,5 @@
   "HeapMemory": "堆内存 M",
   "ProcessCPU": "程序CPU占用",
   "ProcessMemory": "程序内存占用 M",
-  "ThreadCount": "当前线程数" 
+  "ThreadCount": "当前线程数"
 }

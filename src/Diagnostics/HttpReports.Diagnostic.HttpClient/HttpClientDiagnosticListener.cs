@@ -46,18 +46,17 @@ namespace HttpReports.Diagnostic.HttpClient
                 var request = value.Value.GetType().GetProperty("Request").GetValue(value.Value) as System.Net.Http.HttpRequestMessage;
 
                 _context.Push(activity?.SpanId.ToHexString(), new Segment
-                {
-
+                { 
                     activity = activity,
                     CreateTime = DateTime.Now,
                     Value = request
                 });
 
-                if (!request.Headers.TryGetValues(BasicConfig.HttpClientTraceId, out _))
+                if (!request.Headers.TryGetValues(BasicConfig.ActiveTraceId, out _))
                 {
-                    var ActiveTraceId = activity.GetBaggageItem(BasicConfig.ActiveTraceId);
+                    var TraceId = activity.GetBaggageItem(BasicConfig.ActiveTraceId);
 
-                    request.Headers.Add(BasicConfig.HttpClientTraceId, ActiveTraceId);
+                    request.Headers.Add(BasicConfig.ActiveTraceId, TraceId);
                 }
             }
 
@@ -73,9 +72,8 @@ namespace HttpReports.Diagnostic.HttpClient
                 });
 
                 Build(activity?.SpanId.ToHexString());
-            }
-
-            _logger.LogInformation(value.Key);
+            } 
+          
         }
 
         public IRequestChain Build(string Id)

@@ -26,5 +26,9 @@
 
         public string StatusCode { get; set; }
 
+        public string Request { get; set; }
+
+        public string Response { get; set; } 
+
     }
 }

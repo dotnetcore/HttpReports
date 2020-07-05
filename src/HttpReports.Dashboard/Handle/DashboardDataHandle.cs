@@ -518,7 +518,10 @@ namespace HttpReports.Dashboard.Handle
                 Field = RequestInfoFields.CreateTime,
                 IsAscend = false,
                 StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
-                EndTimeFormat = "yyyy-MM-dd HH:mm:ss"
+                EndTimeFormat = "yyyy-MM-dd HH:mm:ss",
+                Request = request.Request,
+                Response = request.Response
+
             });
 
             return Json(new { total = result.AllItemCount, rows = result.List });
@@ -641,6 +644,7 @@ namespace HttpReports.Dashboard.Handle
             { 
                 Info = requestInfo,
                 Detail = requestDetail 
+
             }));
         } 
       

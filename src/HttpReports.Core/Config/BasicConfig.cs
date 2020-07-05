@@ -30,9 +30,9 @@ namespace HttpReports.Core.Config
 
         public const string ActiveTraceId = "HttpReports.Trace.Id";
 
-        public const string ActiveTraceParentId = "HttpReports.Trace.Parent.Id"; 
+        public const string ActiveSpanId = "HttpReports.Trace.Span.Id";
 
-        public const string HttpClientTraceId = "HttpReports.HttpClient.Trace.Id";
+        public const string ActiveParentSpanId = "HttpReports.Trace.ParentSpan.Id"; 
 
         public const string ALLTag = "ALL";
 

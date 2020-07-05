@@ -31,6 +31,8 @@ $(function () {
 
 
 
+    return;
+
     $('body').niceScroll({
         cursorcolor: "rgb(103, 194, 239)",
         cursoropacitymax: 1,

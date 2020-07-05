@@ -573,6 +573,14 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
                 }
             }
 
+            // Query Detail
+            IEnumerable<string> RequestIdCollection = await QueryDetailAsync(filterOption);
+
+            if (RequestIdCollection != null && RequestIdCollection.Any())
+            {
+                whereBuilder.Append($" AND Id IN ({string.Join(",", RequestIdCollection.Select(x => "'" + x + "'"))}) ");
+            }
+
             var where = whereBuilder.ToString();
 
             sqlBuilder.Append(where);
@@ -598,6 +606,43 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
             }, "查询请求信息列表异常");
 
             return result;
+        }
+
+        private async Task<IEnumerable<string>> QueryDetailAsync(RequestInfoSearchFilterOption option)
+        {
+            if (!option.TraceId.IsEmpty()) return null;
+
+            if (option.Request.IsEmpty() && option.Response.IsEmpty()) return null;
+
+            string where = " where 1=1 ";
+
+            if (!option.Request.IsEmpty())
+            {
+                where = where + $"AND RequestBody like '%{option.Request.Trim()}%' ";
+            }
+
+            if (!option.Response.IsEmpty())
+            {
+                where = where + $"AND ResponseBody like '%{option.Response.Trim()}%' ";
+            }
+
+            if (option is ITimeSpanFilterOption timeSpanFilterOption)
+            {
+                if (timeSpanFilterOption.StartTime.HasValue)
+                {
+                    where = where + $" AND CreateTime >= '{timeSpanFilterOption.StartTime.Value.ToString(timeSpanFilterOption.StartTimeFormat)}' ";
+                }
+                if (timeSpanFilterOption.EndTime.HasValue)
+                {
+                    where = where + $" AND CreateTime < '{timeSpanFilterOption.EndTime.Value.ToString(timeSpanFilterOption.EndTimeFormat)}' ";
+                }
+            }
+
+            string sql = $@"Select RequestId From ""{Prefix}RequestDetail"" {where}  ";
+
+            var list = await LoggingSqlOperation(async connection => await connection.QueryAsync<string>(sql));
+
+            return list;
         }
 
         public async Task<bool> UpdateLoginUser(SysUser model)

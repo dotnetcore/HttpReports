@@ -260,71 +260,45 @@ WriteLiteral(@"</td>
             
             #line default
             #line hidden
-WriteLiteral(@"</h3>
-
-    <table class=""table table-striped table-bordered"" style=""word-break:break-all"">
-        <thead>
-            <tr>
-                <th width=""160"">Key</th>
-                <th>Value</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>QueryString</td>
-                <td class=""context_queryString"" style=""text-align:left;font-size:12px""></td>
-            </tr>
-
-            <tr>
-                <td>Header</td>
-                <td class=""context_header"" style=""text-align:left;font-size:12px""></td>
-            </tr>
-
-            <tr>
-                <td>Cookie</td>
-                <td class=""context_cookie"" style=""text-align:left;font-size:12px""></td>
-            </tr>
-
-            <tr>
-                <td>RequestBody</td>
-                <td class=""context_requestBody"" style=""text-align:left;font-size:12px""></td>
-            </tr>
-
-
-            <tr>
-                <td>ResponseBody</td>
-                <td class=""context_responseBody"" style=""text-align:left;font-size:12px""></td>
-            </tr>
-
-            <tr>
-                <td>Error</td>
-                <td class=""context_error"" style=""text-align:left;font-size:12px""></td>
-            </tr>
-
-            <tr>
-                <td>ErrorStack</td>
-                <td class=""context_errorStack"" style=""text-align:left;font-size:12px""></td>
-            </tr>
-
-
-        </tbody>
-    </table>
-
-</div>
-
-
-<input type=""hidden"" value=""");
+WriteLiteral("</h3>\r\n\r\n    <table class=\"table table-striped table-bordered detail-table\" style" +
+"=\"word-break:break-all;\">\r\n        <thead>\r\n\r\n        </thead>\r\n        <tbody>\r" +
+"\n            <tr>\r\n                <td style=\"text-align:left;font-size:12px\">\r\n" +
+"\r\n                    <h3>QueryString</h3>\r\n\r\n                    <p>\r\n         " +
+"               <pre class=\"context_queryString\"></pre>\r\n                    </p>" +
+"\r\n\r\n                </td>\r\n            </tr>\r\n\r\n            <tr>\r\n\r\n            " +
+"    <td style=\"text-align:left;font-size:12px\">\r\n\r\n                    <h3>Heade" +
+"r</h3>\r\n\r\n                    <p>\r\n\r\n                        <pre class=\"context" +
+"_header\"></pre>\r\n\r\n                    </p>\r\n\r\n                </td>\r\n          " +
+"  </tr>\r\n\r\n            <tr>\r\n                <td style=\"text-align:left;font-siz" +
+"e:12px\">\r\n\r\n                    <h3>Cookie</h3>\r\n\r\n                    <p>\r\n    " +
+"                    <pre class=\"context_cookie\"></pre>\r\n                    </p>" +
+"\r\n\r\n                </td>\r\n            </tr>\r\n\r\n            <tr>\r\n              " +
+"  <td style=\"text-align:left;font-size:12px\">\r\n\r\n                    <h3>Request" +
+"Body</h3>\r\n\r\n                    <p>\r\n                        <pre class=\"contex" +
+"t_requestBody\"></pre>\r\n                    </p>\r\n\r\n                </td>\r\n      " +
+"      </tr>\r\n\r\n\r\n            <tr>\r\n\r\n                <td style=\"text-align:left;" +
+"font-size:12px\">\r\n\r\n                    <h3>ResponseBody</h3>\r\n\r\n               " +
+"     <p>\r\n                        <pre class=\"context_responseBody\"></pre>\r\n\r\n  " +
+"                  </p>\r\n\r\n                </td>\r\n            </tr>\r\n\r\n          " +
+"  <tr>\r\n                <td style=\"text-align:left;font-size:12px\">\r\n\r\n         " +
+"           <h3>Error</h3>\r\n\r\n                    <p>\r\n                        <p" +
+"re class=\"context_error\"></pre>\r\n                    </p>\r\n\r\n                </t" +
+"d>\r\n            </tr>\r\n\r\n            <tr>\r\n                <td style=\"text-align" +
+":left;font-size:12px\">\r\n\r\n                    <h3>ErrorStack</h3>\r\n\r\n           " +
+"         <p>\r\n                        <pre class=\"context_errorStack\"></pre>\r\n  " +
+"                  </p>\r\n\r\n                </td>\r\n            </tr>\r\n\r\n\r\n        " +
+"</tbody>\r\n    </table>\r\n\r\n</div>\r\n\r\n\r\n<input type=\"hidden\" value=\"");
 
 
             
-            #line 160 "..\..\Views\HttpReports\Trace.cshtml"
+            #line 211 "..\..\Views\HttpReports\Trace.cshtml"
                        Write(ViewData["TraceId"]);
 
             
             #line default
             #line hidden
 WriteLiteral("\" class=\"trace_id\" />\r\n\r\n<script src=\"/HttpReportsStaticFiles/Content/page/trace." +
-"js?ver=1.0.6\"></script> ");
+"js?ver=1.0.7\"></script> \r\n");
 
 
         }

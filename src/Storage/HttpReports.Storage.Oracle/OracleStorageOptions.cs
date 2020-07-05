@@ -22,6 +22,8 @@ namespace HttpReports.Storage.Oracle
         /// </summary>
         public int DeferThreshold { get; set; }
 
+        public string TablePrefix { get; set; }
+
         public OracleStorageOptions Value => this;
     }
 }

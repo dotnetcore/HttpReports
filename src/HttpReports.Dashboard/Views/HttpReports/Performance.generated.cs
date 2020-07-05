@@ -207,7 +207,7 @@ WriteLiteral("</button>\r\n                        </div>\r\n                   
 "                        <div id=\"ThreadCountChart\" style=\"height:300px\"></div>\r\n" +
 "                        </div>\r\n                    </div>\r\n                </di" +
 "v>\r\n            </div>\r\n        </div> \r\n    </div>\r\n</div>\r\n\r\n<script src=\"/Htt" +
-"pReportsStaticFiles/Content/page/performance.js?ver=1.0.6\"></script>\r\n");
+"pReportsStaticFiles/Content/page/performance.js?ver=1.0.7\"></script>\r\n");
 
 
         }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace HttpReprots.Collector.Http
 {
-    public class HttpCollectorService
+    public class HttpCollectorService: IHttpReportsCollector
     {
         public IHttpReportsStorage Storage { get; }
 
@@ -17,21 +17,14 @@ namespace HttpReprots.Collector.Http
             Storage = storage;
         }
 
-        public async Task<string> Write(List<RequestBag> list)
-        {
-            foreach (var item in list)
-            {
-                await Storage.AddRequestInfoAsync(item);
-            }
-
-            return "Ok";
+        public async Task WriteRequestBag(List<RequestBag> list)
+        { 
+            await Storage.AddRequestInfoAsync(list,new System.Threading.CancellationToken());  
         }
 
-        public async Task<string> WritePerformance(Performance performance)
+        public async Task WritePerformance(IPerformance performance)
         {
-            await Storage.AddPerformanceAsync(performance);
-
-            return "Ok";
-        }  
+            await Storage.AddPerformanceAsync(performance); 
+        } 
     }
 }

@@ -2802,24 +2802,22 @@ ul.profile-details li div i {
 
 
 .request-tree .list-group-item {
-    font-size: 16px;
+    font-size: 12px;
     padding: 12px 20px !important;
 }
 
 .request-tree .service {
-    font-weight: bolder;
     margin-left: 12px;
     padding: 2px 10px;
-    color: #b9b9b9;
+    color: #cccccc;
 }
 
 .request-tree .url {
     margin-left: 20px;
-    font-weight: bolder;
     font-size: 12px;
     margin-left: 12px;
     padding: 2px 10px;
-    color: #9e9e9e;
+    color: #cccccc;
 }
 
 .request-tree .info {
@@ -2889,17 +2887,29 @@ ul.profile-details li div i {
 
 .contextBox {
     max-height: 100%;
-   padding:0 24px;
+    padding:0 24px;
     margin-right:10px;
 }
 
-#TableData .request-info {
-    font-size:16px;
+
+.detail-table h3 {
+    font-size: 16px;
+    margin: 6px 4px;
 }
 
-#TableData .request-trace {
-    font-size: 16px;
+.detail-table pre {
+   border:none;
 }
+
+    #TableData .request-info {
+        font-size: 16px;
+    }
+
+#TableData .request-trace {
+    font-size: 12px;
+}
+
+
 
  
 

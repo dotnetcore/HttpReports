@@ -199,6 +199,11 @@ namespace HttpReports.Dashboard.Services
         public string ThreadCount => GetValue();
 
 
+        public string RequestBody => GetValue();
+
+        public string ResponseBody => GetValue(); 
+
+
         public string this[string key] => _resource.TryGetValue(key, out var value) ? value : string.Empty;
 
         protected string GetValue([CallerMemberName]string key = "") => this[key];

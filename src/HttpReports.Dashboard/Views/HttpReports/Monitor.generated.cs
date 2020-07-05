@@ -411,7 +411,7 @@ WriteLiteral("</button>\r\n\r\n                                </td>\r\n        
             #line hidden
 WriteLiteral("\r\n                        </tbody>\r\n                    </table>\r\n\r\n             " +
 "   </div>\r\n            </div>\r\n\r\n        </div>\r\n\r\n    </div>\r\n\r\n</div>\r\n\r\n<scri" +
-"pt src=\"/HttpReportsStaticFiles/Content/page/monitor.js?ver=1.0.6\"></script>\r\n");
+"pt src=\"/HttpReportsStaticFiles/Content/page/monitor.js?ver=1.0.7\"></script>\r\n");
 
 
         }

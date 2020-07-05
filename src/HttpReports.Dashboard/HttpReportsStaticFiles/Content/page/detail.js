@@ -123,6 +123,9 @@ function InitTable() {
                 formatter: function (value, row, index) {
 
                     value = value.replace('T', ' '); 
+
+                    value = ConvertTimeString(value); 
+
                     return value;
                 }
             },
@@ -210,7 +213,12 @@ function RefreshTable() {
     var service = $(".service-form").find(".service").find("select").val();
     var instance = $(".service-form").find(".instance").find("select").val();  
 
-    url = url + `?start=${start}&end=${end}&url=${requestUrl}&ip=${ip}&service=${service}&instance=${instance}&statusCode=${statusCode}&traceId=${traceId}`;
+
+    var request = $(".request_body").val().trim(); 
+    var response = $(".response_body").val().trim();  
+
+
+    url = url + `?start=${start}&end=${end}&url=${requestUrl}&ip=${ip}&service=${service}&instance=${instance}&statusCode=${statusCode}&traceId=${traceId}&request=${request}&response=${response}`;
 
     $('#TableData').bootstrapTable('refresh', { 
         url: url  
@@ -248,20 +256,58 @@ function bind_context(Id) {
             $(".context_localPort").text(info.localPort);
             $(".context_createTime").text(info.createTime);
 
-            $(".context_queryString").text(detail.queryString);
-            $(".context_header").text(detail.header);
-            $(".context_cookie").text(detail.cookie);
-            $(".context_requestBody").text(detail.requestBody);
-            $(".context_responseBody").text(detail.responseBody);
-            $(".context_error").text(detail.errorMessage);
-            $(".context_errorStack").text(detail.errorStack);
+            $(".context_queryString").text(ConvertJsonString(detail.queryString));
+            $(".context_header").text(ConvertJsonString(detail.header));
+            $(".context_cookie").text(ConvertJsonString(detail.cookie)); 
 
+            $(".context_error").text(ConvertJsonString(detail.errorMessage));
+            $(".context_errorStack").text(ConvertJsonString(detail.errorStack)); 
+           
+            $(".context_requestBody").text(ConvertJsonString(detail.requestBody)); 
+            $(".context_responseBody").text(ConvertJsonString(detail.responseBody));  
 
             show_modal();
         }
     });
 
 } 
+
+
+function ConvertTimeString(str) {
+
+    if (str.length > 23) { 
+        return str.substr(0,23); 
+    }  
+    return str;
+
+}
+
+
+function ConvertJsonString(str) {
+
+    if (IsJson(str)) {
+
+        var json = JSON.stringify(JSON.parse(str), null, 2);
+
+        return json; 
+
+    } 
+
+    return str;
+
+} 
+
+
+function IsJson(str) {
+    try {
+        $.parseJSON(str)
+        return true
+    } catch (e) {
+        return false
+    }
+}
+
+
 
 function show_modal() {  
   

@@ -398,6 +398,16 @@ body.my-login-page {
     border: 1px solid #428bca !important;
 }
 
+.detail-table h3 {
+    color: #a0a0a0 !important;
+}
+
+.detail-table pre {
+    background-color: #2d3035 !important;
+    color:#A0A0A0 !important;
+}
+
+
  
 
  

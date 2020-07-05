@@ -69,7 +69,7 @@
                     <div class="form-inline form" style="margin-bottom:30px;">
 
                         <div class="col-sm-3">
-                            <label class="form-label">TraceId</label>
+                            <label class="form-label">RequestId</label>
                             <input type="text" class="form-control traceId">
                         </div>
 
@@ -97,6 +97,18 @@
                             <label class="form-label">@lang.Request_IPAddress</label>
                             <input placeholder="" type="text" class="form-control laydate ipadress">
                         </div>
+
+                        <div class="col-sm-3">
+                            <label class="form-label">@lang.RequestBody</label>
+                            <input placeholder="" type="text" class="form-control laydate request_body">
+                        </div>
+
+
+                        <div class="col-sm-3">
+                            <label class="form-label">@lang.ResponseBody</label>
+                            <input placeholder="" type="text" class="form-control laydate response_body">
+                        </div> 
+
 
 
                     </div>
@@ -223,48 +235,99 @@
 
     <h3 class="request_detail_title" style="padding-left:6px; margin-top:20px;margin-bottom:16px"><i class="fa fa-space-shuttle" style="margin-right:10px"></i>  @lang.Request_DetailInfo</h3>
 
-    <table class="table table-striped table-bordered" style="word-break:break-all">
+    <table class="table table-striped table-bordered detail-table" style="word-break:break-all;">
         <thead>
-            <tr>
-                <th width="160">Key</th>
-                <th>Value</th>
-            </tr>
+             
         </thead>
         <tbody>
-            <tr>
-                <td>QueryString</td>
-                <td class="context_queryString" style="text-align:left;font-size:12px"></td>
+            <tr> 
+                <td style="text-align:left;font-size:12px">
+
+                    <h3>QueryString</h3>
+
+                    <p>
+                        <pre class="context_queryString"></pre>
+                    </p>
+
+                </td>
             </tr>
 
             <tr>
-                <td>Header</td>
-                <td class="context_header" style="text-align:left;font-size:12px"></td>
+                 
+                <td  style="text-align:left;font-size:12px">
+
+                    <h3>Header</h3>
+
+                    <p>
+
+                        <pre class="context_header"></pre>
+
+                    </p> 
+
+                </td>
             </tr>
 
-            <tr>
-                <td>Cookie</td>
-                <td class="context_cookie" style="text-align:left;font-size:12px"></td>
+            <tr> 
+                <td   style="text-align:left;font-size:12px">
+
+                    <h3>Cookie</h3>
+
+                    <p>
+                        <pre  class="context_cookie"></pre>
+                    </p>
+
+                </td>
             </tr>
 
-            <tr>
-                <td>RequestBody</td>
-                <td class="context_requestBody" style="text-align:left;font-size:12px"></td>
+            <tr> 
+                <td style="text-align:left;font-size:12px"> 
+
+                    <h3>RequestBody</h3> 
+
+                    <p> 
+                        <pre class="context_requestBody"></pre> 
+                    </p>
+
+                </td>
             </tr>
 
 
             <tr>
-                <td>ResponseBody</td>
-                <td class="context_responseBody" style="text-align:left;font-size:12px"></td>
+               
+                <td style="text-align:left;font-size:12px"> 
+
+                    <h3>ResponseBody</h3>
+
+                    <p> 
+                        <pre class="context_responseBody"></pre> 
+
+                    </p> 
+
+                </td>
             </tr>
 
-            <tr>
-                <td>Error</td>
-                <td class="context_error" style="text-align:left;font-size:12px"></td>
+            <tr> 
+                <td style="text-align:left;font-size:12px">
+
+                    <h3>Error</h3>
+
+                    <p>
+                        <pre class="context_error"></pre> 
+                    </p> 
+
+                </td>
             </tr>
 
-            <tr>
-                <td>ErrorStack</td>
-                <td class="context_errorStack" style="text-align:left;font-size:12px"></td>
+            <tr> 
+                <td style="text-align:left;font-size:12px"> 
+
+                    <h3>ErrorStack</h3>
+
+                    <p>
+                        <pre  class="context_errorStack"></pre> 
+                    </p>
+
+                </td>
             </tr>
 
 
@@ -273,4 +336,4 @@
 
 </div>
 
-<script src="/HttpReportsStaticFiles/Content/page/detail.js?ver=1.0.6"></script>
+<script src="/HttpReportsStaticFiles/Content/page/detail.js?ver=1.0.7"></script>

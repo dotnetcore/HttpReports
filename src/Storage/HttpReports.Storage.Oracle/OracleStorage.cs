@@ -28,6 +28,8 @@ namespace HttpReports.Storage.Oracle
 
         public ILogger<OracleStorage> Logger { get; }
 
+        private string TablePrefix { get; set; } = string.Empty;
+
         private readonly AsyncCallbackDeferFlushCollection<RequestBag> _deferFlushCollection = null;
 
         public OracleStorageOptions _options;
@@ -35,6 +37,7 @@ namespace HttpReports.Storage.Oracle
         public OracleStorage(IOptions<OracleStorageOptions> options,OracleConnectionFactory connectionFactory, ILogger<OracleStorage> logger)
         {
             _options = options.Value;
+            if (!_options.TablePrefix.IsEmpty()) TablePrefix = _options.TablePrefix + ".";
             ConnectionFactory = connectionFactory;
             Logger = logger;
 
@@ -748,6 +751,15 @@ namespace HttpReports.Storage.Oracle
                 }
             }
 
+
+            // Query Detail
+            IEnumerable<string> RequestIdCollection = await QueryDetailAsync(filterOption);
+
+            if (RequestIdCollection != null && RequestIdCollection.Any())
+            {
+                whereBuilder.Append($" AND Id IN ({string.Join(",", RequestIdCollection.Select(x => "'" + x + "'"))}) ");
+            }
+
             var where = whereBuilder.ToString();
 
             sqlBuilder.Append(where);
@@ -774,6 +786,43 @@ namespace HttpReports.Storage.Oracle
             }, "查询请求信息列表异常");
 
             return result;
+        }
+        private async Task<IEnumerable<string>> QueryDetailAsync(RequestInfoSearchFilterOption option)
+        {
+            if (!option.TraceId.IsEmpty()) return null;
+
+            if (option.Request.IsEmpty() && option.Response.IsEmpty()) return null;
+
+            string where = " where 1=1 ";
+
+            if (!option.Request.IsEmpty())
+            {
+                where = where + $"AND RequestBody like '%{option.Request.Trim()}%' ";
+            }
+
+            if (!option.Response.IsEmpty())
+            {
+                where = where + $"AND ResponseBody like '%{option.Response.Trim()}%' ";
+            }
+
+
+            if (option is ITimeSpanFilterOption timeSpanFilterOption)
+            {
+                if (timeSpanFilterOption.StartTime.HasValue)
+                {
+                    where = where + $" And CreateTime >= to_date('{timeSpanFilterOption.StartTime.Value.ToString(timeSpanFilterOption.StartTimeFormat)}','YYYY-MM-DD hh24:mi:ss') ";
+                }
+                if (timeSpanFilterOption.EndTime.HasValue)
+                {
+                    where = where + $" And CreateTime < to_date('{timeSpanFilterOption.EndTime.Value.ToString(timeSpanFilterOption.EndTimeFormat)}','YYYY-MM-DD hh24:mi:ss') ";
+                }
+            }  
+ 
+            string sql = $"Select RequestId From RequestDetail {where}  ";
+
+            var list = await LoggingSqlOperation(async connection => await connection.QueryAsync<string>(sql));
+
+            return list;
         }
 
         public async Task<int> GetRequestCountAsync(RequestCountFilterOption filterOption)

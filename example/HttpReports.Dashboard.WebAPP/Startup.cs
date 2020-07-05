@@ -18,11 +18,11 @@ namespace HttpReports.Dashboard.WebAPP
     public class Startup
     {
        
-        public void ConfigureServices(IServiceCollection services)
-        {  
-            services.AddHttpReports().UseSQLServerStorage(); 
+        public void ConfigureServices(IServiceCollection services) 
+        { 
+            services.AddHttpReports().UseMySqlStorage(); 
 
-            services.AddHttpReportsDashboard().UseSQLServerStorage();
+            services.AddHttpReportsDashboard().UseMySqlStorage();
         }
 
       

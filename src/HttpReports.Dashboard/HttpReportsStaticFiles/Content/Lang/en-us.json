@@ -70,6 +70,8 @@
   "Request_Time": "Time",
   "Request_StatusCode": "StatusCode",
   "Request_RemoteIP": "Remote",
+  "RequestBody": "Request",
+  "ResponseBody": "Response",
   "Request_RemotePort": "Remote Port",
   "Request_LocalIP": "Local IP",
   "Request_LocalPort": "Local Port",

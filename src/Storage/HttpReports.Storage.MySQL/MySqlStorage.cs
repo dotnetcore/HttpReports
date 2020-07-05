@@ -416,8 +416,16 @@ Select AVG(Milliseconds) ART From {TablePrefix}RequestInfo {where};";
                 {
                     whereBuilder.Append($" AND StatusCode in ({string.Join(",", filterOption.StatusCodes)}) ");
                 } 
-            } 
+            }
 
+
+            // Query Detail
+            IEnumerable<string> RequestIdCollection = await QueryDetailAsync(filterOption);
+
+            if (RequestIdCollection != null && RequestIdCollection.Any())
+            {
+                whereBuilder.Append($" AND Id IN ({string.Join(",",RequestIdCollection.Select(x => "'" + x + "'" ))}) ");
+            } 
 
             var where = whereBuilder.ToString();
 
@@ -446,6 +454,43 @@ Select AVG(Milliseconds) ART From {TablePrefix}RequestInfo {where};";
             return result;
         }
 
+
+        private async Task<IEnumerable<string>> QueryDetailAsync(RequestInfoSearchFilterOption option)
+        {
+            if (!option.TraceId.IsEmpty()) return null;
+
+            if (option.Request.IsEmpty() && option.Response.IsEmpty()) return null;
+
+            string where = " where 1=1 ";
+
+            if (!option.Request.IsEmpty())
+            {
+                where = where + $"AND RequestBody like '%{option.Request.Trim()}%' ";
+            }
+
+            if (!option.Response.IsEmpty())
+            {
+                where = where + $"AND ResponseBody like '%{option.Response.Trim()}%' ";
+            }
+
+            if (option is ITimeSpanFilterOption timeSpanFilterOption)
+            {
+                if (timeSpanFilterOption.StartTime.HasValue)
+                {
+                    where = where + $" AND CreateTime >= '{timeSpanFilterOption.StartTime.Value.ToString(timeSpanFilterOption.StartTimeFormat)}' ";
+                }
+                if (timeSpanFilterOption.EndTime.HasValue)
+                {
+                    where = where + $" AND CreateTime < '{timeSpanFilterOption.EndTime.Value.ToString(timeSpanFilterOption.EndTimeFormat)}' " ;
+                }
+            }
+
+            string sql = $"Select RequestId From {TablePrefix}RequestDetail {where}  ";
+
+            var list = await LoggingSqlOperation(async connection => await connection.QueryAsync<string>(sql));
+
+            return list;
+        } 
 
         public async Task<RequestTimesStatisticsResult> GetRequestTimesStatisticsAsync(TimeSpanStatisticsFilterOption filterOption)
         {
@@ -838,8 +883,8 @@ Select AVG(Milliseconds) ART From {TablePrefix}RequestInfo {where};";
 
             ) > 0); 
 
-        } 
-
+        }  
+        
 
         public async Task<bool> UpdateMonitorJob(IMonitorJob job)
         {

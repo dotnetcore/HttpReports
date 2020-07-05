@@ -372,7 +372,7 @@ WriteLiteral("</label>\r\n                                <select onchange=\"cha
 "d=\"SlowARTChart\" style=\"min-height:420px; width:99%\"></div>\r\n                   " +
 "     </div>\r\n                    </div>\r\n                </div>\r\n            </d" +
 "iv>\r\n        </div>\r\n    </div>\r\n</div>\r\n\r\n<script src=\"/HttpReportsStaticFiles/" +
-"Content/page/index.js?ver=1.0.6\"></script>");
+"Content/page/index.js?ver=1.0.7\"></script>");
 
 
         }
