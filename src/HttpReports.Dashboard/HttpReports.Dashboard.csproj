@@ -37,6 +37,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
+    <ProjectReference Include="..\HttpReprots.Collector.Http\HttpReprots.Collector.Http.csproj" />
   </ItemGroup>
 
   <ItemGroup>

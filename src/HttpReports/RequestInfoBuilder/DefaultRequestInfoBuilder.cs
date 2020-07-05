@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Web;
 using HttpReports.Core;
 using HttpReports.Core.Config;
 
@@ -60,7 +61,7 @@ namespace HttpReports.RequestInfoBuilder
 
                 if (headers != null && headers.Count > 0)
                 {
-                    model.Header = JsonConvert.SerializeObject(headers);
+                    model.Header = HttpUtility.HtmlDecode(JsonConvert.SerializeObject(headers));
                 }
 
                 if (context.Items.ContainsKey(BasicConfig.HttpReportsGlobalException))
@@ -69,8 +70,8 @@ namespace HttpReports.RequestInfoBuilder
 
                     if (ex != null)
                     {
-                        model.ErrorMessage = ex.Message;
-                        model.ErrorStack = ex.StackTrace;
+                        model.ErrorMessage =  ex.Message;
+                        model.ErrorStack = HttpUtility.HtmlDecode(ex.StackTrace);
                     }
 
                     context.Items.Remove(BasicConfig.HttpReportsGlobalException);
@@ -103,7 +104,7 @@ namespace HttpReports.RequestInfoBuilder
                 model.CreateTime = context.Items[BasicConfig.ActiveTraceCreateTime].ToDateTime();
 
                 model.Scheme = context.Request.Scheme;
-                model.QueryString = context.Request.QueryString.Value;
+                model.QueryString = HttpUtility.UrlDecode(context.Request.QueryString.Value);
             }
 
             return model;

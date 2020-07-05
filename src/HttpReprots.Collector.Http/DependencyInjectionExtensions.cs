@@ -1,5 +1,6 @@
 ﻿using HttpReports;
 using HttpReports.Core;
+using HttpReports.Core.Config;
 using HttpReprots.Collector.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -12,26 +13,21 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class DependencyInjectionExtensions
     {
-        public static IHttpReportsBuilder AddHttpReportsHttpCollector(this IServiceCollection services)
+        public static IServiceCollection AddHttpReportsHttpCollector(this IServiceCollection services)
         { 
             IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");
 
             services.AddSingleton<IHttpReportsCollector,HttpCollectorService>();
 
-            return new HttpReportsBuilder(services, configuration);
+            return services;
+
         } 
         public static IApplicationBuilder UseHttpReportsHttpCollector(this IApplicationBuilder app)
-        {
-            var service = app.ApplicationServices.GetRequiredService<IHttpReportsCollector>();
+        { 
+            app.Map(BasicConfig.TransportPath, builder => {
 
-            app.Map("/HttpReportsCollect",builder => {
+                builder.UseMiddleware<HttpCollectorMiddleware>();  
 
-                app.Run(async context => {
-
-                    await context.Response.WriteAsync("Success");  
-
-                }); 
-            
             }); 
 
             return app;

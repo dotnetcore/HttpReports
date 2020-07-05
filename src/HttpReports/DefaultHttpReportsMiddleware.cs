@@ -154,7 +154,7 @@ namespace HttpReports
 
                 context.Request.Body.Position = 0;
 
-                return HttpUtility.UrlDecode(result);
+                return HttpUtility.HtmlDecode(result);
             }
             catch (Exception ex)
             {
@@ -246,9 +246,15 @@ namespace HttpReports
             if (Options.FilterRequest == null || Options.FilterRequest.Count() == 0)
             {
                 return false;
+            } 
+
+            var path = context.Request.Path.Value.ToLowerInvariant();
+
+            if (path.StartsWith(BasicConfig.TransportPath.ToLowerInvariant()))
+            {
+                return true;
             }
 
-            var path = context.Request.Path.Value.ToLowerInvariant(); 
 
             return MatchRequestRule();
 

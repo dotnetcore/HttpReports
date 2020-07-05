@@ -32,8 +32,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
 
         public static IHttpReportsBuilder AddHttpReportsDashboard(this IServiceCollection services,Action<DashboardOptions> options)
-        { 
-
+        {  
             IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReportsDashboard");
 
             services.AddOptions();
@@ -55,7 +54,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSingleton<LocalizeService>(); 
 
-            services.AddHandleService().AddViewsService();   
+            services.AddHandleService().AddViewsService(); 
+
+            services.AddHttpReportsHttpCollector(); 
 
             return new HttpReportsBuilder(services, configuration);
         }  
@@ -73,7 +74,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var localizeService = app.ApplicationServices.GetRequiredService<LocalizeService>() ?? throw new ArgumentNullException("localizeService Not Found");
 
-            localizeService.InitAsync().Wait(); 
+            localizeService.InitAsync().Wait();
+
+            app.UseHttpReportsHttpCollector();
 
             app.UseMiddleware<DashboardMiddleware>(); 
 

@@ -12,25 +12,24 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class DependencyInjectionExtensions
     {
-        public static IHttpReportsBuilder UseHttpTransport(this IHttpReportsBuilder builder, IConfiguration configuration)
-        {
-            builder.Services.AddOptions().Configure<HttpTransportOptions>(configuration);
-            return builder.UseHttpTransport();
+        public static IHttpReportsBuilder UseHttpTransport(this IHttpReportsBuilder builder)
+        { 
+            builder.Services.AddOptions().Configure<HttpTransportOptions>(builder.Configuration.GetSection("Transport"));
+            return builder.UseHttpTransportService();
         }
 
         public static IHttpReportsBuilder UseHttpTransport(this IHttpReportsBuilder builder, Action<HttpTransportOptions> options)
         {
             builder.Services.AddOptions().Configure(options);
-            return builder.UseHttpTransport();
+            return builder.UseHttpTransportService();
         }
 
-        public static IHttpReportsBuilder UseHttpTransport(this IHttpReportsBuilder builder)
+        private static IHttpReportsBuilder UseHttpTransportService(this IHttpReportsBuilder builder)
         {
             builder.Services.AddHttpClient(BasicConfig.HttpReportsHttpClient,client => {
 
                 client.DefaultRequestHeaders.Clear(); 
                 client.Timeout = TimeSpan.FromSeconds(30);
-                client.DefaultRequestHeaders.Add("Content-Type", "application/json; charset=utf-8");  
 
             });
 

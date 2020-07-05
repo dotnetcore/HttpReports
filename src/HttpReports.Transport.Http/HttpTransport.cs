@@ -2,14 +2,17 @@
 using HttpReports.Core.Config;
 using HttpReports.Core.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options; 
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
-using System.Text;
+using System.Text; 
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace HttpReports.Transport.Http
 {
@@ -31,42 +34,78 @@ namespace HttpReports.Transport.Http
         }   
 
         public Task Transport(RequestBag bag)
-        {
+        { 
             _RequestBagCollection.Flush(bag);
 
             return Task.CompletedTask;
         }
 
         public async Task Transport(IPerformance performance)
-        { 
-            try
-            {
-                HttpContent content = new StringContent(System.Text.Json.JsonSerializer.Serialize(performance), System.Text.Encoding.UTF8, "application/json");
+        {
+            await Retry(async () => {
 
-                var response = await _httpClientFactory.CreateClient(BasicConfig.HttpReportsHttpClient).PostAsync(_options.CollectorAddress, content);
-            }
-            catch (Exception ex)
-            {
-                //TODO ReTry?
-                _logger.LogError(ex, "ReportsTransport Error");
-            } 
+                try
+                {
+                    HttpContent content = new StringContent(HttpUtility.HtmlEncode(JsonConvert.SerializeObject(performance)), System.Text.Encoding.UTF8, "application/json");
+
+                    content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");  
+                    content.Headers.Add(BasicConfig.TransportType, typeof(IPerformance).Name);
+
+                    var client = _httpClientFactory.CreateClient(BasicConfig.HttpReportsHttpClient);
+
+                    var response = await _httpClientFactory.CreateClient(BasicConfig.HttpReportsHttpClient).PostAsync(_options.CollectorAddress + BasicConfig.TransportPath.Substring(1), content);
+
+                    return true;
+
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "HttpReportsTransport IPerformance Error:" + ex.ToString());
+                    return false;
+                }
+
+            });
         }
         
 
         private async Task Push(List<RequestBag> list, CancellationToken token)
-        {
-            try
-            {
-                HttpContent content = new StringContent(System.Text.Json.JsonSerializer.Serialize(list), System.Text.Encoding.UTF8, "application/json");
+        { 
+           await Retry(async () => { 
+               
+                try
+                {
+                    HttpContent content = new StringContent(HttpUtility.HtmlEncode(JsonConvert.SerializeObject(list)),System.Text.Encoding.UTF8);
 
-                var response = await _httpClientFactory.CreateClient(BasicConfig.HttpReportsHttpClient).PostAsync(_options.CollectorAddress, content);
-            }
-            catch (Exception ex)
+                    content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+                   content.Headers.Add(BasicConfig.TransportType, typeof(RequestBag).Name);
+                   var client = _httpClientFactory.CreateClient(BasicConfig.HttpReportsHttpClient);  
+                    var response = await client.PostAsync(_options.CollectorAddress + BasicConfig.TransportPath.Substring(1), content);
+
+                    return true;
+                
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "HttpReportsTransport RequestBag Error :" + ex.ToString());
+                    return false;  
+                }  
+
+            });  
+           
+        }
+
+        private async Task<bool> Retry(Func<Task<bool>> func, int retry = 3)
+        {    
+            for (int i = 0; i < 3; i++)
             {
-                //TODO ReTry?
-                _logger.LogError(ex, "ReportsTransport Error");
+                if (await func.Invoke())
+                {
+                    return true;
+                }  
             }
-        } 
-          
+
+            return false;
+        }  
+
     }
 }

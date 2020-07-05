@@ -9,6 +9,8 @@ namespace HttpReports.Transport.Http
     {
         public Uri CollectorAddress { get; set; }
 
+        public bool EnableDefer { get; set; }
+
         public int DeferSecond { get; set; }
          
         public int DeferThreshold { get; set; }  
