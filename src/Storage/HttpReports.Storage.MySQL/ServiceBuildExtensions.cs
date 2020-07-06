@@ -26,13 +26,11 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         internal static IHttpReportsBuilder UseMySqlStorageService(this IHttpReportsBuilder builder)
-        { 
-            
-
+        {  
             builder.Services.AddSingleton<IHttpReportsStorage, MySqlStorage>();
             builder.Services.AddSingleton<MySqlConnectionFactory>();
 
-            return builder;
+            return builder.UseDirectlyReportsTransport();
 
         }  
     }

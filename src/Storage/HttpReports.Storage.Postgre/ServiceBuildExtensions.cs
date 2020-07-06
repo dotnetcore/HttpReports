@@ -29,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddSingleton<IHttpReportsStorage, PostgreSQLStorage>();
             builder.Services.AddSingleton<PostgreConnectionFactory>();
 
-            return builder;
+            return builder.UseDirectlyReportsTransport();
         }
 
     }

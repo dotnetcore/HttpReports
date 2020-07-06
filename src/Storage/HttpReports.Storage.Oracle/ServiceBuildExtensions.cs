@@ -26,7 +26,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<IHttpReportsStorage, OracleStorage>();
             builder.Services.AddSingleton<OracleConnectionFactory>();
             builder.Services.AddSingleton<IModelCreator, ModelCreator>();
-            return builder;
+            return builder.UseDirectlyReportsTransport();
         }
 
     }

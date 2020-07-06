@@ -28,7 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddSingleton<IHttpReportsStorage, SQLiteStorage>();
             builder.Services.AddSingleton<SQLiteConnectionFactory>();
 
-            return builder;
+            return builder.UseDirectlyReportsTransport();
 
         }
 

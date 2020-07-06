@@ -27,7 +27,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<IHttpReportsStorage, SQLServerStorage>();
             builder.Services.AddSingleton<SQLServerConnectionFactory>();
             builder.Services.AddSingleton<IModelCreator, ModelCreator>();
-            return builder;
+            return builder.UseDirectlyReportsTransport();
         }
 
     }
