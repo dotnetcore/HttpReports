@@ -33,7 +33,10 @@ namespace HttpReports
 
             Uri uri = new Uri(Options.Urls);
             var request = ModelCreator.CreateRequestInfo();
-            request.IP = context.Connection.RemoteIpAddress?.MapToIPv4()?.ToString();
+
+            var remoteIP = context.Request.Headers["X-Forwarded-For"].FirstOrDefault();
+
+            request.IP = remoteIP.IsEmpty() ? context.Connection.RemoteIpAddress?.MapToIPv4()?.ToString() : remoteIP; 
             request.Port = context.Connection.RemotePort;
             request.LocalIP = uri.Host;
             request.LocalPort = uri.Port;

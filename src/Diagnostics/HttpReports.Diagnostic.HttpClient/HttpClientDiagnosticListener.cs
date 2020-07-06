@@ -43,14 +43,7 @@ namespace HttpReports.Diagnostic.HttpClient
 
             if (value.Key == "System.Net.Http.HttpRequestOut.Start")
             {
-                var request = value.Value.GetType().GetProperty("Request").GetValue(value.Value) as System.Net.Http.HttpRequestMessage;
-
-                _context.Push(activity?.SpanId.ToHexString(), new Segment
-                { 
-                    activity = activity,
-                    CreateTime = DateTime.Now,
-                    Value = request
-                });
+                var request = value.Value.GetType().GetProperty("Request").GetValue(value.Value) as System.Net.Http.HttpRequestMessage; 
 
                 if (!request.Headers.TryGetValues(BasicConfig.ActiveTraceId, out _))
                 {
@@ -58,10 +51,21 @@ namespace HttpReports.Diagnostic.HttpClient
 
                     request.Headers.Add(BasicConfig.ActiveTraceId, TraceId);
                 }
+
+                return;
+
+                _context.Push(activity?.SpanId.ToHexString(), new Segment
+                {
+                    activity = activity,
+                    CreateTime = DateTime.Now,
+                    Value = request
+                });
             }
 
             if (value.Key == "System.Net.Http.HttpRequestOut.Stop")
-            {
+            { 
+                return;
+
                 var response = value.Value.GetType().GetProperty("Response").GetValue(value.Value) as System.Net.Http.HttpResponseMessage;
 
                 _context.Push(activity?.SpanId.ToHexString(), new Segment

@@ -47,10 +47,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
 
         private static IHttpReportsBuilder AddHttpReportsService(this IServiceCollection services, IConfiguration configuration)
-        { 
-            services.AddSingleton<IModelCreator, DefaultModelCreator>();
+        {   
             services.AddSingleton<IHttpInvokeProcesser, DefaultHttpInvokeProcesser>();
-            services.AddSingleton<IReportsTransport, DirectlyReportsTransport>();
             services.AddSingleton<IRequestInfoBuilder, DefaultRequestInfoBuilder>();
             services.AddSingleton<IBackgroundService, HttpReportsBackgroundService>();
             services.AddSingleton<IPerformanceService,PerformanceService>();
@@ -67,11 +65,11 @@ namespace Microsoft.Extensions.DependencyInjection
 
             });
 
-            return new HttpReportsBuilder(services, configuration);
+            return new HttpReportsBuilder(services, configuration).UseHttpTransport();
         }
 
         public static IHttpReportsInitializer UseHttpReports(this IApplicationBuilder app)
-        {
+        { 
             ServiceContainer.Provider = app.ApplicationServices.GetRequiredService<IServiceProvider>() ?? throw new ArgumentNullException("ServiceProvider Init Faild"); 
 
             Activity.DefaultIdFormat = ActivityIdFormat.W3C; 

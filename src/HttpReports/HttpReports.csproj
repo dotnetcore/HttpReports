@@ -33,6 +33,7 @@
     <ProjectReference Include="..\Diagnostics\HttpReports.Diagnostic.HttpClient\HttpReports.Diagnostic.HttpClient.csproj" />
     <ProjectReference Include="..\Diagnostics\HttpReports.Diagnostic.SqlClient\HttpReports.Diagnostic.SqlClient.csproj" />
     <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
+    <ProjectReference Include="..\HttpReports.Transport.Http\HttpReports.Transport.Http.csproj" />
   </ItemGroup>
 
 </Project>
