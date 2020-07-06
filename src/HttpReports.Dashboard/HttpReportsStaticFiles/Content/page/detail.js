@@ -147,7 +147,7 @@ function InitTable() {
                 width:'80px',
                 formatter: function (value, row, index) {
 
-                    var btn = ' <a href="Trace?Id=' + value + '" ><i class="request-trace  fa fa-space-shuttle" ></i> </a>';
+                    var btn = `<a style="cursor:pointer"> <i onclick="bind_trace('${value}')" class="request-trace  fa fa-space-shuttle" ></i></a>`; 
                     return btn;
                 }
             }
@@ -272,6 +272,14 @@ function bind_context(Id) {
 
 } 
 
+function bind_trace(Id) {
+
+    InitTree(Id);  
+
+    show_trace();
+
+} 
+
 
 function ConvertTimeString(str) {
 
@@ -307,7 +315,30 @@ function IsJson(str) {
     }
 }
 
+function show_trace() {
 
+    $(".traceBox").show();
+
+    new mSlider({
+        dom: ".traceBox",
+        distance: "40%",
+        direction: "top",
+        callback: function () {
+            $(".traceBox").hide();
+            $(".traceBox").getNiceScroll().remove(); 
+        }
+    }).open();
+
+    $('.traceBox').niceScroll({
+        cursorcolor: "#ccc",
+        cursoropacitymax: 1,
+        touchbehavior: false,
+        cursorwidth: "3px",
+        cursorborder: "0",
+        cursorborderradius: "5px",
+        autohidemode: false
+    });  
+}
 
 function show_modal() {  
   
@@ -322,8 +353,7 @@ function show_modal() {
             $(".contextBox").getNiceScroll().remove();
             
         }
-    }).open(); 
-   
+    }).open();  
 
     $('.contextBox').niceScroll({
         cursorcolor: "#ccc",
@@ -349,5 +379,85 @@ function QueryClick() {
 
     RefreshTable();
 
-}  
+}    
+
+var toptree = null; 
+
+function InitTree(id) { 
+
+    toptree = null; 
+
+    $.ajax({
+
+        url: "/HttpReportsData/GetTraceList/",
+        type: "POST",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify({ Id: id }),
+        success: function (result) {
+
+            var tree = result.data;
+
+            BuildTree(tree);
+
+        }
+
+    });
+}
+
+function BuildTree(tree) {
+
+    var newTree = ParseTree(tree);
+
+    $('.request-tree').treeview({
+        data: newTree,
+        levels: 9999,
+        showTags: true
+    });
+}
+
+function ParseTree(tree) {
+
+    var k = $.isArray(tree) ? tree[0] : tree;
+
+    k = AppendTree(k);
+
+    if (k.nodes != null && k.nodes != undefined && k.nodes.length > 0) {
+
+        $.each(k.nodes, function (index, item) {
+
+            ParseTree(item);
+
+        });
+    }
+    else {
+        delete k["nodes"];
+    }
+
+
+    return tree;
+}
+
+function AppendTree(k) {
+
+    if (toptree == null) {
+        toptree = k;
+    }
+
+    var barWidth = 300;
+    if (toptree != k) {
+        barWidth = parseInt(barWidth * (k.milliseconds / toptree.milliseconds));
+    }
+
+
+    k.text = `<span class="service">${k.node}</span>`
+        + `<span class="url">${k.url}</span>`
+        + `<span class="label label-${(k.statusCode == 200 ? "success" : "danger")} statusCode">${k.statusCode}</span>`
+        + `<span class="requestType">${k.requestType}</span>`
+        + `<i onclick="bind_context('${k.id}')" class="glyphicon glyphicon-info-sign info"></i>`
+        + `<span class="bar" style="width:${barWidth}px"></span>`
+        + `<span class="milliseconds">${k.milliseconds}ms</span>`
+
+    return k;
+}
+
  

@@ -89,11 +89,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>RequestInfoDetail.cshtml</DependentUpon>
     </Compile>
-    <Compile Update="Views\HttpReports\Trace.generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Trace.cshtml</DependentUpon>
-    </Compile>
     <Compile Update="Views\HttpReports\Trend.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -154,11 +149,6 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>RequestInfoDetail.generated.cs</LastGenOutput>
       <CustomToolNamespace>HttpReports.Dashboard.Views</CustomToolNamespace>
-    </None>
-    <None Update="Views\HttpReports\Trace.cshtml">
-      <CustomToolNamespace>HttpReports.Dashboard.Views</CustomToolNamespace>
-      <Generator>RazorGenerator</Generator>
-      <LastGenOutput>Trace.generated.cs</LastGenOutput>
     </None>
     <None Update="Views\HttpReports\Trend.cshtml">
       <Generator>RazorGenerator</Generator>
