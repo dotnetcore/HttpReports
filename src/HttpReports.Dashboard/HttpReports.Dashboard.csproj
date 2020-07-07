@@ -4,18 +4,13 @@
     <TargetFramework>netstandard2.0</TargetFramework> 
     <AssemblyName>HttpReports.Dashboard</AssemblyName>
     <RootNamespace>HttpReports.Dashboard</RootNamespace>
-    <Version>1.5.5</Version>
+    <Version>1.6.0</Version>
     <PackageId>HttpReports.Dashboard</PackageId> 
     <PackageLicenseFile></PackageLicenseFile>
-    <Description>
-      HttpReports is an lightweight APM system for microservice on .Net Core
-
-      github: https://github.com/SpringLeee/HttpReports
-
-    </Description>
+    <Description>HttpReports is a lightweight APM system developed for Net Core , it is also suitable for use in a micro-service architecture.</Description>
     <PackageProjectUrl>https://github.com/dotnetcore/HttpReports</PackageProjectUrl>
     <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
-    <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>
+    <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>

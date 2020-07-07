@@ -3,16 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>SpringLee</Authors>
-    <Description>HttpReports is an lightweight APM system for microservice in .Net Core 
-
-     github: https://github.com/SpringLeee/HttpReports   
-
-</Description>
+    <Description>HttpReports is a lightweight APM system developed for Net Core , it is also suitable for use in a micro-service architecture.</Description>
     <PackageLicenseExpression></PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
     <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
-    <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>
-    <Version>1.5.2</Version>
+    <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl>
+    <Version>1.6.0</Version>
     <PackageLicenseFile></PackageLicenseFile>
     <PackageId>HttpReports</PackageId>
   </PropertyGroup>
@@ -31,7 +27,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Diagnostics\HttpReports.Diagnostic.HttpClient\HttpReports.Diagnostic.HttpClient.csproj" />
-    <ProjectReference Include="..\Diagnostics\HttpReports.Diagnostic.SqlClient\HttpReports.Diagnostic.SqlClient.csproj" />
     <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
     <ProjectReference Include="..\HttpReports.Transport.Http\HttpReports.Transport.Http.csproj" />
   </ItemGroup>

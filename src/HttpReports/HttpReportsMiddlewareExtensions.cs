@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 using HttpReports;
 using HttpReports.Core;
 using HttpReports.Core.Diagnostics;
-using HttpReports.Diagnostic.HttpClient;
-using HttpReports.Diagnostic.SqlClient;
+using HttpReports.Diagnostic.HttpClient; 
 using HttpReports.RequestInfoBuilder;
 using HttpReports.Service;
 using Microsoft.AspNetCore.Authentication;
@@ -53,9 +52,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IBackgroundService, HttpReportsBackgroundService>();
             services.AddSingleton<IPerformanceService,PerformanceService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton<IDiagnosticListener, HttpClientDiagnosticListener>();
-            //services.AddSingleton<IDiagnosticListener, GrpcDiagnosticListener>();
-            //services.AddSingleton<IDiagnosticListener, SqlClientDiagnosticListener>();
+            services.AddSingleton<IDiagnosticListener, HttpClientDiagnosticListener>(); 
             services.AddSingleton<ISegmentContext, SegmentContext>();
             services.AddSingleton<TraceDiagnsticListenerObserver>();  
 
@@ -65,7 +62,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             });
 
-            return new HttpReportsBuilder(services, configuration).UseHttpTransport();
+            return new HttpReportsBuilder(services, configuration).UseDirectlyReportsTransport();
         }
 
         public static IHttpReportsInitializer UseHttpReports(this IApplicationBuilder app)

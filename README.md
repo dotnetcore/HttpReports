@@ -16,7 +16,9 @@ Github地址：**https://github.com/dotnetcore/HttpReports**
 
 在线预览： **https://moa.hengyinfs.com** 
 
-账号: admin 密码 123456 
+账号: admin 密码 123456  
+
+QQ群:897216102
 
 开源不易，感兴趣的同学欢迎 Github Star 一波...
 
