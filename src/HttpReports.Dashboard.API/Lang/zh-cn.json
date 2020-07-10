@@ -50,7 +50,7 @@
   "Menu_RequestList": "请求列表",
   "Menu_Monitor": "预警监控",
   "Trend_MinuteAvgTime": "每分钟平均处理时间 (ms)",
-  "Trend_HourAvgTime": "每分钟平均处理时间 (ms)",
+  "Trend_HourAvgTime": "每小时平均处理时间 (ms)",
   "Trend_MinuteTotalCount": "每分钟请求次数",
   "Trend_HourTotalCount": "每小时请求次数",
   "Trend_DayTotalCount": "每天请求次数",
