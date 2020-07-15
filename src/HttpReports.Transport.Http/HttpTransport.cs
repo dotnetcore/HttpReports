@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
@@ -76,12 +77,16 @@ namespace HttpReports.Transport.Http
                 {
                     HttpContent content = new StringContent(HttpUtility.HtmlEncode(JsonConvert.SerializeObject(list)),System.Text.Encoding.UTF8);
 
-                    content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+                   content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
                    content.Headers.Add(BasicConfig.TransportType, typeof(RequestBag).Name);
                    var client = _httpClientFactory.CreateClient(BasicConfig.HttpReportsHttpClient);  
-                    var response = await client.PostAsync(_options.CollectorAddress + BasicConfig.TransportPath.Substring(1), content);
+                   var response = await client.PostAsync(_options.CollectorAddress + BasicConfig.TransportPath.Substring(1), content);
 
-                    return true;
+                   var result = await response.Content.ReadAsStringAsync();
+
+                   _logger.LogInformation($"HttpReportsTransport RequestBag: {result} "); 
+
+                   return response.StatusCode == HttpStatusCode.OK;
                 
                 }
                 catch (Exception ex)

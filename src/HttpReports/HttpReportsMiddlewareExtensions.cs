@@ -65,13 +65,13 @@ namespace Microsoft.Extensions.DependencyInjection
             return new HttpReportsBuilder(services, configuration).UseDirectlyReportsTransport();
         }
 
-        public static IHttpReportsInitializer UseHttpReports(this IApplicationBuilder app)
+        public static IApplicationBuilder UseHttpReports(this IApplicationBuilder app)
         { 
             ServiceContainer.Provider = app.ApplicationServices.GetRequiredService<IServiceProvider>() ?? throw new ArgumentNullException("ServiceProvider Init Faild"); 
 
-            Activity.DefaultIdFormat = ActivityIdFormat.W3C; 
+            Activity.DefaultIdFormat = ActivityIdFormat.W3C;
 
-            IHttpReportsInitializer httpReportsInitializer = app.InitHttpReports().InitStorage();
+            app.ApplicationServices.GetService<IHttpReportsStorage>()?.InitAsync().Wait(); 
 
             var backgroundService = app.ApplicationServices.GetRequiredService<IBackgroundService>();  
             backgroundService.StartAsync(app); 
@@ -84,9 +84,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
             TraceDiagnsticListenerObserver observer = app.ApplicationServices.GetRequiredService<TraceDiagnsticListenerObserver>();  
 
-            System.Diagnostics.DiagnosticListener.AllListeners.Subscribe(observer);  
+            System.Diagnostics.DiagnosticListener.AllListeners.Subscribe(observer);
 
-            return httpReportsInitializer;
+            return app;
         }
     }
 }
