@@ -100,7 +100,7 @@ namespace HttpReports.Service
             {
                 if (SupportPerformanceCounter)
                 {
-                    return MemoryCounter.NextValue() / 1024.00 * 1024.00;
+                    return MemoryCounter.NextValue() / 1024.00 / 1024.00;
                 }  
             }
 

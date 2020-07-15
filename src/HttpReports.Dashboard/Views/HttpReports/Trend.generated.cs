@@ -141,7 +141,7 @@ WriteLiteral("</button>\r\n                        </div>\r\n                   
 "lass=\"col-sm-12\">\r\n\r\n                            <div id=\"LatelyDayChart\" style=" +
 "\"height:360px\"></div>\r\n                        </div>\r\n                    </div" +
 ">\r\n                </div>\r\n            </div>\r\n        </div>\r\n\r\n    </div>\r\n</d" +
-"iv>\r\n\r\n<script src=\"/HttpReportsStaticFiles/Content/page/trend.js?ver=1.0.7\"></s" +
+"iv>\r\n\r\n<script src=\"/HttpReportsStaticFiles/Content/page/trend.js?ver=1.0.8\"></s" +
 "cript>\r\n");
 
 
