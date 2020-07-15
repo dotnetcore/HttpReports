@@ -3,15 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <PackageId>HttpReports.Grpc</PackageId>
-    <Version>1.5.0</Version>
+    <Version>1.6.0</Version>
     <Authors>SpringLee</Authors>
-    <Description>HttpReports is an lightweight APM system for microservice in .Net Core 
-
-github: https://github.com/SpringLeee/HttpReports   
-</Description>
+    <Description>HttpReports is a lightweight APM system developed for Net Core , it is also suitable for use in a micro-service architecture.</Description>
     <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
     <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
-    <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>
+    <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>

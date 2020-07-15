@@ -20,7 +20,9 @@ namespace HttpReports.Dashboard.WebAPP
        
         public void ConfigureServices(IServiceCollection services) 
         { 
-            services.AddHttpReports().UseHttpTransport();  
+            services.AddHttpReports().UseMySqlStorage();  
+
+            services.AddHttpReportsDashboard().UseSQLServerStorage();
         }
 
       
@@ -52,9 +54,9 @@ namespace HttpReports.Dashboard.WebAPP
 
         public void MapRoute(IApplicationBuilder app)
         {
-            //string address = "http://moa.hengyinfs.com";
+            string address = "http://moa.hengyinfs.com";
 
-            string address = "http://localhost:5010"; 
+            //string address = "http://localhost:5010"; 
 
             app.Map("/SqlClient", builder => { 
                
