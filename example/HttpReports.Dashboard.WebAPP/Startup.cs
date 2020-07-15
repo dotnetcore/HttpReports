@@ -20,17 +20,14 @@ namespace HttpReports.Dashboard.WebAPP
        
         public void ConfigureServices(IServiceCollection services) 
         { 
-            services.AddHttpReports().UseSQLServerStorage(); 
-
-            services.AddHttpReportsDashboard().UseSQLServerStorage();
+            services.AddHttpReports().UseHttpTransport();  
         }
 
       
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {   
-            app.UseHttpReports();
+        {     
 
-            app.UseHttpReportsDashboard();
+            app.UseHttpReports();  
 
             if (env.IsDevelopment())
             {
@@ -59,10 +56,12 @@ namespace HttpReports.Dashboard.WebAPP
 
             string address = "http://localhost:5010"; 
 
-            app.Map("/SqlClient", builder => {
+            app.Map("/SqlClient", builder => { 
+               
 
                 builder.Run(async context => 
-                {
+                { 
+
                     SqlConnection connection = new SqlConnection("Max Pool Size = 512;server=localhost;uid=sa;pwd=123456;database=HttpReports;");
                     var count = await connection.QueryFirstOrDefaultAsync<dynamic>("select * from requestinfo");
 
@@ -76,7 +75,8 @@ namespace HttpReports.Dashboard.WebAPP
             app.Map("/MySql", builder => {
 
                 builder.Run(async context =>
-                {
+                {   
+
                     MySqlConnection connection = new MySqlConnection("DataBase=HttpReports;Data Source=localhost;User Id=root;Password=123456;");
                     var count = await connection.QueryFirstOrDefaultAsync<dynamic>("select * from requestinfo");
 

@@ -50,15 +50,13 @@ namespace HttpReports.Diagnostic.HttpClient
                     var TraceId = activity.GetBaggageItem(BasicConfig.ActiveTraceId);
 
                     request.Headers.Add(BasicConfig.ActiveTraceId, TraceId);
-                }
-
-                return;
-
+                } 
                 _context.Push(activity?.SpanId.ToHexString(), new Segment
                 {
                     activity = activity,
                     CreateTime = DateTime.Now,
                     Value = request
+
                 });
             }
 

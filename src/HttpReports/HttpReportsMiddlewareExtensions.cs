@@ -57,8 +57,8 @@ namespace Microsoft.Extensions.DependencyInjection
             //services.AddSingleton<IDiagnosticListener, GrpcDiagnosticListener>();
             //services.AddSingleton<IDiagnosticListener, SqlClientDiagnosticListener>();
             services.AddSingleton<ISegmentContext, SegmentContext>();
-            services.AddSingleton<TraceDiagnsticListenerObserver>();  
-
+            services.AddSingleton<TraceDiagnsticListenerObserver>();   
+      
             services.AddMvcCore(x =>
             {
                 x.Filters.Add<HttpReportsExceptionFilter>();
