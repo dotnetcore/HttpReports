@@ -1,7 +1,7 @@
 ﻿
 
 <p align="center">
-    <span>中文</span> |  <a href="README.en.md">English</a>
+    <a href="README.en.md">English</a> |  <span href="README.md">中文</span> 
 </p>
 
 [![Member project of .NET Core Community](https://img.shields.io/badge/member%20project%20of-NCC-9e20c9.svg)](https://github.com/dotnetcore)
