@@ -79,9 +79,7 @@ namespace HttpReports.Dashboard.WebAPP
             {
                 builder.Run(async context =>  
                 {
-                    
-                        int cc = Convert.ToInt32("hiolhj"); 
-
+                     
                     HttpClient client = new HttpClient();
                     var response = client.GetStringAsync("http://www.baidu.com").Result;
 

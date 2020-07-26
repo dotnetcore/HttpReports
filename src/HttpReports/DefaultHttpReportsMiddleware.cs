@@ -144,7 +144,7 @@ namespace HttpReports
         {
             try
             {
-                if (!context.Request.ContentType.Contains("application/json"))
+                if (context.Request.ContentType.IsEmpty() || !context.Request.ContentType.Contains("application/json"))
                 {
                     return string.Empty;
                 } 
@@ -172,7 +172,7 @@ namespace HttpReports
         {
             try
             {
-                if (!context.Response.ContentType.Contains("application/json"))
+                if (context.Response.ContentType.IsEmpty() || !context.Response.ContentType.Contains("application/json"))
                 {
                     return string.Empty;
                 }
