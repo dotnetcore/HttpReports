@@ -72,7 +72,7 @@
                                 </td>
                                 <td>@item.CronLike</td>
                                 <td>@item.Emails</td>
-                                <td>@item.Service</td>
+                                <td>@( string.IsNullOrEmpty(item.Service) ? "ALL": item.Service )</td>
                                 <td>@( string.IsNullOrEmpty(item.Instance) ? "ALL": item.Instance )</td>
 
                                 <td>

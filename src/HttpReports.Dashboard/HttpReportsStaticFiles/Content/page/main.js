@@ -85,6 +85,12 @@ function BindInstanceSelect(service,instance = "") {
 
 function BindServiceSelect(service) {
 
+    if (service.length == 0) {
+
+        service = "ALL";
+    } 
+      
+
     $(".service-form").find(".service").find("select").val(service);
     $(".service-form").find(".service").find("select").selectpicker('refresh');  
 

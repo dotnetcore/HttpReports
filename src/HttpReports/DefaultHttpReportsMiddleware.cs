@@ -171,9 +171,10 @@ namespace HttpReports
         private async Task<string> GetResponseBodyAsync(HttpContext context)
         {
             try
-            {
+            {  
                 if (context.Response.ContentType.IsEmpty() || !context.Response.ContentType.Contains("application/json"))
                 {
+                    context.Response.Body.Seek(0, SeekOrigin.Begin);
                     return string.Empty;
                 }
 

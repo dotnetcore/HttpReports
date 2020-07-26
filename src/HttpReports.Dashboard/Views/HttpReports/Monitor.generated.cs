@@ -261,7 +261,7 @@ WriteLiteral("</td>\r\n                                <td>");
 
             
             #line 75 "..\..\Views\HttpReports\Monitor.cshtml"
-                               Write(item.Service);
+                                Write( string.IsNullOrEmpty(item.Service) ? "ALL": item.Service );
 
             
             #line default
