@@ -20,10 +20,9 @@ namespace HttpReports.Dashboard.WebAPP
        
         public void ConfigureServices(IServiceCollection services) 
         { 
-            services.AddHttpReports().UseSQLServerStorage();
-
-            services.AddHttpReportsDashboard().UseSQLServerStorage();
-           
+            services.AddHttpReports().UseSQLServerStorage(); 
+            services.AddHttpReportsDashboard().UseSQLServerStorage();  
+ 
         }
 
       
@@ -36,20 +35,7 @@ namespace HttpReports.Dashboard.WebAPP
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-            }
-
-            app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
-            { 
-                //endpoints.MapHttpReportsGrpcCollector();
-
-                endpoints.MapGet("/Test", async context =>
-                { 
-                    await context.Response.WriteAsync("Hello World!");
-
-                });
-            });
+            } 
 
             MapRoute(app);
         }
@@ -59,6 +45,7 @@ namespace HttpReports.Dashboard.WebAPP
             string address = "http://moa.hengyinfs.com";
 
             //string address = "http://localhost:5010"; 
+           
 
             app.Map("/SqlClient", builder => {
 
@@ -91,8 +78,9 @@ namespace HttpReports.Dashboard.WebAPP
             app.Map("/HttpClient", builder =>
             {
                 builder.Run(async context =>  
-                {  
-                    var a = System.Diagnostics.Activity.Current;
+                {
+                    
+                        int cc = Convert.ToInt32("hiolhj"); 
 
                     HttpClient client = new HttpClient();
                     var response = client.GetStringAsync("http://www.baidu.com").Result;
@@ -198,7 +186,8 @@ namespace HttpReports.Dashboard.WebAPP
 
                 });
 
-            });
+            });  
+          
 
         }
 

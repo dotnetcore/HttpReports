@@ -2,14 +2,14 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
+using System.Threading.Tasks; 
 using HttpReports;
 using HttpReports.Core;
 using HttpReports.Core.Diagnostics;
+using HttpReports.Diagnostic.AspNetCore;
 using HttpReports.Diagnostic.HttpClient; 
 using HttpReports.RequestInfoBuilder;
-using HttpReports.Service;
-using Microsoft.AspNetCore.Authentication;
+using HttpReports.Service; 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -52,22 +52,17 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IBackgroundService, HttpReportsBackgroundService>();
             services.AddSingleton<IPerformanceService,PerformanceService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton<IDiagnosticListener, HttpClientDiagnosticListener>(); 
+            services.AddSingleton<IDiagnosticListener, HttpClientDiagnosticListener>();
+            services.AddSingleton<IDiagnosticListener, AspNetCoreDiagnosticListener>();
             services.AddSingleton<ISegmentContext, SegmentContext>();
-            services.AddSingleton<TraceDiagnsticListenerObserver>();  
-
-            services.AddMvcCore(x =>
-            {
-                x.Filters.Add<HttpReportsExceptionFilter>();
-
-            });
+            services.AddSingleton<TraceDiagnsticListenerObserver>();   
 
             return new HttpReportsBuilder(services, configuration).UseDirectlyReportsTransport();
         }
 
         public static IApplicationBuilder UseHttpReports(this IApplicationBuilder app)
         { 
-            ServiceContainer.Provider = app.ApplicationServices.GetRequiredService<IServiceProvider>() ?? throw new ArgumentNullException("ServiceProvider Init Faild"); 
+            ServiceContainer.Provider = app.ApplicationServices.GetRequiredService<IServiceProvider>() ?? throw new ArgumentNullException("ServiceProvider Init Failed"); 
 
             Activity.DefaultIdFormat = ActivityIdFormat.W3C;
 

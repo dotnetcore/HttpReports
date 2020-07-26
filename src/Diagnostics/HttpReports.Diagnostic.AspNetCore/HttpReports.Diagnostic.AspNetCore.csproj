@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>HttpReports is a lightweight APM system developed for Net Core , it is also suitable for use in a micro-service architecture.</Description>
+    <PackageProjectUrl>https://github.com/dotnetcore/HttpReports</PackageProjectUrl>
+    <Version>1.6.0</Version>
+    <Authors>SpringLee</Authors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\HttpReports.Core\HttpReports.Core.csproj" />
+  </ItemGroup>
+
+</Project>

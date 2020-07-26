@@ -26,7 +26,7 @@ namespace HttpReports.Core.Diagnostics
         }
 
         public void OnNext(DiagnosticListener listener)
-        {
+        {  
             IDiagnosticListener diagnosticListener = _listeners.Where(x => x.ListenerName == listener.Name).FirstOrDefault();
 
             if (diagnosticListener != null)

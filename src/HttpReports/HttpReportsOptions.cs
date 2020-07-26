@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc.Formatters.Internal;
+﻿using System; 
 using Microsoft.Extensions.Options;
 
 namespace HttpReports

@@ -72,9 +72,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Storage.SQLite"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Storage.SQLServer", "src\Storage\HttpReports.Storage.SQLServer\HttpReports.Storage.SQLServer.csproj", "{A0325EE5-8EDF-4537-8861-86E70510F929}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpReports.Diagnostic.HttpClient", "src\Diagnostics\HttpReports.Diagnostic.HttpClient\HttpReports.Diagnostic.HttpClient.csproj", "{9B460430-7875-4D9E-9836-0635895865AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Diagnostic.HttpClient", "src\Diagnostics\HttpReports.Diagnostic.HttpClient\HttpReports.Diagnostic.HttpClient.csproj", "{9B460430-7875-4D9E-9836-0635895865AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpReports.Diagnostic.Grpc", "src\Diagnostics\HttpReports.Diagnostic.Grpc\HttpReports.Diagnostic.Grpc.csproj", "{2F97D7FF-FE6B-47EE-A0BA-9350495E0188}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Diagnostic.Grpc", "src\Diagnostics\HttpReports.Diagnostic.Grpc\HttpReports.Diagnostic.Grpc.csproj", "{2F97D7FF-FE6B-47EE-A0BA-9350495E0188}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpReports.Diagnostic.AspNetCore", "src\Diagnostics\HttpReports.Diagnostic.AspNetCore\HttpReports.Diagnostic.AspNetCore.csproj", "{9B8133DD-19D9-4453-91B0-A9C7AFB3017B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -198,6 +200,10 @@ Global
 		{2F97D7FF-FE6B-47EE-A0BA-9350495E0188}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F97D7FF-FE6B-47EE-A0BA-9350495E0188}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F97D7FF-FE6B-47EE-A0BA-9350495E0188}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B8133DD-19D9-4453-91B0-A9C7AFB3017B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B8133DD-19D9-4453-91B0-A9C7AFB3017B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B8133DD-19D9-4453-91B0-A9C7AFB3017B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B8133DD-19D9-4453-91B0-A9C7AFB3017B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -234,6 +240,7 @@ Global
 		{A0325EE5-8EDF-4537-8861-86E70510F929} = {1B6A48DF-6E7C-497B-94BF-2F61052CEF61}
 		{9B460430-7875-4D9E-9836-0635895865AC} = {A85327D1-9A3E-46C8-BD8E-620B22BF2AA1}
 		{2F97D7FF-FE6B-47EE-A0BA-9350495E0188} = {A85327D1-9A3E-46C8-BD8E-620B22BF2AA1}
+		{9B8133DD-19D9-4453-91B0-A9C7AFB3017B} = {A85327D1-9A3E-46C8-BD8E-620B22BF2AA1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CF5EB1E6-E330-45DC-80A3-9A2CE692DDE5}
