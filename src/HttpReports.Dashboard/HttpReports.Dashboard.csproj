@@ -164,6 +164,10 @@
       <LastGenOutput>UserLogout.generated.cs</LastGenOutput>
       <CustomToolNamespace>HttpReports.Dashboard.Views</CustomToolNamespace>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="UI\" />
   </ItemGroup> 
   
 
