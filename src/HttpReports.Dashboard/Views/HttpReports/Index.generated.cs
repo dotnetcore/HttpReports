@@ -297,49 +297,33 @@ WriteLiteral(@"</h4>
             
             #line default
             #line hidden
-WriteLiteral(@"</h4>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class=""row"" style=""margin-top:40px;"">
-
-            <div class=""col-md-6"">
-
-                <div class=""panel panel-default"">
-                    <div class=""panel-body shadow-box"">
-                        <div id=""StatusCodePie"" style=""height:320px;width:99%""></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class=""col-md-6"">
-
-                <div class=""panel panel-default"">
-                    <div class=""panel-body shadow-box"">
-                        <div id=""ResponseTimePie"" style=""height:320px;width:99%""></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class=""row"">
-
-            <div class=""col-md-6"">
-
-                <div class=""panel panel-default"">
-                    <div class=""panel-body shadow-box"">
-
-                        <div class=""col-sm-12"" style=""padding-left:32px;"">
-
-                            <div class=""row form-inline"">
-
-                                <label class=""form-label"">");
+WriteLiteral("</h4>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n  " +
+"      </div>\r\n\r\n        <div class=\"row\" style=\"margin-top:40px;\">\r\n\r\n          " +
+"  <div class=\"col-md-6\">\r\n\r\n                <div class=\"panel panel-default\">\r\n " +
+"                   <div class=\"panel-body shadow-box\">\r\n                        " +
+"<div id=\"StatusCodePie\" style=\"height:320px;width:99%\"></div>\r\n                 " +
+"   </div>\r\n                </div>\r\n            </div>\r\n\r\n            <div class=" +
+"\"col-md-6\">\r\n\r\n                <div class=\"panel panel-default\">\r\n              " +
+"      <div class=\"panel-body shadow-box\">\r\n                        <div id=\"Resp" +
+"onseTimePie\" style=\"height:320px;width:99%\"></div>\r\n                    </div>\r\n" +
+"                </div>\r\n            </div>\r\n        </div>\r\n\r\n        <div class" +
+"=\"row\" style=\"margin-top:40px;\">\r\n\r\n            <div class=\"col-md-6\">\r\n\r\n      " +
+"          <div class=\"panel panel-default\">\r\n                    <div class=\"pan" +
+"el-body shadow-box\">\r\n                        <div id=\"ScatterChart\" style=\"heig" +
+"ht:320px;width:99%\"></div>\r\n                    </div>\r\n                </div>\r\n" +
+"            </div>\r\n\r\n            <div class=\"col-md-6\">\r\n\r\n                <div" +
+" class=\"panel panel-default\">\r\n                    <div class=\"panel-body shadow" +
+"-box\">\r\n                        <div id=\"HeatmapChart\" style=\"height:320px;width" +
+":99%\"></div>\r\n                    </div>\r\n                </div>\r\n            </" +
+"div>\r\n        </div>\r\n\r\n        <div class=\"row\">\r\n\r\n            <div class=\"col" +
+"-md-6\">\r\n\r\n                <div class=\"panel panel-default\">\r\n                  " +
+"  <div class=\"panel-body shadow-box\">\r\n\r\n                        <div class=\"col" +
+"-sm-12\" style=\"padding-left:32px;\">\r\n\r\n                            <div class=\"r" +
+"ow form-inline\">\r\n\r\n                                <label class=\"form-label\">");
 
 
             
-            #line 168 "..\..\Views\HttpReports\Index.cshtml"
+            #line 189 "..\..\Views\HttpReports\Index.cshtml"
                                                      Write(lang.Index_SelectCount);
 
             
@@ -372,7 +356,7 @@ WriteLiteral("</label>\r\n                                <select onchange=\"cha
 "d=\"SlowARTChart\" style=\"min-height:420px; width:99%\"></div>\r\n                   " +
 "     </div>\r\n                    </div>\r\n                </div>\r\n            </d" +
 "iv>\r\n        </div>\r\n    </div>\r\n</div>\r\n\r\n<script src=\"/HttpReportsStaticFiles/" +
-"Content/page/index.js?ver=1.0.7\"></script>");
+"Content/page/index.js?ver=1.0.8\"></script>\r\n");
 
 
         }

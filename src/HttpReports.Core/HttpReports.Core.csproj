@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>HttpReports.Core</PackageId>
     <Description>HttpReports is a lightweight APM system developed for Net Core , it is also suitable for use in a micro-service architecture.</Description>
-    <Version>1.6.0</Version>
+    <Version>1.6.3</Version>
     <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
     <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
     <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl>

@@ -38,8 +38,8 @@ namespace HttpReports.Diagnostic.HttpClient
         }
 
         public void OnNext(KeyValuePair<string, object> value)
-        {
-            var activity = System.Diagnostics.Activity.Current;
+        {  
+             var activity = System.Diagnostics.Activity.Current;
 
             if (value.Key == "System.Net.Http.HttpRequestOut.Start")
             {
@@ -51,47 +51,8 @@ namespace HttpReports.Diagnostic.HttpClient
 
                     request.Headers.Add(BasicConfig.ActiveTraceId, TraceId);
                 } 
-                _context.Push(activity?.SpanId.ToHexString(), new Segment
-                {
-                    activity = activity,
-                    CreateTime = DateTime.Now,
-                    Value = request
-
-                });
-            }
-
-            if (value.Key == "System.Net.Http.HttpRequestOut.Stop")
-            { 
-                return;
-
-                var response = value.Value.GetType().GetProperty("Response").GetValue(value.Value) as System.Net.Http.HttpResponseMessage;
-
-                _context.Push(activity?.SpanId.ToHexString(), new Segment
-                {
-                    activity = activity,
-                    CreateTime = DateTime.Now,
-                    Value = response
-                });
-
-                Build(activity?.SpanId.ToHexString());
-            } 
-          
-        }
-
-        public IRequestChain Build(string Id)
-        {
-            var Segments = _context.GetSegments(Id);
-
-            if (Segments.Count != 2 || Segments[0] == null || Segments[1] == null)
-            {
-                return null;
-            }
-
-            IRequestChain requestChain = new RequestChain();
-
-            _context.Release(Id);
-
-            return requestChain;
-        }
+            }  
+        } 
+      
     }
 }

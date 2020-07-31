@@ -261,7 +261,7 @@ WriteLiteral("</td>\r\n                                <td>");
 
             
             #line 75 "..\..\Views\HttpReports\Monitor.cshtml"
-                               Write(item.Service);
+                                Write( string.IsNullOrEmpty(item.Service) ? "ALL": item.Service );
 
             
             #line default
@@ -411,7 +411,7 @@ WriteLiteral("</button>\r\n\r\n                                </td>\r\n        
             #line hidden
 WriteLiteral("\r\n                        </tbody>\r\n                    </table>\r\n\r\n             " +
 "   </div>\r\n            </div>\r\n\r\n        </div>\r\n\r\n    </div>\r\n\r\n</div>\r\n\r\n<scri" +
-"pt src=\"/HttpReportsStaticFiles/Content/page/monitor.js?ver=1.0.7\"></script>\r\n");
+"pt src=\"/HttpReportsStaticFiles/Content/page/monitor.js?ver=1.0.8\"></script>\r\n");
 
 
         }

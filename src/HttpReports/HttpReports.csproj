@@ -8,7 +8,7 @@
     <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
     <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
     <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl>
-    <Version>1.6.0</Version>
+    <Version>1.6.3</Version>
     <PackageLicenseFile></PackageLicenseFile>
     <PackageId>HttpReports</PackageId>
   </PropertyGroup>
@@ -17,7 +17,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
@@ -26,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Diagnostics\HttpReports.Diagnostic.AspNetCore\HttpReports.Diagnostic.AspNetCore.csproj" />
     <ProjectReference Include="..\Diagnostics\HttpReports.Diagnostic.HttpClient\HttpReports.Diagnostic.HttpClient.csproj" />
     <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
     <ProjectReference Include="..\HttpReports.Transport.Http\HttpReports.Transport.Http.csproj" />

@@ -96,18 +96,14 @@ namespace HttpReports
             {
                 _list.Add(item);
                 if (++_count >= FlushThreshold)
-                {
-                    Debug.WriteLine("Out of FlushThreshold");
-
+                { 
                     InternalFlush(SwitchBag());
                 }
             }
         }
 
         private List<T> SwitchBag()
-        {
-            Debug.WriteLine("SwitchBag");
-
+        { 
             lock (_syncRoot)
             {
                 _lastFlushTime = DateTime.Now;
@@ -117,9 +113,7 @@ namespace HttpReports
         }
 
         public void Flush()
-        {
-            Debug.WriteLine("Manual Flush");
-
+        { 
             InternalFlush(SwitchBag());
         }
 
@@ -128,9 +122,7 @@ namespace HttpReports
             if (list.Count > 0)
             {
                 Task.Run(async () =>
-                {
-                    Debug.WriteLine($"Flush: {list.Count}");
-
+                { 
                     await FlushAsync(list, _autoFlushCTS.Token);
                 }, _autoFlushCTS.Token);
             }

@@ -110,7 +110,7 @@ function InitTable() {
                 align: 'center',
                 formatter: function (value, row, index) {
 
-                    var btn = `<span>${row.localIP}:${row.localPort}</span>`;
+                    var btn = `<span>${row.ip}:${row.port}</span>`;
                     return btn;
                 }
 

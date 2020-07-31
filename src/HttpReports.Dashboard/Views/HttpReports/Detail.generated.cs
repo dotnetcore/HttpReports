@@ -569,7 +569,7 @@ WriteLiteral("</h3>\r\n\r\n    <table class=\"table table-striped table-bordered
 "ay:none;\">\r\n\r\n    <div class=\"\">\r\n\r\n        <div class=\"panel-body request-trace" +
 "\" style=\"padding:30px 40px\">\r\n\r\n            <div class=\"request-tree\"></div>\r\n\r\n" +
 "        </div>\r\n    </div>\r\n\r\n</div>  \r\n\r\n<script src=\"/HttpReportsStaticFiles/C" +
-"ontent/page/detail.js?ver=1.0.7\"></script>\r\n");
+"ontent/page/detail.js?ver=1.0.8\"></script>\r\n");
 
 
         }

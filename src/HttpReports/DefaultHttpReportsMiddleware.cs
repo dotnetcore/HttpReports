@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -94,8 +95,7 @@ namespace HttpReports
                 if (!string.IsNullOrEmpty(context.Request.Path))
                 {
                     InvokeProcesser.Process(context, stopwatch);
-                }
-
+                } 
             }
 
         }
@@ -144,6 +144,11 @@ namespace HttpReports
         {
             try
             {
+                if (context.Request.ContentType.IsEmpty() || !context.Request.ContentType.Contains("application/json"))
+                {
+                    return string.Empty;
+                } 
+
                 string result = string.Empty;
 
                 context.Request.EnableBuffering();
@@ -166,13 +171,18 @@ namespace HttpReports
         private async Task<string> GetResponseBodyAsync(HttpContext context)
         {
             try
-            {
+            {  
+                if (context.Response.ContentType.IsEmpty() || !context.Response.ContentType.Contains("application/json"))
+                {
+                    context.Response.Body.Seek(0, SeekOrigin.Begin);
+                    return string.Empty;
+                }
+
                 if (FilterStaticFiles(context))
                 {
                     context.Response.Body.Seek(0, SeekOrigin.Begin);
                     return string.Empty;
-                } 
-                
+                }  
 
                 string result = string.Empty;
 

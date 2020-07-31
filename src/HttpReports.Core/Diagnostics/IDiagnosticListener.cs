@@ -6,9 +6,7 @@ namespace HttpReports.Core.Diagnostics
 {
     public interface IDiagnosticListener : IObserver<KeyValuePair<string, object>>
     {
-        string ListenerName { get; } 
-
-        IRequestChain Build(string Id);  
+        string ListenerName { get; }  
 
     }
 }

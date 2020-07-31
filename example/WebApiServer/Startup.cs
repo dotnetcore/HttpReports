@@ -32,7 +32,7 @@ namespace WebApiServer
             app.UseHttpReports();
 
             //DirectlyWrite
-            app.UseHttpReports().InitStorage();
+            //app.UseHttpReports().InitStorage();
 
             if (env.IsDevelopment())
             {

@@ -58,15 +58,15 @@ namespace HttpReports.Service
         {  
             while (!Token.IsCancellationRequested)
             {
-                Uri uri = new Uri(_options.Urls);
+                Uri uri = new Uri(_options.Urls); 
 
-                _logger.LogInformation($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} BackgroundService Execute... "); 
+                IPerformance p = await _performanceService.GetPerformance(uri.Host+":"+uri.Port);
 
-                IPerformance performance = await _performanceService.GetPerformance(uri.Host+":"+uri.Port);
+                _logger.LogInformation($"HttpReports.CLR CPU:{p.ProcessCPU} Memory:{p.ProcessMemory} ThreadCount:{p.ThreadCount}  CG0:{p.GCGen0}  GC1:{p.GCGen1} GC2:{p.GCGen2}  ");
 
-                if (performance != null)
+                if (p != null)
                 {
-                    await _transport.Transport(performance);
+                    await _transport.Transport(p);
                 }
 
                 await Task.Delay(TimeSpan.FromSeconds(10), Token); 

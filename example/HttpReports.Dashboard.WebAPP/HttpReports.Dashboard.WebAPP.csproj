@@ -21,10 +21,4 @@
     <ProjectReference Include="..\..\src\Storage\HttpReports.Storage.SQLServer\HttpReports.Storage.SQLServer.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Dockerfile">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>

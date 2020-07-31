@@ -42,48 +42,48 @@ WriteLiteral("\r\n<!DOCTYPE html>\r\n<html lang=\"zh-cn\">\r\n<head>\r\n    <met
 "meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\r\n    <meta name=\"viewport\" " +
 "content=\"width=device-width, initial-scale=1\">\r\n    <title>HttpReports</title>\r\n" +
 "\r\n    <link href=\"/HttpReportsStaticFiles/Content/assets/css/bootstrap.min.css?v" +
-"er=1.0.7\" rel=\"stylesheet\">\r\n    <link href=\"/HttpReportsStaticFiles/Content/ass" +
-"ets/css/font-awesome.min.css?ver=1.0.7\" rel=\"stylesheet\">\r\n    <link href=\"/Http" +
-"ReportsStaticFiles/Content/assets/css/jquery.mmenu.css?ver=1.0.7\" rel=\"styleshee" +
+"er=1.0.8\" rel=\"stylesheet\">\r\n    <link href=\"/HttpReportsStaticFiles/Content/ass" +
+"ets/css/font-awesome.min.css?ver=1.0.8\" rel=\"stylesheet\">\r\n    <link href=\"/Http" +
+"ReportsStaticFiles/Content/assets/css/jquery.mmenu.css?ver=1.0.8\" rel=\"styleshee" +
 "t\" />\r\n    <link id=\"theme\" href=\"/HttpReportsStaticFiles/Content/assets/css/sty" +
-"le.min.css?ver=1.0.7\" rel=\"stylesheet\">\r\n    <link href=\"/HttpReportsStaticFiles" +
-"/Content/assets/css/add-ons.min.css?ver=1.0.7\" rel=\"stylesheet\">\r\n    <link href" +
+"le.min.css?ver=1.0.8\" rel=\"stylesheet\">\r\n    <link href=\"/HttpReportsStaticFiles" +
+"/Content/assets/css/add-ons.min.css?ver=1.0.8\" rel=\"stylesheet\">\r\n    <link href" +
 "=\"/HttpReportsStaticFiles/Content/bootstrap/bootstrap_switch/_3._3._4/bootstrap-" +
 "switch.css\" rel=\"stylesheet\" />\r\n\r\n\r\n    <link class=\"theme\" id=\"theme_light\" hr" +
-"ef=\"/HttpReportsStaticFiles/Content/css/theme/light.css?ver=1.0.7\" rel=\"styleshe" +
+"ef=\"/HttpReportsStaticFiles/Content/css/theme/light.css?ver=1.0.8\" rel=\"styleshe" +
 "et\" />\r\n    <link class=\"theme\" id=\"theme_dark\" href=\"/HttpReportsStaticFiles/Co" +
-"ntent/css/theme/dark.css?ver=1.0.7\" rel=\"stylesheet\" />\r\n    <link href=\"/HttpRe" +
-"portsStaticFiles/Content/css/animate/_3._5._2/animate.min.css?ver=1.0.7\" rel=\"st" +
+"ntent/css/theme/dark.css?ver=1.0.8\" rel=\"stylesheet\" />\r\n    <link href=\"/HttpRe" +
+"portsStaticFiles/Content/css/animate/_3._5._2/animate.min.css?ver=1.0.8\" rel=\"st" +
 "ylesheet\" />\r\n\r\n\r\n    <script src=\"/HttpReportsStaticFiles/Content/assets/js/jqu" +
-"ery-2.1.1.min.js?ver=1.0.7\"></script>\r\n    <script src=\"/HttpReportsStaticFiles/" +
-"Content/js/jquery.cookie.js?ver=1.0.7\"></script>\r\n    <script src=\"/HttpReportsS" +
-"taticFiles/Content/assets/js/jquery.mmenu.min.js?ver=1.0.7\"></script>\r\n    <scri" +
-"pt src=\"/HttpReportsStaticFiles/Content/assets/js/core.min.js?ver=1.0.7\"></scrip" +
+"ery-2.1.1.min.js?ver=1.0.8\"></script>\r\n    <script src=\"/HttpReportsStaticFiles/" +
+"Content/js/jquery.cookie.js?ver=1.0.8\"></script>\r\n    <script src=\"/HttpReportsS" +
+"taticFiles/Content/assets/js/jquery.mmenu.min.js?ver=1.0.8\"></script>\r\n    <scri" +
+"pt src=\"/HttpReportsStaticFiles/Content/assets/js/core.min.js?ver=1.0.8\"></scrip" +
 "t>\r\n    <script src=\"/HttpReportsStaticFiles/Content/bootstrap/bootstrap_table/_" +
-"1._14._2/bootstrap-table.js?ver=1.0.7\"></script>\r\n\r\n    <script src=\"/HttpReport" +
-"sStaticFiles/Content/assets/js/bootstrap-table-zh-CN.js?ver=1.0.7\"></script>\r\n  " +
+"1._14._2/bootstrap-table.js?ver=1.0.8\"></script>\r\n\r\n    <script src=\"/HttpReport" +
+"sStaticFiles/Content/assets/js/bootstrap-table-zh-CN.js?ver=1.0.8\"></script>\r\n  " +
 "  <script src=\"/HttpReportsStaticFiles/Content/bootstrap/bootstrap_switch/_3._3." +
 "_4/bootstrap-switch.js\"></script>\r\n\r\n\r\n    <script src=\"/HttpReportsStaticFiles/" +
-"Content/assets/js/bootstrap.min.js?ver=1.0.7\"></script>\r\n\r\n    <link rel=\"styles" +
+"Content/assets/js/bootstrap.min.js?ver=1.0.8\"></script>\r\n\r\n    <link rel=\"styles" +
 "heet\" href=\"/HttpReportsStaticFiles/Content/bootstrap/select/select.css?ver=1.0." +
-"7\">\r\n    <script src=\"/HttpReportsStaticFiles/Content/bootstrap/select/select.js" +
-"?ver=1.0.7\"></script>\r\n\r\n\r\n    <script src=\"/HttpReportsStaticFiles/Content/echa" +
-"rts/_4._3._0/echarts.min.js?ver=1.0.7\"></script>\r\n    <script src=\"/HttpReportsS" +
-"taticFiles/Content/echarts/_4._3._0/macarons.js?ver=1.0.7\"></script>\r\n    <scrip" +
-"t src=\"/HttpReportsStaticFiles/Content/echarts/_4._3._0/dark.js?ver=1.0.7\"></scr" +
+"8\">\r\n    <script src=\"/HttpReportsStaticFiles/Content/bootstrap/select/select.js" +
+"?ver=1.0.8\"></script>\r\n\r\n\r\n    <script src=\"/HttpReportsStaticFiles/Content/echa" +
+"rts/_4._3._0/echarts.min.js?ver=1.0.8\"></script>\r\n    <script src=\"/HttpReportsS" +
+"taticFiles/Content/echarts/_4._3._0/macarons.js?ver=1.0.8\"></script>\r\n    <scrip" +
+"t src=\"/HttpReportsStaticFiles/Content/echarts/_4._3._0/dark.js?ver=1.0.8\"></scr" +
 "ipt>\r\n\r\n    <link href=\"/HttpReportsStaticFiles/Content/busyload/app.css?ver=1.0" +
-".7\" rel=\"stylesheet\" />\r\n    <script src=\"/HttpReportsStaticFiles/Content/busylo" +
-"ad/app.js?ver=1.0.7\"></script>\r\n\r\n    <!-- CSS 引入 -->\r\n    <script src=\"/HttpRep" +
-"ortsStaticFiles/Content/laydate/laydate.js?ver=1.0.7\"></script>\r\n\r\n    <script s" +
-"rc=\"/HttpReportsStaticFiles/Content/assets/js/jquery.goup.js?ver=1.0.7\"></script" +
-">\r\n\r\n    <link href=\"/HttpReportsStaticFiles/Content/alert/alert.css?ver=1.0.7\" " +
+".8\" rel=\"stylesheet\" />\r\n    <script src=\"/HttpReportsStaticFiles/Content/busylo" +
+"ad/app.js?ver=1.0.8\"></script>\r\n\r\n    <!-- CSS 引入 -->\r\n    <script src=\"/HttpRep" +
+"ortsStaticFiles/Content/laydate/laydate.js?ver=1.0.8\"></script>\r\n\r\n    <script s" +
+"rc=\"/HttpReportsStaticFiles/Content/assets/js/jquery.goup.js?ver=1.0.8\"></script" +
+">\r\n\r\n    <link href=\"/HttpReportsStaticFiles/Content/alert/alert.css?ver=1.0.8\" " +
 "rel=\"stylesheet\" />\r\n\r\n    <script src=\"/HttpReportsStaticFiles/Content/alert/al" +
-"ert.js?ver=1.0.7\"></script>\r\n    <script src=\"/HttpReportsStaticFiles/Content/js" +
-"/bootstrap-treeview.js?ver=1.0.7\"></script>\r\n\r\n    <script src=\"/HttpReportsStat" +
+"ert.js?ver=1.0.8\"></script>\r\n    <script src=\"/HttpReportsStaticFiles/Content/js" +
+"/bootstrap-treeview.js?ver=1.0.8\"></script>\r\n\r\n    <script src=\"/HttpReportsStat" +
 "icFiles/Content/js/mSlider.min.js\"></script>\r\n    <script src=\"/HttpReportsStati" +
 "cFiles/Content/js/jquery.nicescroll.js\"></script>\r\n\r\n\r\n    <link href=\"/HttpRepo" +
-"rtsStaticFiles/Content/message/message.css?ver=1.0.7\" rel=\"stylesheet\" />\r\n    <" +
-"script src=\"/HttpReportsStaticFiles/Content/message/message.js?ver=1.0.7\"></scri" +
+"rtsStaticFiles/Content/message/message.css?ver=1.0.8\" rel=\"stylesheet\" />\r\n    <" +
+"script src=\"/HttpReportsStaticFiles/Content/message/message.js?ver=1.0.8\"></scri" +
 "pt>\r\n\r\n    <script>  var langFormat = \'");
 
 
@@ -95,10 +95,10 @@ WriteLiteral("\r\n<!DOCTYPE html>\r\n<html lang=\"zh-cn\">\r\n<head>\r\n    <met
             #line default
             #line hidden
 WriteLiteral("\';   </script>\r\n\r\n    <script src=\"/HttpReportsStaticFiles/Content/common/basic.j" +
-"s?ver=1.0.7\"></script>\r\n    <link href=\"/HttpReportsStaticFiles/Content/common/b" +
-"asic.css?ver=1.0.7\" rel=\"stylesheet\" />\r\n\r\n\r\n    <script src=\"/HttpReportsStatic" +
-"Files/Content/page/main.js?ver=1.0.7\"></script> \r\n\r\n    <link rel=\"icon\" href=\"/" +
-"HttpReportsStaticFiles/Content/assets/img/img.ico?ver=1.0.7\" type=\"image/x-icon\"" +
+"s?ver=1.0.8\"></script>\r\n    <link href=\"/HttpReportsStaticFiles/Content/common/b" +
+"asic.css?ver=1.0.8\" rel=\"stylesheet\" />\r\n\r\n\r\n    <script src=\"/HttpReportsStatic" +
+"Files/Content/page/main.js?ver=1.0.8\"></script> \r\n\r\n    <link rel=\"icon\" href=\"/" +
+"HttpReportsStaticFiles/Content/assets/img/img.ico?ver=1.0.8\" type=\"image/x-icon\"" +
 " />\r\n\r\n</head>\r\n\r\n<body> \r\n\r\n\r\n    <!-- start: Header -->\r\n    <div class=\"navba" +
 "r\" role=\"navigation\">\r\n\r\n        <div class=\"container-fluid\">\r\n\r\n            <u" +
 "l class=\"nav navbar-nav navbar-actions navbar-left\">\r\n                <li class=" +
