@@ -16,7 +16,13 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IHttpReportsInitializer InitStorage(this IHttpReportsInitializer initializer)
         {
-            var storage = initializer.ApplicationBuilder.ApplicationServices.GetRequiredService<IHttpReportsStorage>() ?? throw new ArgumentNullException("Storage Service Not Found");
+            var storage = initializer.ApplicationBuilder.ApplicationServices.GetService<IHttpReportsStorage>();
+
+            if (storage == null)
+            {
+                return initializer;
+            } 
+            
             storage.InitAsync().Wait();
 
             return initializer;
