@@ -167,7 +167,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="UI\" />
+    <Folder Include="UI\src\view\" />
   </ItemGroup> 
   
 
