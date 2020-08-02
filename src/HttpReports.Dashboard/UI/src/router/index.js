@@ -5,8 +5,7 @@ import Buttons from '@/view/user/buttons'
 import Form from '@/view/User/form'
 import Main from '@/view/main/index'
 import Animation from '@/view/user/animation'
-import Login from '@/view/user/login'
-import Login2 from '@/view/user/login2';
+import Login from '@/view/user/login' 
 import Store from '@/view/user/store'
 
 
@@ -48,12 +47,7 @@ export default new Router({
       path: '/user/login',
       name: 'login',
       component: Login
-    },
-    {
-      path: '/user/login2',
-      name: 'login2',
-      component: Login2
-    }
+    } 
   ]
 })
 

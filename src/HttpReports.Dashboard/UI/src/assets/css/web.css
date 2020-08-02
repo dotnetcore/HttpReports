@@ -1,6 +1,13 @@
 
 /*==================== 网站基本样式  ==========================*/
 
+body{ 
+
+  margin: 0;
+
+} 
+
+
 .icon-rounded {
   width: 66px;
   height: 66px;
@@ -60,8 +67,7 @@
 }
 
 .navbar-right {
-  float: right;
-  padding-right: 30px;
+  float: right; 
   margin-top: -60px;
 }
 
@@ -74,10 +80,7 @@
     color: #fff;
   }
 
-  .navbar-right .nav-user i {
-    font-size: 16px;
-  }
-
+  
 .nav-item {
   cursor: pointer;
 }
@@ -89,34 +92,24 @@
 }
 
   .navbar-left .logo {
-    width: 220px;
+    width:200px;
   }
 
 
   .navbar-left .title {
     width: 64px;
-  }
-
-
-  .navbar-left .logo span {
-    font-size: 20px;
-    color: #fff;
-  }
-
-  .navbar-left .logo img {
-    font-size: 20px;
-    color: #fff;
-  }
-
+  } 
+  
 .el-header {
   padding: 0;
-  background-color: #344058 !important;
+  background-color:#2b3852 !important;
 }
 
 .navbar-center i {
-  padding: 5px;
-  margin-left: 20px;
-  color: #FFF;
+  
+  padding: 5px; 
+  color:#dad8d8;
   font-size: 20px;
   cursor: pointer;
+  margin-left: 15px;
 }

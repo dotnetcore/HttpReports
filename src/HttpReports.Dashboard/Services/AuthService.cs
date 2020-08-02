@@ -51,7 +51,7 @@ namespace HttpReports.Dashboard.Services
         { 
             lock (sync)
             {
-                var user = Members.Where(x => x.Token == token).First();
+                var user = Members.Where(x => x.Token == token).FirstOrDefault();
 
                 if (user == null) return false;
 
@@ -95,7 +95,7 @@ namespace HttpReports.Dashboard.Services
 
             return ValidToken(token.ToString()); 
 
-        } 
+        }   
 
     }
 

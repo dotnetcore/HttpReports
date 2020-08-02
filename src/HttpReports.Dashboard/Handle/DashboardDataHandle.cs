@@ -33,7 +33,7 @@ namespace HttpReports.Dashboard.Handle
         private readonly ScheduleService _scheduleService; 
 
         private readonly LocalizeService _localizeService;  
-        private Localize _lang => _localizeService.Current;
+        private Localize _lang => _localizeService.Current; 
 
         private IAuthService _authService;
 
@@ -430,6 +430,16 @@ namespace HttpReports.Dashboard.Handle
             return Json(new HttpResultEntity(1, "ok", new { time, value }));
         } 
 
+
+        [AllowAnonymous]
+        public async Task<string> GetLanguage()
+        {
+            var lang = await _storage.GetSysConfig(BasicConfig.Language);
+
+            return Json(new HttpResultEntity(1, "ok", lang ));
+        } 
+
+       
         public async Task<string> ChangeLanguage(ChangeLanguageRequest request)
         { 
             await _localizeService.SetLanguageAsync(request.Language); 
@@ -602,6 +612,7 @@ namespace HttpReports.Dashboard.Handle
         }
 
 
+        [AllowAnonymous]
         public async Task<string> UserLogin(SysUser user)
         {
             var model = await _storage.CheckLogin(user.UserName.Trim(), user.Password.Trim().MD5());

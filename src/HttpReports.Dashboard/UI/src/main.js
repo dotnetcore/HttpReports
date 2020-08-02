@@ -7,17 +7,18 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import './assets/css/web.css';
 import animate from 'animate.css'
-import VueResource from 'vue-resource'
+import VueResource from 'vue-resource' 
+import 'font-awesome/css/font-awesome.min.css'
 
 
 // 引入自定义js库
 import { basic } from '@/common/basic.js'
-Vue.prototype.basic = basic
-
+Vue.prototype.basic = basic   
 
 Vue.use(ElementUI);
 Vue.use(animate)
 Vue.use(VueResource)
+ 
 
 Vue.config.productionTip = false
 
@@ -25,102 +26,107 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   store,
-  router,
+  router, 
   render: h => h(App),
-  created: function () {
+  created: function () {    
 
-    console.log("3333")
+    var configUrl = window.location.href.substring(0, window.location.href.indexOf('index.html')) + "config.json";   
+   
 
-    loadState();
+    setHttpFilter();  
 
-    checkLoginState();
+    loadLanguage(); 
 
-    setHttpFilter();
+    loadState();  
 
   }
 })
 
 function loadState() {
 
-  var token = store.state.token.token;
-  var express = store.state.token.express;
+  var token = store.state.token;  
 
   if (basic.isEmpty(token)) {
 
-    token = localStorage.getItem("token");
-    express = localStorage.getItem("express");
-    var now = basic.getTimeSpan();
+    token = localStorage.getItem("token");  
 
-    if (basic.isEmpty(token)) {
+    if (basic.isEmpty(token)) {   
 
-      // 不BB 跳到登录页
-      if (router.history.current.name != "login2" && router.history.current.name != "login") {
-
-        router.push({ path: '/user/login2' })
-
-      }
+        router.push({ path: '/user/login' })  
     }
     else {
-      store.commit('updateToken', { token: token, express: express });
+      store.commit('set_token',token);
     }
   }
 
+} 
+
+
+function loadLanguage() {     
+ 
+  Vue.http.get("GetLanguage").then(response =>{
+ 
+    var lang = response.body.data;  
+
+    Vue.http.get(`/static/lang/${lang}.json`).then(res =>{   
+      
+      store.commit('set_lang',res.body);
+
+    });
+     
+
+  }); 
+  
 }
 
-function checkLoginState() {
+ 
 
-  var token = store.state.token.token;
-  var express = store.state.token.express;
-  var now = basic.getTimeSpan();
+function setHttpFilter() {   
 
-  if (basic.isEmpty(token) && basic.isEmpty(express)) {
-
-    if (now > express) {
-
-      // 不BB 跳到登录页
-      if (router.history.current.name != "login2" && router.history.current.name != "login") {
-        router.push({ path: '/user/login2' })
-      }
-
-    }
-
-  }
-}
-
-function setHttpFilter() {
-
-  // 设置根请求
-  Vue.http.options.root = "http://localhost:1234/";
+  Vue.http.options.root = "http://localhost:5010/HttpReportsData";  
 
   // VueResource 请求拦截器
   Vue.http.interceptors.push((request, next) => {
 
-    var token = store.state.token.token;
+    var token = store.state.token; 
 
-    if (request.url != "token/CheckLogin") {
-      request.headers.set('Authorization', 'Bearer ' + token);
-    }
+    if (!basic.isEmpty(token)) {
+      
+      request.headers.set('HttpReports.Auth.Token',token); 
 
-    next(function (response) {
+    }  
+
+    next(function (response) { 
 
       if (response.status != 200) {
-        this.$message.error('出错了,请重试！');
+
+        if (response.status == 401) { 
+
+          router.push({ path: '/user/login' })  
+          return;
+        } 
+
+        this.$message.error('error');
         return;
+
       }
+
       return response;
 
     });
+
+    
   })
 
 }
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, from, next) => { 
+ 
+  if(to.path != '/user/login'){
+    loadState(); 
+  } 
 
-  //loadState();
-
-  //checkLoginState();
-
-  //next();
+  next();
 
 });
 

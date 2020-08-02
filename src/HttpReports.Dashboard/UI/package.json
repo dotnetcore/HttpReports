@@ -12,7 +12,9 @@
   "dependencies": {
     "animate.css": "^4.1.0",
     "element-ui": "^2.13.2",
+    "font-awesome": "^4.7.0",
     "vue": "^2.6.11",
+    "vue-awesome": "^4.1.0",
     "vue-resource": "^1.5.1",
     "vue-router": "^3.0.1",
     "vuex": "^3.5.1"

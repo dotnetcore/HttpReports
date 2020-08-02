@@ -15,7 +15,12 @@ namespace HttpReports.Dashboard.Implements
     public static class AuthorizeHelper
     {
         public static async Task<bool> AuthorizeAsync(HttpContext context,IDashboardHandle handle,DashboardRoute route)
-        {
+        { 
+            if (context.Request.Headers.ContainsKey(BasicConfig.AuthToken))
+            {
+                return true;
+            }  
+
             if (handle.GetType().GetMethod(route.Action).GetCustomAttribute<AllowAnonymousAttribute>() != null)
             {
                 return await Task.FromResult(true);

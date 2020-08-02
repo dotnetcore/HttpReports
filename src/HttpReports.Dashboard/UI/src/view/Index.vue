@@ -1,208 +1,268 @@
 
 <template>
-
   <el-container>
+    <el-dialog
+      :title="this.$store.state.lang.Template_EditAccount"
+      :visible.sync="UpdateDialogVisible"
+      width="30%"
+    >
+      <el-form
+        :model="setUserInfo"
+        label-position="left"
+        label-width="100px"
+        style="padding:0 30px"
+      >
+        <el-form-item :label="this.$store.state.lang.Login_UserName" >
+          <el-input v-model="setUserInfo.name"></el-input>
+        </el-form-item>
+
+        <el-form-item :label="this.$store.state.lang.Index_OldPwd" >
+          <el-input type="password" v-model="setUserInfo.oldPwd"></el-input>
+        </el-form-item>
+
+        <el-form-item :label="this.$store.state.lang.Index_NewPwd" >
+          <el-input type="password" v-model="setUserInfo.newPwd"></el-input>
+        </el-form-item>
+      </el-form>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="UpdateDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="updateUserInfo">确 定</el-button>
+      </span>
+    </el-dialog>
 
     <el-header>
-
       <div class="navbar-left">
-
         <div class="logo" v-show="!isCollapse">
-          <img src="http://newoa.hengyinfs.com/Content/style/images/logo-icon.png" />
+          <b style="font-size:18px;color:#FFF">HttpReports</b>
         </div>
 
         <div class="title" v-show="isCollapse">
-          <span style="font-size:22px;color:#FFF">恒</span>
+          <span style="font-size:22px;color:#FFF;width:20px"></span>
         </div>
-
       </div>
 
-
       <div class="navbar-center">
-        <i @click="changeNavState" class="el-icon-menu"></i>
+        <i
+          style="margin-top:16px"
+          @click="changeNavState"
+          :class="[isCollapse?'el-icon-s-unfold':'el-icon-s-fold']"
+        ></i>
       </div>
 
       <div class="navbar-right">
-
         <div class="nav-item">
-
           <el-dropdown>
-
             <span class="el-dropdown-link nav-user">
-              <span>{{  this.$store.state.user.username }}</span>
-              <!--<img src="http://demo.cssmoban.com/cssthemes6/thse_4_dashloon/assets/images/parson.png" class="img-circle" alt="parson-img">-->
-              <i class="el-icon-arrow-down"></i>
+              <i class="fa fa-language"></i>
             </span>
 
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>修改密码</el-dropdown-item>
-              <el-dropdown-item>个人中心</el-dropdown-item>
-              <el-dropdown-item>
-                <el-link :underline="false" href="/#/user/login">登录</el-link>
-              </el-dropdown-item>
-
-              <el-dropdown-item>
-                <el-link :underline="false" href="/#/user/login2">登录2</el-link>
-              </el-dropdown-item>
-
+              <el-dropdown-item @click.native="changeLanguage('en-us')">English</el-dropdown-item>
+              <el-dropdown-item @click.native="changeLanguage('zh-cn')">中文</el-dropdown-item>
             </el-dropdown-menu>
-
           </el-dropdown>
 
+          <el-dropdown v-show="false">
+            <span class="el-dropdown-link nav-user">
+              <i class="fa fa-dashboard"></i>
+            </span>
+
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item>{{ this.$store.state.lang.Template_Light }}</el-dropdown-item>
+              <el-dropdown-item>{{ this.$store.state.lang.Template_Dark }}</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+
+          <el-dropdown>
+            <span class="el-dropdown-link nav-user">
+              <i class="fa fa-user"></i>
+            </span>
+
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item>{{ this.userName }}</el-dropdown-item>
+              <el-dropdown-item
+                @click.native="UpdateDialogVisible = true"
+              >{{ this.$store.state.lang.Template_EditAccount }}</el-dropdown-item>
+              <el-dropdown-item @click.native="logout">{{ this.$store.state.lang.Template_Logout }}</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </div>
 
-        <div class="nav-item">
-
-        </div>
-
+        <div class="nav-item"></div>
       </div>
-
     </el-header>
 
     <el-container>
-
       <el-aside style="width:initial;">
-
-        <el-menu :router="true" :unique-opened="true" default-active="1" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse" style="min-height:820px">
-
-          <el-menu-item index="/" route="/">
-            <i class="el-icon-s-home"></i>
-            <span slot="title">首页</span>
+        <el-menu
+          :router="true"
+          :unique-opened="true"
+          default-active="1"
+          class="el-menu-vertical-demo"
+          @open="handleOpen"
+          @close="handleClose"
+          :collapse="isCollapse"
+          style="min-height:100%"  
+          active-text-color="#409eff"
+        >
+          <el-menu-item index="/" >
+            <i class="fa fa-laptop"></i>
+            <span slot="title">{{ this.$store.state.lang.Menu_BasicData }}</span>
           </el-menu-item>
 
-          <el-submenu index="2">
+          <el-menu-item index="/index/buttons">
+            <i class="fa fa-bar-chart-o"></i>
+            <span slot="title">{{ this.$store.state.lang.Menu_TrendData }}</span>
+          </el-menu-item>
 
-            <template slot="title">
-              <i class="el-icon-menu"></i>
-              <span> 基本组件</span>
-            </template>
+          <el-menu-item index="/d" >
+            <i class="fa fa-bars"></i>
+            <span slot="title">{{ this.$store.state.lang.Menu_RequestList }}</span>
+          </el-menu-item>
 
-            <el-menu-item index="/index/buttons">按钮</el-menu-item>
+          <el-menu-item index="/dd" >
+            <i class="fa fa-rocket"></i>
+            <span slot="title">{{ this.$store.state.lang.Menu_Monitor }}</span>
+          </el-menu-item>
 
-            <el-menu-item index="/index/form">表单</el-menu-item>
-
-            <el-menu-item index="/index/animation">动画</el-menu-item>
-
-            <el-menu-item index="/user/store">状态存储VUEX</el-menu-item>
-
-            <el-menu-item>文档管理</el-menu-item>
-
-            <el-menu-item>问题建议</el-menu-item>
-
-          </el-submenu>
-
-          <el-submenu index="3">
-
-            <template slot="title">
-              <i class="el-icon-s-custom"></i>
-              <span>个人中心</span>
-            </template>
-
-            <el-menu-item index="3-1">员工管理</el-menu-item>
-
-            <el-menu-item index="3-2">知识管理</el-menu-item>
-
-            <el-menu-item index="3-3">动态管理</el-menu-item>
-
-            <el-menu-item index="3-4">文档管理</el-menu-item>
-
-            <el-menu-item index="3-5">问题建议</el-menu-item>
-
-          </el-submenu>
-
-          <el-submenu index="4">
-
-            <template slot="title">
-              <i class="el-icon-setting"></i>
-              <span>设置中心</span>
-            </template>
-
-            <el-menu-item index="4-1">网站设置</el-menu-item>
-
-            <el-menu-item index="4-2">系统日志</el-menu-item>
-
-            <el-menu-item index="4-3">角色管理</el-menu-item>
-
-            <el-menu-item index="4-4">菜单管理</el-menu-item>
-
-          </el-submenu>
-
+            <el-menu-item index="/ddd" >
+            <i class="fa fa-flask"></i>
+            <span slot="title">{{ this.$store.state.lang.Performance }}</span>
+          </el-menu-item>
+ 
         </el-menu>
-
       </el-aside>
 
       <el-main>
-
         <!--内容区域-->
 
         <router-view></router-view>
-
-
       </el-main>
-
     </el-container>
-
   </el-container>
-
 </template>
 
 <style>
 
-  body {
-    background-color: #F3F3F3;
-  }
+.el-menu-item i{
 
-  .el-header {
-    background-color: #B3C0D1;
-    color: #333;
-    line-height: 60px;
-  }
+  font-size: 18px;
+  margin-right: 8px;
 
-  .el-aside {
-    color: #333;
-  }
+}
 
-  .el-menu-vertical-demo:not(.el-menu--collapse) {
-    width: 220px;
-  }
+
+body {
+  background-color: #f3f3f3;
+}
+
+.el-dropdown-link i {
+  font-size: 24px;
+  color: #e4e2e2;
+  width: 50px;
+  line-height: 60px;
+}
+
+.el-header {
+  background-color: #b3c0d1;
+  color: #333;
+  line-height: 60px;
+}
+
+.el-aside {
+  color: #333;
+}
+
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+  width: 220px;
+}
 </style>
 
 <script>
-  export default {
-    data() {
-      return {
-        isCollapse: false,
-        userName: ""
-      };
+export default {
+  data() {
+    return {
+      isCollapse: false,
+      UpdateDialogVisible: false,
+      userName: localStorage.getItem("username"),
+      setUserInfo: {
+        name: localStorage.getItem("username"),
+        oldPwd: "",
+        newPwd: "",
+      },
+    };
+  },
+  created: function () {},
+  methods: {
+    handleClose(done) {
+      this.$confirm("确认关闭？")
+        .then((_) => {
+          done();
+        })
+        .catch((_) => {});
     },
-    created: function () {  
+    changeLanguage(type) {
+      this.$http
+        .post("ChangeLanguage", {
+          Language: type,
+        })
+        .then((response) => {
+          this.$message({ message: "Switch: " + type, type: "success" });
 
-      if (this.basic.isEmpty(this.$store.state.user.username)) {
-
-        this.$http.get("api/values/getUserInfo").then((response) => {
-
-          if (response.body.code == 0) {
-
-            this.$store.commit('updateUser', response.body.data); 
-          }
-          else {
-            this.$message({ message: "出错了,请重试!", type: 'error' });
-          }
+          this.$http.get(`/static/lang/${type}.json`).then((res) => {
+            this.$store.commit("set_lang", res.body);
+          });
         });
+    }, 
+    updateUserInfo() {
 
-      }
+       if(this.basic.isEmpty(this.setUserInfo.name) || this.basic.isEmpty(this.setUserInfo.oldPwd) || this.basic.isEmpty(this.setUserInfo.newPwd)){
+
+           this.$message({ message: this.$store.state.lang.User_NotNull, type: "warning" });  
+           return;
+
+      }   
+
+      if (this.setUserInfo.oldPwd == this.setUserInfo.newPwd) {
+        
+          this.$message({ message: this.$store.state.lang.User_OldNewPass, type: "warning" });  
+          return;
+
+      }  
+      
+       var username = localStorage.getItem("username");
+
+      this.$http.post("UpdateAccountInfo",{ 
+
+        username:username,
+        newUserName:this.setUserInfo.name,
+        oldPwd:this.setUserInfo.oldPwd,
+        newPwd:this.setUserInfo.newPwd 
+
+      }).then(response => {  
+
+          localStorage.setItem("username",this.setUserInfo.name)
+ 
+          this.$message({ message: this.$store.state.lang.User_UpdateSuccess, type: "success" }); 
+          this.UpdateDialogVisible = false;  
+
+          this.logout();
+
+      });  
 
     },
-    methods: {
-      handleOpen(key, keyPath) {
+    logout() {
 
-      },
-      handleClose(key, keyPath) {
-
-      },
-      changeNavState() {
-        this.isCollapse = !this.isCollapse;
-      }
-    }
-  }
+      localStorage.setItem("token", "");
+      this.$store.commit("set_token", ""); 
+      this.$router.push({ path: "/user/login" });
+    },
+    handleOpen(key, keyPath) {},
+    handleClose(key, keyPath) {},
+    changeNavState() {
+      this.isCollapse = !this.isCollapse;
+    },
+  },
+};
 </script>
