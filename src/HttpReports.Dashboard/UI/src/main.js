@@ -22,6 +22,7 @@ Vue.use(VueResource)
 
 Vue.config.productionTip = false
 
+ 
 
 new Vue({
   el: '#app',
@@ -31,7 +32,6 @@ new Vue({
   created: function () {    
 
     var configUrl = window.location.href.substring(0, window.location.href.indexOf('index.html')) + "config.json";   
-   
 
     setHttpFilter();  
 
