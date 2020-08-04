@@ -103,7 +103,7 @@
           @open="handleOpen"
           @close="handleClose"
           :collapse="isCollapse"
-          style="min-height:100%"
+          style="min-height:860px"
           active-text-color="#409eff"
         >
           <el-menu-item index="/">

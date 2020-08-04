@@ -1,20 +1,12 @@
 <template>
 
-  <div>
+  <div> 
 
-    <el-row>
-      <el-carousel :interval="5000" arrow="always">
-        <el-carousel-item v-for="item in 4" :key="item">
-          <h3 style="text-align:center">title</h3>
-        </el-carousel-item>
-      </el-carousel>
-    </el-row>
-
-    <el-row :gutter="20">
+    <el-row :gutter="20" class="tag">
 
       <el-col :span="6">
 
-        <el-card class="box-card">
+        <el-card class="box-card" >
 
           <i class="el-icon-s-custom icon-rounded pull-left bgc1"></i>
 
@@ -77,36 +69,36 @@
 
     <el-row :gutter="20">
 
-      <el-col :span="18">
+       
+        <el-col :span="8"> 
 
-        <el-col :span="6" v-for="o in 4" :key="o"> 
+          <el-card class="box-card" style="margin-top:0">
 
-          <el-card :body-style="{ padding: '0px' }">
-            <img src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" class="image">
-            <div style="padding: 14px;">
-              <span>好吃的汉堡</span>
-              <div class="bottom clearfix">
-                <time class="time">2018-02-01</time>
-                <el-button type="text" class="button">操作按钮</el-button>
-              </div>
-            </div>
+            <div id="c1" style="height:240px"></div>
+             
           </el-card> 
 
-        </el-col> 
+        </el-col>  
 
-      </el-col>
+        <el-col :span="8"> 
 
-      <el-col :span="6">
-        <el-card class="box-card">
-          <div slot="header" class="clearfix">
-            <span>卡片名称</span>
-            <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
-          </div>
-          <div v-for="o in 10" :key="o" class="text item">
-            {{'列表内容 ' + o }}
-          </div>
-        </el-card>
-      </el-col>
+          <el-card class="box-card" style="margin-top:0">
+
+            <div id="c2" style="height:240px"></div>
+             
+          </el-card> 
+
+        </el-col>  
+
+        <el-col :span="8"> 
+
+          <el-card class="box-card" style="margin-top:0">
+
+            <div id="c3" style="height:240px"></div>
+             
+          </el-card> 
+
+        </el-col>  
 
 
     </el-row> 
@@ -118,6 +110,12 @@
 
 <style>  
 
+
+.tag .box-card{
+
+margin-top: 0;
+
+} 
 
    .el-carousel__item h3 {
     color: #475669;
@@ -174,3 +172,115 @@
     background-color: #f9fafc;
   }
 </style>
+
+
+
+<script>
+
+import { Line } from '@antv/g2plot';
+
+export default {
+  data() {
+    return {
+      
+    };
+  },
+  created: () => {},
+  mounted: () => { 
+const data = [
+  { year: '1991', value: 3 },
+  { year: '1992', value: 4 },
+  { year: '1993', value: 3.5 },
+  { year: '1994', value: 5 },
+  { year: '1995', value: 4.9 },
+  { year: '1996', value: 6 },
+  { year: '1997', value: 7 },
+  { year: '1998', value: 9 },
+  { year: '1999', value: 13 },
+];
+
+const linePlot = new Line(document.getElementById('c1'), {
+  title: {
+    visible: true,
+    text: '带数据点的折线图',
+  },
+  description: {
+    visible: false,
+    text: '将折线图上的每一个数据点显示出来，作为辅助阅读。',
+  },
+  forceFit: true,
+  padding: 'auto',
+  data,
+  xField: 'year',
+  yField: 'value',
+  point: {
+    visible: true,
+  },
+  label: {
+    visible: true,
+    type: 'point',
+  },
+});
+
+linePlot.render(); 
+
+const linePlot2 = new Line(document.getElementById('c2'), {
+  title: {
+    visible: true,
+    text: '带数据点的折线图',
+  },
+  description: {
+    visible: false,
+    text: '将折线图上的每一个数据点显示出来，作为辅助阅读。',
+  },
+  forceFit: true,
+  padding: 'auto',
+  data,
+  xField: 'year',
+  yField: 'value',
+  point: {
+    visible: true,
+  },
+  label: {
+    visible: true,
+    type: 'point',
+  },
+});
+
+linePlot2.render(); 
+
+const linePlot3 = new Line(document.getElementById('c3'), {
+  title: {
+    visible: true,
+    text: '带数据点的折线图',
+  },
+  description: {
+    visible: false,
+    text: '将折线图上的每一个数据点显示出来，作为辅助阅读。',
+  },
+  forceFit: true,
+  padding: 'auto',
+  data,
+  xField: 'year',
+  yField: 'value',
+  point: {
+    visible: true,
+  },
+  label: {
+    visible: true,
+    type: 'point',
+  },
+});
+
+linePlot3.render(); 
+
+
+  },
+  methods: {
+     
+  },
+};
+</script>
+
+
+
