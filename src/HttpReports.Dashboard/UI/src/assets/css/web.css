@@ -105,13 +105,15 @@ body{
   background-color:#2b3852 !important;
 }
 
-.navbar-center i {
+.navbar-center .arrow {
   
   padding: 5px; 
-  color:#dad8d8;
+  color:#fbf8f8;
   font-size: 20px;
   cursor: pointer;
   margin-left: 15px;
+  margin-right: 20px;
+  margin-top: 16px;
 }
 
 .box-card{

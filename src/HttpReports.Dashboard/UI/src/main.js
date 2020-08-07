@@ -8,7 +8,8 @@ import 'element-ui/lib/theme-chalk/index.css';
 import './assets/css/web.css';
 import animate from 'animate.css'
 import VueResource from 'vue-resource' 
-import 'font-awesome/css/font-awesome.min.css'
+import 'font-awesome/css/font-awesome.min.css' 
+
 
 
 // 引入自定义js库
@@ -18,6 +19,7 @@ Vue.prototype.basic = basic
 Vue.use(ElementUI);
 Vue.use(animate)
 Vue.use(VueResource)
+ 
  
 
 Vue.config.productionTip = false

@@ -43,11 +43,74 @@
       </div>
 
       <div class="navbar-center">
-        <i
-          style="margin-top:16px"
+        <i 
           @click="changeNavState"
-          :class="[isCollapse?'el-icon-s-unfold':'el-icon-s-fold']"
-        ></i>
+          :class="[isCollapse?'el-icon-s-unfold arrow':'el-icon-s-fold arrow']"
+        ></i> 
+
+         <!-- <el-select
+              size="mini"
+              style="margin-right:10px"
+              v-model="value"
+              placeholder="请选择"
+              filterable
+            >
+              <el-option
+                v-for="item in options1"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+
+            <el-select
+              size="mini"
+              style="margin-right:10px"
+              v-model="value"
+              placeholder="请选择"
+              filterable
+            >
+              <el-option
+                v-for="item in options1"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+
+            <el-date-picker
+              style="margin-right:10px"
+              size="mini"
+              v-model="value2"
+              type="datetimerange"
+              :picker-options="pickerOptions"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              align="right"
+            ></el-date-picker>
+
+            <el-button
+              size="mini"
+              style="margin-right:20px"
+              type="primary"
+              icon="el-icon-search"
+            >搜索</el-button>
+
+            <el-divider direction="vertical"></el-divider>
+
+            <el-switch style="margin-right:10px" v-model="value1" inactive-text="自动刷新"></el-switch>
+
+            <el-input-number
+              style="width:80px;margin-right:10px"
+              controls-position="right"
+              size="mini"
+              v-model="num"
+              :step="3"
+            ></el-input-number> -->
+
+
+
       </div>
 
       <div class="navbar-right">
@@ -134,9 +197,17 @@
       </el-aside>
 
       <el-main style="padding-top:0">
+
         <el-card class="box-card">
           <div class="block">
-            <el-select size="medium" style="margin-right:10px" v-model="value" placeholder="请选择" filterable>
+
+            <el-select
+              size="medium"
+              style="margin-right:10px"
+              v-model="value"
+              placeholder="请选择"
+              filterable
+            >
               <el-option
                 v-for="item in options1"
                 :key="item.value"
@@ -145,7 +216,13 @@
               ></el-option>
             </el-select>
 
-            <el-select size="medium" style="margin-right:10px" v-model="value" placeholder="请选择" filterable>
+            <el-select
+              size="medium"
+              style="margin-right:10px"
+              v-model="value"
+              placeholder="请选择"
+              filterable
+            >
               <el-option
                 v-for="item in options1"
                 :key="item.value"
@@ -154,7 +231,9 @@
               ></el-option>
             </el-select>
 
-            <el-date-picker style="margin-right:10px" size="medium"
+            <el-date-picker
+              style="margin-right:10px"
+              size="medium"
               v-model="value2"
               type="datetimerange"
               :picker-options="pickerOptions"
@@ -164,16 +243,25 @@
               align="right"
             ></el-date-picker>
 
-            <el-button size="small" style="margin-right:20px" type="primary" icon="el-icon-search">搜索</el-button>
+            <el-button
+              size="small"
+              style="margin-right:20px"
+              type="primary"
+              icon="el-icon-search"
+            >搜索</el-button>
 
             <el-divider direction="vertical"></el-divider>
 
-            <el-switch style="margin-right:10px"
-  v-model="value1" 
-  inactive-text="自动刷新">
-</el-switch>
+            <el-switch style="margin-right:10px" v-model="value1" inactive-text="自动刷新"></el-switch>
 
-<el-input-number style="width:80px;margin-right:10px"  controls-position="right"  size="mini" v-model="num" :step="3"></el-input-number>
+            <el-input-number
+              style="width:80px;margin-right:10px"
+              controls-position="right"
+              size="mini"
+              v-model="num"
+              :step="3"
+            ></el-input-number>
+
 
           </div>
         </el-card>
@@ -230,10 +318,10 @@ export default {
         oldPwd: "",
         newPwd: "",
       },
-      value: '', 
-       value1: true,
-        value2: true,
-         num: 3,
+      value: "",
+      value1: true,
+      value2: true,
+      num: 3,
       options1: [
         {
           value: "选项1",
