@@ -1,506 +1,911 @@
 <template>
-
-  <div> 
-
+  <div>
     <el-row :gutter="20" class="tag">
-
       <el-col :span="6">
-
-        <el-card class="box-card" >
-
+        <el-card class="box-card">
           <i class="el-icon-s-custom icon-rounded pull-left bgc1"></i>
 
           <div class="stats">
-            <h5><strong>452</strong></h5>
-            <span>Total Revenue</span>
+            <h5>
+              <strong>452</strong>
+            </h5>
+            <span>总调用次数</span>
           </div>
-
         </el-card>
-
       </el-col>
 
       <el-col :span="6">
-
         <el-card class="box-card">
-
           <i class="el-icon-s-custom icon-rounded pull-left bgc2"></i>
 
           <div class="stats">
-            <h5><strong>452</strong></h5>
-            <span>Total Revenue</span>
+            <h5>
+              <strong>452</strong>
+            </h5>
+            <span>错误次数</span>
           </div>
-
         </el-card>
-
       </el-col>
 
       <el-col :span="6">
-
         <el-card class="box-card">
-
           <i class="el-icon-s-custom icon-rounded pull-left bgc3"></i>
 
           <div class="stats">
-            <h5><strong>452</strong></h5>
-            <span>Total Revenue</span>
+            <h5>
+              <strong>452</strong>
+            </h5>
+            <span>成功率</span>
           </div>
-
         </el-card>
-
       </el-col>
 
       <el-col :span="6">
-
         <el-card class="box-card">
-
           <i class="el-icon-s-custom icon-rounded pull-left bgc4"></i>
 
           <div class="stats">
-            <h5><strong>452</strong></h5>
-            <span>Total Revenue</span>
+            <h5>
+              <strong>15服务 60实例</strong>
+            </h5>
+            <span>服务和实例</span>
           </div>
-
         </el-card>
-
-
       </el-col>
-
     </el-row>
 
-    <el-row :gutter="20">
+    <el-row class="center-chart" :gutter="20">
+      <el-col :span="8">
+        <el-card class="box-card" style="margin-top:0">
+          <div id="service-call" style="height:280px"></div>
+        </el-card>
+      </el-col>
 
-       
-        <el-col :span="8"> 
+      <el-col :span="8">
+        <el-card class="box-card" style="margin-top:0">
+          <div id="slow-service" style="height:280px"></div>
+        </el-card>
+      </el-col>
 
-          <el-card class="box-card" style="margin-top:0">
+      <el-col :span="8">
+        <el-card class="box-card" style="margin-top:0">
+          <div id="error-service" style="height:280px"></div>
+        </el-card>
+      </el-col>
+    </el-row>
 
-            <div id="c1" style="height:240px"></div>
-             
-          </el-card> 
+    <el-row class="chart-bottom" :gutter="20">
+      <el-col :span="12">
+        <el-card class="box-card" style="margin-top:0">
+          <div id="service-call-line" style="height:280px"></div>
+        </el-card>
+      </el-col>
 
-        </el-col>  
-
-        <el-col :span="8"> 
-
-          <el-card class="box-card" style="margin-top:0">
-
-            <div id="c2" style="height:240px"></div>
-             
-          </el-card> 
-
-        </el-col>  
-
-        <el-col :span="8"> 
-
-          <el-card class="box-card" style="margin-top:0">
-
-            <div id="c3" style="height:240px"></div>
-             
-          </el-card> 
-
-        </el-col>  
-
-
-    </el-row> 
-
-
-     <el-row :gutter="20">
-
-       
-        <el-col :span="12"> 
-
-          <el-card class="box-card" style="margin-top:0">
-
-            <div id="d1" style="height:240px"></div>
-             
-          </el-card> 
-
-        </el-col>  
-
-        <el-col :span="12"> 
-
-          <el-card class="box-card" style="margin-top:0">
-
-            <div id="d2" style="height:240px"></div>
-             
-          </el-card> 
-
-        </el-col>   
-
-
-    </el-row> 
-
-  </div> 
-
-
+      <el-col :span="12">
+        <el-card class="box-card" style="margin-top:0">
+          <div id="service-call-heap" style="height:280px"></div>
+        </el-card>
+      </el-col>
+    </el-row>
+  </div>
 </template>
 
-<style>  
+<style>
+.center-chart .el-card__body {
+  padding: 4px;
+}
 
+.chart-bottom .el-card__body {
+  padding: 4px;
+}
 
-.tag .box-card{
+.tag .box-card {
+  margin-top: 0;
+}
 
-margin-top: 0;
+.el-carousel__item h3 {
+  color: #475669;
+  font-size: 18px;
+  opacity: 0.75;
+  line-height: 300px;
+  margin: 0;
+}
 
-} 
+.el-carousel__item:nth-child(2n) {
+  background-color: #99a9bf;
+}
 
-   .el-carousel__item h3 {
-    color: #475669;
-    font-size: 18px;
-    opacity: 0.75;
-    line-height: 300px;
-    margin: 0;
-  }
-  
-  .el-carousel__item:nth-child(2n) {
-    background-color: #99a9bf;
-  }
-  
-  .el-carousel__item:nth-child(2n+1) {
-    background-color: #d3dce6;
-  }
+.el-carousel__item:nth-child(2n + 1) {
+  background-color: #d3dce6;
+}
 
+.el-row {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
 
-  .el-row {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    &:last-child
+.el-row:last-child {
+  margin-bottom: 0;
+}
 
-  {
-    margin-bottom: 0;
-  }
+.el-col {
+  border-radius: 4px;
+}
 
-  }
+.bg-purple-dark {
+  background: #99a9bf;
+}
 
-  .el-col {
-    border-radius: 4px;
-  }
+.bg-purple {
+  background: #d3dce6;
+}
 
-  .bg-purple-dark {
-    background: #99a9bf;
-  }
+.bg-purple-light {
+  background: #e5e9f2;
+}
 
-  .bg-purple {
-    background: #d3dce6;
-  }
+.grid-content {
+  border-radius: 4px;
+  min-height: 36px;
+  min-height: 220px;
+}
 
-  .bg-purple-light {
-    background: #e5e9f2;
-  }
-
-  .grid-content {
-    border-radius: 4px;
-    min-height: 36px;
-    min-height:220px;
-  }
-
-  .row-bg {
-    padding: 10px 0;
-    background-color: #f9fafc;
-  }
-</style>
-
+.row-bg {
+  padding: 10px 0;
+  background-color: #f9fafc;
+}
+</style> 
 
 
 <script>
-
-import { Line } from '@antv/g2plot';
-import { Chart } from '@antv/g2';
+import { Line } from "@antv/g2plot";
+import { Bar } from "@antv/g2plot";
+import { Chart } from "@antv/g2";
+import { Heatmap } from "@antv/g2plot";
 
 export default {
   data() {
-    return {
-      
-    };
+    return {};
   },
   created: () => {},
-  mounted: () => { 
-const data = [
-  { year: '1991', value: 3 },
-  { year: '1992', value: 4 },
-  { year: '1993', value: 3.5 },
-  { year: '1994', value: 5 },
-  { year: '1995', value: 4.9 },
-  { year: '1996', value: 6 },
-  { year: '1997', value: 7 },
-  { year: '1998', value: 9 },
-  { year: '1999', value: 13 },
-];
-
-const linePlot = new Line(document.getElementById('c1'), {
-  title: {
-    visible: true,
-    text: '带数据点的折线图',
-  },
-  description: {
-    visible: false,
-    text: '将折线图上的每一个数据点显示出来，作为辅助阅读。',
-  },
-  forceFit: true,
-  padding: 'auto',
-  data,
-  xField: 'year',
-  yField: 'value',
-  point: {
-    visible: true,
-  },
-  label: {
-    visible: true,
-    type: 'point',
-  },
-});
-
-linePlot.render(); 
-
-const linePlot2 = new Line(document.getElementById('c2'), {
-  title: {
-    visible: true,
-    text: '带数据点的折线图',
-  },
-  description: {
-    visible: false,
-    text: '将折线图上的每一个数据点显示出来，作为辅助阅读。',
-  },
-  forceFit: true,
-  padding: 'auto',
-  data,
-  xField: 'year',
-  yField: 'value',
-  point: {
-    visible: true,
-  },
-  label: {
-    visible: true,
-    type: 'point',
-  },
-});
-
-linePlot2.render(); 
-
-const linePlot3 = new Line(document.getElementById('c3'), {
-  title: {
-    visible: true,
-    text: '带数据点的折线图',
-  },
-  description: {
-    visible: false,
-    text: '将折线图上的每一个数据点显示出来，作为辅助阅读。',
-  },
-  forceFit: true,
-  padding: 'auto',
-  data,
-  xField: 'year',
-  yField: 'value',
-  point: {
-    visible: true,
-  },
-  label: {
-    visible: true,
-    type: 'point',
-  },
-});
-
-linePlot3.render(); 
- 
- 
- const data3 = [
-  [0, 0, 10],
-  [0, 1, 19],
-  [0, 2, 8],
-  [0, 3, 24],
-  [0, 4, 67],
-  [1, 0, 92],
-  [1, 1, 58],
-  [1, 2, 78],
-  [1, 3, 117],
-  [1, 4, 48],
-  [2, 0, 35],
-  [2, 1, 15],
-  [2, 2, 123],
-  [2, 3, 64],
-  [2, 4, 52],
-  [3, 0, 72],
-  [3, 1, 132],
-  [3, 2, 114],
-  [3, 3, 19],
-  [3, 4, 16],
-  [4, 0, 38],
-  [4, 1, 5],
-  [4, 2, 8],
-  [4, 3, 117],
-  [4, 4, 115],
-  [5, 0, 88],
-  [5, 1, 32],
-  [5, 2, 12],
-  [5, 3, 6],
-  [5, 4, 120],
-  [6, 0, 13],
-  [6, 1, 44],
-  [6, 2, 88],
-  [6, 3, 98],
-  [6, 4, 96],
-  [7, 0, 31],
-  [7, 1, 1],
-  [7, 2, 82],
-  [7, 3, 32],
-  [7, 4, 30],
-  [8, 0, 85],
-  [8, 1, 97],
-  [8, 2, 123],
-  [8, 3, 64],
-  [8, 4, 84],
-  [9, 0, 47],
-  [9, 1, 114],
-  [9, 2, 31],
-  [9, 3, 48],
-  [9, 4, 91],
-  [10, 0, 10],
-  [10, 1, 19],
-  [10, 2, 8],
-  [10, 3, 24],
-  [10, 4, 67],
-  [11, 0, 92],
-  [11, 1, 58],
-  [11, 2, 78],
-  [11, 3, 117],
-  [11, 4, 48],
-  [12, 0, 35],
-  [12, 1, 15],
-  [12, 2, 123],
-  [12, 3, 64],
-  [12, 4, 52],
-  [13, 0, 72],
-  [13, 1, 132],
-  [13, 2, 114],
-  [13, 3, 19],
-  [13, 4, 16],
-  [14, 0, 38],
-  [14, 1, 5],
-  [14, 2, 8],
-  [14, 3, 117],
-  [14, 4, 115],
-  [15, 0, 88],
-  [15, 1, 32],
-  [15, 2, 12],
-  [15, 3, 6],
-  [15, 4, 120],
-  [16, 0, 13],
-  [16, 1, 44],
-  [16, 2, 88],
-  [16, 3, 98],
-  [16, 4, 96],
-  [17, 0, 31],
-  [17, 1, 1],
-  [17, 2, 82],
-  [17, 3, 32],
-  [17, 4, 30],
-  [18, 0, 85],
-  [18, 1, 97],
-  [18, 2, 123],
-  [18, 3, 64],
-  [18, 4, 84],
-  [19, 0, 47],
-  [19, 1, 114],
-  [19, 2, 31],
-  [19, 3, 48],
-  [19, 4, 91],
-];
-
-
-
-const source = data3.map((arr) => {
-  return {
-    name: arr[0],
-    day: arr[1],
-    sales: arr[2],
-  };
-});
-
-const chart = new Chart({
-  container: 'd1',
-  autoFit: true,
-  height: 340,
-});
-
-chart.data(source);
-
-chart.scale('name', {
-  type: 'cat',
-  values: ['21:00', '21:10', '21:20', '21:30', '21:40', '21:50', '22:00', '22:10', 'Tim', 'Laura','Alexander', 'Marie', 'Maximilian', 'Sophia', 'Lukas', 'Maria', 'Leon', 'Anna', 'Tim', 'Laura'],
-});
-chart.scale('day', {
-  type: 'cat',
-  values: ['0-200', '200-400', '400-600', '600-800', '800-1000'],
-});
-chart.scale('sales', {
-  nice: true,
-});
-
-chart.axis('name', {
-  tickLine: null,
-  grid: {
-    alignTick: false,
-    line: {
-      style: {
-        lineWidth: 1,
-        lineDash: null,
-        stroke: '#f0f0f0',
-      },
-    },
-  },
-});
-
-chart.axis('day', {
-  title: null,
-  grid: {
-    alignTick: false,
-    line: {
-      style: {
-        lineWidth: 1,
-        lineDash: null,
-        stroke: '#f0f0f0',
-      },
-    },
-  },
-});
-
-chart.legend(false); 
-
-chart.tooltip({
-  showMarkers: false,
-});
-
-chart
-  .polygon()
-  .position('name*day')
-  .color('sales', '#BAE7FF-#1890FF-#0050B3')
-  .label('sales', {
-    offset: -2,
-    style: {
-      fill: '#fff',
-      shadowBlur: 2,
-      shadowColor: 'rgba(0, 0, 0, .45)',
-    },
-  })
-  .style({
-    lineWidth: 1,
-    stroke: '#fff',
-  });
-
-  chart.interaction('brush-visible');
-
-chart.interaction('element-active');
-
-chart.render(); 
-
-
-
+  mounted: () => {
+    this.a.methods.init_service_call();
+    this.a.methods.init_slow_service();
+    this.a.methods.init_error_service();
+    this.a.methods.init_service_call_line();
+    this.a.methods.init_service_call_heap();
   },
   methods: {
-     
-  },
-}; 
+    init_service_call: () => {
+      const data = [
+        { 地区: "UserService", 销售额: 4684506.442 },
+        { 地区: "OrderService", 销售额: 4137415.0929999948 },
+        { 地区: "Payment", 销售额: 2681567.469000001 },
+        { 地区: "Log", 销售额: 2447301.017000004 },
+        { 地区: "DataService", 销售额: 1303124.508000002 },
+        { 地区: "DataService2", 销售额: 1303124.508000002 },
+      ];
 
+      const barPlot = new Bar(document.getElementById("service-call"), {
+        title: {
+          visible: true,
+          text: "服务调用",
+        },
+        yAxis: {
+          visible: true,
+        },
+        forceFit: true,
+        data: data,
+        xField: "销售额",
+        yField: "地区", 
+        label: {
+          visible: true,
+          adjustPosition: true,
+          formatter: (v) => Math.round(v / 10000),
+          position: "left",
+        },
+        events: {
+          onTitleDblClick: (e) => console.log(e),
+        },
+      });
+
+      barPlot.render();
+    },
+
+    init_slow_service: () => {
+      const data = [
+        { 地区: "UserService", 销售额: 4684506.442 },
+        { 地区: "OrderService", 销售额: 4137415.0929999948 },
+        { 地区: "Payment", 销售额: 2681567.469000001 },
+        { 地区: "Log", 销售额: 2447301.017000004 },
+        { 地区: "DataService", 销售额: 1303124.508000002 },
+        { 地区: "DataService2", 销售额: 1303124.508000002 },
+      ];
+
+      const barPlot = new Bar(document.getElementById("slow-service"), {
+        title: {
+          visible: true,
+          text: "慢服务",
+        },
+        yAxis: {
+          visible: true,
+        },
+        forceFit: true,
+        data,
+        xField: "销售额",
+        yField: "地区",
+        color:['#9599E2'],
+        label: {
+          visible: true,
+          adjustPosition: true,
+          formatter: (v) => Math.round(v / 10000),
+          position: "left",
+        },
+        events: {
+          onTitleDblClick: (e) => console.log(e),
+        },
+      });
+
+      barPlot.render();
+    },
+
+    init_error_service: () => {
+      const data = [
+        { 地区: "UserService", 销售额: 4684506.442 },
+        { 地区: "OrderService", 销售额: 4137415.0929999948 },
+        { 地区: "Payment", 销售额: 2681567.469000001 },
+        { 地区: "Log", 销售额: 2447301.017000004 },
+        { 地区: "DataService", 销售额: 1303124.508000002 },
+        { 地区: "DataService2", 销售额: 1303124.508000002 },
+      ];
+
+      const barPlot = new Bar(document.getElementById("error-service"), {
+        title: {
+          visible: true,
+          text: "服务错误排行",
+        },
+        yAxis: {
+          visible: true,
+        },
+        forceFit: true,
+        data,
+        color: ['#FF6A88'],
+        xField: "销售额",
+        yField: "地区",
+        label: {
+          visible: true,
+          adjustPosition: true,
+          formatter: (v) => Math.round(v / 10000),
+          position: "left",
+        },
+        events: {
+          onTitleDblClick: (e) => console.log(e),
+        },
+      });
+
+      barPlot.render();
+    },
+
+    init_service_call_heap: () => {
+      const data = [
+        { name: "hot dog", value: 70, country: "AD" },
+        { name: "burger", value: 54, country: "AD" },
+        { name: "sandwich", value: 49, country: "AD" },
+        { name: "kebab", value: 4, country: "AD" },
+        { name: "fries", value: 11, country: "AD" },
+        { name: "donut", value: 68, country: "AD" },
+        { name: "junk", value: 49, country: "AD" },
+        { name: "sushi", value: 47, country: "AD" },
+        { name: "ramen", value: 64, country: "AD" },
+        { name: "curry", value: 51, country: "AD" },
+        { name: "udon", value: 6, country: "AD" },
+        { name: "hot dog", value: 3, country: "AI" },
+        { name: "burger", value: 6, country: "AI" },
+        { name: "sandwich", value: 34, country: "AI" },
+        { name: "kebab", value: 72, country: "AI" },
+        { name: "fries", value: 21, country: "AI" },
+        { name: "donut", value: 30, country: "AI" },
+        { name: "junk", value: 99, country: "AI" },
+        { name: "sushi", value: 40, country: "AI" },
+        { name: "ramen", value: 1, country: "AI" },
+        { name: "curry", value: 70, country: "AI" },
+        { name: "udon", value: 58, country: "AI" },
+        { name: "hot dog", value: 83, country: "AO" },
+        { name: "burger", value: 6, country: "AO" },
+        { name: "sandwich", value: 17, country: "AO" },
+        { name: "kebab", value: 40, country: "AO" },
+        { name: "fries", value: 61, country: "AO" },
+        { name: "donut", value: 72, country: "AO" },
+        { name: "junk", value: 61, country: "AO" },
+        { name: "sushi", value: 50, country: "AO" },
+        { name: "ramen", value: 77, country: "AO" },
+        { name: "curry", value: 97, country: "AO" },
+        { name: "udon", value: 17, country: "AO" },
+        { name: "hot dog", value: 15, country: "AQ" },
+        { name: "burger", value: 34, country: "AQ" },
+        { name: "sandwich", value: 26, country: "AQ" },
+        { name: "kebab", value: 80, country: "AQ" },
+        { name: "fries", value: 100, country: "AQ" },
+        { name: "donut", value: 97, country: "AQ" },
+        { name: "junk", value: 34, country: "AQ" },
+        { name: "sushi", value: 81, country: "AQ" },
+        { name: "ramen", value: 25, country: "AQ" },
+        { name: "curry", value: 100, country: "AQ" },
+        { name: "udon", value: 56, country: "AQ" },
+        { name: "hot dog", value: 15, country: "AQ1" },
+        { name: "burger", value: 34, country: "AQ1" },
+        { name: "sandwich", value: 26, country: "AQ1" },
+        { name: "kebab", value: 80, country: "AQ1" },
+        { name: "fries", value: 100, country: "AQ1" },
+        { name: "donut", value: 97, country: "AQ1" },
+        { name: "junk", value: 34, country: "AQ1" },
+        { name: "sushi", value: 81, country: "AQ1" },
+        { name: "ramen", value: 25, country: "AQ1" },
+        { name: "curry", value: 100, country: "AQ1" },
+        { name: "udon", value: 56, country: "AQ1" },
+         { name: "hot dog", value: 15, country: "AQ2" },
+        { name: "burger", value: 34, country: "AQ2" },
+        { name: "sandwich", value: 26, country: "AQ2" },
+        { name: "kebab", value: 80, country: "AQ2" },
+        { name: "fries", value: 100, country: "AQ2" },
+        { name: "donut", value: 97, country: "AQ2" },
+        { name: "junk", value: 34, country: "AQ2" },
+        { name: "sushi", value: 81, country: "AQ2" },
+        { name: "ramen", value: 25, country: "AQ2" },
+        { name: "curry", value: 100, country: "AQ2" },
+        { name: "udon", value: 56, country: "AQ2" },
+          { name: "hot dog", value: 15, country: "AQ3" },
+        { name: "burger", value: 34, country: "AQ3" },
+        { name: "sandwich", value: 26, country: "AQ3" },
+        { name: "kebab", value: 80, country: "AQ3" },
+        { name: "fries", value: 100, country: "AQ3" },
+        { name: "donut", value: 97, country: "AQ3" },
+        { name: "junk", value: 34, country: "AQ3" },
+        { name: "sushi", value: 81, country: "AQ3" },
+        { name: "ramen", value: 25, country: "AQ3" },
+        { name: "curry", value: 560, country: "AQ3" },
+        { name: "udon", value: 56, country: "AQ3" },
+      ];
+
+      var heatmapPlot = new Heatmap(
+        document.getElementById("service-call-heap"),
+        {
+          title: {
+            visible: true,
+            text: "热力图",
+          }, 
+          legend:{
+            visible: false 
+          },
+          label:{
+            visible: false
+          },
+          shapeType:"rect",  
+          data,
+          xField: "name",
+          yField: "country",
+          colorField: "value", 
+          color: ['#F3F3FF','#9599E2']
+        }
+      );
+
+      heatmapPlot.render(); 
+
+    },
+    init_service_call_line: () => {
+      var data = [
+        {
+          name: "China",
+          year: "2000",
+          gdp: 1211346869605.24,
+        },
+        {
+          name: "China",
+          year: "2001",
+          gdp: 1339395718865.3,
+        },
+        {
+          name: "China",
+          year: "2002",
+          gdp: 1470550015081.55,
+        },
+        {
+          name: "China",
+          year: "2003",
+          gdp: 1660287965662.68,
+        },
+        {
+          name: "China",
+          year: "2004",
+          gdp: 1955347004963.27,
+        },
+        {
+          name: "China",
+          year: "2005",
+          gdp: 2285965892360.54,
+        },
+        {
+          name: "China",
+          year: "2006",
+          gdp: 2752131773355.16,
+        },
+        {
+          name: "China",
+          year: "2007",
+          gdp: 3550342425238.25,
+        },
+        {
+          name: "China",
+          year: "2008",
+          gdp: 4594306848763.08,
+        },
+        {
+          name: "China",
+          year: "2009",
+          gdp: 5101702432883.45,
+        },
+        {
+          name: "China",
+          year: "2010",
+          gdp: 6087164527421.24,
+        },
+        {
+          name: "China",
+          year: "2011",
+          gdp: 7551500425597.77,
+        },
+        {
+          name: "China",
+          year: "2012",
+          gdp: 8532230724141.76,
+        },
+        {
+          name: "China",
+          year: "2013",
+          gdp: 9570405758739.79,
+        },
+        {
+          name: "China",
+          year: "2014",
+          gdp: 10438529153237.6,
+        },
+        {
+          name: "China",
+          year: "2015",
+          gdp: 11015542352468.9,
+        },
+        {
+          name: "China",
+          year: "2016",
+          gdp: 11137945669350.6,
+        },
+        {
+          name: "China",
+          year: "2017",
+          gdp: 12143491448186.1,
+        },
+        {
+          name: "China",
+          year: "2018",
+          gdp: 13608151864637.9,
+        },
+        {
+          name: "United States",
+          year: "2000",
+          gdp: 10252345464000,
+        },
+        {
+          name: "United States",
+          year: "2001",
+          gdp: 10581821399000,
+        },
+        {
+          name: "United States",
+          year: "2002",
+          gdp: 10936419054000,
+        },
+        {
+          name: "United States",
+          year: "2003",
+          gdp: 11458243878000,
+        },
+        {
+          name: "United States",
+          year: "2004",
+          gdp: 12213729147000,
+        },
+        {
+          name: "United States",
+          year: "2005",
+          gdp: 13036640229000,
+        },
+        {
+          name: "United States",
+          year: "2006",
+          gdp: 13814611414000,
+        },
+        {
+          name: "United States",
+          year: "2007",
+          gdp: 14451858650000,
+        },
+        {
+          name: "United States",
+          year: "2008",
+          gdp: 14712844084000,
+        },
+        {
+          name: "United States",
+          year: "2009",
+          gdp: 14448933025000,
+        },
+        {
+          name: "United States",
+          year: "2010",
+          gdp: 14992052727000,
+        },
+        {
+          name: "United States",
+          year: "2011",
+          gdp: 15542581104000,
+        },
+        {
+          name: "United States",
+          year: "2012",
+          gdp: 16197007349000,
+        },
+        {
+          name: "United States",
+          year: "2013",
+          gdp: 16784849190000,
+        },
+        {
+          name: "United States",
+          year: "2014",
+          gdp: 17521746534000,
+        },
+        {
+          name: "United States",
+          year: "2015",
+          gdp: 18219297584000,
+        },
+        {
+          name: "United States",
+          year: "2016",
+          gdp: 18707188235000,
+        },
+        {
+          name: "United States",
+          year: "2017",
+          gdp: 19485393853000,
+        },
+        {
+          name: "United States",
+          year: "2018",
+          gdp: 20544343456936.5,
+        },
+        {
+          name: "United Kingdom",
+          year: "2000",
+          gdp: 1657816613708.58,
+        },
+        {
+          name: "United Kingdom",
+          year: "2001",
+          gdp: 1640246149417.01,
+        },
+        {
+          name: "United Kingdom",
+          year: "2002",
+          gdp: 1784473920863.31,
+        },
+        {
+          name: "United Kingdom",
+          year: "2003",
+          gdp: 2053018775510.2,
+        },
+        {
+          name: "United Kingdom",
+          year: "2004",
+          gdp: 2416931526913.22,
+        },
+        {
+          name: "United Kingdom",
+          year: "2005",
+          gdp: 2538680000000,
+        },
+        {
+          name: "United Kingdom",
+          year: "2006",
+          gdp: 2713749770009.2,
+        },
+        {
+          name: "United Kingdom",
+          year: "2007",
+          gdp: 3100882352941.18,
+        },
+        {
+          name: "United Kingdom",
+          year: "2008",
+          gdp: 2922667279411.76,
+        },
+        {
+          name: "United Kingdom",
+          year: "2009",
+          gdp: 2410909799034.12,
+        },
+        {
+          name: "United Kingdom",
+          year: "2010",
+          gdp: 2475244321361.11,
+        },
+        {
+          name: "United Kingdom",
+          year: "2011",
+          gdp: 2659310054646.23,
+        },
+        {
+          name: "United Kingdom",
+          year: "2012",
+          gdp: 2704887678386.72,
+        },
+        {
+          name: "United Kingdom",
+          year: "2013",
+          gdp: 2786022872706.81,
+        },
+        {
+          name: "United Kingdom",
+          year: "2014",
+          gdp: 3063803240208.01,
+        },
+        {
+          name: "United Kingdom",
+          year: "2015",
+          gdp: 2928591002002.51,
+        },
+        {
+          name: "United Kingdom",
+          year: "2016",
+          gdp: 2694283209613.29,
+        },
+        {
+          name: "United Kingdom",
+          year: "2017",
+          gdp: 2666229179958.01,
+        },
+        {
+          name: "United Kingdom",
+          year: "2018",
+          gdp: 2855296731521.96,
+        },
+        {
+          name: "Russian",
+          year: "2000",
+          gdp: 259710142196.94,
+        },
+        {
+          name: "Russian",
+          year: "2001",
+          gdp: 306602070620.5,
+        },
+        {
+          name: "Russian",
+          year: "2002",
+          gdp: 345470494417.86,
+        },
+        {
+          name: "Russian",
+          year: "2003",
+          gdp: 430347770731.79,
+        },
+        {
+          name: "Russian",
+          year: "2004",
+          gdp: 591016690742.8,
+        },
+        {
+          name: "Russian",
+          year: "2005",
+          gdp: 764017107992.39,
+        },
+        {
+          name: "Russian",
+          year: "2006",
+          gdp: 989930542278.7,
+        },
+        {
+          name: "Russian",
+          year: "2007",
+          gdp: 1299705764823.62,
+        },
+        {
+          name: "Russian",
+          year: "2008",
+          gdp: 1660846387624.78,
+        },
+        {
+          name: "Russian",
+          year: "2009",
+          gdp: 1222644282201.86,
+        },
+        {
+          name: "Russian",
+          year: "2010",
+          gdp: 1524917468442.01,
+        },
+        {
+          name: "Russian",
+          year: "2011",
+          gdp: 2051661732059.78,
+        },
+        {
+          name: "Russian",
+          year: "2012",
+          gdp: 2210256976945.38,
+        },
+        {
+          name: "Russian",
+          year: "2013",
+          gdp: 2297128039058.21,
+        },
+        {
+          name: "Russian",
+          year: "2014",
+          gdp: 2059984158438.46,
+        },
+        {
+          name: "Russian",
+          year: "2015",
+          gdp: 1363594369577.82,
+        },
+        {
+          name: "Russian",
+          year: "2016",
+          gdp: 1282723881134.01,
+        },
+        {
+          name: "Russian",
+          year: "2017",
+          gdp: 1578624060588.26,
+        },
+        {
+          name: "Russian",
+          year: "2018",
+          gdp: 1657554647149.87,
+        },
+        {
+          name: "Japan",
+          year: "2000",
+          gdp: 4887519660744.86,
+        },
+        {
+          name: "Japan",
+          year: "2001",
+          gdp: 4303544259842.72,
+        },
+        {
+          name: "Japan",
+          year: "2002",
+          gdp: 4115116279069.77,
+        },
+        {
+          name: "Japan",
+          year: "2003",
+          gdp: 4445658071221.86,
+        },
+        {
+          name: "Japan",
+          year: "2004",
+          gdp: 4815148854362.11,
+        },
+        {
+          name: "Japan",
+          year: "2005",
+          gdp: 4755410630912.14,
+        },
+        {
+          name: "Japan",
+          year: "2006",
+          gdp: 4530377224970.4,
+        },
+        {
+          name: "Japan",
+          year: "2007",
+          gdp: 4515264514430.57,
+        },
+        {
+          name: "Japan",
+          year: "2008",
+          gdp: 5037908465114.48,
+        },
+        {
+          name: "Japan",
+          year: "2009",
+          gdp: 5231382674593.7,
+        },
+        {
+          name: "Japan",
+          year: "2010",
+          gdp: 5700098114744.41,
+        },
+        {
+          name: "Japan",
+          year: "2011",
+          gdp: 6157459594823.72,
+        },
+        {
+          name: "Japan",
+          year: "2012",
+          gdp: 6203213121334.12,
+        },
+        {
+          name: "Japan",
+          year: "2013",
+          gdp: 5155717056270.83,
+        },
+        {
+          name: "Japan",
+          year: "2014",
+          gdp: 4850413536037.84,
+        },
+        {
+          name: "Japan",
+          year: "2015",
+          gdp: 4389475622588.97,
+        },
+        {
+          name: "Japan",
+          year: "2016",
+          gdp: 4926667087367.51,
+        },
+        {
+          name: "Japan",
+          year: "2017",
+          gdp: 4859950558538.97,
+        },
+        {
+          name: "Japan",
+          year: "2018",
+          gdp: 4971323079771.87,
+        },
+      ];
+
+      const linePlot = new Line(document.getElementById("service-call-line"), {
+        title: {
+          visible: true,
+          text: "服务调用",
+        },
+        padding: [20, 100, 30, 80],
+        forceFit: true,
+        data,
+        xField: "year",
+        yField: "gdp",
+        seriesField: "name",
+        xAxis: {
+          type: "dateTime",
+          label: {
+            visible: true,
+            autoHide: true,
+          },
+        },
+        yAxis: {
+          formatter: (v) => `${(v / 10e8).toFixed(1)} B`,
+        },
+        legend: {
+          visible: false,
+        },
+        label: {
+          visible: true,
+          type: "line",
+        }, 
+        smooth: true,
+      });
+
+      linePlot.render();
+    },
+  },
+};
 </script>
 
 

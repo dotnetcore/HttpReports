@@ -43,12 +43,12 @@
       </div>
 
       <div class="navbar-center">
-        <i 
+        <i
           @click="changeNavState"
           :class="[isCollapse?'el-icon-s-unfold arrow':'el-icon-s-fold arrow']"
-        ></i> 
+        ></i>
 
-         <!-- <el-select
+        <!-- <el-select
               size="mini"
               style="margin-right:10px"
               v-model="value"
@@ -107,14 +107,17 @@
               size="mini"
               v-model="num"
               :step="3"
-            ></el-input-number> -->
-
-
-
+        ></el-input-number>-->
       </div>
 
       <div class="navbar-right">
         <div class="nav-item">
+          <el-dropdown>
+            <span class="el-dropdown-link nav-user">
+              <i style="font-size:26px" class="el-icon-rank" @click="handleFullScreen"></i>
+            </span>
+          </el-dropdown>
+
           <el-dropdown>
             <span class="el-dropdown-link nav-user">
               <i class="fa fa-language"></i>
@@ -197,10 +200,8 @@
       </el-aside>
 
       <el-main style="padding-top:0">
-
         <el-card class="box-card">
           <div class="block">
-
             <el-select
               size="medium"
               style="margin-right:10px"
@@ -261,8 +262,6 @@
               v-model="num"
               :step="3"
             ></el-input-number>
-
-
           </div>
         </el-card>
 
@@ -310,6 +309,7 @@ body {
 export default {
   data() {
     return {
+      fullscreen: false,
       isCollapse: false,
       UpdateDialogVisible: false,
       userName: localStorage.getItem("username"),
@@ -381,6 +381,33 @@ export default {
   },
   created: function () {},
   methods: {
+    handleFullScreen() {
+      let element = document.documentElement;
+      if (this.fullscreen) {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitCancelFullScreen) {
+          document.webkitCancelFullScreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+      } else {
+        if (element.requestFullscreen) {
+          element.requestFullscreen();
+        } else if (element.webkitRequestFullScreen) {
+          element.webkitRequestFullScreen();
+        } else if (element.mozRequestFullScreen) {
+          element.mozRequestFullScreen();
+        } else if (element.msRequestFullscreen) {
+          // IE11
+          element.msRequestFullscreen();
+        }
+      }
+      this.fullscreen = !this.fullscreen;
+    },
+
     handleClose(done) {
       this.$confirm("确认关闭？")
         .then((_) => {

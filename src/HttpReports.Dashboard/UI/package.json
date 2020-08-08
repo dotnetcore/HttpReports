@@ -15,6 +15,7 @@
     "animate.css": "^4.1.0",
     "element-ui": "^2.13.2",
     "font-awesome": "^4.7.0",
+    "screenfull": "^5.0.2",
     "vue": "^2.6.11",
     "vue-awesome": "^4.1.0",
     "vue-resource": "^1.5.1",
