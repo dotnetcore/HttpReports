@@ -1,17 +1,14 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Index from '@/view/Index'
-import Buttons from '@/view/user/buttons'
-import Form from '@/view/User/form'
-import Main from '@/view/main/index'
-import Animation from '@/view/user/animation'
-import Login from '@/view/user/login' 
-import Store from '@/view/user/store'
 
+import Login from '@/view/login'
+import Index from '@/view/index'
+import Basic from '@/view/basic'
+import Service from '@/view/service'
+import Detail from '@/view/detail'
+import Monitor from '@/view/monitor'   
 
-
-Vue.use(Router)
-
+Vue.use(Router) 
 
 //push 
 const VueRouterPush = Router.prototype.push 
@@ -35,32 +32,27 @@ export default new Router({
       children: [
         {
           path: '/',
-          component: Main
+          component: Basic
+        },  
+        {
+          path: '/service',
+          component: Service
         },
         {
-          path: '/index/buttons',
-          component: Buttons
+          path: '/detail',
+          component: Detail
         },
         {
-          path: '/index/form',
-          component: Form
-        },
-        {
-          path: '/index/animation',
-          component: Animation
-        },
-        {
-          path: '/user/store',
-          name: 'store',
-          component: Store
-        }
-      ]
+          path: '/monitor',
+          component: Monitor
+        } 
+      ] 
     },
     {
-      path: '/user/login',
+      path: '/login',
       name: 'login',
       component: Login
-    } 
+    }, 
   ]
 })
 

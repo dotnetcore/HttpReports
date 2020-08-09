@@ -54,7 +54,7 @@ function loadState() {
 
     if (basic.isEmpty(token)) {   
 
-        router.push({ path: '/user/login' })  
+        router.push({ path: '/login' })  
     }
     else {
       store.commit('set_token',token);
@@ -104,7 +104,7 @@ function setHttpFilter() {
 
         if (response.status == 401) { 
 
-          router.push({ path: '/user/login' })  
+          router.push({ path: '/login' })  
           return;
         } 
 
@@ -124,7 +124,7 @@ function setHttpFilter() {
 
 router.beforeEach((to, from, next) => { 
  
-  if(to.path != '/user/login'){
+  if(to.path != '/login'){
     loadState(); 
   } 
 

@@ -77,13 +77,13 @@
     <el-row class="chart-bottom" :gutter="20">
       <el-col :span="12">
         <el-card class="box-card" style="margin-top:0">
-          <div id="service-call-line" style="height:280px"></div>
+          <div id="service-call-line" style="height:270px"></div>
         </el-card>
       </el-col>
 
       <el-col :span="12">
         <el-card class="box-card" style="margin-top:0">
-          <div id="service-call-heap" style="height:280px"></div>
+          <div id="service-call-heap" style="height:270px"></div>
         </el-card>
       </el-col>
     </el-row>
@@ -178,12 +178,12 @@ export default {
   methods: {
     init_service_call: () => {
       const data = [
-        { 地区: "UserService", 销售额: 4684506.442 },
-        { 地区: "OrderService", 销售额: 4137415.0929999948 },
-        { 地区: "Payment", 销售额: 2681567.469000001 },
-        { 地区: "Log", 销售额: 2447301.017000004 },
-        { 地区: "DataService", 销售额: 1303124.508000002 },
-        { 地区: "DataService2", 销售额: 1303124.508000002 },
+        { 地区: "UserService", data: 4684506.442 },
+        { 地区: "OrderService", data: 4137415.0929999948 },
+        { 地区: "Payment", data: 2681567.469000001 },
+        { 地区: "Log", data: 2447301.017000004 },
+        { 地区: "DataService", data: 1303124.508000002 },
+        { 地区: "DataService2", data: 1303124.508000002 },
       ];
 
       const barPlot = new Bar(document.getElementById("service-call"), {
@@ -196,7 +196,7 @@ export default {
         },
         forceFit: true,
         data: data,
-        xField: "销售额",
+        xField: "data",
         yField: "地区", 
         label: {
           visible: true,
@@ -214,12 +214,12 @@ export default {
 
     init_slow_service: () => {
       const data = [
-        { 地区: "UserService", 销售额: 4684506.442 },
-        { 地区: "OrderService", 销售额: 4137415.0929999948 },
-        { 地区: "Payment", 销售额: 2681567.469000001 },
-        { 地区: "Log", 销售额: 2447301.017000004 },
-        { 地区: "DataService", 销售额: 1303124.508000002 },
-        { 地区: "DataService2", 销售额: 1303124.508000002 },
+        { 地区: "UserService", data: 4684506.442 },
+        { 地区: "OrderService", data: 4137415.0929999948 },
+        { 地区: "Payment", data: 2681567.469000001 },
+        { 地区: "Log", data: 2447301.017000004 },
+        { 地区: "DataService", data: 1303124.508000002 },
+        { 地区: "DataService2", data: 1303124.508000002 },
       ];
 
       const barPlot = new Bar(document.getElementById("slow-service"), {
@@ -232,7 +232,7 @@ export default {
         },
         forceFit: true,
         data,
-        xField: "销售额",
+        xField: "data",
         yField: "地区",
         color:['#9599E2'],
         label: {
@@ -251,12 +251,12 @@ export default {
 
     init_error_service: () => {
       const data = [
-        { 地区: "UserService", 销售额: 4684506.442 },
-        { 地区: "OrderService", 销售额: 4137415.0929999948 },
-        { 地区: "Payment", 销售额: 2681567.469000001 },
-        { 地区: "Log", 销售额: 2447301.017000004 },
-        { 地区: "DataService", 销售额: 1303124.508000002 },
-        { 地区: "DataService2", 销售额: 1303124.508000002 },
+        { 地区: "UserService", data: 4684506.442 },
+        { 地区: "OrderService", data: 4137415.0929999948 },
+        { 地区: "Payment", data: 2681567.469000001 },
+        { 地区: "Log", data: 2447301.017000004 },
+        { 地区: "DataService", data: 1303124.508000002 },
+        { 地区: "DataService2", data: 1303124.508000002 },
       ];
 
       const barPlot = new Bar(document.getElementById("error-service"), {
@@ -270,7 +270,7 @@ export default {
         forceFit: true,
         data,
         color: ['#FF6A88'],
-        xField: "销售额",
+        xField: "data",
         yField: "地区",
         label: {
           visible: true,
@@ -354,7 +354,7 @@ export default {
         { name: "ramen", value: 25, country: "AQ2" },
         { name: "curry", value: 100, country: "AQ2" },
         { name: "udon", value: 56, country: "AQ2" },
-          { name: "hot dog", value: 15, country: "AQ3" },
+        { name: "hot dog", value: 15, country: "AQ3" },
         { name: "burger", value: 34, country: "AQ3" },
         { name: "sandwich", value: 26, country: "AQ3" },
         { name: "kebab", value: 80, country: "AQ3" },
@@ -363,7 +363,7 @@ export default {
         { name: "junk", value: 34, country: "AQ3" },
         { name: "sushi", value: 81, country: "AQ3" },
         { name: "ramen", value: 25, country: "AQ3" },
-        { name: "curry", value: 560, country: "AQ3" },
+        { name: "curry", value: 160, country: "AQ3" },
         { name: "udon", value: 56, country: "AQ3" },
       ];
 

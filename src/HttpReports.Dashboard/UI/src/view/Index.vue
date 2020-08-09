@@ -46,68 +46,8 @@
         <i
           @click="changeNavState"
           :class="[isCollapse?'el-icon-s-unfold arrow':'el-icon-s-fold arrow']"
-        ></i>
+        ></i> 
 
-        <!-- <el-select
-              size="mini"
-              style="margin-right:10px"
-              v-model="value"
-              placeholder="请选择"
-              filterable
-            >
-              <el-option
-                v-for="item in options1"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-
-            <el-select
-              size="mini"
-              style="margin-right:10px"
-              v-model="value"
-              placeholder="请选择"
-              filterable
-            >
-              <el-option
-                v-for="item in options1"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-
-            <el-date-picker
-              style="margin-right:10px"
-              size="mini"
-              v-model="value2"
-              type="datetimerange"
-              :picker-options="pickerOptions"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              align="right"
-            ></el-date-picker>
-
-            <el-button
-              size="mini"
-              style="margin-right:20px"
-              type="primary"
-              icon="el-icon-search"
-            >搜索</el-button>
-
-            <el-divider direction="vertical"></el-divider>
-
-            <el-switch style="margin-right:10px" v-model="value1" inactive-text="自动刷新"></el-switch>
-
-            <el-input-number
-              style="width:80px;margin-right:10px"
-              controls-position="right"
-              size="mini"
-              v-model="num"
-              :step="3"
-        ></el-input-number>-->
       </div>
 
       <div class="navbar-right">
@@ -177,25 +117,21 @@
             <span slot="title">{{ this.$store.state.lang.Menu_BasicData }}</span>
           </el-menu-item>
 
-          <el-menu-item index="/index/buttons" route="/index/buttons">
+          <el-menu-item index="/service">
             <i class="fa fa-bar-chart-o"></i>
-            <span slot="title">{{ this.$store.state.lang.Menu_TrendData }}</span>
+            <span slot="title">{{ this.$store.state.lang.ServiceTag }}</span>
           </el-menu-item>
 
-          <el-menu-item index="/d">
+          <el-menu-item index="/detail">
             <i class="fa fa-bars"></i>
             <span slot="title">{{ this.$store.state.lang.Menu_RequestList }}</span>
           </el-menu-item>
 
-          <el-menu-item index="/dd">
+          <el-menu-item index="/monitor">
             <i class="fa fa-rocket"></i>
             <span slot="title">{{ this.$store.state.lang.Menu_Monitor }}</span>
           </el-menu-item>
-
-          <el-menu-item index="/ddd">
-            <i class="fa fa-flask"></i>
-            <span slot="title">{{ this.$store.state.lang.Performance }}</span>
-          </el-menu-item>
+ 
         </el-menu>
       </el-aside>
 
@@ -242,15 +178,8 @@
               start-placeholder="开始日期"
               end-placeholder="结束日期"
               align="right"
-            ></el-date-picker>
-
-            <el-button
-              size="small"
-              style="margin-right:20px"
-              type="primary"
-              icon="el-icon-search"
-            >搜索</el-button>
-
+            ></el-date-picker> 
+           
             <el-divider direction="vertical"></el-divider>
 
             <el-switch style="margin-right:10px" v-model="value1" inactive-text="自动刷新"></el-switch>
@@ -473,7 +402,7 @@ export default {
     logout() {
       localStorage.setItem("token", "");
       this.$store.commit("set_token", "");
-      this.$router.push({ path: "/user/login" });
+      this.$router.push({ path: "/user/login"})
     },
     handleOpen(key, keyPath) {},
     handleClose(key, keyPath) {},
