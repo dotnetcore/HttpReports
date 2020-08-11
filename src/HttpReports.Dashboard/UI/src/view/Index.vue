@@ -127,7 +127,7 @@
             <span slot="title">{{ this.$store.state.lang.Menu_RequestList }}</span>
           </el-menu-item>
 
-          <el-menu-item index="/monitor">
+          <el-menu-item index="/alarm">
             <i class="fa fa-rocket"></i>
             <span slot="title">{{ this.$store.state.lang.Menu_Monitor }}</span>
           </el-menu-item>

@@ -6,7 +6,7 @@ import Index from '@/view/index'
 import Basic from '@/view/basic'
 import Service from '@/view/service'
 import Detail from '@/view/detail'
-import Monitor from '@/view/monitor'   
+import Alarm from '@/view/alarm'   
 
 Vue.use(Router) 
 
@@ -43,8 +43,8 @@ export default new Router({
           component: Detail
         },
         {
-          path: '/monitor',
-          component: Monitor
+          path: '/alarm',
+          component: Alarm
         } 
       ] 
     },

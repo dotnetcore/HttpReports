@@ -9,6 +9,8 @@ import './assets/css/web.css';
 import animate from 'animate.css'
 import VueResource from 'vue-resource' 
 import 'font-awesome/css/font-awesome.min.css' 
+import VueParticles from 'vue-particles'
+
 
 
 
@@ -19,6 +21,7 @@ Vue.prototype.basic = basic
 Vue.use(ElementUI);
 Vue.use(animate)
 Vue.use(VueResource)
+Vue.use(VueParticles)
  
  
 
