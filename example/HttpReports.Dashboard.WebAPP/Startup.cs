@@ -21,15 +21,30 @@ namespace HttpReports.Dashboard.WebAPP
         public void ConfigureServices(IServiceCollection services) 
         { 
             services.AddHttpReports().UseSQLServerStorage(); 
-            services.AddHttpReportsDashboard().UseSQLServerStorage();  
- 
+            services.AddHttpReportsDashboard().UseSQLServerStorage();
+
+
+
+            services.AddCors(c =>
+            { 
+                c.AddPolicy("Policy", policy =>
+                {
+                    policy.WithOrigins("http://localhost:8080").AllowAnyHeader().AllowAnyMethod(); 
+
+                });
+            });
+
+
         }
 
       
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {     
+        {
+            app.UseCors("Policy");
 
-            app.UseHttpReports();  
+
+            app.UseHttpReports();
+            app.UseHttpReportsDashboard();
 
             if (env.IsDevelopment())
             {

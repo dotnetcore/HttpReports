@@ -14,17 +14,23 @@ using Org.BouncyCastle.Asn1.X509.Qualified;
 using HttpReports.Dashboard.Implements;
 using Quartz.Logging;
 using Microsoft.Extensions.Logging;
+using HttpReports.Dashboard.Services;
+using System.Net;
+using Org.BouncyCastle.Utilities.IO;
 
 namespace HttpReports.Dashboard
 {
     public class DashboardMiddleware
     {
         private readonly RequestDelegate _next;
+
+        private IAuthService _authService;
        
 
-        public DashboardMiddleware(RequestDelegate next)
+        public DashboardMiddleware(RequestDelegate next, IAuthService authService)
         {
-            _next = next; 
+            _next = next;
+            _authService = authService;
         }
 
 
@@ -79,7 +85,18 @@ namespace HttpReports.Dashboard
 
 
                 //Authorization
-                await AuthorizeHelper.AuthorizeAsync(httpContext, handle, router);
+                await AuthorizeHelper.AuthorizeAsync(httpContext, handle, router); 
+
+
+                // VaildToken
+                if (!_authService.ValidToken(httpContext,handle, router))
+                {
+                    httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+
+                    await httpContext.Response.WriteAsync("Unauthorized");
+
+                    return; 
+                }   
 
                 handle.Context = DashboardContext;
 

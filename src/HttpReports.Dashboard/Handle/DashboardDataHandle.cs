@@ -33,15 +33,18 @@ namespace HttpReports.Dashboard.Handle
         private readonly ScheduleService _scheduleService; 
 
         private readonly LocalizeService _localizeService;  
-        private Localize _lang => _localizeService.Current;
+        private Localize _lang => _localizeService.Current; 
+
+        private IAuthService _authService;
 
 
-        public DashboardDataHandle(IServiceProvider serviceProvider, IHttpReportsStorage storage, MonitorService monitorService, ScheduleService scheduleService,LocalizeService localizeService) : base(serviceProvider)
+        public DashboardDataHandle(IServiceProvider serviceProvider, IAuthService authService, IHttpReportsStorage storage, MonitorService monitorService, ScheduleService scheduleService,LocalizeService localizeService) : base(serviceProvider)
         {
             _storage = storage;
             _monitorService = monitorService;
             _scheduleService = scheduleService; 
-            _localizeService = localizeService; 
+            _localizeService = localizeService;
+            _authService = authService;
         }
 
         public async Task<string> GetServiceInstance()
@@ -427,6 +430,16 @@ namespace HttpReports.Dashboard.Handle
             return Json(new HttpResultEntity(1, "ok", new { time, value }));
         } 
 
+
+        [AllowAnonymous]
+        public async Task<string> GetLanguage()
+        {
+            var lang = await _storage.GetSysConfig(BasicConfig.Language);
+
+            return Json(new HttpResultEntity(1, "ok", lang ));
+        } 
+
+       
         public async Task<string> ChangeLanguage(ChangeLanguageRequest request)
         { 
             await _localizeService.SetLanguageAsync(request.Language); 
@@ -597,6 +610,21 @@ namespace HttpReports.Dashboard.Handle
 
             return Json(new HttpResultEntity(1, _lang.Login_Success, null));
         }
+
+
+        [AllowAnonymous]
+        public async Task<string> UserLogin(SysUser user)
+        {
+            var model = await _storage.CheckLogin(user.UserName.Trim(), user.Password.Trim().MD5());
+
+            if (model == null)
+                return Json(new HttpResultEntity(-1, _lang.Login_UserOrPassError, null));
+
+            var token = _authService.BuildToken(); 
+
+            return Json(new HttpResultEntity(1, _lang.Login_Success,token));
+        }  
+
 
         public async Task<string> UpdateAccountInfo(UpdateAccountRequest request)
         {

@@ -32,7 +32,11 @@ namespace HttpReports.Core.Config
 
         public const string ActiveSpanId = "HttpReports.Trace.Span.Id";
 
-        public const string ActiveParentSpanId = "HttpReports.Trace.ParentSpan.Id"; 
+        public const string ActiveParentSpanId = "HttpReports.Trace.ParentSpan.Id";
+
+
+        public const string AuthToken = "HttpReports.Auth.Token";
+
 
         public const string ALLTag = "ALL";
 
