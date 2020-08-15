@@ -33,7 +33,7 @@ body {
   text-align: center; 
   background-color: #3d4148;
   position:relative;
-  box-shadow: 16px 16px 28px #161e2f;
+  box-shadow: 28px 28px 28px #161e2f;
   z-index: 10;
 
 } 
@@ -54,6 +54,7 @@ color: #FFF;
   line-height: 1.2;
   color: #FFFFFF;
   margin-bottom: 60px;
+  font-weight: 500;
 }
 
 .el-input__inner {
@@ -127,15 +128,15 @@ height:80px;
 
       <h3 class="logo-title">HttpReports</h3>
 
-      <p>用户名</p>
+      <p>{{ this.$store.state.lang.Login_UserName }}</p>
 
-      <el-input size="medium" v-model="username" placeholder="请输入用户名"></el-input>
+      <el-input size="medium" v-model="username" ></el-input>
 
-       <p>密码</p>
+       <p>{{ this.$store.state.lang.Login_Password }}</p>
 
-      <el-input  size="medium"  type="password" v-model="password" placeholder="请输入密码"></el-input>
+      <el-input  size="medium"  type="password" v-model="password" ></el-input>
 
-      <button size="small" @click="submit" class="btn login-form__btn submit w-100">登 录</button>
+      <button size="small" @click="submit" class="btn login-form__btn submit w-100">{{ this.$store.state.lang.Login_Button }}</button>
     </div>
   </div>
 </template>   

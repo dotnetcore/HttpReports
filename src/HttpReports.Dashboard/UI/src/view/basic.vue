@@ -33,9 +33,9 @@
 
           <div class="stats">
             <h5>
-              <strong>452</strong>
+              <strong>50</strong>
             </h5>
-            <span>成功率</span>
+            <span>服务</span>
           </div>
         </el-card>
       </el-col>
@@ -46,9 +46,9 @@
 
           <div class="stats">
             <h5>
-              <strong>15服务 60实例</strong>
+              <strong>360</strong>
             </h5>
-            <span>服务和实例</span>
+            <span>实例</span>
           </div>
         </el-card>
       </el-col>
@@ -162,54 +162,98 @@ import { Line } from "@antv/g2plot";
 import { Bar } from "@antv/g2plot";
 import { Chart } from "@antv/g2";
 import { Heatmap } from "@antv/g2plot";
+import Index from "./index";
+import { mapState } from "vuex";
 
 export default {
   data() {
-    return {};
+    return {
+      service_call_chart: null,
+    };
   },
   created: () => {},
-  mounted: () => {
-    this.a.methods.init_service_call();
-    this.a.methods.init_slow_service();
-    this.a.methods.init_error_service();
-    this.a.methods.init_service_call_line();
-    this.a.methods.init_service_call_heap();
+  computed: mapState({
+    query: (state) => state.query,
+  }),
+  watch: {
+    query(newVal, oldVal) {
+      this.load_service_call();
+    },
   },
-  methods: {
-    init_service_call: () => {
-      const data = [
-        { 地区: "UserService", data: 4684506.442 },
-        { 地区: "OrderService", data: 4137415.0929999948 },
-        { 地区: "Payment", data: 2681567.469000001 },
-        { 地区: "Log", data: 2447301.017000004 },
-        { 地区: "DataService", data: 1303124.508000002 },
-        { 地区: "DataService2", data: 1303124.508000002 },
-      ];
+  mounted() {
 
-      const barPlot = new Bar(document.getElementById("service-call"), {
-        title: {
-          visible: true,
-          text: "服务调用",
-        },
-        yAxis: {
-          visible: true,
-        },
-        forceFit: true,
-        data: data,
-        xField: "data",
-        yField: "地区", 
-        label: {
-          visible: true,
-          adjustPosition: true,
-          formatter: (v) => Math.round(v / 10000),
-          position: "left",
-        },
-        events: {
-          onTitleDblClick: (e) => console.log(e),
-        },
-      });
 
-      barPlot.render();
+
+    this.load_service_call();
+    this.init_slow_service();
+    this.init_error_service();
+    this.init_service_call_line();
+    this.init_service_call_heap();
+  },
+  methods: { 
+
+    load_basic_data(){  
+
+      
+
+
+
+    }, 
+
+    load_service_call() {
+
+      var source = [
+        {
+          地区: "UserService2",
+          data:
+            10684506.442 +
+            Math.floor(Math.random() * (5681567 - 1681567 + 1)) +
+            1681567,
+        },
+        { 地区: "OrderService2", data: 937415.0929999948 },
+        { 地区: "Payment1", data: 8681567.469000001 },
+        {
+          地区: "Log2",
+          data:
+            7447301.017000004 +
+            Math.floor(Math.random() * (5681567 - 1681567 + 1)) +
+            1681567,
+        },
+        { 地区: "DataService", data: 6303124.508000002 },
+        { 地区: "DataService2", data: 5303124.508000002 },
+      ]; 
+ 
+      if (this.service_call_chart == null) {
+        this.service_call_chart = new Bar(
+          document.getElementById("service-call"),
+          {
+            title: {
+              visible: true,
+              text: "服务调用",
+            },
+            yAxis: {
+              visible: true,
+            },
+            forceFit: true,
+            data: source,
+            xField: "data",
+            yField: "地区",
+            label: {
+              visible: true,
+              adjustPosition: true,
+              formatter: (v) => v,
+              position: "left",
+            },
+            events: {
+              onTitleDblClick: (e) => console.log(e),
+            },
+          }
+        );
+
+        this.service_call_chart.render();
+      } else {
+        this.service_call_chart.changeData(source);
+      }
     },
 
     init_slow_service: () => {
@@ -234,7 +278,7 @@ export default {
         data,
         xField: "data",
         yField: "地区",
-        color:['#9599E2'],
+        color: ["#9599E2"],
         label: {
           visible: true,
           adjustPosition: true,
@@ -269,7 +313,7 @@ export default {
         },
         forceFit: true,
         data,
-        color: ['#FF6A88'],
+        color: ["#FF6A88"],
         xField: "data",
         yField: "地区",
         label: {
@@ -343,7 +387,7 @@ export default {
         { name: "ramen", value: 25, country: "AQ1" },
         { name: "curry", value: 100, country: "AQ1" },
         { name: "udon", value: 56, country: "AQ1" },
-         { name: "hot dog", value: 15, country: "AQ2" },
+        { name: "hot dog", value: 15, country: "AQ2" },
         { name: "burger", value: 34, country: "AQ2" },
         { name: "sandwich", value: 26, country: "AQ2" },
         { name: "kebab", value: 80, country: "AQ2" },
@@ -373,24 +417,23 @@ export default {
           title: {
             visible: true,
             text: "热力图",
-          }, 
-          legend:{
-            visible: false 
           },
-          label:{
-            visible: false
+          legend: {
+            visible: false,
           },
-          shapeType:"rect",  
+          label: {
+            visible: false,
+          },
+          shapeType: "rect",
           data,
           xField: "name",
           yField: "country",
-          colorField: "value", 
-          color: ['#F3F3FF','#9599E2']
+          colorField: "value",
+          color: ["#F3F3FF", "#9599E2"],
         }
       );
 
-      heatmapPlot.render(); 
-
+      heatmapPlot.render();
     },
     init_service_call_line: () => {
       var data = [
@@ -898,7 +941,7 @@ export default {
         label: {
           visible: true,
           type: "line",
-        }, 
+        },
         smooth: true,
       });
 

@@ -19,6 +19,7 @@
     "screenfull": "^5.0.2",
     "vue": "^2.6.11",
     "vue-awesome": "^4.1.0",
+    "vue-i18n": "^8.21.0",
     "vue-particles": "^1.0.9",
     "vue-resource": "^1.5.1",
     "vue-router": "^3.0.1",

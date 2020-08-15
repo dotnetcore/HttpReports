@@ -83,6 +83,7 @@
 </style>
 
 <script>
+
 import { Line } from "@antv/g2plot";
 import { Bar } from "@antv/g2plot";
 import { Chart } from "@antv/g2";

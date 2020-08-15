@@ -46,17 +46,14 @@
         <i
           @click="changeNavState"
           :class="[isCollapse?'el-icon-s-unfold arrow':'el-icon-s-fold arrow']"
-        ></i> 
-
+        ></i>
       </div>
 
       <div class="navbar-right">
         <div class="nav-item">
-          <el-dropdown>
-            <span class="el-dropdown-link nav-user">
-              <i style="font-size:26px" class="el-icon-rank" @click="handleFullScreen"></i>
-            </span>
-          </el-dropdown>
+          <span class="el-dropdown-link nav-user">
+            <i style="font-size:26px" class="el-icon-rank" @click="handleFullScreen"></i>
+          </span>
 
           <el-dropdown>
             <span class="el-dropdown-link nav-user">
@@ -131,7 +128,6 @@
             <i class="fa fa-rocket"></i>
             <span slot="title">{{ this.$store.state.lang.Menu_Monitor }}</span>
           </el-menu-item>
- 
         </el-menu>
       </el-aside>
 
@@ -141,12 +137,13 @@
             <el-select
               size="medium"
               style="margin-right:10px"
-              v-model="value"
+              v-model="select_service"
               placeholder="请选择"
               filterable
+              @change="serviceChange"
             >
               <el-option
-                v-for="item in options1"
+                v-for="item in service"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -156,12 +153,13 @@
             <el-select
               size="medium"
               style="margin-right:10px"
-              v-model="value"
+              v-model="select_instance"
               placeholder="请选择"
               filterable
+              @change="instanceChange"
             >
               <el-option
-                v-for="item in options1"
+                v-for="item in instance"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -171,19 +169,20 @@
             <el-date-picker
               style="margin-right:10px"
               size="medium"
-              v-model="value2"
+              v-model="range"
               type="datetimerange"
               :picker-options="pickerOptions"
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
               align="right"
-            ></el-date-picker> 
-           
+              @change="timeChange"
+            ></el-date-picker>
+
             <el-divider direction="vertical"></el-divider>
 
-            <el-switch style="margin-right:10px" v-model="value1" inactive-text="自动刷新"></el-switch>
-
+            <el-switch style="margin-right:10px" v-model="auto" inactive-text="自动刷新"></el-switch> 
+          
             <el-input-number
               style="width:80px;margin-right:10px"
               controls-position="right"
@@ -234,12 +233,19 @@ body {
 }
 </style>
 
-<script>
-export default {
-  data() {
-    return {
+<script>     
+
+import { mapState } from 'vuex' 
+import { basic } from '@/common/basic.js'
+
+ export default {
+
+  data() {  
+
+   return { 
+
       fullscreen: false,
-      isCollapse: false,
+      isCollapse: false, 
       UpdateDialogVisible: false,
       userName: localStorage.getItem("username"),
       setUserInfo: {
@@ -247,69 +253,132 @@ export default {
         oldPwd: "",
         newPwd: "",
       },
-      value: "",
-      value1: true,
+      range:{},
+      select_service: "",
+      select_instance: "",
+      service: true,
       value2: true,
+      auto: true,
       num: 3,
-      options1: [
-        {
-          value: "选项1",
-          label: "黄金糕",
-        },
-        {
-          value: "选项2",
-          label: "双皮奶",
-        },
-        {
-          value: "选项3",
-          label: "蚵仔煎",
-        },
-        {
-          value: "选项4",
-          label: "龙须面",
-        },
-        {
-          value: "选项5",
-          label: "北京烤鸭",
-        },
-      ],
+      service: [],
+      instance: [], 
       pickerOptions: {
         shortcuts: [
           {
-            text: "最近一周",
+            text:this.$i18n.t('Time_15m'),
             onClick(picker) {
               const end = new Date();
               const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              start.setTime(start.getTime() - 60 * 1000 * 15 );
               picker.$emit("pick", [start, end]);
             },
           },
           {
-            text: "最近一个月",
+            text:this.$i18n.t('Time_30m'),
             onClick(picker) {
               const end = new Date();
               const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              start.setTime(start.getTime() - 60 * 1000 * 30 );
+              picker.$emit("pick", [start, end]);
+            },
+          },
+           {
+            text:this.$i18n.t('Time_1h'),
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 60 * 1000 * 60 );
               picker.$emit("pick", [start, end]);
             },
           },
           {
-            text: "最近三个月",
+            text:this.$i18n.t('Time_4h'),
             onClick(picker) {
               const end = new Date();
               const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              start.setTime(start.getTime() - 60 * 1000 * 60 * 4 );
               picker.$emit("pick", [start, end]);
             },
           },
+           {
+            text:this.$i18n.t('Time_12h'),
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 60 * 1000 * 60 * 12 );
+              picker.$emit("pick", [start, end]);
+            },
+          },
+            {
+            text:this.$i18n.t('Time_24h'),
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 60 * 1000 * 60 * 24 );
+              picker.$emit("pick", [start, end]);
+            },
+          } 
         ],
       },
       value1: [new Date(2000, 10, 10, 10, 10), new Date(2000, 10, 11, 10, 10)],
       value2: "",
-    };
+    };  
+    
   },
-  created: function () {},
-  methods: {
+  created: function () {    
+    this.initServiceInstance();
+  },
+  updated: () => {},
+ computed: mapState({
+    lang: state => state.lang 
+}),
+  mounted() { 
+
+  },
+  methods: {    
+
+    serviceChange(data) {
+
+      this.$store.state.tag.forEach((item) => {
+        if (item.service == data) {
+
+          this.instance = [];
+          this.instance.push({ value: "ALL", label: "ALL" });
+
+          item.instance.forEach((k) => {
+            this.instance.push({ value: k, label: k });
+          });
+
+          this.select_instance = "ALL";
+
+           this.reload();
+
+          return;
+        }
+      });
+    },
+    instanceChange(data){
+
+       this.reload();
+
+    },  
+    timeChange(data){ 
+      
+      this.reload();
+
+    },
+    reload(){   
+
+      this.$store.commit("set_query",{ 
+        service:this.select_service,
+        instance:this.select_instance,
+        start:basic.dateFormat(new Date(this.range[0])),
+        end:basic.dateFormat(new Date(this.range[1])) 
+        
+      }); 
+
+      this.$message({ message:"reload", type: "success" }); 
+    }, 
     handleFullScreen() {
       let element = document.documentElement;
       if (this.fullscreen) {
@@ -344,16 +413,28 @@ export default {
         })
         .catch((_) => {});
     },
-    changeLanguage(type) {
+    changeLanguage(type) { 
+
+      this.$i18n.locale = type; 
+
+     localStorage.setItem('locale',type);
+
       this.$http
         .post("ChangeLanguage", {
           Language: type,
         })
-        .then((response) => {
-          this.$message({ message: "Switch: " + type, type: "success" });
+        .then((response) => { 
+
+          //this.$message({ message: "Switch: " + type, type: "success" });
 
           this.$http.get(`/static/lang/${type}.json`).then((res) => {
-            this.$store.commit("set_lang", res.body);
+
+            this.$store.commit("set_lang", res.body); 
+
+             //this.$forceUpdate();
+
+             window.location.reload();
+
           });
         });
     },
@@ -398,16 +479,34 @@ export default {
 
           this.logout();
         });
-    },
+    }, 
     logout() {
       localStorage.setItem("token", "");
       this.$store.commit("set_token", "");
-      this.$router.push({ path: "/user/login"})
+      this.$router.push({ path: "/user/login" });
     },
     handleOpen(key, keyPath) {},
     handleClose(key, keyPath) {},
     changeNavState() {
       this.isCollapse = !this.isCollapse;
+    },
+    initServiceInstance() {
+      this.$http.post("GetServiceInstance", {}).then((response) => {
+        this.$store.commit("set_tag", response.body.data);
+
+        this.service = [];
+        this.service.push({ value: "ALL", label: "ALL" });
+
+        this.instance = [];
+        this.instance.push({ value: "ALL", label: "ALL" });
+
+        this.$store.state.tag.forEach((item) => {
+          this.service.push({ value: item.service, label: item.service });
+        });
+
+        this.select_service = "ALL";
+        this.select_instance = "ALL";
+      });
     },
   },
 };

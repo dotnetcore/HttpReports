@@ -35,7 +35,7 @@ namespace HttpReports.Dashboard
 
 
         public async Task InvokeAsync(HttpContext httpContext)
-        {
+        {  
             using (var scope = httpContext.RequestServices.CreateScope()) 
             {
                 var options = scope.ServiceProvider.GetService<DashboardOptions>();
