@@ -16,23 +16,22 @@ namespace HttpReports
     /// 储存库接口
     /// </summary>
     public interface IHttpReportsStorage
-    {
-        /// <summary>
-        /// 初始化储存库
-        /// </summary>
-        /// <returns></returns>
+    { 
         Task InitAsync(); 
 
-
-        /// <summary>
-        /// 添加一条请求记录
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
+ 
         Task AddRequestInfoAsync(RequestBag bag);
 
 
-        Task AddRequestInfoAsync(List<RequestBag> list, CancellationToken token);
+        Task AddRequestInfoAsync(List<RequestBag> list, CancellationToken token); 
+
+
+        Task<IndexPageData> GetIndexBasicDataAsync(IndexPageDataFilterOption filterOption);
+
+        Task<List<List<(string service, int value)>>> GetIndexTOPService(IndexPageDataFilterOption filterOption);   
+
+
+        //--------------------------------------------------------------------------------------
 
 
 
@@ -40,39 +39,19 @@ namespace HttpReports
 
         #region Statistics
 
-        /// <summary>
-        /// 获取Url请求统计
-        /// </summary>
-        /// <returns></returns>
+        
         Task<List<UrlRequestCount>> GetUrlRequestStatisticsAsync(RequestInfoFilterOption filterOption);
 
-        /// <summary>
-        /// 获取Url的平均响应时间统计
-        /// </summary>
-        /// <param name="filterOption"></param>
-        /// <returns></returns>
-        Task<List<RequestAvgResponeTime>> GetRequestAvgResponeTimeStatisticsAsync(RequestInfoFilterOption filterOption);
-
-        /// <summary>
-        /// 获取http状态码数量统计
-        /// </summary>
-        /// <param name="filterOption"></param>
-        /// <returns></returns>
+      
+        Task<List<RequestAvgResponeTime>> GetRequestAvgResponeTimeStatisticsAsync(RequestInfoFilterOption filterOption);  
+      
         Task<List<StatusCodeCount>> GetStatusCodeStatisticsAsync(RequestInfoFilterOption filterOption);
 
-        /// <summary>
-        /// 获取Url的响应时间分组统计
-        /// </summary>
-        /// <param name="filterOption"></param>
-        /// <returns></returns>
+        
         Task<List<ResponeTimeGroup>> GetGroupedResponeTimeStatisticsAsync(GroupResponeTimeFilterOption filterOption);
 
-        /// <summary>
-        /// 获取首页数据
-        /// </summary>
-        /// <param name="filterOption"></param>
-        /// <returns></returns>
-        Task<IndexPageData> GetIndexPageDataAsync(IndexPageDataFilterOption filterOption);
+        
+        Task<IndexPageData> GetIndexPageDataAsync(IndexPageDataFilterOption filterOption); 
 
         /// <summary>
         /// 搜索请求信息

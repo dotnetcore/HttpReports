@@ -15,5 +15,11 @@
 
         public int APICount { get; set; }
         public double ErrorPercent { get; set; }
+
+        public int Service { get; set; }
+
+        public int Instance { get; set; }
+
+
     }
 }

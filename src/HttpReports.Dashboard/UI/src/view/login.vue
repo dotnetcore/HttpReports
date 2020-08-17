@@ -1,58 +1,46 @@
 
-<style type="text/css">
-body {
-  height: 100%;
-  background-color: #f3f3f9;
-} 
-
- body{
-
+<style>
+.login-body {
   background-color: #34363a;
+}
 
- }
+.background {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  z-index: 5;
+}
 
-.background{ 
-   width: 100%;
-   height: 100%; 
-   position: fixed;
-   top: 0;
-   z-index: 5; 
-} 
- 
-.card-body{ 
-
-  border-top:2px solid #67c2ef;
+.card-body {
+  border-top: 2px solid #67c2ef;
   margin: 0 auto;
   width: 410px;
   height: 530px;
-  margin-top:6%;
+  margin-top: 6%;
   display: block;
   background-color: #fff;
-  border-radius:0.25rem; 
-  padding: 30px;
-  text-align: center; 
-  background-color: #3d4148;
-  position:relative;
-  box-shadow: 28px 28px 28px #161e2f;
+  border-radius: 0.25rem;
+  padding: 30px; 
   z-index: 10;
-
-} 
-
-.card-body p{
-
-font-size: 14px;
-float: left;
-color: #FFF;
-
+position: relative;
+  text-align: center;
+  background-color: #3d4148; 
+  box-shadow: 28px 28px 28px #161e2f; 
 }
- 
+
+.card-body p {
+  font-size: 14px;
+  float: left;
+  color: #fff;
+}
 
 .card-body h3 {
   margin-left: 2px;
   font-size: 32px;
-  margin-bottom: 0.5rem; 
+  margin-bottom: 0.5rem;
   line-height: 1.2;
-  color: #FFFFFF;
+  color: #ffffff;
   margin-bottom: 60px;
   font-weight: 500;
 }
@@ -76,7 +64,7 @@ color: #FFF;
   user-select: none;
   border: 1px solid transparent;
   font-size: 18px;
-  line-height:26px;
+  line-height: 26px;
   border-radius: 0.25rem;
   color: #fff;
   width: 100%;
@@ -85,13 +73,23 @@ color: #FFF;
     border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
-.logo-img{
+.logo-img {
+  margin-top: 30px;
+  width: 80px;
+  height: 80px;
+}
 
-margin-top:30px; 
-width:80px;
-height:80px;
+
+.back-ground-login{
+
+width: 100%;
+text-align: center; 
+z-index: 10;
+position: relative;
 
 }
+
+
 
 
 
@@ -99,10 +97,12 @@ height:80px;
 
 
 <template>
+  <el-container class="login-body background">
 
-  <div class="back-ground-login2">
 
-<vue-particles
+
+    <div class="back-ground-login">
+      <vue-particles
         color="#c7c8ca"
         :particleOpacity="0.7"
         :particlesNumber="30"
@@ -114,38 +114,38 @@ height:80px;
         :lineOpacity="0.4"
         :linesDistance="50"
         :moveSpeed="2"
-        :hoverEffect="false" 
+        :hoverEffect="false"
         :clickEffect="true"
-        clickMode="push" 
+        clickMode="push"
         class="background"
+      ></vue-particles>
 
-      >
- </vue-particles>
+      <div class="card-body">
+        <img class="logo-img" src="/static/logo3.png" />
 
-    <div class="card-body" >
+        <h3 class="logo-title">HttpReports</h3>
 
-      <img class="logo-img" src="/static/logo3.png"/> 
+        <p>{{ this.$store.state.lang.Login_UserName }}</p>
 
-      <h3 class="logo-title">HttpReports</h3>
+        <el-input size="medium" v-model="username"></el-input>
 
-      <p>{{ this.$store.state.lang.Login_UserName }}</p>
+        <p>{{ this.$store.state.lang.Login_Password }}</p>
 
-      <el-input size="medium" v-model="username" ></el-input>
+        <el-input size="medium" type="password" v-model="password"></el-input>
 
-       <p>{{ this.$store.state.lang.Login_Password }}</p>
-
-      <el-input  size="medium"  type="password" v-model="password" ></el-input>
-
-      <button size="small" @click="submit" class="btn login-form__btn submit w-100">{{ this.$store.state.lang.Login_Button }}</button>
+        <button
+          size="small"
+          @click="submit"
+          class="btn login-form__btn submit w-100"
+        >{{ this.$store.state.lang.Login_Button }}</button>
+      </div>
     </div>
-  </div>
+  </el-container>
 </template>   
  
 
 
-<script> 
-
-
+<script>
 export default {
   data() {
     return {
@@ -155,15 +155,17 @@ export default {
   },
   created: function () {},
   methods: {
-    submit(item) {  
+    submit(item) {
+      var that = this;
 
-      var that = this;    
-
-      if (this.basic.isEmpty(this.username) || this.basic.isEmpty(this.password)) {
+      if (
+        this.basic.isEmpty(this.username) ||
+        this.basic.isEmpty(this.password)
+      ) {
         this.$message({ message: "请输入用户名或密码！", type: "warning" });
         return;
-      } 
-      
+      }
+
       // 网络请求模块
       this.$http
         .post("userlogin", {
@@ -171,16 +173,14 @@ export default {
           Password: this.password,
         })
         .then((response) => {
-          
           if (response.body.code != 1) {
             this.$message({ message: response.body.msg, type: "error" });
             return;
           }
 
           localStorage.setItem("token", response.body.data);
-          localStorage.setItem("username",this.username)
-          that.$store.commit("set_token", response.body.data); 
-
+          localStorage.setItem("username", this.username);
+          that.$store.commit("set_token", response.body.data);
 
           this.$message({
             message: "登录成功",
@@ -188,10 +188,8 @@ export default {
             duration: 1000,
             onClose: function () {
               that.$router.push({ path: "/" });
-            }
-          }); 
-
-
+            },
+          });
         });
     },
   },

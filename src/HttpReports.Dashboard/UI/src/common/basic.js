@@ -45,6 +45,11 @@ const basic = {
     var seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
     // 拼接
     return year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
+  },
+  getLastTime(minutes = 15){
+            var now = new Date;
+            now.setMinutes (now.getMinutes () - minutes);
+            return now;
   }
 
 };

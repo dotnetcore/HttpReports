@@ -1,6 +1,6 @@
 
 <template>
-  <el-container>
+  <el-container class="index-body">
     <el-dialog
       :title="this.$store.state.lang.Template_EditAccount"
       :visible.sync="UpdateDialogVisible"
@@ -207,7 +207,7 @@
   margin-right: 8px;
 }
 
-body {
+.index-body {
   background-color: #f3f3f3;
 }
 
@@ -253,7 +253,7 @@ import { basic } from '@/common/basic.js'
         oldPwd: "",
         newPwd: "",
       },
-      range:{},
+      range:[ this.getLastTime(),new Date()],
       select_service: "",
       select_instance: "",
       service: true,
@@ -335,8 +335,12 @@ import { basic } from '@/common/basic.js'
   mounted() { 
 
   },
-  methods: {    
-
+  methods: {  
+    getLastTime(minutes = 15){
+        var now = new Date;
+        now.setMinutes (now.getMinutes () - minutes);
+        return now;
+    },
     serviceChange(data) {
 
       this.$store.state.tag.forEach((item) => {

@@ -196,8 +196,9 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
             }, "获取首页数据异常");
 
             return result;
-        }
-         
+        } 
+      
+
 
         public async Task<List<IMonitorJob>> GetMonitorJobs()
         {
@@ -1012,6 +1013,65 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
             await connection.ExecuteAsync(sql, performance)
 
             ) > 0);
+
+        }
+
+        public async Task<IndexPageData> GetIndexBasicDataAsync(IndexPageDataFilterOption filterOption)
+        {
+            string where = BuildSqlFilter(filterOption);
+
+            string sql = $@"
+        Select COUNT(1) Total From ""{Prefix}RequestInfo"" {where}; 
+        Select COUNT(1) Code500 From ""{Prefix}RequestInfo"" {where} AND StatusCode = 500;
+        SELECT Count(DISTINCT(Node)) From ""{Prefix}RequestInfo"" {where} ;  
+        Select Count(1) from ( SELECT LocalIP,LocalPort from ""{Prefix}RequestInfo""  {where} GROUP BY LocalIP,LocalPort) Z;";
+
+            TraceLogSql(sql);
+
+            IndexPageData result = new IndexPageData();
+
+            await LoggingSqlOperation(async connection =>
+            {
+                using (var resultReader = await connection.QueryMultipleAsync(sql))
+                {
+                    result.Total = resultReader.ReadFirstOrDefault<int>();
+                    result.ServerError = resultReader.ReadFirstOrDefault<int>();
+                    result.Service = resultReader.ReadFirstOrDefault<int>();
+                    result.Instance = resultReader.ReadFirstOrDefault<int>();
+                }
+            }, "获取首页数据异常");
+
+            return result;
+        }
+
+        public async Task<List<List<(string service, int value)>>> GetIndexTOPService(IndexPageDataFilterOption filterOption)
+        {
+            string where = BuildSqlFilter(filterOption);
+
+            string sql = $@"
+
+Select Node,COUNT(1) From ""{Prefix}RequestInfo"" {where} Group by Node  ORDER BY COUNT(1) Desc Limit {filterOption.Take} ;
+Select Node,AVG(Milliseconds) From ""{Prefix}RequestInfo"" {where} Group by Node  ORDER BY  Avg(Milliseconds) Desc Limit {filterOption.Take} ; 
+Select Node,COUNT(1) From ""{Prefix}RequestInfo"" {where} AND StatusCode = 500 Group by Node  ORDER BY COUNT(1) Desc Limit {filterOption.Take} ; 
+
+";
+
+            TraceLogSql(sql);
+
+            List<List<(string service, int value)>> result = new List<List<(string service, int value)>>();
+
+            await LoggingSqlOperation(async connection =>
+            {
+                using (var resultReader = await connection.QueryMultipleAsync(sql))
+                {
+                    result.Add(resultReader.Read<(string service, double value)>().Select(x => (x.service, x.value.ToInt())).ToList());
+                    result.Add(resultReader.Read<(string service, double value)>().Select(x => (x.service, x.value.ToInt())).ToList());
+                    result.Add(resultReader.Read<(string service, double value)>().Select(x => (x.service, x.value.ToInt())).ToList());
+
+                }
+            }, "获取首页数据异常");
+
+            return result;
 
         }
 

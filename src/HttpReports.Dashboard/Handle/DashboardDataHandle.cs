@@ -493,6 +493,63 @@ namespace HttpReports.Dashboard.Handle
             }));
         }
 
+
+
+        public async Task<string> GetIndexBasicData(QueryRequest request)
+        { 
+            var start = request.Start.ToDateTime();
+            var end = request.End.ToDateTime();
+
+            #region BuildService
+            if (request.Service.IsEmpty() || request.Service == "ALL")
+            {
+                request.Service = "";
+            }
+
+            if (request.Instance.IsEmpty() || request.Instance == "ALL")
+            {
+                request.LocalIP = "";
+                request.LocalPort = 0;
+            }
+            else
+            {
+                request.LocalIP = request.Instance.Substring(0, request.Instance.LastIndexOf(':'));
+                request.LocalPort = request.Instance.Substring(request.Instance.LastIndexOf(':') + 1).ToInt();
+            }
+
+            #endregion
+
+            IndexPageDataFilterOption option = new IndexPageDataFilterOption {
+
+                Service = request.Service,
+                LocalIP = request.LocalIP,
+                LocalPort = request.LocalPort,
+                StartTime = start,
+                EndTime = end,
+                StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
+                EndTimeFormat = "yyyy-MM-dd HH:mm:ss",
+                Take = 6
+
+            };
+
+            var basic = await _storage.GetIndexBasicDataAsync(option);
+
+            var top = await _storage.GetIndexTOPService(option);  
+
+            return Json(new HttpResultEntity(1, "ok", new
+            {
+                Total = basic.Total,
+                ServerError = basic.ServerError,
+                Service = basic.Service,
+                Instance = basic.Instance,
+                Top = top
+
+            }));
+             
+        }
+
+
+
         public async Task<string> GetRequestList(GetRequestListRequest request)
         {
             #region BuildService

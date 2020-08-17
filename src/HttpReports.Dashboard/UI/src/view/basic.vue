@@ -7,7 +7,7 @@
 
           <div class="stats">
             <h5>
-              <strong>452</strong>
+              <strong>{{ this.basic_data.total }}</strong>
             </h5>
             <span>总调用次数</span>
           </div>
@@ -20,7 +20,7 @@
 
           <div class="stats">
             <h5>
-              <strong>452</strong>
+              <strong>{{ this.basic_data.serverError }}</strong>
             </h5>
             <span>错误次数</span>
           </div>
@@ -33,7 +33,7 @@
 
           <div class="stats">
             <h5>
-              <strong>50</strong>
+              <strong>{{ this.basic_data.service }}</strong>
             </h5>
             <span>服务</span>
           </div>
@@ -46,7 +46,7 @@
 
           <div class="stats">
             <h5>
-              <strong>360</strong>
+              <strong>{{ this.basic_data.instance }}</strong>
             </h5>
             <span>实例</span>
           </div>
@@ -164,10 +164,17 @@ import { Chart } from "@antv/g2";
 import { Heatmap } from "@antv/g2plot";
 import Index from "./index";
 import { mapState } from "vuex";
+import Vue from 'vue'
 
 export default {
   data() {
-    return {
+    return { 
+      basic_data:{ 
+        total:0,
+        serverError:0,
+        service:0,
+        instance:0  
+      },
       service_call_chart: null,
     };
   },
@@ -176,13 +183,18 @@ export default {
     query: (state) => state.query,
   }),
   watch: {
-    query(newVal, oldVal) {
-      this.load_service_call();
+    async query(newVal, oldVal) {
+
+      var response =  await this.load_basic_data();
+      this.basic_data = response.body.data; 
+
     },
   },
-  mounted() {
+  async mounted() {   
 
-
+     var response =  await this.load_basic_data();
+     console.log(response)
+     this.basic_data = response.body.data; 
 
     this.load_service_call();
     this.init_slow_service();
@@ -190,17 +202,15 @@ export default {
     this.init_service_call_line();
     this.init_service_call_heap();
   },
-  methods: { 
+  methods: {   
+    
+     async load_basic_data() {
 
-    load_basic_data(){  
-
+      return await Vue.http.post("GetIndexBasicData",this.$store.state.query) 
       
-
-
-
     }, 
 
-    load_service_call() {
+    load_service_call() { 
 
       var source = [
         {
@@ -254,6 +264,7 @@ export default {
       } else {
         this.service_call_chart.changeData(source);
       }
+
     },
 
     init_slow_service: () => {
