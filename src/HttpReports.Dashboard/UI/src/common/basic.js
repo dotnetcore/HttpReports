@@ -46,11 +46,23 @@ const basic = {
     // 拼接
     return year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
   },
-  getLastTime(minutes = 15){
+  getLastTime(minutes = 150){
             var now = new Date;
             now.setMinutes (now.getMinutes () - minutes);
             return now;
-  }
+  },
+  numberFormat(val){
+
+    if(val >= 1000000){
+
+      val = val.substring(0,val.length - 4) + "w" 
+      return val
+
+    } 
+
+    return val;
+
+  } 
 
 };
 

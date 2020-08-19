@@ -211,29 +211,35 @@ namespace HttpReports.Storage.SQLServer
 
                 List<IRequestDetail> requestDetails = list.Select(x => x.RequestDetail).ToList();
 
-                string requestSql = string.Join(",", requestInfos.Select(item =>
-                { 
-                    int i = requestInfos.IndexOf(item) + 1;
-
-                    return $"(@Id{i},@ParentId{i},@Node{i}, @Route{i}, @Url{i},@RequestType{i}, @Method{i}, @Milliseconds{i}, @StatusCode{i}, @IP{i},@Port{i},@LocalIP{i},@LocalPort{i},@CreateTime{i})";
-
-                }));
-
-                await connection.ExecuteAsync($"Insert into [{Prefix}RequestInfo] ([Id],[ParentId],[Node],[Route],[Url],[RequestType],[Method],[Milliseconds],[StatusCode],[IP],[Port],[LocalIP],[LocalPort],[CreateTime]) VALUES {requestSql}", BuildParameters(requestInfos));
-                 
-                string detailSql = string.Join(",", requestDetails.Select(item =>
+                if (requestInfos.Select(x => x != null).Any())
                 {
+                    string requestSql = string.Join(",", requestInfos.Select(item =>
+                    {
+                        int i = requestInfos.IndexOf(item) + 1;
 
-                    int i = requestDetails.IndexOf(item) + 1;
+                        return $"(@Id{i},@ParentId{i},@Node{i}, @Route{i}, @Url{i},@RequestType{i}, @Method{i}, @Milliseconds{i}, @StatusCode{i}, @IP{i},@Port{i},@LocalIP{i},@LocalPort{i},@CreateTime{i})";
 
-                    return $"(@Id{i},@RequestId{i},@Scheme{i},@QueryString{i},@Header{i},@Cookie{i},@RequestBody{i},@ResponseBody{i},@ErrorMessage{i},@ErrorStack{i},@CreateTime{i}) ";
+                    }));
 
-                }));
+                    await connection.ExecuteAsync($"Insert into [{Prefix}RequestInfo] ([Id],[ParentId],[Node],[Route],[Url],[RequestType],[Method],[Milliseconds],[StatusCode],[IP],[Port],[LocalIP],[LocalPort],[CreateTime]) VALUES {requestSql}", BuildParameters(requestInfos));
+                      
+                }
 
 
-                await connection.ExecuteAsync($"Insert into [{Prefix}RequestDetail] (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime) VALUES {detailSql}", BuildParameters(requestDetails));
+                if (requestDetails.Select(x => x != null).Any())
+                { 
+                    string detailSql = string.Join(",", requestDetails.Select(item =>
+                    {
 
+                        int i = requestDetails.IndexOf(item) + 1;
 
+                        return $"(@Id{i},@RequestId{i},@Scheme{i},@QueryString{i},@Header{i},@Cookie{i},@RequestBody{i},@ResponseBody{i},@ErrorMessage{i},@ErrorStack{i},@CreateTime{i}) ";
+
+                    })); 
+
+                    await connection.ExecuteAsync($"Insert into [{Prefix}RequestDetail] (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime) VALUES {detailSql}", BuildParameters(requestDetails));
+                     
+                }
 
             }, "请求数据批量保存失败");
         }
@@ -473,16 +479,12 @@ namespace HttpReports.Storage.SQLServer
             Logger.LogTrace($"Class: {nameof(SQLServerStorage)} Method: {method} SQL: {sql}");
         }
 
-        /// <summary>
-        /// where子句
-        /// </summary>
-        /// <param name="filterOption"></param>
-        /// <returns></returns>
-        protected string BuildSqlFilter(IFilterOption filterOption, bool withOutStatusCode = false)
+
+        protected string BuildSqlFilter(IFilterOption filterOption, bool withOutStatusCode = false, bool withOutService = false)
         {
             var builder = new StringBuilder(256);
 
-            if (filterOption is INodeFilterOption nodeFilterOption)
+            if (!withOutService && filterOption is INodeFilterOption nodeFilterOption)
             {
                 if (!nodeFilterOption.Service.IsEmpty())
                 {
@@ -525,8 +527,8 @@ namespace HttpReports.Storage.SQLServer
             }
 
             return builder.ToString();
-        }
-
+        } 
+        
         protected StringBuilder CheckSqlWhere(StringBuilder builder)
         {
             if (builder.Length == 0)
@@ -1167,13 +1169,13 @@ namespace HttpReports.Storage.SQLServer
 
         public async Task<List<List<(string service, int value)>>> GetIndexTOPService(IndexPageDataFilterOption filterOption)
         {
-            string where = BuildSqlFilter(filterOption);
+            var where = BuildSqlFilter(filterOption, false, true); 
 
             string sql = $@"
 
-Select Node,COUNT(1) From {Prefix}RequestInfo {where} Group by Node  ORDER BY COUNT(1) Desc Limit {filterOption.Take} ;
-Select Node,AVG(Milliseconds) From {Prefix}RequestInfo {where} Group by Node  ORDER BY  Avg(Milliseconds) Desc Limit {filterOption.Take} ; 
-Select Node,COUNT(1) From {Prefix}RequestInfo {where} AND StatusCode = 500 Group by Node  ORDER BY COUNT(1) Desc Limit {filterOption.Take} ; 
+Select TOP {filterOption.Take} Node,COUNT(1) From {Prefix}RequestInfo {where} Group by Node  ORDER BY COUNT(1) Desc  ;
+Select TOP {filterOption.Take}  Node, CAST(AVG(CONVERT(FLOAT,Milliseconds)) AS DECIMAL(18,2)) as AvgTime From {Prefix}RequestInfo {where} Group by Node  ORDER BY AvgTime Desc; 
+Select TOP {filterOption.Take} Node,COUNT(1) From {Prefix}RequestInfo {where} AND StatusCode = 500 Group by Node  ORDER BY COUNT(1) Desc ; 
 
 ";
 

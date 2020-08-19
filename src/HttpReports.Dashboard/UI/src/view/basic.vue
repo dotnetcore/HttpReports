@@ -1,94 +1,4 @@
-<template>
-  <div>
-    <el-row :gutter="20" class="tag">
-      <el-col :span="6">
-        <el-card class="box-card">
-          <i class="el-icon-s-custom icon-rounded pull-left bgc1"></i>
 
-          <div class="stats">
-            <h5>
-              <strong>{{ this.basic_data.total }}</strong>
-            </h5>
-            <span>总调用次数</span>
-          </div>
-        </el-card>
-      </el-col>
-
-      <el-col :span="6">
-        <el-card class="box-card">
-          <i class="el-icon-s-custom icon-rounded pull-left bgc2"></i>
-
-          <div class="stats">
-            <h5>
-              <strong>{{ this.basic_data.serverError }}</strong>
-            </h5>
-            <span>错误次数</span>
-          </div>
-        </el-card>
-      </el-col>
-
-      <el-col :span="6">
-        <el-card class="box-card">
-          <i class="el-icon-s-custom icon-rounded pull-left bgc3"></i>
-
-          <div class="stats">
-            <h5>
-              <strong>{{ this.basic_data.service }}</strong>
-            </h5>
-            <span>服务</span>
-          </div>
-        </el-card>
-      </el-col>
-
-      <el-col :span="6">
-        <el-card class="box-card">
-          <i class="el-icon-s-custom icon-rounded pull-left bgc4"></i>
-
-          <div class="stats">
-            <h5>
-              <strong>{{ this.basic_data.instance }}</strong>
-            </h5>
-            <span>实例</span>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
-
-    <el-row class="center-chart" :gutter="20">
-      <el-col :span="8">
-        <el-card class="box-card" style="margin-top:0">
-          <div id="service-call" style="height:280px"></div>
-        </el-card>
-      </el-col>
-
-      <el-col :span="8">
-        <el-card class="box-card" style="margin-top:0">
-          <div id="slow-service" style="height:280px"></div>
-        </el-card>
-      </el-col>
-
-      <el-col :span="8">
-        <el-card class="box-card" style="margin-top:0">
-          <div id="error-service" style="height:280px"></div>
-        </el-card>
-      </el-col>
-    </el-row>
-
-    <el-row class="chart-bottom" :gutter="20">
-      <el-col :span="12">
-        <el-card class="box-card" style="margin-top:0">
-          <div id="service-call-line" style="height:270px"></div>
-        </el-card>
-      </el-col>
-
-      <el-col :span="12">
-        <el-card class="box-card" style="margin-top:0">
-          <div id="service-call-heap" style="height:270px"></div>
-        </el-card>
-      </el-col>
-    </el-row>
-  </div>
-</template>
 
 <style>
 .center-chart .el-card__body {
@@ -157,6 +67,99 @@
 </style> 
 
 
+<template>
+  <div>
+    <el-row :gutter="20" class="tag">
+      <el-col :span="6">
+        <el-card class="box-card">
+          <i class="el-icon-s-promotion icon-rounded pull-left bgc1"></i>
+
+          <div class="stats">
+            <h5>
+              <strong>{{ this.basic_data.total }}</strong>
+            </h5>
+            <span>{{ this.$store.state.lang.Index_RequestCount }}</span>
+          </div>
+        </el-card>
+      </el-col>
+
+      <el-col :span="6">
+        <el-card class="box-card">
+          <i class="el-icon-message-solid icon-rounded pull-left bgc2"></i>
+
+          <div class="stats">
+            <h5>
+              <strong>{{ this.basic_data.serverError }}</strong>
+            </h5>
+            <span>{{ this.$store.state.lang.Index_Errors }}</span>
+          </div>
+        </el-card>
+      </el-col>
+
+      <el-col :span="6">
+        <el-card class="box-card">
+          <i class="el-icon-star-on icon-rounded pull-left bgc3"></i>
+
+          <div class="stats">
+            <h5>
+              <strong>{{ this.basic_data.service }}</strong>
+            </h5>
+            <span>{{ this.$store.state.lang.ServiceTag }}</span>
+          </div>
+        </el-card>
+      </el-col>
+
+      <el-col :span="6">
+        <el-card class="box-card">
+          <i class="el-icon-menu icon-rounded pull-left bgc4"></i>
+
+          <div class="stats">
+            <h5>
+              <strong>{{ this.basic_data.instance }}</strong>
+            </h5>
+            <span>{{ this.$store.state.lang.InstanceTag }}</span>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <el-row class="center-chart" :gutter="20">
+      <el-col :span="8">
+        <el-card class="box-card" style="margin-top:0">
+          <div id="service-call" style="height:280px"></div>
+        </el-card>
+      </el-col>
+
+      <el-col :span="8">
+        <el-card class="box-card" style="margin-top:0">
+          <div id="slow-service" style="height:280px"></div>
+        </el-card>
+      </el-col>
+
+      <el-col :span="8">
+        <el-card class="box-card" style="margin-top:0">
+          <div id="error-service" style="height:280px"></div>
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <el-row class="chart-bottom" :gutter="20">
+      <el-col :span="12">
+        <el-card class="box-card" style="margin-top:0">
+          <div id="service-call-line" style="height:270px"></div>
+        </el-card>
+      </el-col>
+
+      <el-col :span="12">
+        <el-card class="box-card" style="margin-top:0">
+          <div id="service-call-heap" style="height:270px"></div>
+        </el-card>
+      </el-col>
+    </el-row>
+  </div>
+</template>
+
+
 <script>
 import { Line } from "@antv/g2plot";
 import { Bar } from "@antv/g2plot";
@@ -164,18 +167,20 @@ import { Chart } from "@antv/g2";
 import { Heatmap } from "@antv/g2plot";
 import Index from "./index";
 import { mapState } from "vuex";
-import Vue from 'vue'
+import Vue from "vue";
 
 export default {
   data() {
-    return { 
-      basic_data:{ 
-        total:0,
-        serverError:0,
-        service:0,
-        instance:0  
+    return {
+      basic_data: {
+        total: 0,
+        serverError: 0,
+        service: 0,
+        instance: 0,
       },
       service_call_chart: null,
+      slow_service_chart: null,
+      error_service_chart: null,
     };
   },
   created: () => {},
@@ -184,70 +189,55 @@ export default {
   }),
   watch: {
     async query(newVal, oldVal) {
+      var response = await this.load_basic_data();
+      this.basic_data = response.body.data;
 
-      var response =  await this.load_basic_data();
-      this.basic_data = response.body.data; 
+      this.load_service_call(response);
+      this.load_slow_service(response);
+      this.load_error_service(response);
 
     },
   },
-  async mounted() {   
+  async mounted() {
+    var response = await this.load_basic_data();
+    this.basic_data = response.body.data;
 
-     var response =  await this.load_basic_data();
-     console.log(response)
-     this.basic_data = response.body.data; 
-
-    this.load_service_call();
-    this.init_slow_service();
-    this.init_error_service();
+    this.load_service_call(response);
+    this.load_slow_service(response);
+    this.load_error_service(response);
     this.init_service_call_line();
     this.init_service_call_heap();
   },
-  methods: {   
-    
-     async load_basic_data() {
+  methods: {
+    async load_basic_data() {
+      return await Vue.http.post("GetIndexBasicData", this.$store.state.query);
+    },
 
-      return await Vue.http.post("GetIndexBasicData",this.$store.state.query) 
-      
-    }, 
+    load_service_call(response) {
+      var source = [];
 
-    load_service_call() { 
+      response.data.data.top[0].forEach((item) => {
+        source.push({
+          key: item.item1,
+          value: item.item2,
+        });
+      });
 
-      var source = [
-        {
-          地区: "UserService2",
-          data:
-            10684506.442 +
-            Math.floor(Math.random() * (5681567 - 1681567 + 1)) +
-            1681567,
-        },
-        { 地区: "OrderService2", data: 937415.0929999948 },
-        { 地区: "Payment1", data: 8681567.469000001 },
-        {
-          地区: "Log2",
-          data:
-            7447301.017000004 +
-            Math.floor(Math.random() * (5681567 - 1681567 + 1)) +
-            1681567,
-        },
-        { 地区: "DataService", data: 6303124.508000002 },
-        { 地区: "DataService2", data: 5303124.508000002 },
-      ]; 
- 
       if (this.service_call_chart == null) {
         this.service_call_chart = new Bar(
           document.getElementById("service-call"),
           {
             title: {
               visible: true,
-              text: "服务调用",
+              text: this.$store.state.lang.ServiceLoad,
             },
             yAxis: {
               visible: true,
             },
             forceFit: true,
             data: source,
-            xField: "data",
-            yField: "地区",
+            xField: "value",
+            yField: "key",
             label: {
               visible: true,
               adjustPosition: true,
@@ -264,84 +254,104 @@ export default {
       } else {
         this.service_call_chart.changeData(source);
       }
-
     },
 
-    init_slow_service: () => {
-      const data = [
-        { 地区: "UserService", data: 4684506.442 },
-        { 地区: "OrderService", data: 4137415.0929999948 },
-        { 地区: "Payment", data: 2681567.469000001 },
-        { 地区: "Log", data: 2447301.017000004 },
-        { 地区: "DataService", data: 1303124.508000002 },
-        { 地区: "DataService2", data: 1303124.508000002 },
-      ];
+    load_slow_service(response) {
 
-      const barPlot = new Bar(document.getElementById("slow-service"), {
-        title: {
-          visible: true,
-          text: "慢服务",
-        },
-        yAxis: {
-          visible: true,
-        },
-        forceFit: true,
-        data,
-        xField: "data",
-        yField: "地区",
-        color: ["#9599E2"],
-        label: {
-          visible: true,
-          adjustPosition: true,
-          formatter: (v) => Math.round(v / 10000),
-          position: "left",
-        },
-        events: {
-          onTitleDblClick: (e) => console.log(e),
-        },
+      var source = [];
+
+      response.data.data.top[1].forEach((item) => {
+        source.push({
+          key: item.item1,
+          value: item.item2,
+        });
       });
 
-      barPlot.render();
+      if (this.slow_service_chart == null) {
+
+        this.slow_service_chart = new Bar(
+          document.getElementById("slow-service"),
+          {
+            title: {
+              visible: true,
+              text: this.$store.state.lang.SlowService,
+            },
+            yAxis: {
+              visible: true,
+            },
+            forceFit: true,
+            data: source,
+            xField: "value",
+            yField: "key",
+            color: ["#9599E2"],
+            label: {
+              visible: true,
+              adjustPosition: true,
+              formatter: (v) => v,
+              position: "left",
+            },
+            events: {
+              onTitleDblClick: (e) => console.log(e),
+            },
+          }
+        );
+
+        this.slow_service_chart.render();
+
+      } else {
+        this.slow_service_chart.changeData(source);
+      }
     },
 
-    init_error_service: () => {
-      const data = [
-        { 地区: "UserService", data: 4684506.442 },
-        { 地区: "OrderService", data: 4137415.0929999948 },
-        { 地区: "Payment", data: 2681567.469000001 },
-        { 地区: "Log", data: 2447301.017000004 },
-        { 地区: "DataService", data: 1303124.508000002 },
-        { 地区: "DataService2", data: 1303124.508000002 },
-      ];
+    load_error_service(response) {
 
-      const barPlot = new Bar(document.getElementById("error-service"), {
-        title: {
-          visible: true,
-          text: "服务错误排行",
-        },
-        yAxis: {
-          visible: true,
-        },
-        forceFit: true,
-        data,
-        color: ["#FF6A88"],
-        xField: "data",
-        yField: "地区",
-        label: {
-          visible: true,
-          adjustPosition: true,
-          formatter: (v) => Math.round(v / 10000),
-          position: "left",
-        },
-        events: {
-          onTitleDblClick: (e) => console.log(e),
-        },
+       var source = [];
+
+      response.data.data.top[2].forEach((item) => {
+        source.push({
+          key: item.item1,
+          ms: item.item2,
+        });
       });
 
-      barPlot.render();
+      if (this.error_service_chart == null) {
+
+        this.error_service_chart = new Bar(
+          document.getElementById("error-service"),
+          {
+            title: {
+              visible: true,
+              text: this.$store.state.lang.SlowService,
+            },
+            yAxis: {
+              visible: true,
+            },
+            forceFit: true,
+            data: source,
+            xField: "ms",
+            yField: "key",
+            color: ["#FF6A88"],
+            label: {
+              visible: true,
+              adjustPosition: true,
+              formatter: (v) => v,
+              position: "left",
+            },
+            events: {
+              onTitleDblClick: (e) => console.log(e),
+            },
+          }
+        );
+
+        this.error_service_chart.render();
+
+      } else {
+        this.error_service_chart.changeData(source);
+      } 
+      
     },
 
-    init_service_call_heap: () => {
+    init_service_call_heap() {
       const data = [
         { name: "hot dog", value: 70, country: "AD" },
         { name: "burger", value: 54, country: "AD" },
@@ -427,7 +437,7 @@ export default {
         {
           title: {
             visible: true,
-            text: "热力图",
+            text: this.$store.state.lang.Index_Heatmap,
           },
           legend: {
             visible: false,
@@ -446,7 +456,7 @@ export default {
 
       heatmapPlot.render();
     },
-    init_service_call_line: () => {
+    init_service_call_line() {
       var data = [
         {
           name: "China",
@@ -928,7 +938,7 @@ export default {
       const linePlot = new Line(document.getElementById("service-call-line"), {
         title: {
           visible: true,
-          text: "服务调用",
+          text: this.$store.state.lang.ServiceLoad,
         },
         padding: [20, 100, 30, 80],
         forceFit: true,
@@ -941,6 +951,11 @@ export default {
           label: {
             visible: true,
             autoHide: true,
+          },
+        },
+        animation: {
+          appear: {
+            animation: "clipingWithData",
           },
         },
         yAxis: {

@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 
 using HttpReports.Storage.FilterOptions;
-
+using Microsoft.VisualBasic.CompilerServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HttpReports.Test
@@ -21,54 +25,46 @@ namespace HttpReports.Test
         public async Task InsertTestAsync()
         {
             var startTime = DateTime.Now.AddSeconds(-1);
-            var count = 500;
+            var count = 100000;
             var random = new Random();
+
+            string[] Services = { "User", "SendOrder", "PostOrder", "Payment", "Log", "DataCenter", "Student","Master" };
+            string[] LocalIPs = { "192.168.1.1", "192.168.1.2", "192.168.1.3", "192.168.1.4", "192.168.1.5", "192.168.1.6" };
+            int[] LocalPort = { 8801,8802,8803,8804,8805,8806};
 
             for (int i = 0; i < count; i++)
             {
-                RequestInfo request = new RequestInfo
+                List<Core.RequestBag> requestBags = new List<Core.RequestBag>();
+
+                for (int c = 0; c < 100; c++)
                 {
-                    CreateTime = DateTime.Now,
-                    IP = "192.168.1.1",
-                    Method = "GET",
-                    Node = "Log",
-                    Milliseconds = new Random().Next(1, 9999),
-                    Route = "/User/Login",
-                    Url = "/User/Login/AAA",
-                    StatusCode = 200
-                };
+                    requestBags.Add(new Core.RequestBag(new RequestInfo {
 
-                await Storage.AddRequestInfoAsync(new Core.RequestBag(request,null));
+                        Id = MD5_16(Guid.NewGuid().ToString()),
+                        ParentId = MD5_16(Guid.NewGuid().ToString()),
+                        Node = Services[new Random().Next(0,Services.Length - 1)],
+                        Route = "/httpreportsdata/getserviceinstance",
+                        Url = "/HttpReportsData/GetServiceInstance",
+                        RequestType = "http",
+                        Method = "POST",
+                        Milliseconds = new Random().Next(1,9999),
+                        StatusCode = new Random().Next(1, 10) > 3 ? 200:500,
+                        IP = "192.168.1.1",
+                        Port = 80,
+                        LocalIP = LocalIPs[new Random().Next(0,LocalIPs.Length - 1)],
+                        LocalPort = LocalPort[new Random().Next(0, LocalPort.Length - 1)],
+                        CreateTime = DateTime.Now 
 
-                await Task.Delay(random.Next(1, 5));
-            }
+                    },null));; 
+                }   
 
-            if (DeferTime.HasValue)
-            {
-                await Task.Delay(DeferTime.Value + TimeSpan.FromSeconds(1));
-            }
+                await Storage.AddRequestInfoAsync(requestBags,System.Threading.CancellationToken.None);
 
-            var requests = await Storage.SearchRequestInfoAsync(new RequestInfoSearchFilterOption()
-            {
-                StartTime = startTime,
-                Take = count,
-                EndTime = DateTime.Now.AddSeconds(1),
-                StartTimeFormat = "yyyy-MM-dd HH:mm:ss.fff",
-                EndTimeFormat = "yyyy-MM-dd HH:mm:ss.fff",
-                IsOrderByField = true,
-                Field = RequestInfoFields.Id,
-                IsAscend = true,
-            });
+                Debug.WriteLine(i.ToString());
+            } 
 
-            Assert.AreEqual(count, requests.AllItemCount);
 
-            for (int i = 0; i < requests.AllItemCount - 1; i++)
-            {
-                if (requests.List[i].CreateTime >= requests.List[i + 1].CreateTime)
-                {
-                    Assert.Fail($"Time Error:Index-{i} Id-{requests.List[i].Id}");
-                }
-            }
+           
         } 
 
         [TestMethod]
@@ -116,6 +112,14 @@ namespace HttpReports.Test
 
             Assert.IsTrue(requestCountWithOutList.All > 0);
             Assert.IsTrue(requestCountWithOutList.All >= requestCountWithList.Max);
+        }
+
+
+        private static string MD5_16(string source)
+        {
+            MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
+            string val = BitConverter.ToString(md5.ComputeHash(UTF8Encoding.Default.GetBytes(source)), 4, 8).Replace("-", "").ToLower();
+            return val;
         }
     }
 }

@@ -336,7 +336,7 @@ import { basic } from '@/common/basic.js'
 
   },
   methods: {  
-    getLastTime(minutes = 15){
+    getLastTime(minutes = 150){
         var now = new Date;
         now.setMinutes (now.getMinutes () - minutes);
         return now;
@@ -353,13 +353,12 @@ import { basic } from '@/common/basic.js'
             this.instance.push({ value: k, label: k });
           });
 
-          this.select_instance = "ALL";
-
-           this.reload();
-
-          return;
+          this.select_instance = "ALL";  
         }
-      });
+      }); 
+
+        this.reload();
+
     },
     instanceChange(data){
 
@@ -371,7 +370,7 @@ import { basic } from '@/common/basic.js'
       this.reload();
 
     },
-    reload(){   
+    reload(){    
 
       this.$store.commit("set_query",{ 
         service:this.select_service,
@@ -379,9 +378,8 @@ import { basic } from '@/common/basic.js'
         start:basic.dateFormat(new Date(this.range[0])),
         end:basic.dateFormat(new Date(this.range[1])) 
         
-      }); 
-
-      this.$message({ message:"reload", type: "success" }); 
+      });  
+       
     }, 
     handleFullScreen() {
       let element = document.documentElement;

@@ -207,28 +207,36 @@ CREATE TABLE IF NOT EXISTS `{TablePrefix}Performance` (
             { 
                 List<IRequestInfo> requestInfos = list.Select(x => x.RequestInfo).ToList();
 
-                List<IRequestDetail> requestDetails = list.Select(x => x.RequestDetail).ToList();
+                List<IRequestDetail> requestDetails = list.Select(x => x.RequestDetail).ToList(); 
 
-                string requestSql = string.Join(",", requestInfos.Select(request => {
+                if (requestInfos.Select(x => x != null).Any())
+                {
 
-                    int i = requestInfos.IndexOf(request) + 1;
+                    string requestSql = string.Join(",", requestInfos.Select(request => {
 
-                    return $"(@Id{i}, @ParentId{i}, @Node{i}, @Route{i}, @Url{i}, @RequestType{i}, @Method{i}, @Milliseconds{i}, @StatusCode{i}, @IP{i}, @Port{i}, @LocalIP{i}, @LocalPort{i}, @CreateTime{i})";
+                        int i = requestInfos.IndexOf(request) + 1;
 
-                }));
+                        return $"(@Id{i}, @ParentId{i}, @Node{i}, @Route{i}, @Url{i}, @RequestType{i}, @Method{i}, @Milliseconds{i}, @StatusCode{i}, @IP{i}, @Port{i}, @LocalIP{i}, @LocalPort{i}, @CreateTime{i})";
 
-                await connection.ExecuteAsync($"INSERT INTO `{TablePrefix}RequestInfo` (`Id`,`ParentId`,`Node`, `Route`, `Url`,`RequestType`,`Method`, `Milliseconds`, `StatusCode`, `IP`,`Port`,`LocalIP`,`LocalPort`,`CreateTime`) VALUES {requestSql}",BuildParameters(requestInfos));
+                    }));
 
-                string detailSql = string.Join(",", requestDetails.Select(detail => {
-
-                    int i = requestDetails.IndexOf(detail) + 1;
-
-                    return $"(@Id{i},@RequestId{i},@Scheme{i},@QueryString{i},@Header{i},@Cookie{i},@RequestBody{i},@ResponseBody{i},@ErrorMessage{i},@ErrorStack{i},@CreateTime{i})";
+                    await connection.ExecuteAsync($"INSERT INTO `{TablePrefix}RequestInfo` (`Id`,`ParentId`,`Node`, `Route`, `Url`,`RequestType`,`Method`, `Milliseconds`, `StatusCode`, `IP`,`Port`,`LocalIP`,`LocalPort`,`CreateTime`) VALUES {requestSql}", BuildParameters(requestInfos));
                      
-                }));
+                }
 
-                await connection.ExecuteAsync($"Insert into `{TablePrefix}RequestDetail` (`Id`,`RequestId`,`Scheme`,`QueryString`,`Header`,`Cookie`,`RequestBody`,`ResponseBody`,`ErrorMessage`,`ErrorStack`,`CreateTime`) VALUES {detailSql}",BuildParameters(requestDetails));
+                if (requestDetails.Select(x => x != null).Any())
+                {
+                    string detailSql = string.Join(",", requestDetails.Select(detail =>
+                    { 
+                        int i = requestDetails.IndexOf(detail) + 1;
 
+                        return $"(@Id{i},@RequestId{i},@Scheme{i},@QueryString{i},@Header{i},@Cookie{i},@RequestBody{i},@ResponseBody{i},@ErrorMessage{i},@ErrorStack{i},@CreateTime{i})";
+
+                    }));
+
+                    await connection.ExecuteAsync($"Insert into `{TablePrefix}RequestDetail` (`Id`,`RequestId`,`Scheme`,`QueryString`,`Header`,`Cookie`,`RequestBody`,`ResponseBody`,`ErrorMessage`,`ErrorStack`,`CreateTime`) VALUES {detailSql}", BuildParameters(requestDetails));
+
+                }
 
             }, "请求数据批量保存失败");
         }

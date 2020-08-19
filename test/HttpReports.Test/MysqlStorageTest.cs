@@ -18,14 +18,14 @@ namespace HttpReports.Test
 
         [TestInitialize]
         public override async Task Init()
-        {
+        { 
             var services = new ServiceCollection();
             services.AddOptions();
             services.AddLogging();
 
             services.Configure<MySqlStorageOptions>(o =>
             {
-                o.ConnectionString = "Data Source=127.0.0.1;Initial Catalog=HttpReports;User ID=test;Password=test;charset=utf8;SslMode=none;";
+                o.ConnectionString = "DataBase=HttpReports;Data Source=localhost;User Id=root;Password=123456;";
                 o.DeferSecond = 3;
                 o.DeferThreshold = 5;
                 o.EnableDefer = true;
@@ -35,6 +35,8 @@ namespace HttpReports.Test
 
             _storage = services.BuildServiceProvider().GetRequiredService<MySqlStorage>();
             await _storage.InitAsync();
-        }
+        } 
+        
+
     }
 }

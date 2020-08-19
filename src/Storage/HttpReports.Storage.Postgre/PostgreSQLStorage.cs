@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 namespace HttpReports.Storage.PostgreSQL
 {
     public class PostgreSQLStorage : IHttpReportsStorage
-    { 
+    {
         public PostgreStorageOptions Options { get; }
 
         public PostgreConnectionFactory ConnectionFactory { get; }
@@ -47,32 +47,42 @@ namespace HttpReports.Storage.PostgreSQL
         public async Task AddRequestInfoAsync(List<RequestBag> list, System.Threading.CancellationToken token)
         {
             await LoggingSqlOperation(async connection =>
-            { 
+            {
                 List<IRequestInfo> requestInfos = list.Select(x => x.RequestInfo).ToList();
 
                 List<IRequestDetail> requestDetails = list.Select(x => x.RequestDetail).ToList();
 
-                var request = string.Join(",", requestInfos.Select(item => {
+                if (requestInfos.Select(x => x != null).Any())
+                {
+                    var request = string.Join(",", requestInfos.Select(item =>
+                    {
 
-                    int i = requestInfos.IndexOf(item) + 1;
+                        int i = requestInfos.IndexOf(item) + 1;
 
-                    return $"(@Id{i},@ParentId{i},@Node{i}, @Route{i}, @Url{i},@RequestType{i}, @Method{i}, @Milliseconds{i}, @StatusCode{i}, @IP{i},@Port{i},@LocalIP{i},@LocalPort{i},@CreateTime{i})";
-               
-                }));
+                        return $"(@Id{i},@ParentId{i},@Node{i}, @Route{i}, @Url{i},@RequestType{i}, @Method{i}, @Milliseconds{i}, @StatusCode{i}, @IP{i},@Port{i},@LocalIP{i},@LocalPort{i},@CreateTime{i})";
 
-                await connection.ExecuteAsync($@"INSERT INTO ""{Prefix}RequestInfo"" (Id,ParentId,Node, Route, Url,RequestType,Method, Milliseconds, StatusCode, IP,Port,LocalIP,LocalPort,CreateTime) VALUES {request}",BuildParameters(requestInfos));
+                    }));
 
-                string detail = string.Join(",", requestDetails.Select(item => { 
+                    await connection.ExecuteAsync($@"INSERT INTO ""{Prefix}RequestInfo"" (Id,ParentId,Node, Route, Url,RequestType,Method, Milliseconds, StatusCode, IP,Port,LocalIP,LocalPort,CreateTime) VALUES {request}", BuildParameters(requestInfos));
 
-                    int i = requestDetails.IndexOf(item) + 1;
+                }
 
-                    return $"(@Id{i},@RequestId{i},@Scheme{i},@QueryString{i},@Header{i},@Cookie{i},@RequestBody{i},@ResponseBody{i},@ErrorMessage{i},@ErrorStack{i},@CreateTime{i}) ";
+                if (requestDetails.Select(x => x != null).Any())
+                {
+                    string detail = string.Join(",", requestDetails.Select(item =>
+                    {
+
+                        int i = requestDetails.IndexOf(item) + 1;
+
+                        return $"(@Id{i},@RequestId{i},@Scheme{i},@QueryString{i},@Header{i},@Cookie{i},@RequestBody{i},@ResponseBody{i},@ErrorMessage{i},@ErrorStack{i},@CreateTime{i}) ";
 
 
-                }));
+                    }));
 
-                await connection.ExecuteAsync($@"Insert into ""{Prefix}RequestDetail"" (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime) VALUES {detail}",BuildParameters(requestDetails));
- 
+                    await connection.ExecuteAsync($@"Insert into ""{Prefix}RequestDetail"" (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime) VALUES {detail}", BuildParameters(requestDetails));
+
+
+                }
 
             }, "请求数据批量保存失败");
         }
@@ -132,11 +142,11 @@ namespace HttpReports.Storage.PostgreSQL
             else
             {
                 await LoggingSqlOperation(async connection =>
-                { 
-                    await connection.ExecuteAsync($@"INSERT INTO ""{Prefix}RequestInfo"" (Id,ParentId,Node, Route,Url,RequestType, Method, Milliseconds, StatusCode, IP,Port,LocalIP,LocalPort,CreateTime) VALUES (@Id,@ParentId,@Node, @Route, @Url,@RequestType, @Method, @Milliseconds, @StatusCode, @IP,@Port,@LocalIP,@LocalPort,@CreateTime)",bag.RequestInfo);
+                {
+                    await connection.ExecuteAsync($@"INSERT INTO ""{Prefix}RequestInfo"" (Id,ParentId,Node, Route,Url,RequestType, Method, Milliseconds, StatusCode, IP,Port,LocalIP,LocalPort,CreateTime) VALUES (@Id,@ParentId,@Node, @Route, @Url,@RequestType, @Method, @Milliseconds, @StatusCode, @IP,@Port,@LocalIP,@LocalPort,@CreateTime)", bag.RequestInfo);
 
-                    await connection.ExecuteAsync($@"INSERT INTO ""{Prefix}RequestDetail"" (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime)  VALUES (@Id,@RequestId,@Scheme,@QueryString,@Header,@Cookie,@RequestBody,@ResponseBody,@ErrorMessage,@ErrorStack,@CreateTime)",bag.RequestDetail);
-                     
+                    await connection.ExecuteAsync($@"INSERT INTO ""{Prefix}RequestDetail"" (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime)  VALUES (@Id,@RequestId,@Scheme,@QueryString,@Header,@Cookie,@RequestBody,@ResponseBody,@ErrorMessage,@ErrorStack,@CreateTime)", bag.RequestDetail);
+
                 }, "请求数据保存失败");
             }
         }
@@ -162,7 +172,7 @@ namespace HttpReports.Storage.PostgreSQL
             TraceLogSql(sql);
 
             return await LoggingSqlOperation(async connection =>
-            (await connection.ExecuteAsync(sql,new { Id })) > 0);
+            (await connection.ExecuteAsync(sql, new { Id })) > 0);
         }
 
 
@@ -196,8 +206,8 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
             }, "获取首页数据异常");
 
             return result;
-        } 
-      
+        }
+
 
 
         public async Task<List<IMonitorJob>> GetMonitorJobs()
@@ -213,7 +223,7 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
             ).ToList().Select(x => x as IMonitorJob).ToList());
         }
 
-         
+
 
         public async Task<List<RequestAvgResponeTime>> GetRequestAvgResponeTimeStatisticsAsync(RequestInfoFilterOption filterOption)
         {
@@ -383,12 +393,12 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
         }
 
         public async Task InitAsync()
-        { 
+        {
             try
             {
                 using (var con = ConnectionFactory.GetConnection())
                 {
-                    if (await con.QueryFirstOrDefaultAsync<int>($"select count(1) from pg_class where relname = '{Prefix}RequestInfo' ") == 0 )
+                    if (await con.QueryFirstOrDefaultAsync<int>($"select count(1) from pg_class where relname = '{Prefix}RequestInfo' ") == 0)
                     {
                         await con.ExecuteAsync($@"
                             CREATE TABLE ""{Prefix}RequestInfo"" ( 
@@ -407,7 +417,7 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
                               LocalPort Int, 
                               CreateTime timestamp(3) without time zone
                             ); 
-                        "). ConfigureAwait(false); 
+                        ").ConfigureAwait(false);
                     }
 
                     if (await con.QueryFirstOrDefaultAsync<int>($"select count(1) from pg_class where relname = '{Prefix}RequestDetail' ") == 0)
@@ -459,7 +469,7 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
                     if (await con.QueryFirstOrDefaultAsync<int>($"select count(1) from information_schema.columns where table_catalog = '{ConnectionFactory.DataBase}' and table_name = '{Prefix}MonitorJob' and column_name = 'nodes' ") > 0)
                     {
                         await con.ExecuteAsync($@"DROP TABLE ""{Prefix}MonitorJob"" ");
-                    } 
+                    }
 
 
                     if (await con.QueryFirstOrDefaultAsync<int>($"select count(1) from pg_class where relname = '{Prefix}MonitorJob' ") == 0)
@@ -508,7 +518,7 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
                     {
                         await con.ExecuteAsync($@" Insert Into ""{Prefix}SysUser"" (Id,UserName,Password) Values ('{MD5_16(Guid.NewGuid().ToString())}', '{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ");
                     }
-                     
+
 
 
                     var lang = await con.QueryFirstOrDefaultAsync<string>($@"Select * from ""{Prefix}SysConfig"" Where Key =  '{BasicConfig.Language}' ");
@@ -526,13 +536,13 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
                     else
                     {
                         await con.ExecuteAsync($@" Insert Into ""{Prefix}SysConfig"" (Id,Key,Value) Values ('{MD5_16(Guid.NewGuid().ToString())}','{BasicConfig.Language}','en-us') ");
-                    }  
+                    }
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception("数据库初始化失败：" + ex.Message,ex);
-            } 
+                throw new Exception("数据库初始化失败：" + ex.Message, ex);
+            }
         }
 
         public async Task<RequestInfoSearchResult> SearchRequestInfoAsync(RequestInfoSearchFilterOption filterOption)
@@ -666,7 +676,7 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
 
                 Set Title = @Title,Description = @Description,CronLike = @CronLike,Emails = @Emails,WebHook = @WebHook, Mobiles = @Mobiles,Status= @Status,Service = @Service, Instance = @Instance, PayLoad = @PayLoad 
 
-                Where Id = @Id " ; 
+                Where Id = @Id ";
 
             TraceLogSql(sql);
 
@@ -677,7 +687,7 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
             ) > 0);
         }
 
-        protected async Task LoggingSqlOperation(Func<IDbConnection, Task> func, string message = null, [System.Runtime.CompilerServices.CallerMemberName]string method = null)
+        protected async Task LoggingSqlOperation(Func<IDbConnection, Task> func, string message = null, [System.Runtime.CompilerServices.CallerMemberName] string method = null)
         {
             try
             {
@@ -687,12 +697,12 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
                 }
             }
             catch (Exception ex)
-            {  
+            {
                 Logger.LogError(ex, $"Method: {method} Message: {message ?? "数据库操作异常"}");
             }
         }
 
-        protected async Task<T> LoggingSqlOperation<T>(Func<IDbConnection, Task<T>> func, string message = null, [CallerMemberName]string method = null)
+        protected async Task<T> LoggingSqlOperation<T>(Func<IDbConnection, Task<T>> func, string message = null, [CallerMemberName] string method = null)
         {
             try
             {
@@ -705,16 +715,16 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
             {
                 Logger.LogError(ex, $"Method: {method} Message: {message ?? "数据库操作异常"}");
                 return default(T);
-            } 
+            }
         }
 
 
-        protected void TraceLogSql(string sql, [CallerMemberName]string method = null)
+        protected void TraceLogSql(string sql, [CallerMemberName] string method = null)
         {
             Logger.LogTrace($"Class: {nameof(PostgreSQLStorage)} Method: {method} SQL: {sql}");
         }
 
-       
+
         protected string BuildSqlFilter(IFilterOption filterOption, bool withOutStatusCode = false)
         {
             var builder = new StringBuilder(256);
@@ -775,8 +785,8 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
                 builder.Append("AND ");
             }
             return builder;
-        } 
-       
+        }
+
         protected string BuildSqlControl(IFilterOption filterOption)
         {
             var builder = new StringBuilder(512);
@@ -791,7 +801,7 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
                 {
                     builder.Append($"{(orderFilterOption.IsAscend ? "Asc" : "Desc")} ");
                 }
-            } 
+            }
 
             if (filterOption is ITakeFilterOption takeFilterOption && takeFilterOption.Take > 0)
             {
@@ -819,7 +829,7 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
 
                 case TimeUnit.Hour:
                     dateFormat = "to_char(CreateTime,'DD-hh24')";
-                    break; 
+                    break;
 
                 case TimeUnit.Day:
                 default:
@@ -845,7 +855,7 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
 
             return await LoggingSqlOperation(async connection => (
 
-              await connection.QueryFirstOrDefaultAsync<MonitorJob>(sql,new { Id })
+              await connection.QueryFirstOrDefaultAsync<MonitorJob>(sql, new { Id })
 
             ));
         }
@@ -907,14 +917,14 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
 
         public async Task ClearData(string StartTime)
         {
-            string sql = $@"Delete From ""{Prefix}RequestInfo"" Where CreateTime <= @StartTime "; 
-            var result = await LoggingSqlOperation(async _ =>  await _.ExecuteAsync(sql, new { StartTime }) );
+            string sql = $@"Delete From ""{Prefix}RequestInfo"" Where CreateTime <= @StartTime ";
+            var result = await LoggingSqlOperation(async _ => await _.ExecuteAsync(sql, new { StartTime }));
 
-            string detailSql =$@"Delete From ""{Prefix}RequestDetail"" Where CreateTime <= @StartTime ";
+            string detailSql = $@"Delete From ""{Prefix}RequestDetail"" Where CreateTime <= @StartTime ";
             var detailResult = await LoggingSqlOperation(async _ => await _.ExecuteAsync(detailSql, new { StartTime }));
 
 
-            string performanceSql = $@"Delete From ""{Prefix}Performance"" Where CreateTime <= @StartTime ";  
+            string performanceSql = $@"Delete From ""{Prefix}Performance"" Where CreateTime <= @StartTime ";
             await LoggingSqlOperation(async _ => await _.ExecuteAsync(performanceSql, new { StartTime }));
 
 
