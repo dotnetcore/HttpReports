@@ -226,7 +226,7 @@ namespace HttpReports.Storage.SQLServer
                 }
 
 
-                if (requestDetails.Select(x => x != null).Any())
+                if (!requestDetails.Select(x => x != null).Any())
                 { 
                     string detailSql = string.Join(",", requestDetails.Select(item =>
                     {
@@ -1167,7 +1167,7 @@ namespace HttpReports.Storage.SQLServer
             return result;
         }
 
-        public async Task<List<List<(string service, int value)>>> GetIndexTOPService(IndexPageDataFilterOption filterOption)
+        public async Task<List<List<TopServiceResponse>>> GetIndexTOPService(IndexPageDataFilterOption filterOption)
         {
             var where = BuildSqlFilter(filterOption, false, true); 
 
@@ -1181,15 +1181,15 @@ Select TOP {filterOption.Take} Node,COUNT(1) From {Prefix}RequestInfo {where} AN
 
             TraceLogSql(sql);
 
-            List<List<(string service, int value)>> result = new List<List<(string service, int value)>>();
+            List<List<TopServiceResponse>> result = new List<List<TopServiceResponse>>();
 
             await LoggingSqlOperation(async connection =>
             {
                 using (var resultReader = await connection.QueryMultipleAsync(sql))
                 {
-                    result.Add(resultReader.Read<(string service, double value)>().Select(x => (x.service, x.value.ToInt())).ToList());
-                    result.Add(resultReader.Read<(string service, double value)>().Select(x => (x.service, x.value.ToInt())).ToList());
-                    result.Add(resultReader.Read<(string service, double value)>().Select(x => (x.service, x.value.ToInt())).ToList());
+                    result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service,Value = x.value.ToInt() }).ToList());
+                    result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
+                    result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
 
                 }
             }, "获取首页数据异常");
@@ -1197,5 +1197,31 @@ Select TOP {filterOption.Take} Node,COUNT(1) From {Prefix}RequestInfo {where} AN
             return result;
 
         }
+
+
+        public async Task<IEnumerable<string>> GetTopServiceLoad(IndexPageDataFilterOption filterOption)
+        {
+            string sql = $"Select TOP {filterOption.Take} Node,COUNT(1) From {Prefix}RequestInfo {BuildSqlFilter(filterOption, false, true)} Group by Node  ORDER BY COUNT(1) Desc ";
+
+            return await LoggingSqlOperation(async connection => await connection.QueryAsync<string>(sql) ); 
+
+        } 
+
+        public async Task<List<TopServiceTrendResponse>> GetServiceTrend(IndexPageDataFilterOption filterOption)
+        {
+            var service = await GetTopServiceLoad(filterOption);
+
+            var DateFormat = GetDateFormat(new TimeSpanStatisticsFilterOption {
+
+                Type = (filterOption.EndTime.Value - filterOption.StartTime.Value).Minutes > 60 ? TimeUnit.Hour : TimeUnit.Minute, 
+
+            });
+
+            string sql = $@"Select Node,{DateFormat} KeyField ,COUNT(1) from RequestInfo where Node In ('Log','User','DataCenter','Test') Group BY CONVERT(varchar(16),CreateTime,120)";
+            
+
+
+        }  
+
     }
 }

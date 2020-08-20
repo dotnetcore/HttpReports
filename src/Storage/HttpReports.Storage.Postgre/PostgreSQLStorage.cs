@@ -725,11 +725,11 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
         }
 
 
-        protected string BuildSqlFilter(IFilterOption filterOption, bool withOutStatusCode = false)
+        protected string BuildSqlFilter(IFilterOption filterOption, bool withOutStatusCode = false, bool withOutService = false)
         {
             var builder = new StringBuilder(256);
 
-            if (filterOption is INodeFilterOption nodeFilterOption)
+            if (!withOutService && filterOption is INodeFilterOption nodeFilterOption)
             {
                 if (!nodeFilterOption.Service.IsEmpty())
                 {
@@ -1054,7 +1054,15 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
             return result;
         }
 
-        public async Task<List<List<(string service, int value)>>> GetIndexTOPService(IndexPageDataFilterOption filterOption)
+        public async Task<IEnumerable<string>> GetTopServiceLoad(IndexPageDataFilterOption filterOption)
+        {
+            string sql = $@"Select Node  From ""{Prefix}RequestInfo"" {BuildSqlFilter(filterOption, false, true)} Group by Node  ORDER BY COUNT(1)  Desc Limit {filterOption.Take}  ";
+
+            return await LoggingSqlOperation(async connection => await connection.QueryAsync<string>(sql));
+
+        }
+
+        public async Task<List<List<TopServiceResponse>>> GetIndexTOPService(IndexPageDataFilterOption filterOption)
         {
             string where = BuildSqlFilter(filterOption);
 
@@ -1068,15 +1076,16 @@ Select Node,COUNT(1) From ""{Prefix}RequestInfo"" {where} AND StatusCode = 500 G
 
             TraceLogSql(sql);
 
-            List<List<(string service, int value)>> result = new List<List<(string service, int value)>>();
+            List<List<TopServiceResponse>> result = new List<List<TopServiceResponse>>();
 
             await LoggingSqlOperation(async connection =>
             {
                 using (var resultReader = await connection.QueryMultipleAsync(sql))
                 {
-                    result.Add(resultReader.Read<(string service, double value)>().Select(x => (x.service, x.value.ToInt())).ToList());
-                    result.Add(resultReader.Read<(string service, double value)>().Select(x => (x.service, x.value.ToInt())).ToList());
-                    result.Add(resultReader.Read<(string service, double value)>().Select(x => (x.service, x.value.ToInt())).ToList());
+                    result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
+                    result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
+                    result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
+
 
                 }
             }, "获取首页数据异常");

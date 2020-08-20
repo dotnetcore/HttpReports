@@ -28,7 +28,12 @@ namespace HttpReports
 
         Task<IndexPageData> GetIndexBasicDataAsync(IndexPageDataFilterOption filterOption);
 
-        Task<List<List<(string service, int value)>>> GetIndexTOPService(IndexPageDataFilterOption filterOption);   
+        Task<List<List<TopServiceResponse>>> GetIndexTOPService(IndexPageDataFilterOption filterOption);
+
+
+        Task<List<TopServiceTrendResponse>> GetServiceTrend(IndexPageDataFilterOption filterOption);
+
+        Task<IEnumerable<string>> GetTopServiceLoad(IndexPageDataFilterOption filterOption)
 
 
         //--------------------------------------------------------------------------------------
@@ -137,6 +142,7 @@ namespace HttpReports
 
         Task<string> GetSysConfig(string Key);
 
-        Task<bool> AddPerformanceAsync(IPerformance performance); 
+        Task<bool> AddPerformanceAsync(IPerformance performance);  
+
     }
 }

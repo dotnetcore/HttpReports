@@ -189,6 +189,7 @@ export default {
   }),
   watch: {
     async query(newVal, oldVal) {
+
       var response = await this.load_basic_data();
       this.basic_data = response.body.data;
 
@@ -205,8 +206,8 @@ export default {
     this.load_service_call(response);
     this.load_slow_service(response);
     this.load_error_service(response);
-    this.init_service_call_line();
-    this.init_service_call_heap();
+    this.load_service_call_line();
+    this.load_service_call_heap();
   },
   methods: {
     async load_basic_data() {
@@ -351,7 +352,7 @@ export default {
       
     },
 
-    init_service_call_heap() {
+    load_service_call_heap() {
       const data = [
         { name: "hot dog", value: 70, country: "AD" },
         { name: "burger", value: 54, country: "AD" },
@@ -456,7 +457,7 @@ export default {
 
       heatmapPlot.render();
     },
-    init_service_call_line() {
+    load_service_call_line() {
       var data = [
         {
           name: "China",
