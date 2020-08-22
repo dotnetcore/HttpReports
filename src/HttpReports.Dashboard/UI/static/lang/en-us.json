@@ -34,6 +34,7 @@
   "Time_12h": "12h",
   "Time_24h": "24h",
   "Query": "Query",
+  "Auto": "Auto",
   "Index_RequestCount": "Request count",
   "Index_Errors": "Errors", 
   "Index_ART": "Average processing time",

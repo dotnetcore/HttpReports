@@ -31,9 +31,13 @@ namespace HttpReports
         Task<List<List<TopServiceResponse>>> GetIndexTOPService(IndexPageDataFilterOption filterOption);
 
 
-        Task<List<TopServiceTrendResponse>> GetServiceTrend(IndexPageDataFilterOption filterOption);
+        Task<List<BaseTimeModel>> GetServiceTrend(IndexPageDataFilterOption filterOption,List<string> Time);
 
-        Task<IEnumerable<string>> GetTopServiceLoad(IndexPageDataFilterOption filterOption)
+        Task<List<BaseTimeModel>> GetServiceHeatMap(IndexPageDataFilterOption filterOption, List<string> Time,List<string> Span);
+
+
+
+        Task<IEnumerable<string>> GetTopServiceLoad(IndexPageDataFilterOption filterOption);  
 
 
         //--------------------------------------------------------------------------------------

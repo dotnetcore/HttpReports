@@ -52,7 +52,7 @@ namespace HttpReports.Storage.PostgreSQL
 
                 List<IRequestDetail> requestDetails = list.Select(x => x.RequestDetail).ToList();
 
-                if (requestInfos.Select(x => x != null).Any())
+                if (requestInfos.Where(x => x != null).Any())
                 {
                     var request = string.Join(",", requestInfos.Select(item =>
                     {
@@ -67,7 +67,7 @@ namespace HttpReports.Storage.PostgreSQL
 
                 }
 
-                if (requestDetails.Select(x => x != null).Any())
+                if (requestDetails.Where(x => x != null).Any())
                 {
                     string detail = string.Join(",", requestDetails.Select(item =>
                     {
@@ -1092,6 +1092,21 @@ Select Node,COUNT(1) From ""{Prefix}RequestInfo"" {where} AND StatusCode = 500 G
 
             return result;
 
+        }
+
+        public Task<List<TopServiceTrendResponse>> GetServiceTrend(IndexPageDataFilterOption filterOption)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<BaseTimeModel>> GetServiceTrend(IndexPageDataFilterOption filterOption, List<string> Time)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<BaseTimeModel>> GetServiceHeatMap(IndexPageDataFilterOption filterOption, List<string> Time, List<string> Span)
+        {
+            throw new NotImplementedException();
         }
 
         private class KVClass<TKey, TValue>

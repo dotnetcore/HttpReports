@@ -534,7 +534,15 @@ namespace HttpReports.Dashboard.Handle
 
             var basic = await _storage.GetIndexBasicDataAsync(option);
 
-            var top = await _storage.GetIndexTOPService(option);  
+            var top = await _storage.GetIndexTOPService(option);
+
+            var range = GetTimeRange(option.StartTime.Value, option.EndTime.Value);
+
+            var trend = await _storage.GetServiceTrend(option, range);
+
+            string[] span = { "0-200","200-400","400-600","600-800","800-1000","1000-1200","1200-1400","1400-1600","1600+" };
+
+            var heatmap = await _storage.GetServiceHeatMap(option,range,span.ToList());
 
             return Json(new HttpResultEntity(1, "ok", new
             {
@@ -542,12 +550,38 @@ namespace HttpReports.Dashboard.Handle
                 ServerError = basic.ServerError,
                 Service = basic.Service,
                 Instance = basic.Instance,
-                Top = top
+                Top = top, 
+                Trend = trend,
+                HeatMap = heatmap
 
             }));
              
         }
 
+
+        public List<string> GetTimeRange(DateTime start, DateTime end)
+        {
+            List<string> Time = new List<string>();
+
+            if ((end - start).TotalMinutes <= 60)
+            {
+                while (start <= end)
+                { 
+                    Time.Add(start.ToString("HH:mm"));
+                    start = start.AddMinutes(1); 
+                } 
+
+            }
+            else
+            {
+                while (start <= end)
+                {
+                    Time.Add(start.ToString("dd-HH"));
+                    start = start.AddHours(1);
+                }  
+            } 
+            return Time;   
+        } 
 
 
         public async Task<string> GetRequestList(GetRequestListRequest request)

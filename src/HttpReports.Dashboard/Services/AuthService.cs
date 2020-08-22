@@ -67,7 +67,7 @@ namespace HttpReports.Dashboard.Services
         }
 
         public bool ValidToken(HttpContext httpContext, IDashboardHandle handle, DashboardRoute route)
-        {
+        {  
             if (httpContext == null) return false; 
 
             if (handle.GetType().GetMethod(route.Action).GetCustomAttribute<AllowAnonymousAttribute>() != null)

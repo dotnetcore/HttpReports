@@ -26,8 +26,8 @@
       </el-form>
 
       <span slot="footer" class="dialog-footer">
-        <el-button @click="UpdateDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="updateUserInfo">确 定</el-button>
+        <el-button @click="UpdateDialogVisible = false">{{ this.$store.state.lang.Button_Cancel }}</el-button>
+        <el-button type="primary" @click="updateUserInfo">{{ this.$store.state.lang.Button_OK }}</el-button>
       </span>
     </el-dialog>
 
@@ -46,6 +46,12 @@
         <i
           @click="changeNavState"
           :class="[isCollapse?'el-icon-s-unfold arrow':'el-icon-s-fold arrow']"
+        ></i>
+
+        <i
+          @click="reload"
+          title="refresh"
+          :class="[loading?'refresh fa-spin el-icon-refresh-right':'refresh el-icon-refresh-right']"
         ></i>
       </div>
 
@@ -138,7 +144,6 @@
               size="medium"
               style="margin-right:10px"
               v-model="select_service"
-              placeholder="请选择"
               filterable
               @change="serviceChange"
             >
@@ -154,7 +159,6 @@
               size="medium"
               style="margin-right:10px"
               v-model="select_instance"
-              placeholder="请选择"
               filterable
               @change="instanceChange"
             >
@@ -181,13 +185,20 @@
 
             <el-divider direction="vertical"></el-divider>
 
-            <el-switch style="margin-right:10px" v-model="auto" inactive-text="自动刷新"></el-switch> 
-          
+            <el-switch
+              @change="autoSwitch"
+              class="auto-switch"
+              style="margin-right:10px"
+              v-model="auto"
+              :inactive-text="this.$store.state.lang.Auto"
+            ></el-switch>
+
             <el-input-number
               style="width:80px;margin-right:10px"
               controls-position="right"
               size="mini"
               v-model="num"
+              :min="3"
               :step="3"
             ></el-input-number>
           </div>
@@ -228,124 +239,163 @@
   color: #333;
 }
 
+.auto-switch .el-switch__label {
+  color: #409eff;
+}
+
+.auto-switch .is-active {
+  color: initial;
+}
+
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 220px;
 }
 </style>
 
-<script>     
+<script>
+import { mapState } from "vuex";
+import { basic } from "@/common/basic.js";
 
-import { mapState } from 'vuex' 
-import { basic } from '@/common/basic.js'
-
- export default {
-
-  data() {  
-
-   return { 
-
+export default {
+  data() {
+    return {
       fullscreen: false,
-      isCollapse: false, 
+      isCollapse: false,
       UpdateDialogVisible: false,
+      autoTimer: null,
       userName: localStorage.getItem("username"),
       setUserInfo: {
         name: localStorage.getItem("username"),
         oldPwd: "",
         newPwd: "",
       },
-      range:[ this.getLastTime(),new Date()],
+      range: [this.getLastTime(), new Date()],
       select_service: "",
       select_instance: "",
       service: true,
       value2: true,
-      auto: true,
+      auto: false,
+      loading: false,
       num: 3,
       service: [],
-      instance: [], 
+      instance: [],
       pickerOptions: {
         shortcuts: [
           {
-            text:this.$i18n.t('Time_15m'),
+            text: this.$i18n.t("Time_15m"),
             onClick(picker) {
               const end = new Date();
               const start = new Date();
-              start.setTime(start.getTime() - 60 * 1000 * 15 );
+              start.setTime(start.getTime() - 60 * 1000 * 15);
               picker.$emit("pick", [start, end]);
             },
           },
           {
-            text:this.$i18n.t('Time_30m'),
+            text: this.$i18n.t("Time_30m"),
             onClick(picker) {
               const end = new Date();
               const start = new Date();
-              start.setTime(start.getTime() - 60 * 1000 * 30 );
-              picker.$emit("pick", [start, end]);
-            },
-          },
-           {
-            text:this.$i18n.t('Time_1h'),
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 60 * 1000 * 60 );
+              start.setTime(start.getTime() - 60 * 1000 * 30);
               picker.$emit("pick", [start, end]);
             },
           },
           {
-            text:this.$i18n.t('Time_4h'),
+            text: this.$i18n.t("Time_1h"),
             onClick(picker) {
               const end = new Date();
               const start = new Date();
-              start.setTime(start.getTime() - 60 * 1000 * 60 * 4 );
+              start.setTime(start.getTime() - 60 * 1000 * 60);
               picker.$emit("pick", [start, end]);
             },
           },
-           {
-            text:this.$i18n.t('Time_12h'),
+          {
+            text: this.$i18n.t("Time_4h"),
             onClick(picker) {
               const end = new Date();
               const start = new Date();
-              start.setTime(start.getTime() - 60 * 1000 * 60 * 12 );
+              start.setTime(start.getTime() - 60 * 1000 * 60 * 4);
               picker.$emit("pick", [start, end]);
             },
           },
-            {
-            text:this.$i18n.t('Time_24h'),
+          {
+            text: this.$i18n.t("Time_12h"),
             onClick(picker) {
               const end = new Date();
               const start = new Date();
-              start.setTime(start.getTime() - 60 * 1000 * 60 * 24 );
+              start.setTime(start.getTime() - 60 * 1000 * 60 * 12);
               picker.$emit("pick", [start, end]);
             },
-          } 
+          },
+          {
+            text: this.$i18n.t("Time_24h"),
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 60 * 1000 * 60 * 24);
+              picker.$emit("pick", [start, end]);
+            },
+          },
         ],
       },
       value1: [new Date(2000, 10, 10, 10, 10), new Date(2000, 10, 11, 10, 10)],
       value2: "",
-    };  
-    
+    };
   },
-  created: function () {    
+  created: function () {
     this.initServiceInstance();
   },
   updated: () => {},
- computed: mapState({
-    lang: state => state.lang 
-}),
-  mounted() { 
+  computed: mapState({
+    lang: (state) => state.lang,
+  }),
 
+  computed: mapState({
+    basic_loading: (state) => state.basic_loading,
+    detail_loading: (state) => state.detail_loading,
+  }),
+  watch: {
+    basic_loading(newVal, oldVal) {
+      var path = this.$router.app._route.path;
+      if (path == "/" || path == "/basic") {
+        this.loading = newVal;
+      }
+    },
+
+    detail_loading(newVal, oldVal) {
+      var path = this.$router.app._route.path;
+      if (path == "/detail") {
+        this.loading = newVal;
+      }
+    },
   },
-  methods: {  
-    getLastTime(minutes = 150){
-        var now = new Date;
-        now.setMinutes (now.getMinutes () - minutes);
-        return now;
-    },
-    serviceChange(data) {
+  mounted() {},
+  methods: {
+    getLastTime(minutes = 30) {
+      var now = new Date();
+      now.setMinutes(now.getMinutes() - minutes);
+      return now;
+    },
+    refresh() {
+      this.range = [
+        basic.addSecond(this.range[0], this.num),
+        basic.addSecond(this.range[1], this.num),
+      ];
+      this.reload();
+    },
 
+    autoSwitch(data) {
+      if (data) {
+        this.autoTimer = setInterval(this.refresh, this.num * 1000);
+      } else {
+        if (this.autoTimer != null) {
+          clearInterval(this.autoTimer);
+        }
+      }
+    },
+
+    serviceChange(data) {
       this.$store.state.tag.forEach((item) => {
         if (item.service == data) {
-
           this.instance = [];
           this.instance.push({ value: "ALL", label: "ALL" });
 
@@ -353,34 +403,26 @@ import { basic } from '@/common/basic.js'
             this.instance.push({ value: k, label: k });
           });
 
-          this.select_instance = "ALL";  
+          this.select_instance = "ALL";
         }
-      }); 
+      });
 
-        this.reload();
-
-    },
-    instanceChange(data){
-
-       this.reload();
-
-    },  
-    timeChange(data){ 
-      
       this.reload();
-
     },
-    reload(){    
-
-      this.$store.commit("set_query",{ 
-        service:this.select_service,
-        instance:this.select_instance,
-        start:basic.dateFormat(new Date(this.range[0])),
-        end:basic.dateFormat(new Date(this.range[1])) 
-        
-      });  
-       
-    }, 
+    instanceChange(data) {
+      this.reload();
+    },
+    timeChange(data) {
+      this.reload();
+    },
+    reload() {
+      this.$store.commit("set_query", {
+        service: this.select_service,
+        instance: this.select_instance,
+        start: basic.dateFormat(new Date(this.range[0])),
+        end: basic.dateFormat(new Date(this.range[1])),
+      });
+    },
     handleFullScreen() {
       let element = document.documentElement;
       if (this.fullscreen) {
@@ -415,28 +457,24 @@ import { basic } from '@/common/basic.js'
         })
         .catch((_) => {});
     },
-    changeLanguage(type) { 
+    changeLanguage(type) {
+      this.$i18n.locale = type;
 
-      this.$i18n.locale = type; 
-
-     localStorage.setItem('locale',type);
+      localStorage.setItem("locale", type);
 
       this.$http
         .post("ChangeLanguage", {
           Language: type,
         })
-        .then((response) => { 
-
+        .then((response) => {
           //this.$message({ message: "Switch: " + type, type: "success" });
 
           this.$http.get(`/static/lang/${type}.json`).then((res) => {
+            this.$store.commit("set_lang", res.body);
 
-            this.$store.commit("set_lang", res.body); 
+            //this.$forceUpdate();
 
-             //this.$forceUpdate();
-
-             window.location.reload();
-
+            window.location.reload();
           });
         });
     },
@@ -481,7 +519,7 @@ import { basic } from '@/common/basic.js'
 
           this.logout();
         });
-    }, 
+    },
     logout() {
       localStorage.setItem("token", "");
       this.$store.commit("set_token", "");

@@ -14,7 +14,9 @@ const store = new Vuex.Store({
       instance:"ALL",
       start:basic.dateFormat(basic.getLastTime()),
       end:basic.dateFormat(new Date()) 
-    }
+    },  
+    basic_loading:false, 
+    detail_loading:false  
   },  
   mutations: { 
     set_token: (state, data) => state.token = data,
@@ -23,6 +25,9 @@ const store = new Vuex.Store({
     },
     set_tag: (state, data) => state.tag = data,
     set_query:(state,data) => state.query = data,
+    set_basic_loading:(state,data) => state.basic_loading = data,
+    set_detail_loading:(state,data) => state.detail_loading = data,
+
   }
 
 })

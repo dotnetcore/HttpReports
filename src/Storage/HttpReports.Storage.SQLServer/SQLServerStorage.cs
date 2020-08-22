@@ -211,7 +211,7 @@ namespace HttpReports.Storage.SQLServer
 
                 List<IRequestDetail> requestDetails = list.Select(x => x.RequestDetail).ToList();
 
-                if (requestInfos.Select(x => x != null).Any())
+                if (requestInfos.Where(x => x != null).Any())
                 {
                     string requestSql = string.Join(",", requestInfos.Select(item =>
                     {
@@ -223,10 +223,10 @@ namespace HttpReports.Storage.SQLServer
 
                     await connection.ExecuteAsync($"Insert into [{Prefix}RequestInfo] ([Id],[ParentId],[Node],[Route],[Url],[RequestType],[Method],[Milliseconds],[StatusCode],[IP],[Port],[LocalIP],[LocalPort],[CreateTime]) VALUES {requestSql}", BuildParameters(requestInfos));
                       
-                }
+                } 
 
 
-                if (!requestDetails.Select(x => x != null).Any())
+                if (requestDetails.Where(x => x != null).Any())
                 { 
                     string detailSql = string.Join(",", requestDetails.Select(item =>
                     {
@@ -1218,10 +1218,20 @@ Select TOP {filterOption.Take} Node,COUNT(1) From {Prefix}RequestInfo {where} AN
             });
 
             string sql = $@"Select Node,{DateFormat} KeyField ,COUNT(1) from RequestInfo where Node In ('Log','User','DataCenter','Test') Group BY CONVERT(varchar(16),CreateTime,120)";
-            
 
 
-        }  
+            return null;
 
+        }
+
+        public Task<List<BaseTimeModel>> GetServiceTrend(IndexPageDataFilterOption filterOption, List<string> Time)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<BaseTimeModel>> GetServiceHeatMap(IndexPageDataFilterOption filterOption, List<string> Time, List<string> Span)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

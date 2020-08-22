@@ -10,6 +10,7 @@ namespace HttpReports.Core.Models
 
         public List<BaseNode> Data { get; set; } 
 
-    } 
+    }  
+
 
 }

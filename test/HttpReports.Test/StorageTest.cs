@@ -47,7 +47,7 @@ namespace HttpReports.Test
                         Url = "/HttpReportsData/GetServiceInstance",
                         RequestType = "http",
                         Method = "POST",
-                        Milliseconds = new Random().Next(1,9999),
+                        Milliseconds = new Random().Next(1,2000),
                         StatusCode = new Random().Next(1, 10) > 3 ? 200:500,
                         IP = "192.168.1.1",
                         Port = 80,
@@ -55,10 +55,13 @@ namespace HttpReports.Test
                         LocalPort = LocalPort[new Random().Next(0, LocalPort.Length - 1)],
                         CreateTime = DateTime.Now 
 
-                    },null));; 
+                    },null)); 
+
                 }   
 
                 await Storage.AddRequestInfoAsync(requestBags,System.Threading.CancellationToken.None);
+
+                await Task.Delay(new Random().Next(1000,5000));
 
                 Debug.WriteLine(i.ToString());
             } 
