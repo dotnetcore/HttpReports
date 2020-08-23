@@ -36,7 +36,6 @@ namespace HttpReports
         Task<List<BaseTimeModel>> GetServiceHeatMap(IndexPageDataFilterOption filterOption, List<string> Time,List<string> Span);
 
 
-
         Task<IEnumerable<string>> GetTopServiceLoad(IndexPageDataFilterOption filterOption);  
 
 

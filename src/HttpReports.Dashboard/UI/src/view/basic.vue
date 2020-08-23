@@ -66,7 +66,7 @@
 }
 </style> 
 
-
+ 
 <template>
   <div>
     <el-row :gutter="20" class="tag">
@@ -157,7 +157,7 @@
       </el-col>
     </el-row>
   </div>
-</template>
+</template> 
 
 
 <script>
@@ -178,18 +178,18 @@ export default {
         service: 0,
         instance: 0,
       },
+      created:false,
       service_call_chart: null,
       slow_service_chart: null,
       error_service_chart: null,
       service_call_line_chart: null,
       service_heatmap_chart: null,
     };
-  },
-  created: () => {},
+  }, 
   computed: mapState({
-    query: (state) => state.query,
+    query: (state) => state.query 
   }),
-  watch: {
+  watch: { 
 
     async query(newVal, oldVal) {  
        
@@ -201,11 +201,16 @@ export default {
       this.load_error_service(response);
       this.load_service_call_line(response);
       this.load_service_call_heap(response);
+
     },
   },
-  async mounted() {   
+  async mounted() {     
+    
+    console.log(this.created)
+
+    this.created = true; 
       
-    var response = await this.load_basic_data();
+    var response = await this.load_basic_data();  
     this.basic_data = response.body.data;  
 
     this.load_service_call(response);
@@ -215,16 +220,32 @@ export default {
     this.load_service_call_heap(response);
     
   },
+
+activated(){
+
+console.log("activated");
+
+},
+
+deactivated(){
+
+console.log("deactivated");
+},
+
   methods: {
     async load_basic_data() {   
      
       this.$store.commit("set_basic_loading",true);  
       var data = await Vue.http.post("GetIndexBasicData", this.$store.state.query);  
-      this.$store.commit("set_basic_loading",false);
+      this.$store.commit("set_basic_loading",false);  
+
+      console.log(data)
+      console.log("cost:"+ data.data.data.cost) 
       return data;
     },
 
     load_service_call(response) {
+
       var source = [];
 
       response.data.data.top[0].forEach((item) => {
@@ -327,7 +348,7 @@ export default {
           {
             title: {
               visible: true,
-              text: this.$store.state.lang.SlowService,
+              text: this.$store.state.lang.ErrorService,
             },
             yAxis: {
               visible: true,

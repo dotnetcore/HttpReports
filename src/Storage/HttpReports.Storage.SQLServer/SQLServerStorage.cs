@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
@@ -1153,14 +1154,28 @@ namespace HttpReports.Storage.SQLServer
 
             IndexPageData result = new IndexPageData();
 
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             await LoggingSqlOperation(async connection =>
-            {
+            {  
+                await connection.QueryAsync<dynamic>(sql); 
+
+                var a0 = stopwatch.ElapsedMilliseconds; 
+
                 using (var resultReader = await connection.QueryMultipleAsync(sql))
                 {
+                    var a1 = stopwatch.ElapsedMilliseconds; 
+
                     result.Total = resultReader.ReadFirstOrDefault<int>();
                     result.ServerError = resultReader.ReadFirstOrDefault<int>();
                     result.Service = resultReader.ReadFirstOrDefault<int>();
                     result.Instance = resultReader.ReadFirstOrDefault<int>();
+
+                    var a2 = stopwatch.ElapsedMilliseconds;
+
+                    stopwatch.Stop(); 
+
                 }
             }, "获取首页数据异常");
 
@@ -1205,33 +1220,158 @@ Select TOP {filterOption.Take} Node,COUNT(1) From {Prefix}RequestInfo {where} AN
 
             return await LoggingSqlOperation(async connection => await connection.QueryAsync<string>(sql) ); 
 
+        }  
+        
+
+        public async Task<List<BaseTimeModel>> GetServiceTrend(IndexPageDataFilterOption filterOption, List<string> range)
+        { 
+            IEnumerable<string> service = new List<string>() { filterOption.Service };
+
+            if (filterOption.Service.IsEmpty())
+            {
+                service = await GetTopServiceLoad(filterOption);
+            }
+
+            var timeSpan = new TimeSpanStatisticsFilterOption {
+
+                Type = (filterOption.EndTime.Value - filterOption.StartTime.Value).TotalHours > 1 ? TimeUnit.Hour : TimeUnit.Minute,
+
+            }; 
+
+            var DateFormat = GetDateFormat(timeSpan);
+
+            string where = " where  CreateTime >= @Start AND CreateTime < @End ";
+
+            if (service.Any())
+            {
+                if (service.Count() == 1)
+                {
+                    where = where + $" AND Node = '{service.FirstOrDefault()}' ";
+                }
+                else
+                {
+                    where = where + $" AND Node In  @NodeList ";
+                }
+            }
+
+            if (!filterOption.LocalIP.IsEmpty()) where = where + $" AND LocalIP = '{filterOption.LocalIP}' ";
+            if (filterOption.LocalPort > 0) where = where + $" AND LocalPort = {filterOption.LocalPort} ";
+
+            string sql = $@"SELECT Node KeyField, {DateFormat} TimeField,COUNT(1) ValueField From RequestInfo {where} GROUP BY Node,{DateFormat} ";
+
+            var list = await LoggingSqlOperation(async connection => await connection.QueryAsync<BaseTimeModel>(sql, new
+            {
+
+                Start = filterOption.StartTime.Value.ToString(filterOption.StartTimeFormat),
+                End = filterOption.EndTime.Value.ToString(filterOption.EndTimeFormat),
+                NodeList = service.ToArray()
+
+            }));
+
+            var model = new List<BaseTimeModel>();
+
+            foreach (var s in service)
+            {
+                foreach (var r in range)
+                {
+                    var c = list.Where(x => x.KeyField == s && ParseTimeField(x.TimeField, timeSpan.Type) == r).FirstOrDefault();
+
+                    model.Add(new BaseTimeModel
+                    {
+                        KeyField = s,
+                        TimeField = r,
+                        ValueField = c == null ? 0 : c.ValueField
+
+                    });
+
+                }
+            }
+
+            return model; 
+
+        }
+
+
+        string ParseTimeField(string TimeField, TimeUnit timeUnit)
+        {
+            if (timeUnit == TimeUnit.Minute)
+            {
+                TimeField = TimeField.Substring(11);
+            }
+
+            if (timeUnit == TimeUnit.Hour)
+            {
+                TimeField = TimeField.Substring(8,2) + "-" + TimeField.Substring(11,2);
+            }
+
+            return TimeField; 
         } 
 
-        public async Task<List<TopServiceTrendResponse>> GetServiceTrend(IndexPageDataFilterOption filterOption)
+
+        public async Task<List<BaseTimeModel>> GetServiceHeatMap(IndexPageDataFilterOption filterOption, List<string> Time, List<string> Span)
         {
-            var service = await GetTopServiceLoad(filterOption);
+            string where = " where  CreateTime >= @Start AND CreateTime < @End ";
 
-            var DateFormat = GetDateFormat(new TimeSpanStatisticsFilterOption {
+            if (!filterOption.Service.IsEmpty()) where = where + $" AND Node = '{filterOption.Service}' ";
+            if (!filterOption.LocalIP.IsEmpty()) where = where + $" AND LocalIP = '{filterOption.LocalIP}' ";
+            if (filterOption.LocalPort > 0) where = where + $" AND LocalPort = {filterOption.LocalPort} ";
 
-                Type = (filterOption.EndTime.Value - filterOption.StartTime.Value).Minutes > 60 ? TimeUnit.Hour : TimeUnit.Minute, 
+            var timeSpan = new TimeSpanStatisticsFilterOption
+            {
+                Type = (filterOption.EndTime.Value - filterOption.StartTime.Value).TotalHours > 1 ? TimeUnit.Hour : TimeUnit.Minute
 
-            });
+            };
 
-            string sql = $@"Select Node,{DateFormat} KeyField ,COUNT(1) from RequestInfo where Node In ('Log','User','DataCenter','Test') Group BY CONVERT(varchar(16),CreateTime,120)";
+            var DateFormat = GetDateFormat(timeSpan);
+
+            string sql = $@" 
+
+               SELECT COUNT(1) ValueField,TimeField,KeyField from ( 
+                  select {DateFormat} TimeField,  
+                  case 
+                  when (0 < Milliseconds and Milliseconds <= 200  ) then '0-200'
+                  when (200 < Milliseconds and Milliseconds <= 400) then '200-400'
+                  when (400 < Milliseconds and Milliseconds <= 600) then '400-600'
+                  when (600 < Milliseconds and Milliseconds <= 800) then '600-800'
+                  when (800 < Milliseconds and Milliseconds <= 1000) then '800-1000'
+                  when (1000 < Milliseconds and Milliseconds <= 1200) then '1000-1200'
+                  when (1200 < Milliseconds and Milliseconds <= 1400) then '1200-1400'
+                  when (1400 < Milliseconds and Milliseconds <= 1600) then '1400-1600'
+                  else '1600+' end KeyField 
+                  From requestinfo {where}  
+
+              ) A Group by TimeField, KeyField ";
+
+            var list = await LoggingSqlOperation(async connection => await connection.QueryAsync<BaseTimeModel>(sql, new
+            {
+
+                Start = filterOption.StartTime.Value.ToString(filterOption.StartTimeFormat),
+                End = filterOption.EndTime.Value.ToString(filterOption.EndTimeFormat),
+                Node = filterOption.Service
 
 
-            return null;
+            }));
 
-        }
+            var model = new List<BaseTimeModel>();
 
-        public Task<List<BaseTimeModel>> GetServiceTrend(IndexPageDataFilterOption filterOption, List<string> Time)
-        {
-            throw new NotImplementedException();
-        }
+            foreach (var t in Time)
+            {
+                foreach (var s in Span)
+                {
+                    var c = list.Where(x => ParseTimeField(x.TimeField, timeSpan.Type) == t && x.KeyField  == s).FirstOrDefault();
 
-        public Task<List<BaseTimeModel>> GetServiceHeatMap(IndexPageDataFilterOption filterOption, List<string> Time, List<string> Span)
-        {
-            throw new NotImplementedException();
+                    model.Add(new BaseTimeModel
+                    {
+
+                        TimeField = t,
+                        KeyField = s,
+                        ValueField = c == null ? 0 : c.ValueField
+
+                    });
+                }
+            }
+
+            return model;
         }
     }
 }

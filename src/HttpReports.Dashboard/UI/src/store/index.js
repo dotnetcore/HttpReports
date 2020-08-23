@@ -3,12 +3,14 @@ import Vuex from 'vuex';
 
 Vue.use(Vuex); 
 import { basic } from '@/common/basic.js'
+import { data } from 'autoprefixer';
 
 const store = new Vuex.Store({ 
   state: {
     tag: {},
     token: "", 
     lang: {},
+    route:"/",
     query:{
       service:"ALL",
       instance:"ALL",
@@ -16,6 +18,7 @@ const store = new Vuex.Store({
       end:basic.dateFormat(new Date()) 
     },  
     basic_loading:false, 
+    service_loading:false,  
     detail_loading:false  
   },  
   mutations: { 
@@ -27,6 +30,8 @@ const store = new Vuex.Store({
     set_query:(state,data) => state.query = data,
     set_basic_loading:(state,data) => state.basic_loading = data,
     set_detail_loading:(state,data) => state.detail_loading = data,
+    set_service_loading:(state,data) => state.service_loading = data,
+    set_route:(state,data) => state.route = data,
 
   }
 

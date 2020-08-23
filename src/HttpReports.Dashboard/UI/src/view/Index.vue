@@ -206,7 +206,10 @@
 
         <!--内容区域-->
 
-        <router-view></router-view>
+        <keep-alive>
+            <router-view></router-view>
+        </keep-alive>
+
       </el-main>
     </el-container>
   </el-container>
@@ -352,15 +355,21 @@ export default {
   computed: mapState({
     basic_loading: (state) => state.basic_loading,
     detail_loading: (state) => state.detail_loading,
+    service_loading:(state) => state.service_loading
   }),
   watch: {
-    basic_loading(newVal, oldVal) {
+    basic_loading(newVal, oldVal) { 
       var path = this.$router.app._route.path;
       if (path == "/" || path == "/basic") {
         this.loading = newVal;
       }
     },
-
+    service_loading(newVal, oldVal) {
+      var path = this.$router.app._route.path;
+      if (path == "/service") {
+        this.loading = newVal;
+      }
+    }, 
     detail_loading(newVal, oldVal) {
       var path = this.$router.app._route.path;
       if (path == "/detail") {

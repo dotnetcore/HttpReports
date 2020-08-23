@@ -682,7 +682,8 @@ Select AVG(Milliseconds) ART From {TablePrefix}RequestInfo {where};";
             }
 
             return dateFormat;
-        }
+        } 
+         
 
         private class KVClass<TKey, TValue>
         {
@@ -1218,14 +1219,17 @@ Select Node,COUNT(1) From {TablePrefix}RequestInfo {where} AND StatusCode = 500 
             if (filterOption.Service.IsEmpty()) 
             {
                 service = await GetTopServiceLoad(filterOption);
-            }  
+            } 
 
-            var DateFormat = GetDateFormat(new TimeSpanStatisticsFilterOption
+            var timeSpan = new TimeSpanStatisticsFilterOption
             { 
-                Type = (filterOption.EndTime.Value - filterOption.StartTime.Value).Minutes > 60 ? TimeUnit.Hour : TimeUnit.Minute, 
-            });
+                Type = (filterOption.EndTime.Value - filterOption.StartTime.Value).TotalHours > 1 ? TimeUnit.Hour : TimeUnit.Minute,
 
-            string where = " where  CreateTime >= @Start AND CreateTime < @End AND Node In @NodeList ";
+            };
+
+            var DateFormat = GetDateFormat(timeSpan);
+
+            string where = " where  CreateTime >= @Start AND CreateTime < @End  ";
 
             if (service.Any())
             {
@@ -1237,13 +1241,12 @@ Select Node,COUNT(1) From {TablePrefix}RequestInfo {where} AND StatusCode = 500 
                 {
                     where = where + $" AND Node In  @NodeList ";
                 }  
-            }
-
+            } 
 
             if (!filterOption.LocalIP.IsEmpty()) where = where + $" AND LocalIP = '{filterOption.LocalIP}' ";
             if (filterOption.LocalPort > 0) where = where + $" AND LocalPort = {filterOption.LocalPort} ";
 
-            string sql = $@"SELECT Node KeyField, {DateFormat} TimeField,COUNT(1) ValueField From RequestInfo {where} GROUP BY KeyField,TimeField "; 
+            string sql = $@"SELECT Node KeyField, {DateFormat} TimeField,COUNT(1) ValueField From RequestInfo {where} GROUP BY Node,{DateFormat} "; 
 
             var list = await LoggingSqlOperation(async connection => await connection.QueryAsync<BaseTimeModel>(sql,new {
             
@@ -1282,13 +1285,15 @@ Select Node,COUNT(1) From {TablePrefix}RequestInfo {where} AND StatusCode = 500 
 
             if (!filterOption.Service.IsEmpty()) where = where + $" AND Node = '{filterOption.Service}' ";
             if (!filterOption.LocalIP.IsEmpty()) where = where + $" AND LocalIP = '{filterOption.LocalIP}' ";
-            if (filterOption.LocalPort > 0) where = where + $" AND LocalPort = {filterOption.LocalPort} "; 
+            if (filterOption.LocalPort > 0) where = where + $" AND LocalPort = {filterOption.LocalPort} ";
 
-            var DateFormat = GetDateFormat(new TimeSpanStatisticsFilterOption
+            var timeSpan = new TimeSpanStatisticsFilterOption
             {
-                Type = (filterOption.EndTime.Value - filterOption.StartTime.Value).Minutes > 60 ? TimeUnit.Hour : TimeUnit.Minute
+                Type = (filterOption.EndTime.Value - filterOption.StartTime.Value).TotalHours > 1 ? TimeUnit.Hour : TimeUnit.Minute
 
-            });
+            };
+
+            var DateFormat = GetDateFormat(timeSpan);
 
             string sql = $@"
 
@@ -1301,7 +1306,7 @@ Select Node,COUNT(1) From {TablePrefix}RequestInfo {where} AND StatusCode = 500 
                   when (800 < Milliseconds and Milliseconds <= 1000) then '800-1000'
                   when (1000 < Milliseconds and Milliseconds <= 1200) then '1000-1200'
                   when (1200 < Milliseconds and Milliseconds <= 1400) then '1200-1400'
-                  when (1400 < Milliseconds and Milliseconds <= 1600) then '1200-1600'
+                  when (1400 < Milliseconds and Milliseconds <= 1600) then '1400-1600'
                   else '1600+' end KeyField, count(1) ValueField 
                   From requestinfo {where} GROUP BY KeyField,TimeField  "; 
 

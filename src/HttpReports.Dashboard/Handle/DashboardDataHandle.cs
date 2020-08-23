@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks; 
 using HttpReports.Core.Config;
@@ -496,7 +497,10 @@ namespace HttpReports.Dashboard.Handle
 
 
         public async Task<string> GetIndexBasicData(QueryRequest request)
-        { 
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             var start = request.Start.ToDateTime();
             var end = request.End.ToDateTime();
 
@@ -532,17 +536,31 @@ namespace HttpReports.Dashboard.Handle
 
             };
 
+            var a0 = stopwatch.ElapsedMilliseconds;
+
             var basic = await _storage.GetIndexBasicDataAsync(option);
+
+            var a1 = stopwatch.ElapsedMilliseconds;
 
             var top = await _storage.GetIndexTOPService(option);
 
-            var range = GetTimeRange(option.StartTime.Value, option.EndTime.Value);
+            var a2 = stopwatch.ElapsedMilliseconds;
+
+            var range =  GetTimeRange(option.StartTime.Value, option.EndTime.Value);
 
             var trend = await _storage.GetServiceTrend(option, range);
 
+            var a3 = stopwatch.ElapsedMilliseconds;
+
             string[] span = { "0-200","200-400","400-600","600-800","800-1000","1000-1200","1200-1400","1400-1600","1600+" };
 
-            var heatmap = await _storage.GetServiceHeatMap(option,range,span.ToList());
+            var heatmap = await _storage.GetServiceHeatMap(option,range,span.ToList()); 
+
+            var a4 = stopwatch.ElapsedMilliseconds;
+
+            //await Task.WhenAll(basic,top,trend,heatmap);
+
+            stopwatch.Stop();
 
             return Json(new HttpResultEntity(1, "ok", new
             {
@@ -552,7 +570,8 @@ namespace HttpReports.Dashboard.Handle
                 Instance = basic.Instance,
                 Top = top, 
                 Trend = trend,
-                HeatMap = heatmap
+                HeatMap = heatmap,
+                Cost = stopwatch.ElapsedMilliseconds
 
             }));
              
@@ -563,7 +582,7 @@ namespace HttpReports.Dashboard.Handle
         {
             List<string> Time = new List<string>();
 
-            if ((end - start).TotalMinutes <= 60)
+            if ((end - start).TotalHours <= 1)
             {
                 while (start <= end)
                 { 

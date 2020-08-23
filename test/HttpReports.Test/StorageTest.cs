@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using HttpReports.Storage.FilterOptions;
 using Microsoft.VisualBasic.CompilerServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Org.BouncyCastle.Asn1.IsisMtt;
 
 namespace HttpReports.Test
 {
@@ -32,90 +34,147 @@ namespace HttpReports.Test
             string[] LocalIPs = { "192.168.1.1", "192.168.1.2", "192.168.1.3", "192.168.1.4", "192.168.1.5", "192.168.1.6" };
             int[] LocalPort = { 8801,8802,8803,8804,8805,8806};
 
-            for (int i = 0; i < count; i++)
+            _ = Task.Run(()=> { Insert(); });
+
+            _ = Task.Run(() => { Insert(); });
+
+            _ = Task.Run(() => { Insert(); });
+
+            Insert();
+
+            void Insert()
             {
-                List<Core.RequestBag> requestBags = new List<Core.RequestBag>();
-
-                for (int c = 0; c < 100; c++)
+                while (true)
                 {
-                    requestBags.Add(new Core.RequestBag(new RequestInfo {
+                    List<Core.RequestBag> requestBags = new List<Core.RequestBag>();
 
-                        Id = MD5_16(Guid.NewGuid().ToString()),
-                        ParentId = MD5_16(Guid.NewGuid().ToString()),
-                        Node = Services[new Random().Next(0,Services.Length - 1)],
-                        Route = "/httpreportsdata/getserviceinstance",
-                        Url = "/HttpReportsData/GetServiceInstance",
-                        RequestType = "http",
-                        Method = "POST",
-                        Milliseconds = new Random().Next(1,2000),
-                        StatusCode = new Random().Next(1, 10) > 3 ? 200:500,
-                        IP = "192.168.1.1",
-                        Port = 80,
-                        LocalIP = LocalIPs[new Random().Next(0,LocalIPs.Length - 1)],
-                        LocalPort = LocalPort[new Random().Next(0, LocalPort.Length - 1)],
-                        CreateTime = DateTime.Now 
+                    for (int c = 0; c < 200; c++)
+                    {
+                        requestBags.Add(new Core.RequestBag(new RequestInfo
+                        {
+                            Id = MD5_16(Guid.NewGuid().ToString()),
+                            ParentId = MD5_16(Guid.NewGuid().ToString()),
+                            Node = Services[new Random().Next(0, Services.Length - 1)],
+                            Route = "/httpreportsdata/getserviceinstance",
+                            Url = "/HttpReportsData/GetServiceInstance",
+                            RequestType = "http",
+                            Method = "POST",
+                            Milliseconds = new Random().Next(1, 2000),
+                            StatusCode = new Random().Next(1, 10) > 3 ? 200 : 500,
+                            IP = "192.168.1.1",
+                            Port = 80,
+                            LocalIP = LocalIPs[new Random().Next(0, LocalIPs.Length - 1)],
+                            LocalPort = LocalPort[new Random().Next(0, LocalPort.Length - 1)],
+                            CreateTime = DateTime.Now
 
-                    },null)); 
+                        }, null));
 
-                }   
+                    }
 
-                await Storage.AddRequestInfoAsync(requestBags,System.Threading.CancellationToken.None);
+                    Storage.AddRequestInfoAsync(requestBags, System.Threading.CancellationToken.None).Wait();
+                } 
+               
+            }
+                 
+        }
 
-                await Task.Delay(new Random().Next(1000,5000));
-
-                Debug.WriteLine(i.ToString());
-            } 
-
-
-           
-        } 
 
         [TestMethod]
-        public async Task MonitorQueryTestAsync()
-        {
-            var requestCount = await Storage.GetRequestCountAsync(new RequestCountFilterOption()
+        public async Task IndexQuery()
+        { 
+            int times = 3;
+
+            IndexPageDataFilterOption option = new IndexPageDataFilterOption
+            {  
+                StartTime = DateTime.Now.AddHours(3),
+                EndTime = DateTime.Now,
+                StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
+                EndTimeFormat = "yyyy-MM-dd HH:mm:ss",
+                Take = 6 
+
+            };
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            for (int i = 0; i < times; i++)
+            { 
+                var basic = await Storage.GetIndexBasicDataAsync(option);
+            }
+
+            stopwatch.Stop();
+
+            Console.WriteLine($"GetIndexBasicDataAsync:AVG {(stopwatch.ElapsedMilliseconds).ToString()}"); 
+
+            stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            for (int i = 0; i < times; i++) {
+
+                var top = await Storage.GetIndexTOPService(option); 
+            }
+
+            stopwatch.Stop();
+
+            Console.WriteLine($"GetIndexTOPService:AVG {(stopwatch.ElapsedMilliseconds).ToString()}");  
+
+
+            
+            stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            var range =  GetTimeRange(option.StartTime.Value, option.EndTime.Value);
+
+            for (int i = 0; i < times; i++)
             {
-                StartTime = DateTime.Now.Date,
-                EndTime = DateTime.Now.Date.AddDays(1).AddSeconds(-1),
-                Service = "Test1"
-            });
+                var trend = await Storage.GetServiceTrend(option, range);
+            } 
 
-            Assert.IsTrue(requestCount > 0);
+            stopwatch.Stop();
+            Console.WriteLine($"GetServiceTrend:AVG {(stopwatch.ElapsedMilliseconds).ToString()}");
 
-            var requestCountWithCode = await Storage.GetRequestCountAsync(new RequestCountFilterOption()
+
+
+            stopwatch = new Stopwatch();
+            stopwatch.Start(); 
+
+            string[] span = { "0-200", "200-400", "400-600", "600-800", "800-1000", "1000-1200", "1200-1400", "1400-1600", "1600+" };
+
+            for (int i = 0; i < times; i++)
             {
-                StartTime = DateTime.Now.Date,
-                EndTime = DateTime.Now.Date.AddDays(1).AddSeconds(-1),
-                Service = "Test1",
-                StatusCodes = new[] { 200, 301, 302 }
-            });
+                var heatmap = await Storage.GetServiceHeatMap(option, range, span.ToList());
+            } 
 
-            Assert.IsTrue(requestCount > requestCountWithCode);
+            stopwatch.Stop();
+            Console.WriteLine($"GetServiceHeatMap:AVG {(stopwatch.ElapsedMilliseconds).ToString()}"); 
+           
+            Assert.IsTrue(true); 
 
-            var requestCountWithList = await Storage.GetRequestCountWithWhiteListAsync(new RequestCountWithListFilterOption()
+            List<string> GetTimeRange(DateTime start, DateTime end)
             {
-                StartTime = DateTime.Now.Date,
-                EndTime = DateTime.Now.Date.AddDays(1).AddSeconds(-1),
-                Service = "Test1",
-                List = new[] { "127.0.0.1" },
-                InList = true,
-            });
+                List<string> Time = new List<string>();
 
-            Assert.IsTrue(requestCountWithList.All > 0);
-            Assert.IsTrue(requestCountWithList.All >= requestCountWithList.Max);
+                if ((end - start).TotalMinutes <= 60)
+                {
+                    while (start <= end)
+                    {
+                        Time.Add(start.ToString("HH:mm"));
+                        start = start.AddMinutes(1);
+                    }
 
-            var requestCountWithOutList = await Storage.GetRequestCountWithWhiteListAsync(new RequestCountWithListFilterOption()
-            {
-                StartTime = DateTime.Now.Date,
-                EndTime = DateTime.Now.Date.AddDays(1).AddSeconds(-1),
-                Service = "Test1",
-                List = new[] { "127.0.0.1" },
-                InList = false,
-            });
+                }
+                else
+                {
+                    while (start <= end)
+                    {
+                        Time.Add(start.ToString("dd-HH"));
+                        start = start.AddHours(1);
+                    }
+                }
+                return Time;
+            }
 
-            Assert.IsTrue(requestCountWithOutList.All > 0);
-            Assert.IsTrue(requestCountWithOutList.All >= requestCountWithList.Max);
-        }
+        }  
 
 
         private static string MD5_16(string source)

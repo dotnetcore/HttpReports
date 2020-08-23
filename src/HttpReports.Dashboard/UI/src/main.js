@@ -41,7 +41,7 @@ Vue.use(ElementUI, {
 
 Vue.config.productionTip = false 
 
-new Vue({
+var vue = new Vue({
   el: '#app',
   store, 
   i18n,
@@ -146,7 +146,9 @@ router.beforeEach((to, from, next) => {
  
   if(to.path != '/login'){
     loadState(); 
-  } 
+  }     
+
+  vue.$store.commit("set_route",to.path);   
 
   next();
 
