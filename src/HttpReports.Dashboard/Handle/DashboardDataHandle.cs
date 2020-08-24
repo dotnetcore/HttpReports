@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks; 
 using HttpReports.Core.Config;
@@ -492,6 +493,115 @@ namespace HttpReports.Dashboard.Handle
                 ErrorPercent = result.ErrorPercent.ToString("0.00%"),
             }));
         }
+
+
+
+        public async Task<string> GetIndexBasicData(QueryRequest request)
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            var start = request.Start.ToDateTime();
+            var end = request.End.ToDateTime();
+
+            #region BuildService
+            if (request.Service.IsEmpty() || request.Service == "ALL")
+            {
+                request.Service = "";
+            }
+
+            if (request.Instance.IsEmpty() || request.Instance == "ALL")
+            {
+                request.LocalIP = "";
+                request.LocalPort = 0;
+            }
+            else
+            {
+                request.LocalIP = request.Instance.Substring(0, request.Instance.LastIndexOf(':'));
+                request.LocalPort = request.Instance.Substring(request.Instance.LastIndexOf(':') + 1).ToInt();
+            }
+
+            #endregion
+
+            IndexPageDataFilterOption option = new IndexPageDataFilterOption {
+
+                Service = request.Service,
+                LocalIP = request.LocalIP,
+                LocalPort = request.LocalPort,
+                StartTime = start,
+                EndTime = end,
+                StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
+                EndTimeFormat = "yyyy-MM-dd HH:mm:ss",
+                Take = 6
+
+            };
+
+            var a0 = stopwatch.ElapsedMilliseconds;
+
+            var basic = await _storage.GetIndexBasicDataAsync(option);
+
+            var a1 = stopwatch.ElapsedMilliseconds;
+
+            var top = await _storage.GetIndexTOPService(option);
+
+            var a2 = stopwatch.ElapsedMilliseconds;
+
+            var range =  GetTimeRange(option.StartTime.Value, option.EndTime.Value);
+
+            var trend = await _storage.GetServiceTrend(option, range);
+
+            var a3 = stopwatch.ElapsedMilliseconds;
+
+            string[] span = { "0-200","200-400","400-600","600-800","800-1000","1000-1200","1200-1400","1400-1600","1600+" };
+
+            var heatmap = await _storage.GetServiceHeatMap(option,range,span.ToList()); 
+
+            var a4 = stopwatch.ElapsedMilliseconds;
+
+            //await Task.WhenAll(basic,top,trend,heatmap);
+
+            stopwatch.Stop();
+
+            return Json(new HttpResultEntity(1, "ok", new
+            {
+                Total = basic.Total,
+                ServerError = basic.ServerError,
+                Service = basic.Service,
+                Instance = basic.Instance,
+                Top = top, 
+                Trend = trend,
+                HeatMap = heatmap,
+                Cost = stopwatch.ElapsedMilliseconds
+
+            }));
+             
+        }
+
+
+        public List<string> GetTimeRange(DateTime start, DateTime end)
+        {
+            List<string> Time = new List<string>();
+
+            if ((end - start).TotalHours <= 1)
+            {
+                while (start <= end)
+                { 
+                    Time.Add(start.ToString("HH:mm"));
+                    start = start.AddMinutes(1); 
+                } 
+
+            }
+            else
+            {
+                while (start <= end)
+                {
+                    Time.Add(start.ToString("dd-HH"));
+                    start = start.AddHours(1);
+                }  
+            } 
+            return Time;   
+        } 
+
 
         public async Task<string> GetRequestList(GetRequestListRequest request)
         {

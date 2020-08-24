@@ -35,7 +35,7 @@ namespace HttpReports.Dashboard
 
 
         public async Task InvokeAsync(HttpContext httpContext)
-        {
+        {   
             using (var scope = httpContext.RequestServices.CreateScope()) 
             {
                 var options = scope.ServiceProvider.GetService<DashboardOptions>();
@@ -69,7 +69,7 @@ namespace HttpReports.Dashboard
 
                 var DashboardContext = new DashboardContext(httpContext, router, options);
 
-                //Activate Handle
+                //Activate Handle 
 
                 var handles = Assembly.GetAssembly(typeof(DashboardRoute)).GetTypes();
 
@@ -89,14 +89,14 @@ namespace HttpReports.Dashboard
 
 
                 // VaildToken
-                if (!_authService.ValidToken(httpContext,handle, router))
-                {
-                    httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                //if (!_authService.ValidToken(httpContext,handle, router))
+                //{
+                //    httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
 
-                    await httpContext.Response.WriteAsync("Unauthorized");
+                //    await httpContext.Response.WriteAsync("Unauthorized");
 
-                    return; 
-                }   
+                //    return; 
+                //}   
 
                 handle.Context = DashboardContext;
 

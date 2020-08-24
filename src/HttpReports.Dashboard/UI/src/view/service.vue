@@ -83,10 +83,13 @@
 </style>
 
 <script>
+
 import { Line } from "@antv/g2plot";
 import { Bar } from "@antv/g2plot";
 import { Chart } from "@antv/g2";
 import { Heatmap } from "@antv/g2plot";
+import { mapState } from "vuex";
+import Vue from "vue";
 
 export default {
   data() {
@@ -94,22 +97,46 @@ export default {
       isCollapse: false,
       userName: "",
     };
-  },
-  created: () => {},
-  mounted: () => {
-    this.a.methods.init_service_call1();
-    this.a.methods.init_slow_service1();
-    this.a.methods.init_error_service1();
+  }, 
+computed: mapState({
+    query: (state) => state.query 
+  }),
+  watch: {  
+    async query(newVal, oldVal) { 
 
-    this.a.methods.init_service_call();
-    this.a.methods.init_slow_service();
-    this.a.methods.init_error_service();
+       var response = await this.load_basic_data(); 
+     
+    }, 
+  }, 
+  async mounted() {
 
-    this.a.methods.init_service_gc(); 
-    this.a.methods.init_service_memory(); 
-    this.a.methods.init_service_thread();
-  },
+    //var response = await this.load_basic_data(); 
+
+    this.init_service_call1();
+    this.init_slow_service1();
+    this.init_error_service1();
+
+    this.init_service_call();
+    this.init_slow_service();
+    this.init_error_service();
+
+    this.init_service_gc(); 
+    this.init_service_memory(); 
+    this.init_service_thread();
+  }, 
   methods: {
+
+    async load_basic_data() {   
+     
+      this.$store.commit("set_service_loading",true);  
+      var data = await Vue.http.post("GetIndexBasicData", this.$store.state.query);  
+      this.$store.commit("set_service_loading",false);   
+      console.log("cost:"+ data.data.data.cost) 
+      return data;
+
+    }, 
+
+
     init_service_call1: () => {
       const data = [
         { 地区: "UserService", 销售额: 4684506.442 },

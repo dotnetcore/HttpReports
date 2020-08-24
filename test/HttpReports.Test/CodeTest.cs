@@ -17,19 +17,6 @@ namespace HttpReports.Test
             var result = rule.Where(x => x == '%').ToList();
 
             Assert.IsTrue(result.Count() > 0); 
-        }
-
-
-        [TestMethod]
-        public void Test2()
-        {
-            List<string> list = new List<string>();
-            list.Add("1");
-            list.Add("2");
-
-            var a = list.AsEnumerable().SingleOrDefault();
-
-            Assert.IsTrue(a != null);
-        }
+        } 
     }
 }

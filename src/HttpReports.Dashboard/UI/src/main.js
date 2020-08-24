@@ -9,42 +9,62 @@ import './assets/css/web.css';
 import animate from 'animate.css'
 import VueResource from 'vue-resource' 
 import 'font-awesome/css/font-awesome.min.css' 
+import VueParticles from 'vue-particles'  
+
+import VueI18n from 'vue-i18n'
+import enLocale from 'element-ui/lib/locale/lang/en'
+import zhLocale from 'element-ui/lib/locale/lang/zh-CN'
 
 
-
-// 引入自定义js库
+ 
 import { basic } from '@/common/basic.js'
-Vue.prototype.basic = basic   
+Vue.prototype.basic = basic    
 
-Vue.use(ElementUI);
+Vue.use(VueI18n)  
 Vue.use(animate)
 Vue.use(VueResource)
+Vue.use(VueParticles)  
  
- 
+const i18n = new VueI18n({
+  locale: basic.isEmpty(localStorage.getItem("locale")) ? 'en-us': localStorage.getItem("locale"),  
+  messages: {
+    'en-us': Object.assign(require("../static/lang/en-us.json"), enLocale),
+    'zh-cn': Object.assign(require("../static/lang/zh-cn.json"), zhLocale), 
+  }
 
-Vue.config.productionTip = false
+}) 
 
- 
+Vue.use(ElementUI, {
+  i18n: (key, value) => i18n.t(key, value)
+})
 
-new Vue({
+
+Vue.config.productionTip = false 
+
+var vue = new Vue({
   el: '#app',
-  store,
+  store, 
+  i18n,
   router, 
   render: h => h(App),
-  created: function () {    
+  created:function () {    
 
     var configUrl = window.location.href.substring(0, window.location.href.indexOf('index.html')) + "config.json";   
 
     setHttpFilter();  
 
+    loadState();   
+
     loadLanguage(); 
 
-    loadState();  
+  },
+  methods:{
+  
+  } 
 
-  }
 })
 
-function loadState() {
+ function loadState() {
 
   var token = store.state.token;  
 
@@ -64,24 +84,24 @@ function loadState() {
 } 
 
 
-function loadLanguage() {     
+ function loadLanguage() {    
  
-  Vue.http.get("GetLanguage").then(response =>{
+  Vue.http.get("GetLanguage").then(response => {
  
     var lang = response.body.data;  
 
+    localStorage.setItem('locale',lang);
+
     Vue.http.get(`/static/lang/${lang}.json`).then(res =>{   
       
-      store.commit('set_lang',res.body);
+      store.commit('set_lang',res.body); 
 
-    });
-     
+    }); 
 
   }); 
   
-}
+} 
 
- 
 
 function setHttpFilter() {   
 
@@ -126,7 +146,9 @@ router.beforeEach((to, from, next) => {
  
   if(to.path != '/login'){
     loadState(); 
-  } 
+  }     
+
+  vue.$store.commit("set_route",to.path);   
 
   next();
 

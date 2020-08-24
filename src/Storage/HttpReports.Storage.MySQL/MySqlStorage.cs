@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
@@ -207,28 +208,36 @@ CREATE TABLE IF NOT EXISTS `{TablePrefix}Performance` (
             { 
                 List<IRequestInfo> requestInfos = list.Select(x => x.RequestInfo).ToList();
 
-                List<IRequestDetail> requestDetails = list.Select(x => x.RequestDetail).ToList();
+                List<IRequestDetail> requestDetails = list.Select(x => x.RequestDetail).ToList(); 
 
-                string requestSql = string.Join(",", requestInfos.Select(request => {
+                if (requestInfos.Where(x => x != null).Any())
+                {
 
-                    int i = requestInfos.IndexOf(request) + 1;
+                    string requestSql = string.Join(",", requestInfos.Select(request => {
 
-                    return $"(@Id{i}, @ParentId{i}, @Node{i}, @Route{i}, @Url{i}, @RequestType{i}, @Method{i}, @Milliseconds{i}, @StatusCode{i}, @IP{i}, @Port{i}, @LocalIP{i}, @LocalPort{i}, @CreateTime{i})";
+                        int i = requestInfos.IndexOf(request) + 1;
 
-                }));
+                        return $"(@Id{i}, @ParentId{i}, @Node{i}, @Route{i}, @Url{i}, @RequestType{i}, @Method{i}, @Milliseconds{i}, @StatusCode{i}, @IP{i}, @Port{i}, @LocalIP{i}, @LocalPort{i}, @CreateTime{i})";
 
-                await connection.ExecuteAsync($"INSERT INTO `{TablePrefix}RequestInfo` (`Id`,`ParentId`,`Node`, `Route`, `Url`,`RequestType`,`Method`, `Milliseconds`, `StatusCode`, `IP`,`Port`,`LocalIP`,`LocalPort`,`CreateTime`) VALUES {requestSql}",BuildParameters(requestInfos));
+                    }));
 
-                string detailSql = string.Join(",", requestDetails.Select(detail => {
-
-                    int i = requestDetails.IndexOf(detail) + 1;
-
-                    return $"(@Id{i},@RequestId{i},@Scheme{i},@QueryString{i},@Header{i},@Cookie{i},@RequestBody{i},@ResponseBody{i},@ErrorMessage{i},@ErrorStack{i},@CreateTime{i})";
+                    await connection.ExecuteAsync($"INSERT INTO `{TablePrefix}RequestInfo` (`Id`,`ParentId`,`Node`, `Route`, `Url`,`RequestType`,`Method`, `Milliseconds`, `StatusCode`, `IP`,`Port`,`LocalIP`,`LocalPort`,`CreateTime`) VALUES {requestSql}", BuildParameters(requestInfos));
                      
-                }));
+                } 
 
-                await connection.ExecuteAsync($"Insert into `{TablePrefix}RequestDetail` (`Id`,`RequestId`,`Scheme`,`QueryString`,`Header`,`Cookie`,`RequestBody`,`ResponseBody`,`ErrorMessage`,`ErrorStack`,`CreateTime`) VALUES {detailSql}",BuildParameters(requestDetails));
+                if (requestDetails.Where(x => x != null).Any())
+                {
+                    string detailSql = string.Join(",", requestDetails.Select(detail =>
+                    { 
+                        int i = requestDetails.IndexOf(detail) + 1;
 
+                        return $"(@Id{i},@RequestId{i},@Scheme{i},@QueryString{i},@Header{i},@Cookie{i},@RequestBody{i},@ResponseBody{i},@ErrorMessage{i},@ErrorStack{i},@CreateTime{i})";
+
+                    }));
+
+                    await connection.ExecuteAsync($"Insert into `{TablePrefix}RequestDetail` (`Id`,`RequestId`,`Scheme`,`QueryString`,`Header`,`Cookie`,`RequestBody`,`ResponseBody`,`ErrorMessage`,`ErrorStack`,`CreateTime`) VALUES {detailSql}", BuildParameters(requestDetails));
+
+                }
 
             }, "请求数据批量保存失败");
         }
@@ -338,11 +347,14 @@ CREATE TABLE IF NOT EXISTS `{TablePrefix}Performance` (
             return await LoggingSqlOperation(async connection => (await connection.QueryAsync<ResponeTimeGroup>(sql)).ToList(), "获取http状态码分组统计异常");
         }
 
-        /// <summary>
-        /// 获取首页数据
-        /// </summary>
-        /// <param name="filterOption"></param>
-        /// <returns></returns>
+
+
+
+      
+
+
+
+
         public async Task<IndexPageData> GetIndexPageDataAsync(IndexPageDataFilterOption filterOption)
         {
             string where = BuildSqlFilter(filterOption);
@@ -364,9 +376,37 @@ Select AVG(Milliseconds) ART From {TablePrefix}RequestInfo {where};";
                     result.Total = resultReader.ReadFirstOrDefault<int>();
                     result.NotFound = resultReader.ReadFirstOrDefault<int>();
                     result.ServerError = resultReader.ReadFirstOrDefault<int>();
-                    result.APICount = resultReader.ReadFirst<int>();
+                    result.APICount = resultReader.ReadFirstOrDefault<int>();
                     result.ErrorPercent = result.Total == 0 ? 0 : Convert.ToDouble(result.ServerError) / Convert.ToDouble(result.Total);
                     result.AvgResponseTime = double.TryParse(resultReader.ReadFirstOrDefault<string>(), out var avg) ? avg : 0;
+                }
+            }, "获取首页数据异常");
+
+            return result;
+        } 
+     
+        public async Task<IndexPageData> GetIndexBasicDataAsync(IndexPageDataFilterOption filterOption)
+        {
+            string where = BuildSqlFilter(filterOption);
+
+            string sql = $@"
+        Select COUNT(1) Total From {TablePrefix}RequestInfo {where}; 
+        Select COUNT(1) Code500 From {TablePrefix}RequestInfo {where} AND StatusCode = 500;
+        SELECT Count(DISTINCT(Node)) From {TablePrefix}RequestInfo {where};  
+        Select Count(1) from ( SELECT LocalIP,LocalPort from {TablePrefix}RequestInfo {where} GROUP BY LocalIP,LocalPort) Z;";
+
+            TraceLogSql(sql);
+
+            IndexPageData result = new IndexPageData();
+
+            await LoggingSqlOperation(async connection =>
+            {
+                using (var resultReader = await connection.QueryMultipleAsync(sql))
+                {
+                    result.Total = resultReader.ReadFirstOrDefault<int>(); 
+                    result.ServerError = resultReader.ReadFirstOrDefault<int>();
+                    result.Service = resultReader.ReadFirstOrDefault<int>();
+                    result.Instance = resultReader.ReadFirstOrDefault<int>();
                 }
             }, "获取首页数据异常");
 
@@ -620,7 +660,7 @@ Select AVG(Milliseconds) ART From {TablePrefix}RequestInfo {where};";
             switch (filterOption.Type)
             {
                 case TimeUnit.Minute:
-                    dateFormat = "DATE_FORMAT(CreateTime,'%H-%i')";
+                    dateFormat = "DATE_FORMAT(CreateTime,'%H:%i')";
                     break;
 
                 case TimeUnit.Hour:
@@ -642,7 +682,8 @@ Select AVG(Milliseconds) ART From {TablePrefix}RequestInfo {where};";
             }
 
             return dateFormat;
-        }
+        } 
+         
 
         private class KVClass<TKey, TValue>
         {
@@ -751,11 +792,11 @@ Select AVG(Milliseconds) ART From {TablePrefix}RequestInfo {where};";
         /// </summary>
         /// <param name="filterOption"></param>
         /// <returns></returns>
-        protected string BuildSqlFilter(IFilterOption filterOption, bool withOutStatusCode = false)
+        protected string BuildSqlFilter(IFilterOption filterOption, bool withOutStatusCode = false, bool withOutService = false)
         {
             var builder = new StringBuilder(256); 
 
-            if (filterOption is INodeFilterOption nodeFilterOption)
+            if (!withOutService && filterOption is INodeFilterOption nodeFilterOption)
             {
                 if (!nodeFilterOption.Service.IsEmpty())
                 {
@@ -1128,6 +1169,177 @@ Select AVG(Milliseconds) ART From {TablePrefix}RequestInfo {where};";
             return result.Select(x => x as IPerformance).ToList();
 
         }
+
+
+        public async Task<IEnumerable<string>> GetTopServiceLoad(IndexPageDataFilterOption filterOption)
+        {
+            string sql = $"Select Node  From {TablePrefix}RequestInfo {BuildSqlFilter(filterOption, false, true)} Group by Node  ORDER BY COUNT(1)  Desc Limit {filterOption.Take}  ";
+
+            return await LoggingSqlOperation(async connection => await connection.QueryAsync<string>(sql));
+
+        }
+
+
+        public async Task<List<List<TopServiceResponse>>> GetIndexTOPService(IndexPageDataFilterOption filterOption)
+        { 
+            string where = BuildSqlFilter(filterOption);
+
+            string sql = $@"
+
+Select Node,COUNT(1) From {TablePrefix}RequestInfo {where} Group by Node  ORDER BY COUNT(1) Desc Limit {filterOption.Take} ;
+Select Node,AVG(Milliseconds) From {TablePrefix}RequestInfo {where} Group by Node  ORDER BY  Avg(Milliseconds) Desc Limit {filterOption.Take} ; 
+Select Node,COUNT(1) From {TablePrefix}RequestInfo {where} AND StatusCode = 500 Group by Node  ORDER BY COUNT(1) Desc Limit {filterOption.Take} ; 
+
+"; 
+
+            TraceLogSql(sql);
+
+             List<List<TopServiceResponse>> result = new List<List<TopServiceResponse>>(); 
+
+             await LoggingSqlOperation(async connection =>
+             {
+                using (var resultReader = await connection.QueryMultipleAsync(sql))
+                {
+                     result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
+                     result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
+                     result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
+                      
+                 }
+             }, "获取首页数据异常");
+
+            return result;  
+
+        } 
+
+
+        public async Task<List<BaseTimeModel>> GetServiceTrend(IndexPageDataFilterOption filterOption,List<string> range)
+        {
+            IEnumerable<string> service = new List<string>() { filterOption.Service };
+
+            if (filterOption.Service.IsEmpty()) 
+            {
+                service = await GetTopServiceLoad(filterOption);
+            } 
+
+            var timeSpan = new TimeSpanStatisticsFilterOption
+            { 
+                Type = (filterOption.EndTime.Value - filterOption.StartTime.Value).TotalHours > 1 ? TimeUnit.Hour : TimeUnit.Minute,
+
+            };
+
+            var DateFormat = GetDateFormat(timeSpan);
+
+            string where = " where  CreateTime >= @Start AND CreateTime < @End  ";
+
+            if (service.Any())
+            {
+                if (service.Count() == 1)
+                {
+                    where = where + $" AND Node = '{service.FirstOrDefault()}' ";
+                }
+                else
+                {
+                    where = where + $" AND Node In  @NodeList ";
+                }  
+            } 
+
+            if (!filterOption.LocalIP.IsEmpty()) where = where + $" AND LocalIP = '{filterOption.LocalIP}' ";
+            if (filterOption.LocalPort > 0) where = where + $" AND LocalPort = {filterOption.LocalPort} ";
+
+            string sql = $@"SELECT Node KeyField, {DateFormat} TimeField,COUNT(1) ValueField From RequestInfo {where} GROUP BY Node,{DateFormat} "; 
+
+            var list = await LoggingSqlOperation(async connection => await connection.QueryAsync<BaseTimeModel>(sql,new {
+            
+                Start =  filterOption.StartTime.Value.ToString(filterOption.StartTimeFormat),
+                End = filterOption.EndTime.Value.ToString(filterOption.EndTimeFormat),
+                NodeList = service.ToArray()
+
+            }));
+
+            var model = new List<BaseTimeModel>();
+
+            foreach (var s in service)
+            {
+                foreach (var r in range)
+                {
+                    var c = list.Where(x =>  x.KeyField == s && x.TimeField == r).FirstOrDefault(); 
+
+                    model.Add(new BaseTimeModel
+                    { 
+                        KeyField = s, 
+                        TimeField = r,
+                        ValueField = c == null ? 0 : c.ValueField
+
+                    });
+
+                } 
+            } 
+
+            return model; 
+        }
+         
+
+        public async Task<List<BaseTimeModel>> GetServiceHeatMap(IndexPageDataFilterOption filterOption, List<string> Time,List<string> Span)
+        { 
+            string where = " where  CreateTime >= @Start AND CreateTime < @End ";
+
+            if (!filterOption.Service.IsEmpty()) where = where + $" AND Node = '{filterOption.Service}' ";
+            if (!filterOption.LocalIP.IsEmpty()) where = where + $" AND LocalIP = '{filterOption.LocalIP}' ";
+            if (filterOption.LocalPort > 0) where = where + $" AND LocalPort = {filterOption.LocalPort} ";
+
+            var timeSpan = new TimeSpanStatisticsFilterOption
+            {
+                Type = (filterOption.EndTime.Value - filterOption.StartTime.Value).TotalHours > 1 ? TimeUnit.Hour : TimeUnit.Minute
+
+            };
+
+            var DateFormat = GetDateFormat(timeSpan);
+
+            string sql = $@"
+
+                  select {DateFormat} TimeField,  
+                  case 
+                  when (0 < Milliseconds and Milliseconds <= 200  ) then '0-200'
+                  when (200 < Milliseconds and Milliseconds <= 400) then '200-400'
+                  when (400 < Milliseconds and Milliseconds <= 600) then '400-600'
+                  when (600 < Milliseconds and Milliseconds <= 800) then '600-800'
+                  when (800 < Milliseconds and Milliseconds <= 1000) then '800-1000'
+                  when (1000 < Milliseconds and Milliseconds <= 1200) then '1000-1200'
+                  when (1200 < Milliseconds and Milliseconds <= 1400) then '1200-1400'
+                  when (1400 < Milliseconds and Milliseconds <= 1600) then '1400-1600'
+                  else '1600+' end KeyField, count(1) ValueField 
+                  From requestinfo {where} GROUP BY KeyField,TimeField  "; 
+
+            var list = await LoggingSqlOperation(async connection => await connection.QueryAsync<BaseTimeModel>(sql,new {
+
+                Start = filterOption.StartTime.Value.ToString(filterOption.StartTimeFormat),
+                End = filterOption.EndTime.Value.ToString(filterOption.EndTimeFormat),
+                Node = filterOption.Service
+
+
+            }));
+
+            var model = new List<BaseTimeModel>();
+
+            foreach (var t in Time)
+            {
+                foreach (var s in Span)
+                {
+                    var c = list.Where(x => x.TimeField == t && x.KeyField == s).FirstOrDefault(); 
+
+                    model.Add(new BaseTimeModel { 
+                     
+                        TimeField = t,
+                        KeyField = s,
+                        ValueField = c == null ? 0 : c.ValueField
+
+                    });
+                } 
+            } 
+             
+            return model; 
+        } 
+
 
         #endregion Base
     }
