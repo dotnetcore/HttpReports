@@ -104,6 +104,8 @@ computed: mapState({
   watch: {  
     async query(newVal, oldVal) { 
 
+      console.log("0000000000000");
+
        var response = await this.load_basic_data(); 
      
     }, 
