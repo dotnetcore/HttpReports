@@ -578,6 +578,15 @@ namespace HttpReports.Dashboard.Handle
         }
 
 
+
+        public async Task<string> GetServiceBasicData(QueryRequest request)
+        { 
+            await _storage.GetServiceBasicDataAsync(null);
+
+            return await Task.FromResult("ok"); 
+        } 
+
+
         public List<string> GetTimeRange(DateTime start, DateTime end)
         {
             List<string> Time = new List<string>();
