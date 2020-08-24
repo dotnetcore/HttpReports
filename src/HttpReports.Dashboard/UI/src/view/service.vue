@@ -102,17 +102,15 @@ computed: mapState({
     query: (state) => state.query 
   }),
   watch: {  
-    async query(newVal, oldVal) { 
+    async query(newVal, oldVal) {  
 
-      console.log("0000000000000");
-
-       var response = await this.load_basic_data(); 
+       var response = await this.load_basic_data();  
      
     }, 
   }, 
   async mounted() {
 
-    //var response = await this.load_basic_data(); 
+    var response = await this.load_basic_data(); 
 
     this.init_service_call1();
     this.init_slow_service1();
@@ -128,12 +126,11 @@ computed: mapState({
   }, 
   methods: {
 
-    async load_basic_data() {   
+    async load_basic_data() {    
      
       this.$store.commit("set_service_loading",true);  
-      var data = await Vue.http.post("GetIndexBasicData", this.$store.state.query);  
+      var data = await Vue.http.post("GetServiceBasicData", this.$store.state.query);   
       this.$store.commit("set_service_loading",false);   
-      console.log("cost:"+ data.data.data.cost) 
       return data;
 
     }, 

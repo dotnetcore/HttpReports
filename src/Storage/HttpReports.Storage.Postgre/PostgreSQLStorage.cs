@@ -16,6 +16,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HttpReports.Storage.PostgreSQL
@@ -1026,13 +1027,7 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
 
         }
 
-        public async Task<IndexPageData> GetServiceBasicDataAsync(IndexPageDataFilterOption filterOption)
-        {
-            return null;
-
-        }
-
-
+         
         public async Task<IndexPageData> GetIndexBasicDataAsync(IndexPageDataFilterOption filterOption)
         {
             string where = BuildSqlFilter(filterOption);
@@ -1067,39 +1062,122 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
 
             return await LoggingSqlOperation(async connection => await connection.QueryAsync<string>(sql));
 
-        }
+        } 
 
-        public async Task<List<List<TopServiceResponse>>> GetIndexTOPService(IndexPageDataFilterOption filterOption)
+        public async Task<List<List<TopServiceResponse>>> GetGroupData(IndexPageDataFilterOption filterOption,GroupType group)
         {
+            string groupName = default;
+
+            if (group == GroupType.Node) groupName = "Node";
+            if (group == GroupType.Route) groupName = "Route";
+            if (group == GroupType.Instance) groupName = "LocalIP,LocalPort";  
+
             string where = BuildSqlFilter(filterOption);
 
             string sql = $@"
 
-Select Node,COUNT(1) From ""{Prefix}RequestInfo"" {where} Group by Node  ORDER BY COUNT(1) Desc Limit {filterOption.Take} ;
-Select Node,AVG(Milliseconds) From ""{Prefix}RequestInfo"" {where} Group by Node  ORDER BY  Avg(Milliseconds) Desc Limit {filterOption.Take} ; 
-Select Node,COUNT(1) From ""{Prefix}RequestInfo"" {where} AND StatusCode = 500 Group by Node  ORDER BY COUNT(1) Desc Limit {filterOption.Take} ; 
+            Select {groupName},COUNT(1) From ""{Prefix}RequestInfo"" {where} Group by {groupName}  ORDER BY COUNT(1) Desc Limit {filterOption.Take} ;
+            Select {groupName},AVG(Milliseconds) From ""{Prefix}RequestInfo"" {where} Group by {groupName} ORDER BY  Avg(Milliseconds) Desc Limit {filterOption.Take} ; 
+            Select {groupName},COUNT(1) From ""{Prefix}RequestInfo"" {where} AND StatusCode = 500 Group by {groupName}  ORDER BY COUNT(1) Desc Limit {filterOption.Take} ; 
 
-";
+            ";
 
             TraceLogSql(sql);
 
             List<List<TopServiceResponse>> result = new List<List<TopServiceResponse>>();
 
-            await LoggingSqlOperation(async connection =>
+            await LoggingSqlOperation(async connection => 
             {
                 using (var resultReader = await connection.QueryMultipleAsync(sql))
                 {
-                    result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
-                    result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
-                    result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
 
+                    if (group == GroupType.Instance)
+                    {
+                        result.Add(resultReader.Read<(string localIP,string localPort, double value)>().Select(x => new TopServiceResponse { Service = x.localIP + ":" + x.localPort, Value = x.value.ToInt() }).ToList());
+                        result.Add(resultReader.Read<(string localIP, string localPort, double value)>().Select(x => new TopServiceResponse { Service = x.localIP + ":" + x.localPort, Value = x.value.ToInt() }).ToList());
+                        result.Add(resultReader.Read<(string localIP, string localPort, double value)>().Select(x => new TopServiceResponse { Service = x.localIP + ":" + x.localPort, Value = x.value.ToInt() }).ToList());
+                    }
+                    else
+                    {
+                        result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
+                        result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
+                        result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
+                    }  
 
                 }
-            }, "获取首页数据异常");
+            }, "获取服务数据异常");
 
             return result;
 
-        } 
+        }
+
+
+        public async Task<List<APPTimeModel>> GetAppStatus(IndexPageDataFilterOption filterOption, List<string> range)
+        {
+            IEnumerable<string> service = new List<string>() { filterOption.Service };
+
+            if (filterOption.Service.IsEmpty())
+            {
+                service = await GetTopServiceLoad(filterOption);
+            }
+
+            var timeSpan = new TimeSpanStatisticsFilterOption
+            {
+                Type = (filterOption.EndTime.Value - filterOption.StartTime.Value).TotalHours > 1 ? TimeUnit.Hour : TimeUnit.Minute,
+
+            };
+
+            var DateFormat = GetDateFormat(timeSpan);
+
+            string where = $" where  CreateTime >= '{filterOption.StartTime.Value.ToString(filterOption.StartTimeFormat)}' AND CreateTime < '{filterOption.EndTime.Value.ToString(filterOption.EndTimeFormat)}'  ";
+
+            if (service.Any())
+            {
+                if (service.Count() == 1)
+                {
+                    where = where + $" AND Node = '{service.FirstOrDefault()}' ";
+                }
+                else
+                {
+                    where = where + $" AND Node In  ({string.Join(",", service.Select(x => $"'{x}'"))}) ";
+                }
+            }
+
+            if (!filterOption.LocalIP.IsEmpty()) where = where + $" AND LocalIP = '{filterOption.LocalIP}' ";
+            if (filterOption.LocalPort > 0) where = where + $" AND LocalPort = {filterOption.LocalPort} ";
+
+            string sql = $@" SELECT AVG(GcGen0) GcGen0, AVG(GcGen1) GcGen1, AVG(GcGen2) GcGen2,AVG(HeapMemory) HeapMemory,AVG(ThreadCount) ThreadCount From ""RequestInfo"" {where} GROUP BY {DateFormat} ";
+
+            var list = await LoggingSqlOperation(async connection => await connection.QueryAsync<APPTimeModel>(sql, new
+            {
+                Start = filterOption.StartTime.Value.ToString(filterOption.StartTimeFormat),
+                End = filterOption.EndTime.Value.ToString(filterOption.EndTimeFormat),
+                NodeList = service.ToArray()
+
+            }));
+
+            var model = new List<APPTimeModel>(); 
+           
+            foreach (var r in range)
+            {
+                var c = list.Where(x => x.TimeField == r ).FirstOrDefault();
+
+                model.Add(new APPTimeModel
+                {
+                    TimeField = r,
+                    GcGen0 = c == null ? 0 : c.GcGen0,
+                    GcGen1 = c == null ? 0 : c.GcGen1,
+                    GcGen2 = c == null ? 0 : c.GcGen2,
+                    HeapMemory = c == null ? 0 : c.HeapMemory,
+                    ThreadCount = c == null ? 0 : c.ThreadCount
+                });
+
+            } 
+
+            return model;
+        }
+
+
 
 
         public async Task<List<BaseTimeModel>> GetServiceTrend(IndexPageDataFilterOption filterOption, List<string> range)

@@ -345,12 +345,7 @@ CREATE TABLE IF NOT EXISTS `{TablePrefix}Performance` (
             TraceLogSql(sql);
 
             return await LoggingSqlOperation(async connection => (await connection.QueryAsync<ResponeTimeGroup>(sql)).ToList(), "获取http状态码分组统计异常");
-        }
-
-
-
-
-      
+        } 
 
 
 
@@ -415,12 +410,49 @@ Select AVG(Milliseconds) ART From {TablePrefix}RequestInfo {where};";
 
 
 
-
-        public async Task<IndexPageData> GetServiceBasicDataAsync(IndexPageDataFilterOption filterOption) 
+        public async Task<List<List<TopServiceResponse>>> GetGroupData(IndexPageDataFilterOption filterOption, GroupType group)
         {
-            return null;
-        
-        }  
+            string groupName = default;
+
+            if (group == GroupType.Node) groupName = "Node";
+            if (group == GroupType.Route) groupName = "Route";
+            if (group == GroupType.Instance) groupName = "LocalIP,LocalPort";
+
+            string where = BuildSqlFilter(filterOption);
+
+            string sql = $@"
+
+                Select {groupName},COUNT(1) From {TablePrefix}RequestInfo {where} Group by {groupName}  ORDER BY COUNT(1) Desc Limit {filterOption.Take} ;
+                Select {groupName},AVG(Milliseconds) From {TablePrefix}RequestInfo {where} Group by {groupName}  ORDER BY  Avg(Milliseconds) Desc Limit {filterOption.Take} ; 
+                Select {groupName},COUNT(1) From {TablePrefix}RequestInfo {where} AND StatusCode = 500 Group by {groupName}  ORDER BY COUNT(1) Desc Limit {filterOption.Take} ;  ";
+
+            TraceLogSql(sql);
+
+            List<List<TopServiceResponse>> result = new List<List<TopServiceResponse>>();
+
+            await LoggingSqlOperation(async connection =>
+            {
+                using (var resultReader = await connection.QueryMultipleAsync(sql))
+                { 
+                    if (group == GroupType.Instance)
+                    {
+                        result.Add(resultReader.Read<(string localIP, string localPort, double value)>().Select(x => new TopServiceResponse { Service = x.localIP + ":" + x.localPort, Value = x.value.ToInt() }).ToList());
+                        result.Add(resultReader.Read<(string localIP, string localPort, double value)>().Select(x => new TopServiceResponse { Service = x.localIP + ":" + x.localPort, Value = x.value.ToInt() }).ToList());
+                        result.Add(resultReader.Read<(string localIP, string localPort, double value)>().Select(x => new TopServiceResponse { Service = x.localIP + ":" + x.localPort, Value = x.value.ToInt() }).ToList());
+                    }
+                    else
+                    {
+                        result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
+                        result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
+                        result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
+                    }
+
+                }
+            }, "获取服务数据异常");
+
+            return result;
+
+        }
 
 
         /// <summary>
@@ -1187,40 +1219,8 @@ Select AVG(Milliseconds) ART From {TablePrefix}RequestInfo {where};";
 
             return await LoggingSqlOperation(async connection => await connection.QueryAsync<string>(sql));
 
-        }
-
-
-        public async Task<List<List<TopServiceResponse>>> GetIndexTOPService(IndexPageDataFilterOption filterOption)
-        { 
-            string where = BuildSqlFilter(filterOption);
-
-            string sql = $@"
-
-Select Node,COUNT(1) From {TablePrefix}RequestInfo {where} Group by Node  ORDER BY COUNT(1) Desc Limit {filterOption.Take} ;
-Select Node,AVG(Milliseconds) From {TablePrefix}RequestInfo {where} Group by Node  ORDER BY  Avg(Milliseconds) Desc Limit {filterOption.Take} ; 
-Select Node,COUNT(1) From {TablePrefix}RequestInfo {where} AND StatusCode = 500 Group by Node  ORDER BY COUNT(1) Desc Limit {filterOption.Take} ; 
-
-"; 
-
-            TraceLogSql(sql);
-
-             List<List<TopServiceResponse>> result = new List<List<TopServiceResponse>>(); 
-
-             await LoggingSqlOperation(async connection =>
-             {
-                using (var resultReader = await connection.QueryMultipleAsync(sql))
-                {
-                     result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
-                     result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
-                     result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
-                      
-                 }
-             }, "获取首页数据异常");
-
-            return result;  
-
         } 
-
+      
 
         public async Task<List<BaseTimeModel>> GetServiceTrend(IndexPageDataFilterOption filterOption,List<string> range)
         {

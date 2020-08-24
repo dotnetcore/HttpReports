@@ -542,7 +542,7 @@ namespace HttpReports.Dashboard.Handle
 
             var a1 = stopwatch.ElapsedMilliseconds;
 
-            var top = await _storage.GetIndexTOPService(option);
+            var top = await _storage.GetGroupData(option,GroupType.Node);
 
             var a2 = stopwatch.ElapsedMilliseconds;
 
@@ -580,10 +580,53 @@ namespace HttpReports.Dashboard.Handle
 
 
         public async Task<string> GetServiceBasicData(QueryRequest request)
-        { 
-            await _storage.GetServiceBasicDataAsync(null);
+        {
+            var start = request.Start.ToDateTime();
+            var end = request.End.ToDateTime();
+
+            #region BuildService
+            if (request.Service.IsEmpty() || request.Service == "ALL")
+            {
+                request.Service = "";
+            }
+
+            if (request.Instance.IsEmpty() || request.Instance == "ALL")
+            {
+                request.LocalIP = "";
+                request.LocalPort = 0;
+            }
+            else
+            {
+                request.LocalIP = request.Instance.Substring(0, request.Instance.LastIndexOf(':'));
+                request.LocalPort = request.Instance.Substring(request.Instance.LastIndexOf(':') + 1).ToInt();
+            }
+
+            #endregion
+
+            IndexPageDataFilterOption option = new IndexPageDataFilterOption
+            {
+
+                Service = request.Service,
+                LocalIP = request.LocalIP,
+                LocalPort = request.LocalPort,
+                StartTime = start,
+                EndTime = end,
+                StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
+                EndTimeFormat = "yyyy-MM-dd HH:mm:ss",
+                Take = 6
+
+            };
+
+            var route = await _storage.GetGroupData(option,GroupType.Route);
+
+            var instance = await _storage.GetGroupData(option,GroupType.Instance);
+
+            var range = GetTimeRange(option.StartTime.Value, option.EndTime.Value);
+
+            var app = await _storage.GetAppStatus(option,range); 
 
             return await Task.FromResult("ok"); 
+
         } 
 
 

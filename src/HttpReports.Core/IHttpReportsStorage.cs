@@ -26,20 +26,20 @@ namespace HttpReports
         Task AddRequestInfoAsync(List<RequestBag> list, CancellationToken token); 
 
 
-        Task<IndexPageData> GetIndexBasicDataAsync(IndexPageDataFilterOption filterOption); 
-
-        Task<List<List<TopServiceResponse>>> GetIndexTOPService(IndexPageDataFilterOption filterOption);
-
+        Task<IndexPageData> GetIndexBasicDataAsync(IndexPageDataFilterOption filterOption);   
 
         Task<List<BaseTimeModel>> GetServiceTrend(IndexPageDataFilterOption filterOption,List<string> Time);
 
         Task<List<BaseTimeModel>> GetServiceHeatMap(IndexPageDataFilterOption filterOption, List<string> Time,List<string> Span);
 
 
-        Task<IEnumerable<string>> GetTopServiceLoad(IndexPageDataFilterOption filterOption); 
+        Task<IEnumerable<string>> GetTopServiceLoad(IndexPageDataFilterOption filterOption);  
+    
+
+        Task<List<List<TopServiceResponse>>> GetGroupData(IndexPageDataFilterOption filterOption,GroupType group);
 
 
-        Task<IndexPageData> GetServiceBasicDataAsync(IndexPageDataFilterOption filterOption); 
+        Task<List<APPTimeModel>> GetAppStatus(IndexPageDataFilterOption filterOption, List<string> range);
 
 
         //--------------------------------------------------------------------------------------

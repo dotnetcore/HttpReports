@@ -177,8 +177,7 @@ export default {
         serverError: 0,
         service: 0,
         instance: 0,
-      },
-      created:false,
+      }, 
       service_call_chart: null,
       slow_service_chart: null,
       error_service_chart: null,
@@ -204,11 +203,7 @@ export default {
 
     },
   },
-  async mounted() {     
-    
-    console.log(this.created)
-
-    this.created = true; 
+  async mounted() {      
       
     var response = await this.load_basic_data();  
     this.basic_data = response.body.data;  
@@ -223,13 +218,12 @@ export default {
 
 activated(){
 
-console.log("activated");
+ 
 
 },
 
 deactivated(){
-
-console.log("deactivated");
+ 
 },
 
   methods: {
@@ -237,9 +231,7 @@ console.log("deactivated");
      
       this.$store.commit("set_basic_loading",true);  
       var data = await Vue.http.post("GetIndexBasicData", this.$store.state.query);  
-      this.$store.commit("set_basic_loading",false);  
-
-      console.log(data)
+      this.$store.commit("set_basic_loading",false);   
       console.log("cost:"+ data.data.data.cost) 
       return data;
     },

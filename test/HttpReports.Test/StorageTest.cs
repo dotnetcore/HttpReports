@@ -32,6 +32,9 @@ namespace HttpReports.Test
 
             string[] Services = { "User", "SendOrder", "PostOrder", "Payment", "Log", "DataCenter", "Student","Master" };
             string[] LocalIPs = { "192.168.1.1", "192.168.1.2", "192.168.1.3", "192.168.1.4", "192.168.1.5", "192.168.1.6" };
+
+            string[] Route = { "Login","Payment","Search","QueryData","GetCofnig","LoadData" };
+
             int[] LocalPort = { 8801,8802,8803,8804,8805,8806};
 
             _ = Task.Run(()=> { Insert(); });
@@ -55,7 +58,7 @@ namespace HttpReports.Test
                             Id = MD5_16(Guid.NewGuid().ToString()),
                             ParentId = MD5_16(Guid.NewGuid().ToString()),
                             Node = Services[new Random().Next(0, Services.Length - 1)],
-                            Route = "/httpreportsdata/getserviceinstance",
+                            Route =  Services[new Random().Next(0, Services.Length - 1)] + "/" + Route[new Random().Next(0, Route.Length - 1)],
                             Url = "/HttpReportsData/GetServiceInstance",
                             RequestType = "http",
                             Method = "POST",
@@ -111,7 +114,7 @@ namespace HttpReports.Test
 
             for (int i = 0; i < times; i++) {
 
-                var top = await Storage.GetIndexTOPService(option); 
+                var top = await Storage.GetGroupData(option,Core.Storage.FilterOptions.GroupType.Instance); 
             }
 
             stopwatch.Stop();

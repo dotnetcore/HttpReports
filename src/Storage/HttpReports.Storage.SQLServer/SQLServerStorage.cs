@@ -1140,9 +1140,47 @@ namespace HttpReports.Storage.SQLServer
 
         }
 
-        public async Task<IndexPageData> GetServiceBasicDataAsync(IndexPageDataFilterOption filterOption)
+        public async Task<List<List<TopServiceResponse>>> GetGroupData(IndexPageDataFilterOption filterOption, GroupType group)
         {
-            return null;
+            string groupName = default;
+
+            if (group == GroupType.Node) groupName = "Node";
+            if (group == GroupType.Route) groupName = "Route";
+            if (group == GroupType.Instance) groupName = "LocalIP,LocalPort";
+
+            string where = BuildSqlFilter(filterOption);
+
+            string sql = $@"
+
+                Select TOP {filterOption.Take} {groupName},COUNT(1) From {Prefix}RequestInfo {where} Group by {groupName}  ORDER BY COUNT(1) Desc  ;
+                Select TOP {filterOption.Take} {groupName},AVG(Milliseconds) From {Prefix}RequestInfo {where} Group by {groupName}  ORDER BY  Avg(Milliseconds) Desc ; 
+                Select TOP {filterOption.Take} {groupName},COUNT(1) From {Prefix}RequestInfo {where} AND StatusCode = 500 Group by {groupName}  ORDER BY COUNT(1) Desc ; ";
+
+            TraceLogSql(sql);
+
+            List<List<TopServiceResponse>> result = new List<List<TopServiceResponse>>();
+
+            await LoggingSqlOperation(async connection =>
+            {
+                using (var resultReader = await connection.QueryMultipleAsync(sql))
+                {
+                    if (group == GroupType.Instance)
+                    {
+                        result.Add(resultReader.Read<(string localIP, string localPort, double value)>().Select(x => new TopServiceResponse { Service = x.localIP + ":" + x.localPort, Value = x.value.ToInt() }).ToList());
+                        result.Add(resultReader.Read<(string localIP, string localPort, double value)>().Select(x => new TopServiceResponse { Service = x.localIP + ":" + x.localPort, Value = x.value.ToInt() }).ToList());
+                        result.Add(resultReader.Read<(string localIP, string localPort, double value)>().Select(x => new TopServiceResponse { Service = x.localIP + ":" + x.localPort, Value = x.value.ToInt() }).ToList());
+                    }
+                    else
+                    {
+                        result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
+                        result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
+                        result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
+                    }
+
+                }
+            }, "获取服务数据异常");
+
+            return result;
 
         }
 
@@ -1188,37 +1226,7 @@ namespace HttpReports.Storage.SQLServer
             return result;
         }
 
-        public async Task<List<List<TopServiceResponse>>> GetIndexTOPService(IndexPageDataFilterOption filterOption)
-        {
-            var where = BuildSqlFilter(filterOption, false, true); 
-
-            string sql = $@"
-
-Select TOP {filterOption.Take} Node,COUNT(1) From {Prefix}RequestInfo {where} Group by Node  ORDER BY COUNT(1) Desc  ;
-Select TOP {filterOption.Take}  Node, CAST(AVG(CONVERT(FLOAT,Milliseconds)) AS DECIMAL(18,2)) as AvgTime From {Prefix}RequestInfo {where} Group by Node  ORDER BY AvgTime Desc; 
-Select TOP {filterOption.Take} Node,COUNT(1) From {Prefix}RequestInfo {where} AND StatusCode = 500 Group by Node  ORDER BY COUNT(1) Desc ; 
-
-";
-
-            TraceLogSql(sql);
-
-            List<List<TopServiceResponse>> result = new List<List<TopServiceResponse>>();
-
-            await LoggingSqlOperation(async connection =>
-            {
-                using (var resultReader = await connection.QueryMultipleAsync(sql))
-                {
-                    result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service,Value = x.value.ToInt() }).ToList());
-                    result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
-                    result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
-
-                }
-            }, "获取首页数据异常");
-
-            return result;
-
-        }
-
+       
 
         public async Task<IEnumerable<string>> GetTopServiceLoad(IndexPageDataFilterOption filterOption)
         {

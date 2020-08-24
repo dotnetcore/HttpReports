@@ -20,7 +20,7 @@ namespace HttpReports.Dashboard.WebAPP
        
         public void ConfigureServices(IServiceCollection services) 
         { 
-            //services.AddHttpReports().UseSQLServerStorage(); 
+            services.AddHttpReports().UsePostgreSQLStorage(); 
             services.AddHttpReportsDashboard().UsePostgreSQLStorage(); 
 
             services.AddCors(c =>
@@ -41,7 +41,7 @@ namespace HttpReports.Dashboard.WebAPP
             app.UseCors("Policy");
 
 
-            //app.UseHttpReports();
+            app.UseHttpReports();
             app.UseHttpReportsDashboard();
 
             if (env.IsDevelopment())
