@@ -1026,6 +1026,13 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
 
         }
 
+        public async Task<IndexPageData> GetServiceBasicDataAsync(IndexPageDataFilterOption filterOption)
+        {
+            return null;
+
+        }
+
+
         public async Task<IndexPageData> GetIndexBasicDataAsync(IndexPageDataFilterOption filterOption)
         {
             string where = BuildSqlFilter(filterOption);

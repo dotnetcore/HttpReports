@@ -413,6 +413,16 @@ Select AVG(Milliseconds) ART From {TablePrefix}RequestInfo {where};";
             return result;
         }
 
+
+
+
+        public async Task<IndexPageData> GetServiceBasicDataAsync(IndexPageDataFilterOption filterOption) 
+        {
+            return null;
+        
+        }  
+
+
         /// <summary>
         /// 获取请求信息
         /// </summary>
