@@ -468,11 +468,12 @@ deactivated(){
             color: ["#F3F3FF", "#9599E2"],
           }
         );
-
+ 
+  
         this.service_heatMap_chart.render();
-      } else {
+      } else { 
         this.service_heatMap_chart.changeData(source);
-      }
+      } 
     },
   },
 };
