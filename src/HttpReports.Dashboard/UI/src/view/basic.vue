@@ -369,6 +369,7 @@ deactivated(){
     },
 
     load_service_call_line(response) {
+      
       var source = [];
 
       response.data.data.trend.forEach((item) => {

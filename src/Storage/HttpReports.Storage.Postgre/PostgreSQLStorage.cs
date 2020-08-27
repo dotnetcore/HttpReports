@@ -1135,18 +1135,21 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
             {
                 if (service.Count() == 1)
                 {
-                    where = where + $" AND Node = '{service.FirstOrDefault()}' ";
+                    where = where + $" AND Service = '{service.FirstOrDefault()}' ";
                 }
                 else
                 {
-                    where = where + $" AND Node In  ({string.Join(",", service.Select(x => $"'{x}'"))}) ";
+                    where = where + $" AND Service In  ({string.Join(",", service.Select(x => $"'{x}'"))}) ";
                 }
             }
 
-            if (!filterOption.LocalIP.IsEmpty()) where = where + $" AND LocalIP = '{filterOption.LocalIP}' ";
-            if (filterOption.LocalPort > 0) where = where + $" AND LocalPort = {filterOption.LocalPort} ";
 
-            string sql = $@" SELECT AVG(GcGen0) GcGen0, AVG(GcGen1) GcGen1, AVG(GcGen2) GcGen2,AVG(HeapMemory) HeapMemory,AVG(ThreadCount) ThreadCount From ""RequestInfo"" {where} GROUP BY {DateFormat} ";
+            if (filterOption.LocalIP.IsEmpty() && filterOption.LocalPort > 0)
+            {
+                where = where + $" AND Instance = '{filterOption.LocalIP+":"+filterOption.LocalPort}'  ";
+            } 
+
+            string sql = $@" SELECT AVG(GcGen0) GcGen0, AVG(GcGen1) GcGen1, AVG(GcGen2) GcGen2,AVG(HeapMemory) HeapMemory,AVG(ThreadCount) ThreadCount,{DateFormat} TimeField From ""Performance"" {where} GROUP BY {DateFormat} ";
 
             var list = await LoggingSqlOperation(async connection => await connection.QueryAsync<APPTimeModel>(sql, new
             {
@@ -1165,16 +1168,17 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
                 model.Add(new APPTimeModel
                 {
                     TimeField = r,
-                    GcGen0 = c == null ? 0 : c.GcGen0,
-                    GcGen1 = c == null ? 0 : c.GcGen1,
-                    GcGen2 = c == null ? 0 : c.GcGen2,
-                    HeapMemory = c == null ? 0 : c.HeapMemory,
+                    GcGen0 = c == null ? 0 : c.GcGen0.ToString().ToDouble(2),
+                    GcGen1 = c == null ? 0 : c.GcGen1.ToString().ToDouble(2),
+                    GcGen2 = c == null ? 0 : c.GcGen2.ToString().ToDouble(2),
+                    HeapMemory = c == null ? 0 : c.HeapMemory.ToString().ToDouble(2),
                     ThreadCount = c == null ? 0 : c.ThreadCount
                 });
 
             } 
 
             return model;
+
         }
 
 

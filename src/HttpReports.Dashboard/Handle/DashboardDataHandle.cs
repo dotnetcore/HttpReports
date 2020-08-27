@@ -623,9 +623,17 @@ namespace HttpReports.Dashboard.Handle
 
             var range = GetTimeRange(option.StartTime.Value, option.EndTime.Value);
 
-            var app = await _storage.GetAppStatus(option,range); 
+            var app = await _storage.GetAppStatus(option,range);
 
-            return await Task.FromResult("ok"); 
+
+            return Json(new HttpResultEntity(1, "ok", new
+            {
+                route = route,
+                instance = instance,
+                range = range,
+                app = app
+
+            })); 
 
         } 
 

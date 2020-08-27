@@ -96,6 +96,7 @@ export default {
     return {
       isCollapse: false,
       userName: "",
+      service_gc_chart:null
     };
   }, 
 computed: mapState({
@@ -120,9 +121,9 @@ computed: mapState({
     this.init_slow_service();
     this.init_error_service();
 
-    this.init_service_gc(); 
-    this.init_service_memory(); 
-    this.init_service_thread();
+    this.load_service_gc(response.body.data); 
+    this.load_service_memory(); 
+    this.load_service_thread();
   }, 
   methods: {
 
@@ -130,7 +131,8 @@ computed: mapState({
      
       this.$store.commit("set_service_loading",true);  
       var data = await Vue.http.post("GetServiceBasicData", this.$store.state.query);   
-      this.$store.commit("set_service_loading",false);   
+      this.$store.commit("set_service_loading",false);  
+      console.log(data) 
       return data;
 
     }, 
@@ -357,42 +359,82 @@ computed: mapState({
       barPlot.render();
     },
 
-    init_service_gc: () => {
-      const data = [
-        { year: "1991", value: 3 },
-        { year: "1992", value: 4 },
-        { year: "1993", value: 3.5 },
-        { year: "1994", value: 5 },
-        { year: "1995", value: 4.9 },
-        { year: "1996", value: 6 },
-        { year: "1997", value: 7 },
-        { year: "1998", value: 9 },
-        { year: "1999", value: 13 },
-      ];
+    load_service_gc(data){ 
+      
+      var source = [];  
 
-      const linePlot = new Line(document.getElementById("service-gc"), {
-        title: {
-          visible: true,
-          text: "GC",
-        },
-        forceFit: true,
-        padding: "auto",
-        data,
-        xField: "year",
-        yField: "value",
-        point: {
-          visible: true,
-        },
-        label: {
-          visible: true,
-          type: "point",
-        },
-      });
+      data.app.forEach((item) => { 
 
-      linePlot.render();
+        source.push({
+          service: "GcGen0",
+          time: item.timeField,
+          value: item.gcGen0,
+        });
+
+        source.push({
+          service: "GcGen1",
+          time: item.timeField,
+          value: item.gcGen1,
+        });
+
+        source.push({
+          service: "GcGen2",
+          time: item.timeField,
+          value: item.gcGen2,
+        }); 
+
+      }); 
+    
+
+      if (this.service_gc_chart == null) {
+        this.service_gc_chart = new Line(
+          document.getElementById("service-gc"),
+          {
+            title: {
+              visible: true,
+              text: "GC",
+            },
+
+            forceFit: true,
+            data: source,
+            xField: "time",
+            yField: "value",
+            seriesField: "service",
+            xAxis: {
+              type: "dateTime",
+              label: {
+                visible: true,
+                autoHide: true,
+                autoRotate: false,
+              },
+            },
+            animation: {
+              appear: {
+                animation: "clipingWithData",
+              },
+            },
+            yAxis: {
+              formatter: (v) => v,
+            },
+            legend: {
+              visible: false,
+            },
+            label: {
+              visible: true,
+              type: "line",
+            },
+            smooth: true,
+          }
+        );
+
+        this.service_gc_chart.render();
+      } else {
+        this.service_gc_chart.changeData(source);
+      }
+
     },
 
-    init_service_memory: () => {
+    load_service_memory: () => {
       const data = [
         { year: "1991", value: 3 },
         { year: "1992", value: 4 },
@@ -427,7 +469,7 @@ computed: mapState({
       linePlot.render();
     },
 
-    init_service_thread: () => {
+    load_service_thread: () => {
       const data = [
         { year: "1991", value: 3 },
         { year: "1992", value: 4 },

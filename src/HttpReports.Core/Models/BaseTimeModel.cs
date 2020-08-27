@@ -27,8 +27,7 @@ namespace HttpReports.Core.Models
 
         public double HeapMemory { get; set; }
 
-        public double ThreadCount { get; set; }
-
+        public int ThreadCount { get; set; } 
 
     } 
      
