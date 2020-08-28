@@ -31,17 +31,22 @@ namespace HttpReports.Storage.MySql
 
         public MySqlConnectionFactory ConnectionFactory { get; }
 
+        public IFreeSql freeSql;
+
         private string TablePrefix { get; set; } = string.Empty;
 
         public ILogger<MySqlStorage> Logger { get; }
 
-        private readonly AsyncCallbackDeferFlushCollection<RequestBag> _deferFlushCollection = null;
+        private readonly AsyncCallbackDeferFlushCollection<RequestBag> _deferFlushCollection = null; 
 
         public MySqlStorage(IOptions<MySqlStorageOptions> options, MySqlConnectionFactory connectionFactory, ILogger<MySqlStorage> logger)
         {
             Options = options.Value;
             if (!Options.TablePrefix.IsEmpty()) TablePrefix = Options.TablePrefix + ".";
             ConnectionFactory = connectionFactory;
+
+            freeSql = new FreeSql.FreeSqlBuilder().UseConnectionString(FreeSql.DataType.MySql,Options.ConnectionString).Build(); 
+
             Logger = logger;
             if (Options.EnableDefer)
             {
@@ -54,7 +59,7 @@ namespace HttpReports.Storage.MySql
         public async Task InitAsync()
         {
             try
-            { 
+            {  
                 using (var connection = ConnectionFactory.GetConnection())
                 {
                     await connection.ExecuteAsync($@"CREATE TABLE IF NOT EXISTS `{TablePrefix}RequestInfo` (

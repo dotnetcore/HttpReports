@@ -57,17 +57,15 @@ namespace HttpReports.Test
                         {
                             Id = MD5_16(Guid.NewGuid().ToString()),
                             ParentId = MD5_16(Guid.NewGuid().ToString()),
-                            Node = Services[new Random().Next(0, Services.Length - 1)],
+                            Service = Services[new Random().Next(0, Services.Length - 1)],
                             Route =  Services[new Random().Next(0, Services.Length - 1)] + "/" + Route[new Random().Next(0, Route.Length - 1)],
                             Url = "/HttpReportsData/GetServiceInstance",
                             RequestType = "http",
                             Method = "POST",
                             Milliseconds = new Random().Next(1, 2000),
                             StatusCode = new Random().Next(1, 10) > 3 ? 200 : 500,
-                            IP = "192.168.1.1",
-                            Port = 80,
-                            LocalIP = LocalIPs[new Random().Next(0, LocalIPs.Length - 1)],
-                            LocalPort = LocalPort[new Random().Next(0, LocalPort.Length - 1)],
+                            RemoteIP = "192.168.1.1", 
+                            Instance = LocalIPs[new Random().Next(0, LocalIPs.Length - 1)] + ":" + LocalPort[new Random().Next(0, LocalPort.Length - 1)],
                             CreateTime = DateTime.Now
 
                         }, null));

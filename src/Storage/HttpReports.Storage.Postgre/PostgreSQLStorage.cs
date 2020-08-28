@@ -29,13 +29,16 @@ namespace HttpReports.Storage.PostgreSQL
 
         public ILogger<PostgreSQLStorage> Logger { get; }
 
+        public IFreeSql freeSql;
+
         private string Prefix { get; set; } = string.Empty;
 
         private readonly AsyncCallbackDeferFlushCollection<RequestBag> _deferFlushCollection = null;
 
         public PostgreSQLStorage(IOptions<PostgreStorageOptions> options, PostgreConnectionFactory connectionFactory, ILogger<PostgreSQLStorage> logger)
         {
-            Options = options.Value;
+            Options = options.Value;  
+            freeSql = new FreeSql.FreeSqlBuilder().UseConnectionString(FreeSql.DataType.MySql, Options.ConnectionString).Build(); 
             ConnectionFactory = connectionFactory;
             if (!Options.TablePrefix.IsEmpty()) Prefix = Options.TablePrefix + ".";
             Logger = logger;

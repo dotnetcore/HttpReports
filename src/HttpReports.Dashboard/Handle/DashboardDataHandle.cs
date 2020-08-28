@@ -898,7 +898,7 @@ namespace HttpReports.Dashboard.Handle
 
                 Id = requestInfo.Id,
                 Text = requestInfo.Id,
-                Node = requestInfo.Node,
+                Service = requestInfo.Service,
                 Url = requestInfo.Url,
                 Milliseconds = requestInfo.Milliseconds,
                 StatusCode = requestInfo.StatusCode,

@@ -8,22 +8,29 @@ namespace HttpReports
     public interface IRequestInfo
     {   
         string Id { get; set; } 
-        string ParentId { get; set; } 
-        string IP { get; set; } 
 
-        int Port { get; set; }
+        string ParentId { get; set; }
 
-        string LocalIP { get; set; }
+        string Service { get; set; }
 
-        int LocalPort { get; set; }
+        string Instance { get; set; }
+
+        string Route { get; set; }
+
+        string Url { get; set; }
+
+        string RequestType { get; set; }
 
         string Method { get; set; }
+
         int Milliseconds { get; set; }
-        string Node { get; set; }
-        string Route { get; set; }
+
         int StatusCode { get; set; }
-        string Url { get; set; }     
-        string RequestType { get; set; }
+
+        string RemoteIP { get; set; } 
+
+        string LoginUser { get; set; }   
+
         DateTime CreateTime { get; set; }
     }
 }

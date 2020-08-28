@@ -10,7 +10,7 @@ namespace HttpReports.Dashboard.DTO
 
         public string Id { get; set; }
 
-        public string Node { get; set; }
+        public string Service { get; set; }
 
         public string Url { get; set; }
 

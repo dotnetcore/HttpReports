@@ -31,6 +31,9 @@ namespace HttpReports.Storage.SQLServer
 
         public ILogger<SQLServerStorage> Logger { get; }
 
+
+        public IFreeSql freeSql;
+
         private string Prefix { get; set; } = string.Empty;
 
         private readonly AsyncCallbackDeferFlushCollection<RequestBag> _deferFlushCollection = null;
@@ -38,6 +41,9 @@ namespace HttpReports.Storage.SQLServer
         public SQLServerStorage(IOptions<SQLServerStorageOptions> options, SQLServerConnectionFactory connectionFactory, ILogger<SQLServerStorage> logger)
         {
             _options = options.Value;
+
+            freeSql = new FreeSql.FreeSqlBuilder().UseConnectionString(FreeSql.DataType.SqlServer, _options.ConnectionString).Build();
+
             if (!_options.TablePrefix.IsEmpty()) Prefix = _options.TablePrefix + ".";
             ConnectionFactory = connectionFactory;
             Logger = logger;
