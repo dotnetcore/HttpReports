@@ -6,11 +6,11 @@ namespace HttpReports.Core
 {
     public class RequestBag
     {
-        public IRequestInfo RequestInfo { get; set; }
+        public RequestInfo RequestInfo { get; set; }
 
-        public IRequestDetail RequestDetail { get; set; }
+        public RequestDetail RequestDetail { get; set; }
 
-        public RequestBag(IRequestInfo info,IRequestDetail detail)
+        public RequestBag(RequestInfo info,RequestDetail detail)
         {
             this.RequestInfo = info;
             this.RequestDetail = detail;

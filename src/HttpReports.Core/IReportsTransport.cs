@@ -1,5 +1,5 @@
 ﻿using HttpReports.Core;
-using HttpReports.Core.Interface;
+using HttpReports.Core.Models;
 using System.Threading.Tasks;
 
 namespace HttpReports
@@ -8,7 +8,7 @@ namespace HttpReports
     {
         Task Transport(RequestBag bag);
 
-        Task Transport(IPerformance performance); 
+        Task Transport(Performance performance); 
 
     }
 }

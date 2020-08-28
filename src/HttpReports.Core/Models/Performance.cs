@@ -1,11 +1,11 @@
-﻿using HttpReports.Core.Interface;
+﻿ 
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace HttpReports.Core.Models
 {
-    public class Performance:IPerformance
+    public class Performance 
     {
         public string Id { get; set; }
         public string Service { get; set; }

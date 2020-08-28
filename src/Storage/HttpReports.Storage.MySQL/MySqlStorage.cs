@@ -12,7 +12,6 @@ using Dapper;
 using Google.Protobuf.WellKnownTypes;
 using HttpReports.Core;
 using HttpReports.Core.Config;
-using HttpReports.Core.Interface;
 using HttpReports.Core.Models;
 using HttpReports.Core.Storage.FilterOptions;
 using HttpReports.Models;
@@ -211,9 +210,9 @@ CREATE TABLE IF NOT EXISTS `{TablePrefix}Performance` (
         {
             await LoggingSqlOperation(async connection =>
             { 
-                List<IRequestInfo> requestInfos = list.Select(x => x.RequestInfo).ToList();
+                List<RequestInfo> requestInfos = list.Select(x => x.RequestInfo).ToList();
 
-                List<IRequestDetail> requestDetails = list.Select(x => x.RequestDetail).ToList(); 
+                List<RequestDetail> requestDetails = list.Select(x => x.RequestDetail).ToList(); 
 
                 if (requestInfos.Where(x => x != null).Any())
                 {
@@ -955,7 +954,7 @@ Select AVG(Milliseconds) ART From {TablePrefix}RequestInfo {where};";
 
         }
 
-        public async Task<bool> AddPerformanceAsync(IPerformance performance)
+        public async Task<bool> AddPerformanceAsync(Performance performance)
         {
             performance.Id = MD5_16(Guid.NewGuid().ToString());
 
@@ -1068,7 +1067,7 @@ Select AVG(Milliseconds) ART From {TablePrefix}RequestInfo {where};";
             ));
         }
 
-        public async Task<(IRequestInfo, IRequestDetail)> GetRequestInfoDetail(string Id)
+        public async Task<(RequestInfo, RequestDetail)> GetRequestInfoDetail(string Id)
         {
             string sql = $" Select * From {TablePrefix}RequestInfo Where Id = @Id";
 
@@ -1100,7 +1099,7 @@ Select AVG(Milliseconds) ART From {TablePrefix}RequestInfo {where};";
             return val;
         }
 
-        public async Task<IRequestInfo> GetRequestInfo(string Id)
+        public async Task<RequestInfo> GetRequestInfo(string Id)
         {
             string sql = $" Select * From {TablePrefix}RequestInfo Where Id = @Id";
 
@@ -1115,7 +1114,7 @@ Select AVG(Milliseconds) ART From {TablePrefix}RequestInfo {where};";
             return requestInfo;
         }
 
-        public async Task<List<IRequestInfo>> GetRequestInfoByParentId(string ParentId)
+        public async Task<List<RequestInfo>> GetRequestInfoByParentId(string ParentId)
         {
             string sql = $"Select * From {TablePrefix}RequestInfo Where ParentId = @ParentId Order By CreateTime ";
 
@@ -1127,7 +1126,7 @@ Select AVG(Milliseconds) ART From {TablePrefix}RequestInfo {where};";
 
            ));
 
-            return requestInfo.Select(x => x as IRequestInfo).ToList();
+            return requestInfo.Select(x => x as RequestInfo).ToList();
         }
 
         public async Task ClearData(string StartTime)
@@ -1188,7 +1187,7 @@ Select AVG(Milliseconds) ART From {TablePrefix}RequestInfo {where};";
             }).ToList();
         }
 
-        public async Task<List<IPerformance>> GetPerformances(PerformanceFilterIOption option)
+        public async Task<List<Performance>> GetPerformances(PerformanceFilterIOption option)
         {
             string where = " where  CreateTime >= @Start AND CreateTime < @End "; 
 
@@ -1213,7 +1212,7 @@ Select AVG(Milliseconds) ART From {TablePrefix}RequestInfo {where};";
 
            ));
 
-            return result.Select(x => x as IPerformance).ToList();
+            return result.Select(x => x as Performance).ToList();
 
         }
 

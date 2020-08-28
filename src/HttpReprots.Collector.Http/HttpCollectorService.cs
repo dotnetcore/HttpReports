@@ -23,7 +23,7 @@ namespace HttpReprots.Collector.Http
             await Storage.AddRequestInfoAsync(list,new System.Threading.CancellationToken());  
         }
 
-        public async Task WritePerformance(IPerformance performance)
+        public async Task WritePerformance(Performance performance)
         {
             await Storage.AddPerformanceAsync(performance); 
         } 

@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Diagnostics\HttpReports.Diagnostic.Grpc\HttpReports.Diagnostic.Grpc.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Core\HttpReports.Core.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Grpc\HttpReports.Grpc.csproj" />
     <ProjectReference Include="..\..\src\HttpReports\HttpReports.csproj" />

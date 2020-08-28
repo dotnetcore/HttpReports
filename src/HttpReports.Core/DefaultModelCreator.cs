@@ -1,4 +1,4 @@
-﻿using HttpReports.Core.Interface;
+﻿ 
 using HttpReports.Core.Models;
 using HttpReports.Monitor;
 
@@ -30,10 +30,10 @@ namespace HttpReports
 
         public virtual IMonitorRule CreateMonitorRule() => new MonitorRule();
 
-        public virtual IRequestDetail CreateRequestDetail() => new RequestDetail();
+        public virtual RequestDetail CreateRequestDetail() => new RequestDetail();
 
-        public virtual IRequestInfo CreateRequestInfo() => new RequestInfo(); 
+        public virtual RequestInfo CreateRequestInfo() => new RequestInfo(); 
 
-        public virtual IPerformance CreatePerformance() => new Performance();
+        public virtual Performance CreatePerformance() => new Performance();
     }
 }

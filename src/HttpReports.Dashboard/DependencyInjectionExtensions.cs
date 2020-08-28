@@ -7,8 +7,7 @@ using HttpReports.Dashboard.Handle;
 using HttpReports.Dashboard.Implements;
 using HttpReports.Dashboard.Route;
 using HttpReports.Dashboard.Services; 
-using HttpReports.Dashboard.Services.Quartz;
-using HttpReports.Dashboard.Views;
+using HttpReports.Dashboard.Services.Quartz; 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
@@ -54,9 +53,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSingleton<ScheduleService>(); 
 
-            services.AddSingleton<LocalizeService>(); 
-
-            services.AddHandleService().AddViewsService(); 
+            services.AddSingleton<LocalizeService>();  
 
             services.AddHttpReportsHttpCollector(); 
 
@@ -134,19 +131,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services;
 
-        }
-
-        private static IServiceCollection AddViewsService(this IServiceCollection services)
-        {
-            var views = Assembly.GetAssembly(typeof(DashboardRoute)).GetTypes().Where(x => typeof(RazorPage).IsAssignableFrom(x) && x != typeof(RazorPage));
-
-            foreach (var view in views)
-            {
-                services.AddTransient(view);
-            }
-
-            return services;
         } 
+       
 
     }
 }

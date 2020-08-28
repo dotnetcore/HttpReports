@@ -1,4 +1,5 @@
-﻿using HttpReports.Core.Interface;
+﻿
+using HttpReports.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,6 +9,6 @@ namespace HttpReports.Service
 {
     public interface IPerformanceService
     {
-        Task<IPerformance> GetPerformance(string Instance);  
+        Task<Performance> GetPerformance(string Instance);  
     }
 }

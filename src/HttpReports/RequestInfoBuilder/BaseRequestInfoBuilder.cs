@@ -1,6 +1,7 @@
 ﻿using HttpReports.Core;
 using HttpReports.Core.Config;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -21,9 +22,9 @@ namespace HttpReports
             ModelCreator = modelCreator;
         }
 
-        protected abstract (IRequestInfo, IRequestDetail) Build(HttpContext context, IRequestInfo request, string path);
+        protected abstract (RequestInfo, RequestDetail) Build(HttpContext context, RequestInfo request, string path);
 
-        public (IRequestInfo, IRequestDetail) Build(HttpContext context, Stopwatch stopwatch)
+        public (RequestInfo, RequestDetail) Build(HttpContext context, Stopwatch stopwatch)
         {    
             var path = (context.Request.Path.Value ?? string.Empty).ToLowerInvariant();
 
@@ -36,10 +37,8 @@ namespace HttpReports
 
             var remoteIP = context.Request.Headers["X-Forwarded-For"].FirstOrDefault();
 
-            request.IP = remoteIP.IsEmpty() ? context.Connection.RemoteIpAddress?.MapToIPv4()?.ToString() : remoteIP; 
-            request.Port = context.Connection.RemotePort;
-            request.LocalIP = uri.Host;
-            request.LocalPort = uri.Port;
+            request.RemoteIP = remoteIP.IsEmpty() ? context.Connection.RemoteIpAddress?.MapToIPv4()?.ToString() : remoteIP;
+            request.Instance = uri.Host + ":" + uri.Port; 
             request.StatusCode = context.Response.StatusCode; 
             request.Method = context.Request.Method;
             request.Url = context.Request.Path;
@@ -54,18 +53,18 @@ namespace HttpReports
             return (ParseRequestInfo(requestInfo), ParseRequestDetail(requestDetail));
         }
 
-        private IRequestInfo ParseRequestInfo(IRequestInfo request)
+        private RequestInfo ParseRequestInfo(RequestInfo request)
         {
-            if (request.Node == null) request.Node = string.Empty;
+            if (request.Service == null) request.Service = string.Empty;
             if (request.Route == null) request.Route = string.Empty;
             if (request.Url == null) request.Url = string.Empty;
             if (request.Method == null) request.Method = string.Empty;
-            if (request.IP == null) request.IP = string.Empty;
+            if (request.RemoteIP == null) request.RemoteIP = string.Empty;
 
             return request;
         }
 
-        private IRequestDetail ParseRequestDetail(IRequestDetail request)
+        private RequestDetail ParseRequestDetail(RequestDetail request)
         {
             if (request.Scheme == null) request.Scheme = string.Empty;
             if (request.QueryString == null) request.QueryString = string.Empty;

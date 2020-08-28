@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks; 
 using HttpReports.Core.Config;
-using HttpReports.Core.Interface;
 using HttpReports.Core.Models;
 using HttpReports.Core.Storage.FilterOptions;
 using HttpReports.Dashboard.DTO;
@@ -847,7 +846,7 @@ namespace HttpReports.Dashboard.Handle
         } 
       
 
-        private async Task<IRequestInfo> GetGrandParentRequestInfo(ByIdRequest req)
+        private async Task<RequestInfo> GetGrandParentRequestInfo(ByIdRequest req)
         {
             var requestInfo = await _storage.GetRequestInfo(req.Id);
 
@@ -891,7 +890,7 @@ namespace HttpReports.Dashboard.Handle
             return requestInfoTrace;
         }
 
-        private RequestInfoTrace MapRequestInfo(IRequestInfo requestInfo)
+        private RequestInfoTrace MapRequestInfo(RequestInfo requestInfo)
         {
             return new RequestInfoTrace
             {

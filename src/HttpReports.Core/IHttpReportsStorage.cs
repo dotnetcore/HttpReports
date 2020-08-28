@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using HttpReports.Core;
-using HttpReports.Core.Interface;
+using HttpReports.Core; 
 using HttpReports.Core.Models;
 using HttpReports.Core.Storage.FilterOptions;
 using HttpReports.Models;
@@ -91,7 +90,7 @@ namespace HttpReports
          
         Task<bool> AddMonitorJob(IMonitorJob job);
 
-        Task<List<IPerformance>> GetPerformances(PerformanceFilterIOption option);
+        Task<List<Performance>> GetPerformances(PerformanceFilterIOption option);
 
         Task<bool> UpdateMonitorJob(IMonitorJob job);
 
@@ -136,11 +135,11 @@ namespace HttpReports
 
         Task<bool> UpdateLoginUser(SysUser model);
 
-        Task<(IRequestInfo,IRequestDetail)> GetRequestInfoDetail(string Id); 
+        Task<(RequestInfo,RequestDetail)> GetRequestInfoDetail(string Id); 
 
-        Task<IRequestInfo> GetRequestInfo(string Id);
+        Task<RequestInfo> GetRequestInfo(string Id);
 
-        Task<List<IRequestInfo>> GetRequestInfoByParentId(string ParentId);
+        Task<List<RequestInfo>> GetRequestInfoByParentId(string ParentId);
 
         Task ClearData(string StartTime);
 
@@ -148,7 +147,7 @@ namespace HttpReports
 
         Task<string> GetSysConfig(string Key);
 
-        Task<bool> AddPerformanceAsync(IPerformance performance);  
+        Task<bool> AddPerformanceAsync(Performance performance);  
 
     }
 }

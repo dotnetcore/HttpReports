@@ -1,5 +1,4 @@
 ﻿using HttpReports.Core.Config;
-using HttpReports.Core.Interface;
 using HttpReports.Core.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -52,9 +51,9 @@ namespace HttpReports.Service
             }
         }
 
-        public Task<IPerformance> GetPerformance(string Instance)
+        public Task<Performance> GetPerformance(string Instance)
         {
-            IPerformance performance = new Performance {  
+            Performance performance = new Performance {  
 
                  Service = Options.Service.IsEmpty() ? "Default": Options.Service,
                  Instance = Instance,

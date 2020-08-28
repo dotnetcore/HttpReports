@@ -2,6 +2,6 @@
 {
     internal class ModelCreator : DefaultModelCreator
     {
-        public override IRequestInfo CreateRequestInfo() => new RequestInfo();
+        public override RequestInfo CreateRequestInfo() => new RequestInfo();
     }
 }

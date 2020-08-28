@@ -71,7 +71,7 @@ namespace HttpReprots.Collector.Http
 
                         foreach (var item in package)
                         {
-                            bags.Add(new RequestBag(item.RequestInfo as IRequestInfo,item.RequestDetail as IRequestDetail));
+                            bags.Add(new RequestBag(item.RequestInfo as RequestInfo,item.RequestDetail as RequestDetail));
                         } 
 
                         await _collector.WriteRequestBag(bags);
@@ -84,9 +84,9 @@ namespace HttpReprots.Collector.Http
                 } 
             }
 
-            if (TransportType == typeof(IPerformance).Name)
+            if (TransportType == typeof(Performance).Name)
             {
-                var package = JsonConvert.DeserializeObject<Performance>(Body) as IPerformance;
+                var package = JsonConvert.DeserializeObject<Performance>(Body) as Performance;
 
                 await _collector.WritePerformance(package);
             }  

@@ -1,5 +1,6 @@
 ﻿using HttpReports.Core;
-using HttpReports.Core.Interface;
+
+using HttpReports.Core.Models;
 using System.Threading.Tasks;
 
 namespace HttpReports
@@ -20,7 +21,7 @@ namespace HttpReports
             return Task.CompletedTask;
         }
 
-        public Task Transport(IPerformance performance)
+        public Task Transport(Performance performance)
         {
             Storage.AddPerformanceAsync(performance);
 

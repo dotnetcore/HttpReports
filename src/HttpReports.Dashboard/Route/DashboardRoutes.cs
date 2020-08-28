@@ -1,5 +1,4 @@
-﻿using HttpReports.Dashboard.Handle;
-using HttpReports.Dashboard.Views;
+﻿using HttpReports.Dashboard.Handle; 
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,15 +13,7 @@ namespace HttpReports.Dashboard.Route
 
         static DashboardRoutes()
         {
-            Routes = new RouteCollection();
-
-            var views = Assembly.GetAssembly(typeof(DashboardRoute)).GetTypes().Where(x => typeof(RazorPage).IsAssignableFrom(x) && x != typeof(RazorPage));
-
-            foreach (var item in views)
-            {
-                Routes.AddRoute(new DashboardRoute("/HttpReports/"+item.Name,item));
-            }  
-          
+            Routes = new RouteCollection(); 
 
             typeof(DashboardDataHandle).GetMethods().Select(x => x.Name).ToList().ForEach(action => {
 

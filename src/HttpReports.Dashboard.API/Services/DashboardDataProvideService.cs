@@ -540,7 +540,7 @@ namespace HttpReports.Dashboard.Services
             };
         }
 
-        private async Task<IRequestInfo> GetGrandParentRequestInfo(string Id)
+        private async Task<RequestInfo> GetGrandParentRequestInfo(string Id)
         {
             var requestInfo = await _storage.GetRequestInfo(Id);
 
@@ -579,13 +579,13 @@ namespace HttpReports.Dashboard.Services
             return requestInfoTrace;
         }
 
-        private RequestInfoTrace MapRequestInfo(IRequestInfo requestInfo)
+        private RequestInfoTrace MapRequestInfo(RequestInfo requestInfo)
         {
             return new RequestInfoTrace
             {
                 Id = requestInfo.Id,
                 Text = requestInfo.Id,
-                Node = requestInfo.Node,
+                Service = requestInfo.Service,
                 Url = requestInfo.Url,
                 Milliseconds = requestInfo.Milliseconds,
                 StatusCode = requestInfo.StatusCode,

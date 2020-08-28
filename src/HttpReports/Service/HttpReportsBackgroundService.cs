@@ -1,5 +1,4 @@
 ﻿using HttpReports.Core.Config;
-using HttpReports.Core.Interface;
 using HttpReports.Core.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting.Server.Features;
@@ -60,7 +59,7 @@ namespace HttpReports.Service
             {
                 Uri uri = new Uri(_options.Urls); 
 
-                IPerformance p = await _performanceService.GetPerformance(uri.Host+":"+uri.Port);
+                Performance p = await _performanceService.GetPerformance(uri.Host+":"+uri.Port);
 
                 _logger.LogInformation($"HttpReports.CLR CPU:{p.ProcessCPU} Memory:{p.ProcessMemory} ThreadCount:{p.ThreadCount}  CG0:{p.GCGen0}  GC1:{p.GCGen1} GC2:{p.GCGen2}  ");
 

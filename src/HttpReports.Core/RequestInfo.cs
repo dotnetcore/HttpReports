@@ -2,7 +2,7 @@
 
 namespace HttpReports
 {
-    public class RequestInfo : IRequestInfo
+    public class RequestInfo 
     { 
         public string Id { get; set; }
 

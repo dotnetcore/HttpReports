@@ -11,13 +11,13 @@ namespace HttpReports
         /// 创建请求信息
         /// </summary>
         /// <returns></returns>
-        IRequestInfo CreateRequestInfo();
+        RequestInfo CreateRequestInfo();
 
         /// <summary>
         /// 创建请求详情
         /// </summary>
         /// <returns></returns>
-        IRequestDetail CreateRequestDetail();
+        RequestDetail CreateRequestDetail();
 
         /// <summary>
         /// 创建监控

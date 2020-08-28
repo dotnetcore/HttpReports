@@ -1,11 +1,11 @@
-﻿using HttpReports.Core.Interface;
+﻿ 
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace HttpReports.Core.Models
 {
-    public class SysUser: ISysUser
+    public class SysUser 
     { 
         public string Id { get; set; }
 

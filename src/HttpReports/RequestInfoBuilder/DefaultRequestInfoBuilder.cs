@@ -22,17 +22,17 @@ namespace HttpReports.RequestInfoBuilder
 
         }
 
-        protected override (IRequestInfo, IRequestDetail) Build(HttpContext context, IRequestInfo request, string path)
+        protected override (RequestInfo, RequestDetail) Build(HttpContext context, RequestInfo request, string path)
         {
             if (Options.Service.IsEmpty())
             {
                 Options.Service = Options.Node.IsEmpty() ? "Default":Options.Node;
             }
 
-            request.Node = Options.Service.Substring(0, 1).ToUpper() + Options.Service.Substring(1);
+            request.Service = Options.Service.Substring(0, 1).ToUpper() + Options.Service.Substring(1);
             request.Route = GetRoute(path);
 
-            IRequestDetail requestDetail = GetRequestDetail(context, request);
+            RequestDetail requestDetail = GetRequestDetail(context, request);
 
             requestDetail.RequestId = request.Id = context.GetTraceId();
 
@@ -41,9 +41,9 @@ namespace HttpReports.RequestInfoBuilder
             return (request, requestDetail);
         }
 
-        private IRequestDetail GetRequestDetail(HttpContext context, IRequestInfo request)
+        private RequestDetail GetRequestDetail(HttpContext context,RequestInfo request)
         {
-            IRequestDetail model = ModelCreator.CreateRequestDetail();
+            RequestDetail model = ModelCreator.CreateRequestDetail();
 
             if (context.Request != null)
             {
@@ -111,7 +111,7 @@ namespace HttpReports.RequestInfoBuilder
         }
 
 
-        private IEnumerable<IRequestChain> GetRequestChains(HttpContext context, IRequestInfo request)
+        private IEnumerable<IRequestChain> GetRequestChains(HttpContext context, RequestInfo request)
         {
             var list = context.Items.ToList();    
 

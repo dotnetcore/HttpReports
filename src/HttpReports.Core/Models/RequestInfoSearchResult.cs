@@ -12,7 +12,7 @@ namespace HttpReports.Models
         /// <summary>
         /// 请求信息列表
         /// </summary>
-        public List<IRequestInfo> List { get; set; } = new List<IRequestInfo>();
+        public List<RequestInfo> List { get; set; } = new List<RequestInfo>();
 
         /// <summary>
         /// 请求的总条数

@@ -67,10 +67,11 @@ namespace HttpReports.Dashboard
                     return;
                 }
 
+
+
                 var DashboardContext = new DashboardContext(httpContext, router, options);
 
-                //Activate Handle 
-
+                //Activate Handle  
                 var handles = Assembly.GetAssembly(typeof(DashboardRoute)).GetTypes();
 
                 var handleType = handles.FirstOrDefault(x => x.Name.Contains(router.Handle.Replace("HttpReports", "Dashboard") + "Handle"));
@@ -151,9 +152,7 @@ namespace HttpReports.Dashboard
 
                             }
 
-                            html = await (Task<string>)method.Invoke(handle, new[] { args });
-
-                          
+                            html = await (Task<string>)method.Invoke(handle, new[] { args }); 
 
                         }  
                     }

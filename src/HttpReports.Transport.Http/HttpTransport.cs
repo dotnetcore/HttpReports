@@ -41,7 +41,7 @@ namespace HttpReports.Transport.Http
             return Task.CompletedTask;
         }
 
-        public async Task Transport(IPerformance performance)
+        public async Task Transport(Performance performance)
         {
             await Retry(async () => {
 
@@ -50,7 +50,7 @@ namespace HttpReports.Transport.Http
                     HttpContent content = new StringContent(HttpUtility.HtmlEncode(JsonConvert.SerializeObject(performance)), System.Text.Encoding.UTF8, "application/json");
 
                     content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");  
-                    content.Headers.Add(BasicConfig.TransportType, typeof(IPerformance).Name); 
+                    content.Headers.Add(BasicConfig.TransportType, typeof(Performance).Name); 
 
                     var response = await _httpClientFactory.CreateClient(BasicConfig.HttpReportsHttpClient).PostAsync(_options.CollectorAddress + BasicConfig.TransportPath.Substring(1), content);
 

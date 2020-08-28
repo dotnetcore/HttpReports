@@ -1,4 +1,4 @@
-﻿using HttpReports.Dashboard.Views;
+﻿
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -21,31 +21,7 @@ namespace HttpReports.Dashboard.Handle
 
         public IServiceProvider ServiceProvider { get; }
 
-        public Dictionary<string, object> ViewData { get; set; }
-
-
-
-        public virtual async Task<string> View(object model = null, Type viewType = null)
-        {
-            Context.HttpContext.Response.ContentType = "text/html"; 
-            ViewData["View"] = Context.Route.View; 
-           
-            var view =  ServiceProvider.GetRequiredService(viewType ?? Context.Route.View) as RazorPage;
-
-            if (view == null)
-            {
-                throw new ArgumentException("view not found");
-            }
-
-            if (model != null)
-            {
-                ViewData["Model"] = model;
-            }
-
-            view.Context = Context;
-            view.ViewData = ViewData;
-            return await Task.FromResult(view.ToString());
-        }
+        public Dictionary<string, object> ViewData { get; set; } 
 
 
         public virtual string Json(object model)
