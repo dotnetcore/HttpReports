@@ -228,7 +228,7 @@ namespace HttpReports.Dashboard.Services
             return model;
         }
 
-        public MonitorJobRequest GetMonitorJobRequest(IMonitorJob job)
+        public MonitorJobRequest GetMonitorJobRequest(MonitorJob job)
         {
             MonitorJobPayload payload = JsonConvert.DeserializeObject<MonitorJobPayload>(job.Payload);
 

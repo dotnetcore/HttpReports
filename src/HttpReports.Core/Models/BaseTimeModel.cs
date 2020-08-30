@@ -19,18 +19,16 @@ namespace HttpReports.Core.Models
 
         public string TimeField { get; set; }
 
-        public double GcGen0 { get; set; }
+        public decimal GcGen0 { get; set; }
 
-        public double GcGen1 { get; set; }
+        public decimal GcGen1 { get; set; }
 
-        public double GcGen2 { get; set; }
+        public decimal GcGen2 { get; set; }
 
-        public double HeapMemory { get; set; }
+        public decimal HeapMemory { get; set; }
 
-        public int ThreadCount { get; set; } 
+        public decimal ThreadCount { get; set; } 
 
-    } 
-     
-
+    }  
 
 }

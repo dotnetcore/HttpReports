@@ -25,20 +25,20 @@ namespace HttpReports
         Task AddRequestInfoAsync(List<RequestBag> list, CancellationToken token); 
 
 
-        Task<IndexPageData> GetIndexBasicDataAsync(IndexPageDataFilterOption filterOption);   
+        Task<IndexPageData> GetIndexBasicDataAsync(BasicFilter filter);   
 
-        Task<List<BaseTimeModel>> GetServiceTrend(IndexPageDataFilterOption filterOption,List<string> Time);
+        Task<List<BaseTimeModel>> GetServiceTrend(BasicFilter filter,List<string> Time);
 
-        Task<List<BaseTimeModel>> GetServiceHeatMap(IndexPageDataFilterOption filterOption, List<string> Time,List<string> Span);
+        Task<List<BaseTimeModel>> GetServiceHeatMap(BasicFilter filter, List<string> Time);
 
 
-        Task<IEnumerable<string>> GetTopServiceLoad(IndexPageDataFilterOption filterOption);  
+        Task<IEnumerable<string>> GetTopServiceLoad(BasicFilter filter);  
     
 
-        Task<List<List<TopServiceResponse>>> GetGroupData(IndexPageDataFilterOption filterOption,GroupType group);
+        Task<List<List<TopServiceResponse>>> GetGroupData(BasicFilter filter,GroupType groupType);
 
 
-        Task<List<APPTimeModel>> GetAppStatus(IndexPageDataFilterOption filterOption, List<string> range);
+        Task<List<APPTimeModel>> GetAppStatus(BasicFilter filter, List<string> range);
 
 
         //--------------------------------------------------------------------------------------
@@ -88,17 +88,17 @@ namespace HttpReports
 
         #region Monitor
          
-        Task<bool> AddMonitorJob(IMonitorJob job);
+        Task<bool> AddMonitorJob(MonitorJob job);
 
         Task<List<Performance>> GetPerformances(PerformanceFilterIOption option);
 
-        Task<bool> UpdateMonitorJob(IMonitorJob job);
+        Task<bool> UpdateMonitorJob(MonitorJob job);
 
         Task<bool> DeleteMonitorJob(string Id);
 
-        Task<IMonitorJob> GetMonitorJob(string Id);
+        Task<MonitorJob> GetMonitorJob(string Id);
 
-        Task<List<IMonitorJob>> GetMonitorJobs();  
+        Task<List<MonitorJob>> GetMonitorJobs();  
 
 
         #region Query

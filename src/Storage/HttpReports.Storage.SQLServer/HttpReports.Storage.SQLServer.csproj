@@ -16,6 +16,7 @@
     <PackageReference Include="Dapper" Version="2.0.30" />
     <PackageReference Include="Dapper.Contrib" Version="2.0.30" />
     <PackageReference Include="FreeSql" Version="1.8.1" />
+    <PackageReference Include="FreeSql.Provider.SqlServer" Version="1.8.1" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
@@ -25,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\HttpReports.Core\HttpReports.Core.csproj" />
+    <ProjectReference Include="..\HttpReports.Storage.Repository\HttpReports.Storage.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

@@ -112,5 +112,20 @@ namespace HttpReports
                 return DateTime.Now;
             }
         }
+
+
+        public static int ToInt(this long lo)
+        {
+            try
+            {
+                return Convert.ToInt32(lo);
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
+        } 
+
+
     }
 }

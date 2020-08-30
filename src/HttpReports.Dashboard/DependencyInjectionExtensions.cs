@@ -53,7 +53,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSingleton<ScheduleService>(); 
 
-            services.AddSingleton<LocalizeService>();  
+            services.AddSingleton<LocalizeService>();
+
+            services.AddHandleService();
 
             services.AddHttpReportsHttpCollector(); 
 

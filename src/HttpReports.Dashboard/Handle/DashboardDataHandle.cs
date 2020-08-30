@@ -12,15 +12,14 @@ using HttpReports.Dashboard.Models;
 using HttpReports.Dashboard.Models.ViewModels;
 using HttpReports.Dashboard.Services; 
 using HttpReports.Dashboard.ViewModels;
+using HttpReports.Models;
 using HttpReports.Monitor;
 using HttpReports.Storage.FilterOptions; 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using Org.BouncyCastle.Math.EC.Rfc7748;
-using Org.BouncyCastle.Ocsp;
+using Newtonsoft.Json.Serialization; 
 
 namespace HttpReports.Dashboard.Handle
 {
@@ -51,7 +50,7 @@ namespace HttpReports.Dashboard.Handle
         {
            var serviceInstance = await _storage.GetServiceInstance(DateTime.Now.AddDays(-1)); 
 
-           List<ServiceInstanceResponse> response = new List<ServiceInstanceResponse>();
+           List<ServiceInstanceResponse> response = new List<ServiceInstanceResponse>();  
 
             if (serviceInstance != null)
             {
@@ -59,7 +58,7 @@ namespace HttpReports.Dashboard.Handle
 
                 foreach (var service in services)
                 {
-                    List<string> instance = serviceInstance.Where(k => k.Service == service).Select(k => k.IP + ":" + k.Port).Distinct().ToList();
+                    List<string> instance = serviceInstance.Where(k => k.Service == service).Select(x=>x.Instance).ToList();
 
                     response.Add(new ServiceInstanceResponse {  
                          Service = service,
@@ -535,25 +534,35 @@ namespace HttpReports.Dashboard.Handle
 
             };
 
+
+            BasicFilter filter = new BasicFilter
+            { 
+                Service = request.Service,
+                Instance = request.Instance,
+                StartTime = start,
+                EndTime = end,
+                Count = 6
+
+            }; 
+
+
             var a0 = stopwatch.ElapsedMilliseconds;
 
-            var basic = await _storage.GetIndexBasicDataAsync(option);
+            var basic = await _storage.GetIndexBasicDataAsync(filter);
 
             var a1 = stopwatch.ElapsedMilliseconds;
 
-            var top = await _storage.GetGroupData(option,GroupType.Node);
+            var top = await _storage.GetGroupData(filter,GroupType.Service);
 
             var a2 = stopwatch.ElapsedMilliseconds;
 
             var range =  GetTimeRange(option.StartTime.Value, option.EndTime.Value);
 
-            var trend = await _storage.GetServiceTrend(option, range);
+            var trend = await _storage.GetServiceTrend(filter, range);
 
-            var a3 = stopwatch.ElapsedMilliseconds;
+            var a3 = stopwatch.ElapsedMilliseconds; 
 
-            string[] span = { "0-200","200-400","400-600","600-800","800-1000","1000-1200","1200-1400","1400-1600","1600+" };
-
-            var heatmap = await _storage.GetServiceHeatMap(option,range,span.ToList()); 
+            var heatmap = await _storage.GetServiceHeatMap(filter,range); 
 
             var a4 = stopwatch.ElapsedMilliseconds;
 
@@ -616,13 +625,23 @@ namespace HttpReports.Dashboard.Handle
 
             };
 
-            var route = await _storage.GetGroupData(option,GroupType.Route);
+            BasicFilter filter = new BasicFilter { 
+            
+                Service = request.Service,
+                Instance = request.Instance,
+                StartTime = start,
+                EndTime = end,
+                Count = 6 
+            
+            }; 
 
-            var instance = await _storage.GetGroupData(option,GroupType.Instance);
+            var route = await _storage.GetGroupData(filter, GroupType.Route);
+
+            var instance = await _storage.GetGroupData(filter, GroupType.Instance);
 
             var range = GetTimeRange(option.StartTime.Value, option.EndTime.Value);
 
-            var app = await _storage.GetAppStatus(option,range);
+            var app = await _storage.GetAppStatus(filter,range);
 
 
             return Json(new HttpResultEntity(1, "ok", new
@@ -716,7 +735,7 @@ namespace HttpReports.Dashboard.Handle
             if (!vaild.IsEmpty())
                 return Json(new HttpResultEntity(-1, vaild, null));
 
-            IMonitorJob model = _monitorService.GetMonitorJob(request);
+            MonitorJob model = _monitorService.GetMonitorJob(request);
 
             if (request.Id.IsEmpty() || request.Id == "0")
                 await _storage.AddMonitorJob(model);

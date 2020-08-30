@@ -13,7 +13,10 @@ namespace HttpReports.Storage.FilterOptions
         public DateTime? EndTime { get; set; }
         public string StartTimeFormat { get; set; } = "yyyy-MM-dd";
         public string EndTimeFormat { get; set; } = "yyyy-MM-dd";
-        public string Service { get; set; }
+        public string Service { get; set; }   
+
+        public string Instance { get; set; }
+
         public string LocalIP { get; set; }
         public int LocalPort { get; set; }
 

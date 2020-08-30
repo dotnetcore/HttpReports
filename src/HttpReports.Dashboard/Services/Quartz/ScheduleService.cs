@@ -1,5 +1,6 @@
 ﻿using HttpReports.Core.Config; 
 using HttpReports.Dashboard.Services.Quartz;
+using HttpReports.Models;
 using HttpReports.Monitor;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -46,7 +47,7 @@ namespace HttpReports.Dashboard.Services
 
         public async Task InitMonitorJobAsync()
         { 
-            List<IMonitorJob> list = await _storage.GetMonitorJobs();
+            List<MonitorJob> list = await _storage.GetMonitorJobs();
 
             if (list == null || list.Count == 0)
             {
@@ -62,7 +63,7 @@ namespace HttpReports.Dashboard.Services
           
         }
 
-        private async Task ScheduleJobAsync(IMonitorJob model)
+        private async Task ScheduleJobAsync(MonitorJob model)
         { 
             var job = JobBuilder.Create<MonitorBackendJob>().
                    WithIdentity(SchedulerTag + model.Id, SchedulerGroup)
@@ -86,7 +87,7 @@ namespace HttpReports.Dashboard.Services
 
         public async Task UpdateMonitorJobAsync()
         { 
-            List<IMonitorJob> list = await _storage.GetMonitorJobs();
+            List<MonitorJob> list = await _storage.GetMonitorJobs();
 
             if (list == null || list.Count == 0)
             {
@@ -109,7 +110,7 @@ namespace HttpReports.Dashboard.Services
                     }
                     else
                     {
-                        IMonitorJob monitorJob = job.JobDataMap.Get("job") as IMonitorJob; 
+                        MonitorJob monitorJob = job.JobDataMap.Get("job") as MonitorJob; 
 
                         // 判断是否有修改，如果修改后，重置Job
                         if (JsonConvert.SerializeObject(k) != JsonConvert.SerializeObject(monitorJob))

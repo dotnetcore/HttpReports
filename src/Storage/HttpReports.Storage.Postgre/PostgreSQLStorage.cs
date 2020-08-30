@@ -5,7 +5,9 @@ using HttpReports.Core.Models;
 using HttpReports.Core.Storage.FilterOptions;
 using HttpReports.Models;
 using HttpReports.Monitor;
+using HttpReports.Storage.Abstractions;
 using HttpReports.Storage.FilterOptions;
+using HttpReports.Storage.Abstractions.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -20,74 +22,58 @@ using System.Threading.Tasks;
 
 namespace HttpReports.Storage.PostgreSQL
 {
-    public class PostgreSQLStorage : IHttpReportsStorage
+    public class PostgreSQLStorage : BaseStorage 
     {
         public PostgreStorageOptions Options { get; }
 
         public PostgreConnectionFactory ConnectionFactory { get; }
 
-        public ILogger<PostgreSQLStorage> Logger { get; }
-
-        public IFreeSql freeSql;
-
-        private string Prefix { get; set; } = string.Empty;
-
-        private readonly AsyncCallbackDeferFlushCollection<RequestBag> _deferFlushCollection = null;
-
+        public ILogger<PostgreSQLStorage> Logger { get; } 
+       
+        private string Prefix { get; set; } = string.Empty;  
+        
         public PostgreSQLStorage(IOptions<PostgreStorageOptions> options, PostgreConnectionFactory connectionFactory, ILogger<PostgreSQLStorage> logger)
+
+            : base(new BaseStorageOptions {
+
+                DeferSecond = options.Value.DeferSecond,
+                DeferThreshold = options.Value.DeferThreshold,
+                ConnectionString = options.Value.ConnectionString,
+                DataType = FreeSql.DataType.PostgreSQL
+
+            })
         {
-            Options = options.Value;  
-            freeSql = new FreeSql.FreeSqlBuilder().UseConnectionString(FreeSql.DataType.MySql, Options.ConnectionString).Build(); 
+            Options = options.Value;   
+
             ConnectionFactory = connectionFactory;
             if (!Options.TablePrefix.IsEmpty()) Prefix = Options.TablePrefix + ".";
             Logger = logger;
-            if (Options.EnableDefer)
-            {
-                _deferFlushCollection = new AsyncCallbackDeferFlushCollection<RequestBag>(AddRequestInfoAsync, Options.DeferThreshold, Options.DeferSecond);
-            }
+            
         }
 
         public async Task AddRequestInfoAsync(List<RequestBag> list, System.Threading.CancellationToken token)
+        { 
+            List<RequestInfo> requestInfos = list.Select(x => x.RequestInfo).ToList();
+
+            List<RequestDetail> requestDetails = list.Select(x => x.RequestDetail).ToList();
+
+            await freeSql.Insert(requestInfos).ExecuteAffrowsAsync();
+
+            await freeSql.Insert(requestDetails).ExecuteAffrowsAsync(); 
+        }
+
+        public async Task AddRequestInfoAsync(RequestBag bag)
         {
-            await LoggingSqlOperation(async connection =>
+            if (Options.EnableDefer)
             {
-                List<RequestInfo> requestInfos = list.Select(x => x.RequestInfo).ToList();
+                _deferFlushCollection.Flush(bag);
+            }
+            else
+            {
+                await freeSql.Insert(bag.RequestInfo).ExecuteAffrowsAsync();
+                await freeSql.Insert(bag.RequestDetail).ExecuteAffrowsAsync();
 
-                List<RequestDetail> requestDetails = list.Select(x => x.RequestDetail).ToList();
-
-                if (requestInfos.Where(x => x != null).Any())
-                {
-                    var request = string.Join(",", requestInfos.Select(item =>
-                    {
-
-                        int i = requestInfos.IndexOf(item) + 1;
-
-                        return $"(@Id{i},@ParentId{i},@Node{i}, @Route{i}, @Url{i},@RequestType{i}, @Method{i}, @Milliseconds{i}, @StatusCode{i}, @IP{i},@Port{i},@LocalIP{i},@LocalPort{i},@CreateTime{i})";
-
-                    }));
-
-                    await connection.ExecuteAsync($@"INSERT INTO ""{Prefix}RequestInfo"" (Id,ParentId,Node, Route, Url,RequestType,Method, Milliseconds, StatusCode, IP,Port,LocalIP,LocalPort,CreateTime) VALUES {request}", BuildParameters(requestInfos));
-
-                }
-
-                if (requestDetails.Where(x => x != null).Any())
-                {
-                    string detail = string.Join(",", requestDetails.Select(item =>
-                    {
-
-                        int i = requestDetails.IndexOf(item) + 1;
-
-                        return $"(@Id{i},@RequestId{i},@Scheme{i},@QueryString{i},@Header{i},@Cookie{i},@RequestBody{i},@ResponseBody{i},@ErrorMessage{i},@ErrorStack{i},@CreateTime{i}) ";
-
-
-                    }));
-
-                    await connection.ExecuteAsync($@"Insert into ""{Prefix}RequestDetail"" (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime) VALUES {detail}", BuildParameters(requestDetails));
-
-
-                }
-
-            }, "请求数据批量保存失败");
+            }
         }
 
         private DynamicParameters BuildParameters<K>(List<K> data)
@@ -118,7 +104,7 @@ namespace HttpReports.Storage.PostgreSQL
 
 
 
-        public async Task<bool> AddMonitorJob(IMonitorJob job)
+        public async Task<bool> AddMonitorJob(MonitorJob job)
         {
             job.Id = MD5_16(Guid.NewGuid().ToString());
 
@@ -134,39 +120,8 @@ namespace HttpReports.Storage.PostgreSQL
 
             ) > 0);
 
-        }
-
-        public async Task AddRequestInfoAsync(RequestBag bag)
-        {
-            if (Options.EnableDefer)
-            {
-                _deferFlushCollection.Flush(bag);
-            }
-            else
-            {
-                await LoggingSqlOperation(async connection =>
-                {
-                    await connection.ExecuteAsync($@"INSERT INTO ""{Prefix}RequestInfo"" (Id,ParentId,Node, Route,Url,RequestType, Method, Milliseconds, StatusCode, IP,Port,LocalIP,LocalPort,CreateTime) VALUES (@Id,@ParentId,@Node, @Route, @Url,@RequestType, @Method, @Milliseconds, @StatusCode, @IP,@Port,@LocalIP,@LocalPort,@CreateTime)", bag.RequestInfo);
-
-                    await connection.ExecuteAsync($@"INSERT INTO ""{Prefix}RequestDetail"" (Id,RequestId,Scheme,QueryString,Header,Cookie,RequestBody,ResponseBody,ErrorMessage,ErrorStack,CreateTime)  VALUES (@Id,@RequestId,@Scheme,@QueryString,@Header,@Cookie,@RequestBody,@ResponseBody,@ErrorMessage,@ErrorStack,@CreateTime)", bag.RequestDetail);
-
-                }, "请求数据保存失败");
-            }
-        }
-
-        public async Task<SysUser> CheckLogin(string Username, string Password)
-        {
-            string sql = $@" Select * From ""{Prefix}SysUser"" Where UserName = @UserName AND Password = @Password ";
-
-            TraceLogSql(sql);
-
-            return await LoggingSqlOperation(async connection => (
-
-              await connection.QueryFirstOrDefaultAsync<SysUser>(sql, new { Username, Password })
-
-            ));
-
-        }
+        } 
+       
 
         public async Task<bool> DeleteMonitorJob(string Id)
         {
@@ -213,19 +168,7 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
 
 
 
-        public async Task<List<IMonitorJob>> GetMonitorJobs()
-        {
-            string sql = $@"Select * From ""{Prefix}MonitorJob"" ";
-
-            TraceLogSql(sql);
-
-            return await LoggingSqlOperation(async connection => (
-
-            await connection.QueryAsync<MonitorJob>(sql)
-
-            ).ToList().Select(x => x as IMonitorJob).ToList());
-        }
-
+        
 
 
         public async Task<List<RequestAvgResponeTime>> GetRequestAvgResponeTimeStatisticsAsync(RequestInfoFilterOption filterOption)
@@ -393,160 +336,8 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
             TraceLogSql(sql);
 
             return await LoggingSqlOperation(async connection => (await connection.QueryAsync<UrlRequestCount>(sql)).ToList());
-        }
-
-        public async Task InitAsync()
-        {
-            try
-            {
-                using (var con = ConnectionFactory.GetConnection())
-                {
-                    if (await con.QueryFirstOrDefaultAsync<int>($"select count(1) from pg_class where relname = '{Prefix}RequestInfo' ") == 0)
-                    {
-                        await con.ExecuteAsync($@"
-                            CREATE TABLE ""{Prefix}RequestInfo"" ( 
-                              ID varchar(50) Primary Key,
-                              ParentId varchar(50),
-                              Node varchar(50) ,
-                              Route varchar(255),
-                              Url varchar(255),
-                              RequestType varchar(50),
-                              Method varchar(10), 
-                              Milliseconds Int,
-                              StatusCode Int,
-                              IP varchar(255),
-                              Port Int, 
-                              LocalIP varchar(50),
-                              LocalPort Int, 
-                              CreateTime timestamp(3) without time zone
-                            ); 
-                        ").ConfigureAwait(false);
-                    }
-
-                    if (await con.QueryFirstOrDefaultAsync<int>($"select count(1) from pg_class where relname = '{Prefix}RequestDetail' ") == 0)
-                    {
-                        await con.ExecuteAsync($@"
-                            CREATE TABLE ""{Prefix}RequestDetail"" ( 
-                                ID varchar(50) Primary Key,
-                                RequestId varchar(50),
-                                Scheme varchar(10),
-                                QueryString text,
-                                Header text,
-                                Cookie text,
-                                RequestBody text,
-                                ResponseBody text,
-                                ErrorMessage text,
-                                ErrorStack text,
-                                CreateTime timestamp(3) without time zone 
-                            ); 
-                        ");
-                    }
-
-                    if (await con.QueryFirstOrDefaultAsync<int>($"select count(1) from pg_class where relname = '{Prefix}Performance' ") == 0)
-                    {
-                        await con.ExecuteAsync($@" 
-
-                            CREATE TABLE ""{Prefix}Performance"" ( 
-                                ID varchar(50) Primary Key,
-                                Service varchar(200),
-                                Instance varchar(200),
-                                GCGen0 Int,
-                                GCGen1 Int,
-                                GCGen2 Int,
-                                HeapMemory Numeric,
-                                ProcessCPU Numeric,
-                                ProcessMemory Numeric, 
-                                ThreadCount Int,
-                                PendingThreadCount Int, 
-                                CreateTime timestamp(3) without time zone 
-
-                            ); 
-                        ");
-                    }
-
-
-
-
-
-
-                    if (await con.QueryFirstOrDefaultAsync<int>($"select count(1) from information_schema.columns where table_catalog = '{ConnectionFactory.DataBase}' and table_name = '{Prefix}MonitorJob' and column_name = 'nodes' ") > 0)
-                    {
-                        await con.ExecuteAsync($@"DROP TABLE ""{Prefix}MonitorJob"" ");
-                    }
-
-
-                    if (await con.QueryFirstOrDefaultAsync<int>($"select count(1) from pg_class where relname = '{Prefix}MonitorJob' ") == 0)
-                    {
-                        await con.ExecuteAsync($@"
-                            CREATE TABLE ""{Prefix}MonitorJob"" ( 
-                              ID varchar(50) Primary Key,
-                              Title varchar(255) ,
-                              Description varchar(255),
-                              CronLike varchar(255),
-                              Emails varchar(1000),
-                              WebHook varchar(1000),
-                              Mobiles varchar(1000),
-                              Status Int,
-                              Service varchar(255),
-                              Instance varchar(255),
-                              PayLoad varchar(3000),  
-                              CreateTime timestamp(3) without time zone
-                            ); 
-                        ");
-                    }
-
-                    if (await con.QueryFirstOrDefaultAsync<int>($"select count(1) from pg_class where relname = '{Prefix}SysUser' ") == 0)
-                    {
-                        await con.ExecuteAsync($@"
-                            CREATE TABLE ""{Prefix}SysUser"" ( 
-                              ID varchar(50) Primary Key,
-                              UserName varchar(255) ,
-                              Password varchar(255) 
-                            ); 
-                        ");
-                    }
-
-                    if (await con.QueryFirstOrDefaultAsync<int>($"select count(1) from pg_class where relname = '{Prefix}SysConfig' ") == 0)
-                    {
-                        await con.ExecuteAsync($@"
-                            CREATE TABLE ""{Prefix}SysConfig"" ( 
-                              ID varchar(50) Primary Key,
-                              Key varchar(255) ,
-                              Value varchar(255) 
-                            ); 
-                        ");
-                    }
-
-                    if (await con.QueryFirstOrDefaultAsync<int>($@"Select count(1) from ""{Prefix}SysUser"" ") == 0)
-                    {
-                        await con.ExecuteAsync($@" Insert Into ""{Prefix}SysUser"" (Id,UserName,Password) Values ('{MD5_16(Guid.NewGuid().ToString())}', '{Core.Config.BasicConfig.DefaultUserName}','{Core.Config.BasicConfig.DefaultPassword}') ");
-                    }
-
-
-
-                    var lang = await con.QueryFirstOrDefaultAsync<string>($@"Select * from ""{Prefix}SysConfig"" Where Key =  '{BasicConfig.Language}' ");
-
-                    if (!lang.IsEmpty())
-                    {
-                        if (lang.ToLowerInvariant() == "chinese" || lang.ToLowerInvariant() == "english")
-                        {
-                            await con.ExecuteAsync($@" Delete From ""{Prefix}SysConfig"" Where Key =  '{BasicConfig.Language}'  ");
-
-                            await con.ExecuteAsync($@" Insert Into ""{Prefix}SysConfig"" (Id,Key,Value) Values ('{MD5_16(Guid.NewGuid().ToString())}','{BasicConfig.Language}','en-us') ");
-
-                        }
-                    }
-                    else
-                    {
-                        await con.ExecuteAsync($@" Insert Into ""{Prefix}SysConfig"" (Id,Key,Value) Values ('{MD5_16(Guid.NewGuid().ToString())}','{BasicConfig.Language}','en-us') ");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("数据库初始化失败：" + ex.Message, ex);
-            }
-        }
+        } 
+        
 
         public async Task<RequestInfoSearchResult> SearchRequestInfoAsync(RequestInfoSearchFilterOption filterOption)
         {
@@ -673,7 +464,7 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
 
         }
 
-        public async Task<bool> UpdateMonitorJob(IMonitorJob job)
+        public async Task<bool> UpdateMonitorJob(MonitorJob job)
         {
             string sql = $@"Update ""{Prefix}MonitorJob""
 
@@ -850,7 +641,7 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
             return val;
         }
 
-        public async Task<IMonitorJob> GetMonitorJob(string Id)
+        public async Task<MonitorJob> GetMonitorJob(string Id)
         {
             string sql = $@"Select * From ""{Prefix}MonitorJob"" Where Id = @Id ";
 
@@ -931,57 +722,8 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
             await LoggingSqlOperation(async _ => await _.ExecuteAsync(performanceSql, new { StartTime }));
 
 
-        }
-
-        public async Task SetLanguage(string Language)
-        {
-            string sql = $@"Update ""{Prefix}SysConfig"" Set Value = @Language Where Key = '{BasicConfig.Language}' ";
-
-            TraceLogSql(sql);
-
-            var result = await LoggingSqlOperation(async connection => (
-
-             await connection.ExecuteAsync(sql, new { Language })
-
-           ));
-        }
-
-
-        public async Task<string> GetSysConfig(string Key)
-        {
-            string sql = $@"Select Value From ""{Prefix}SysConfig"" Where Key = @Key ";
-
-            TraceLogSql(sql);
-
-            var result = await LoggingSqlOperation(async connection => (
-
-               await connection.QueryFirstOrDefaultAsync<string>(sql, new { Key })
-
-           ));
-
-            return result;
-        }
-
-        public async Task<List<ServiceInstanceInfo>> GetServiceInstance(DateTime startTime)
-        {
-            string sql = $@"Select Node,LocalIP,LocalPort from ""{Prefix}RequestInfo"" where CreateTime >= @CreateTime GROUP BY Node,LocalIP,LocalPort ORDER BY LocalIP,LocalPort";
-
-            TraceLogSql(sql);
-
-            var result = await LoggingSqlOperation(async connection => (
-
-               await connection.QueryAsync<ServiceInstanceInfoModel>(sql, new { CreateTime = startTime })
-
-           ));
-
-            return result.Select(x => new ServiceInstanceInfo
-            {
-                Service = x.Node,
-                IP = x.LocalIP,
-                Port = x.LocalPort
-
-            }).ToList();
-        }
+        }  
+        
 
         public async Task<List<Performance>> GetPerformances(PerformanceFilterIOption option)
         {
@@ -1010,308 +752,9 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
 
             return result.Select(x => x as Performance).ToList();
 
-        }
-
-        public async Task<bool> AddPerformanceAsync(Performance performance)
-        {
-            performance.Id = MD5_16(Guid.NewGuid().ToString());
-
-            string sql = $@"Insert Into ""{Prefix}Performance"" (Id,Service,Instance,GCGen0,GCGen1,GCGen2,HeapMemory,ProcessCPU,ProcessMemory,ThreadCount,PendingThreadCount,CreateTime)
-             Values (@Id,@Service,@Instance,@GCGen0,@GCGen1,@GCGen2,@HeapMemory,@ProcessCPU,@ProcessMemory,@ThreadCount,@PendingThreadCount,@CreateTime)";
-
-            TraceLogSql(sql);
-
-            return await LoggingSqlOperation(async connection => (
-
-            await connection.ExecuteAsync(sql, performance)
-
-            ) > 0);
-
-        }
-
-         
-        public async Task<IndexPageData> GetIndexBasicDataAsync(IndexPageDataFilterOption filterOption)
-        {
-            string where = BuildSqlFilter(filterOption);
-
-            string sql = $@"
-        Select COUNT(1) Total From ""{Prefix}RequestInfo"" {where}; 
-        Select COUNT(1) Code500 From ""{Prefix}RequestInfo"" {where} AND StatusCode = 500;
-        SELECT Count(DISTINCT(Node)) From ""{Prefix}RequestInfo"" {where} ;  
-        Select Count(1) from ( SELECT LocalIP,LocalPort from ""{Prefix}RequestInfo""  {where} GROUP BY LocalIP,LocalPort) Z;";
-
-            TraceLogSql(sql);
-
-            IndexPageData result = new IndexPageData();
-
-            await LoggingSqlOperation(async connection =>
-            {
-                using (var resultReader = await connection.QueryMultipleAsync(sql))
-                {
-                    result.Total = resultReader.ReadFirstOrDefault<int>();
-                    result.ServerError = resultReader.ReadFirstOrDefault<int>();
-                    result.Service = resultReader.ReadFirstOrDefault<int>();
-                    result.Instance = resultReader.ReadFirstOrDefault<int>();
-                }
-            }, "获取首页数据异常");
-
-            return result;
-        }
-
-        public async Task<IEnumerable<string>> GetTopServiceLoad(IndexPageDataFilterOption filterOption)
-        {
-            string sql = $@"Select Node  From ""{Prefix}RequestInfo"" {BuildSqlFilter(filterOption, false, true)} Group by Node  ORDER BY COUNT(1)  Desc Limit {filterOption.Take}  ";
-
-            return await LoggingSqlOperation(async connection => await connection.QueryAsync<string>(sql));
-
-        } 
-
-        public async Task<List<List<TopServiceResponse>>> GetGroupData(IndexPageDataFilterOption filterOption,GroupType group)
-        {
-            string groupName = default;
-
-            if (group == GroupType.Node) groupName = "Node";
-            if (group == GroupType.Route) groupName = "Route";
-            if (group == GroupType.Instance) groupName = "LocalIP,LocalPort";  
-
-            string where = BuildSqlFilter(filterOption);
-
-            string sql = $@"
-
-            Select {groupName},COUNT(1) From ""{Prefix}RequestInfo"" {where} Group by {groupName}  ORDER BY COUNT(1) Desc Limit {filterOption.Take} ;
-            Select {groupName},AVG(Milliseconds) From ""{Prefix}RequestInfo"" {where} Group by {groupName} ORDER BY  Avg(Milliseconds) Desc Limit {filterOption.Take} ; 
-            Select {groupName},COUNT(1) From ""{Prefix}RequestInfo"" {where} AND StatusCode = 500 Group by {groupName}  ORDER BY COUNT(1) Desc Limit {filterOption.Take} ; 
-
-            ";
-
-            TraceLogSql(sql);
-
-            List<List<TopServiceResponse>> result = new List<List<TopServiceResponse>>();
-
-            await LoggingSqlOperation(async connection => 
-            {
-                using (var resultReader = await connection.QueryMultipleAsync(sql))
-                {
-
-                    if (group == GroupType.Instance)
-                    {
-                        result.Add(resultReader.Read<(string localIP,string localPort, double value)>().Select(x => new TopServiceResponse { Service = x.localIP + ":" + x.localPort, Value = x.value.ToInt() }).ToList());
-                        result.Add(resultReader.Read<(string localIP, string localPort, double value)>().Select(x => new TopServiceResponse { Service = x.localIP + ":" + x.localPort, Value = x.value.ToInt() }).ToList());
-                        result.Add(resultReader.Read<(string localIP, string localPort, double value)>().Select(x => new TopServiceResponse { Service = x.localIP + ":" + x.localPort, Value = x.value.ToInt() }).ToList());
-                    }
-                    else
-                    {
-                        result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
-                        result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
-                        result.Add(resultReader.Read<(string service, double value)>().Select(x => new TopServiceResponse { Service = x.service, Value = x.value.ToInt() }).ToList());
-                    }  
-
-                }
-            }, "获取服务数据异常");
-
-            return result;
-
-        }
-
-
-        public async Task<List<APPTimeModel>> GetAppStatus(IndexPageDataFilterOption filterOption, List<string> range)
-        {
-            IEnumerable<string> service = new List<string>() { filterOption.Service };
-
-            if (filterOption.Service.IsEmpty())
-            {
-                service = await GetTopServiceLoad(filterOption);
-            }
-
-            var timeSpan = new TimeSpanStatisticsFilterOption
-            {
-                Type = (filterOption.EndTime.Value - filterOption.StartTime.Value).TotalHours > 1 ? TimeUnit.Hour : TimeUnit.Minute,
-
-            };
-
-            var DateFormat = GetDateFormat(timeSpan);
-
-            string where = $" where  CreateTime >= '{filterOption.StartTime.Value.ToString(filterOption.StartTimeFormat)}' AND CreateTime < '{filterOption.EndTime.Value.ToString(filterOption.EndTimeFormat)}'  ";
-
-            if (service.Any())
-            {
-                if (service.Count() == 1)
-                {
-                    where = where + $" AND Service = '{service.FirstOrDefault()}' ";
-                }
-                else
-                {
-                    where = where + $" AND Service In  ({string.Join(",", service.Select(x => $"'{x}'"))}) ";
-                }
-            }
-
-
-            if (filterOption.LocalIP.IsEmpty() && filterOption.LocalPort > 0)
-            {
-                where = where + $" AND Instance = '{filterOption.LocalIP+":"+filterOption.LocalPort}'  ";
-            } 
-
-            string sql = $@" SELECT AVG(GcGen0) GcGen0, AVG(GcGen1) GcGen1, AVG(GcGen2) GcGen2,AVG(HeapMemory) HeapMemory,AVG(ThreadCount) ThreadCount,{DateFormat} TimeField From ""Performance"" {where} GROUP BY {DateFormat} ";
-
-            var list = await LoggingSqlOperation(async connection => await connection.QueryAsync<APPTimeModel>(sql, new
-            {
-                Start = filterOption.StartTime.Value.ToString(filterOption.StartTimeFormat),
-                End = filterOption.EndTime.Value.ToString(filterOption.EndTimeFormat),
-                NodeList = service.ToArray()
-
-            }));
-
-            var model = new List<APPTimeModel>(); 
-           
-            foreach (var r in range)
-            {
-                var c = list.Where(x => x.TimeField == r ).FirstOrDefault();
-
-                model.Add(new APPTimeModel
-                {
-                    TimeField = r,
-                    GcGen0 = c == null ? 0 : c.GcGen0.ToString().ToDouble(2),
-                    GcGen1 = c == null ? 0 : c.GcGen1.ToString().ToDouble(2),
-                    GcGen2 = c == null ? 0 : c.GcGen2.ToString().ToDouble(2),
-                    HeapMemory = c == null ? 0 : c.HeapMemory.ToString().ToDouble(2),
-                    ThreadCount = c == null ? 0 : c.ThreadCount
-                });
-
-            } 
-
-            return model;
-
-        }
-
-
-
-
-        public async Task<List<BaseTimeModel>> GetServiceTrend(IndexPageDataFilterOption filterOption, List<string> range)
-        {
-            IEnumerable<string> service = new List<string>() { filterOption.Service };
-
-            if (filterOption.Service.IsEmpty())
-            {
-                service = await GetTopServiceLoad(filterOption);
-            }
-
-            var timeSpan = new TimeSpanStatisticsFilterOption
-            {
-                Type = (filterOption.EndTime.Value - filterOption.StartTime.Value).TotalHours > 1 ? TimeUnit.Hour : TimeUnit.Minute,
-
-            };
-
-            var DateFormat = GetDateFormat(timeSpan);
-
-            string where = $" where  CreateTime >= '{filterOption.StartTime.Value.ToString(filterOption.StartTimeFormat)}' AND CreateTime < '{filterOption.EndTime.Value.ToString(filterOption.EndTimeFormat)}'  ";
-
-            if (service.Any())
-            {
-                if (service.Count() == 1)
-                {
-                    where = where + $" AND Node = '{service.FirstOrDefault()}' ";
-                }
-                else
-                {
-                    where = where + $" AND Node In  ({string.Join(",",service.Select(x => $"'{x}'"))}) ";
-                }
-            }
-
-            if (!filterOption.LocalIP.IsEmpty()) where = where + $" AND LocalIP = '{filterOption.LocalIP}' ";
-            if (filterOption.LocalPort > 0) where = where + $" AND LocalPort = {filterOption.LocalPort} ";
-
-            string sql = $@" SELECT Node KeyField, {DateFormat} TimeField,COUNT(1) ValueField From ""RequestInfo"" {where} GROUP BY Node,{DateFormat} ";
-
-            var list = await LoggingSqlOperation(async connection => await connection.QueryAsync<BaseTimeModel>(sql, new
-            { 
-                Start = filterOption.StartTime.Value.ToString(filterOption.StartTimeFormat),
-                End = filterOption.EndTime.Value.ToString(filterOption.EndTimeFormat),
-                NodeList = service.ToArray()
-
-            }));
-
-            var model = new List<BaseTimeModel>();
-
-            foreach (var s in service)
-            {
-                foreach (var r in range)
-                {
-                    var c = list.Where(x => x.KeyField == s && x.TimeField == r).FirstOrDefault();
-
-                    model.Add(new BaseTimeModel
-                    {
-                        KeyField = s,
-                        TimeField = r,
-                        ValueField = c == null ? 0 : c.ValueField
-
-                    });
-
-                }
-            }
-
-            return model;
-        }
-
-        public async Task<List<BaseTimeModel>> GetServiceHeatMap(IndexPageDataFilterOption filterOption, List<string> Time, List<string> Span)
-        {
-            string where = $" where   CreateTime >= '{filterOption.StartTime.Value.ToString(filterOption.StartTimeFormat)}' AND CreateTime < '{filterOption.EndTime.Value.ToString(filterOption.EndTimeFormat)}' ";
-
-            if (!filterOption.Service.IsEmpty()) where = where + $" AND Node = '{filterOption.Service}' ";
-            if (!filterOption.LocalIP.IsEmpty()) where = where + $" AND LocalIP = '{filterOption.LocalIP}' ";
-            if (filterOption.LocalPort > 0) where = where + $" AND LocalPort = {filterOption.LocalPort} ";
-
-            var timeSpan = new TimeSpanStatisticsFilterOption
-            {
-                Type = (filterOption.EndTime.Value - filterOption.StartTime.Value).TotalHours > 1 ? TimeUnit.Hour : TimeUnit.Minute
-
-            };
-
-            var DateFormat = GetDateFormat(timeSpan);
-
-            string sql = $@"
-
-                  select {DateFormat} TimeField,  
-                  case 
-                  when (0 < Milliseconds and Milliseconds <= 200  ) then '0-200'
-                  when (200 < Milliseconds and Milliseconds <= 400) then '200-400'
-                  when (400 < Milliseconds and Milliseconds <= 600) then '400-600'
-                  when (600 < Milliseconds and Milliseconds <= 800) then '600-800'
-                  when (800 < Milliseconds and Milliseconds <= 1000) then '800-1000'
-                  when (1000 < Milliseconds and Milliseconds <= 1200) then '1000-1200'
-                  when (1200 < Milliseconds and Milliseconds <= 1400) then '1200-1400'
-                  when (1400 < Milliseconds and Milliseconds <= 1600) then '1400-1600'
-                  else '1600+' end KeyField, count(1) ValueField 
-                  From ""RequestInfo"" {where} GROUP BY KeyField,TimeField  ";
-
-            var list = await LoggingSqlOperation(async connection => await connection.QueryAsync<BaseTimeModel>(sql, new
-            {
-
-                Start = filterOption.StartTime.Value.ToString(filterOption.StartTimeFormat),
-                End = filterOption.EndTime.Value.ToString(filterOption.EndTimeFormat),
-                Node = filterOption.Service
-
-
-            }));
-
-            var model = new List<BaseTimeModel>();
-
-            foreach (var t in Time)
-            {
-                foreach (var s in Span)
-                {
-                    var c = list.Where(x => x.TimeField == t && x.KeyField == s).FirstOrDefault();
-
-                    model.Add(new BaseTimeModel
-                    { 
-                        TimeField = t,
-                        KeyField = s,
-                        ValueField = c == null ? 0 : c.ValueField 
-                    });
-                }
-            }
-
-            return model;
-        }
+        }   
+      
+       
 
         private class KVClass<TKey, TValue>
         {

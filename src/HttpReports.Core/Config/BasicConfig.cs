@@ -52,6 +52,8 @@ namespace HttpReports.Core.Config
 
         public const string Language = "Language";
 
+        public const string DefaultLanguage = "en-us";
+
         public const string StaticFilesRoot = "HttpReports.Dashboard";
 
         public const string HttpReportsServerRegister = "/HttpReportsServerRegister";

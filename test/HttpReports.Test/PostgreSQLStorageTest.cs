@@ -24,6 +24,10 @@ namespace HttpReports.Test
             services.Configure<PostgreStorageOptions>(o =>
             {
                 o.ConnectionString = "Host=localhost;Port=5432;Username=postgres;Password=123456;Database=HttpReports;";
+                o.DeferSecond = 5;
+                o.DeferThreshold = 5;
+
+
             });
             services.AddTransient<PostgreSQLStorage>();
             services.AddSingleton<PostgreConnectionFactory>();

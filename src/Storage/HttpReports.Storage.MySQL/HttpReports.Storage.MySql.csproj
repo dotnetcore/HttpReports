@@ -18,12 +18,13 @@
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
-    <PackageReference Include="MySql.Data" Version="8.0.20" />
+    <PackageReference Include="MySql.Data" Version="8.0.21" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\HttpReports.Core\HttpReports.Core.csproj" />
+    <ProjectReference Include="..\HttpReports.Storage.Repository\HttpReports.Storage.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

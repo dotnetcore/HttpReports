@@ -5,7 +5,7 @@ using System.Text;
 
 namespace HttpReports.Models
 {
-    public class MonitorJob: IMonitorJob
+    public class MonitorJob 
     {
         public string Id { get; set; } 
          

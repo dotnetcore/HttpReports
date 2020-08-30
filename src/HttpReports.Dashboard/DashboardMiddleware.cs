@@ -86,18 +86,18 @@ namespace HttpReports.Dashboard
 
 
                 //Authorization
-                await AuthorizeHelper.AuthorizeAsync(httpContext, handle, router); 
+                await AuthorizeHelper.AuthorizeAsync(httpContext, handle, router);
 
 
-                // VaildToken
-                //if (!_authService.ValidToken(httpContext,handle, router))
-                //{
-                //    httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                //VaildToken
+                if (!_authService.ValidToken(httpContext, handle, router))
+                {
+                    httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
 
-                //    await httpContext.Response.WriteAsync("Unauthorized");
+                    await httpContext.Response.WriteAsync("Unauthorized");
 
-                //    return; 
-                //}   
+                    return;
+                }
 
                 handle.Context = DashboardContext;
 

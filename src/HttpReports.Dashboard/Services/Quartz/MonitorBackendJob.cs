@@ -44,13 +44,13 @@ namespace HttpReports.Dashboard.Services.Quartz
             _lang = _lang ?? (ServiceContainer.provider.GetService(typeof(LocalizeService)) as LocalizeService).Current;
 
 
-            IMonitorJob job = context.JobDetail.JobDataMap.Get("job") as IMonitorJob;
+            MonitorJob job = context.JobDetail.JobDataMap.Get("job") as MonitorJob;
 
             MonitorJobPayload payload = JsonConvert.DeserializeObject<MonitorJobPayload>(job.Payload);
 
 
             //开始调用任务 
-            var response = GetCheckResponse(new List<Func<IMonitorJob, MonitorJobPayload, Task<AlarmOption>>> {
+            var response = GetCheckResponse(new List<Func<MonitorJob, MonitorJobPayload, Task<AlarmOption>>> {
 
                 CheckResponseTimeOutMonitor,
                 CheckErrorResponseMonitor,
@@ -63,7 +63,7 @@ namespace HttpReports.Dashboard.Services.Quartz
 
         }
 
-        private IEnumerable<Task<AlarmOption>> GetCheckResponse(List<Func<IMonitorJob, MonitorJobPayload, Task<AlarmOption>>> funcs, IMonitorJob job, MonitorJobPayload payload)
+        private IEnumerable<Task<AlarmOption>> GetCheckResponse(List<Func<MonitorJob, MonitorJobPayload, Task<AlarmOption>>> funcs, MonitorJob job, MonitorJobPayload payload)
         {
             List<Task<AlarmOption>> alarmOptions = new List<Task<AlarmOption>>();
 
@@ -76,7 +76,7 @@ namespace HttpReports.Dashboard.Services.Quartz
         }
 
 
-        private async Task AlarmAsync(IList<AlarmOption> alarmOption, IMonitorJob job)
+        private async Task AlarmAsync(IList<AlarmOption> alarmOption, MonitorJob job)
         {
             foreach (var item in alarmOption)
             {
@@ -97,7 +97,7 @@ namespace HttpReports.Dashboard.Services.Quartz
         /// 检查超时监控
         /// </summary>
         /// <returns></returns>
-        private async Task<AlarmOption> CheckResponseTimeOutMonitor(IMonitorJob job, MonitorJobPayload payload)
+        private async Task<AlarmOption> CheckResponseTimeOutMonitor(MonitorJob job, MonitorJobPayload payload)
         {  
             if (payload.ResponseTimeOutMonitor == null)
             {
@@ -190,7 +190,7 @@ namespace HttpReports.Dashboard.Services.Quartz
         /// <param name="job"></param>
         /// <param name="payload"></param>
         /// <returns></returns>
-        private async Task<AlarmOption> CheckErrorResponseMonitor(IMonitorJob job, MonitorJobPayload payload)
+        private async Task<AlarmOption> CheckErrorResponseMonitor(MonitorJob job, MonitorJobPayload payload)
         {  
             if (payload.ErrorResponseMonitor == null)
             {
@@ -278,7 +278,7 @@ namespace HttpReports.Dashboard.Services.Quartz
 
 
        
-        private async Task<AlarmOption> CheckIPMonitor(IMonitorJob job, MonitorJobPayload payload)
+        private async Task<AlarmOption> CheckIPMonitor(MonitorJob job, MonitorJobPayload payload)
         {
             if (payload.IPMonitor == null)
             {
@@ -357,7 +357,7 @@ namespace HttpReports.Dashboard.Services.Quartz
         }
 
  
-        private async Task<AlarmOption> CheckRequestCountMonitor(IMonitorJob job, MonitorJobPayload payload)
+        private async Task<AlarmOption> CheckRequestCountMonitor(MonitorJob job, MonitorJobPayload payload)
         {
             if (payload.RequestCountMonitor == null)
             {
