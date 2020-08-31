@@ -165,11 +165,12 @@ namespace HttpReports.Storage.Abstractions
                 }).ToListAsync(x => new APPTimeModel {
 
                     TimeField = x.Key.TimeField,
-                    GcGen0 = x.Avg(x.Value.GCGen0),
-                    GcGen1 = x.Avg(x.Value.GCGen1),
-                    GcGen2 = x.Avg(x.Value.GCGen2),
-                    HeapMemory = x.Avg(x.Value.HeapMemory),
-                    ThreadCount = x.Avg(x.Value.ThreadCount) 
+                    GcGen0_Raw = x.Avg(x.Value.GCGen0),
+                    GcGen1_Raw = x.Avg(x.Value.GCGen1),
+                    GcGen2_Raw = x.Avg(x.Value.GCGen2),
+                    HeapMemory_Raw = x.Avg(x.Value.HeapMemory),
+                    ProcessMemory_Raw = x.Avg(x.Value.ProcessMemory),
+                    ThreadCount_Raw = x.Avg(x.Value.ThreadCount) 
 
                 });
 
@@ -183,11 +184,13 @@ namespace HttpReports.Storage.Abstractions
                 model.Add(new APPTimeModel
                 {
                     TimeField = r,
-                    GcGen0 = c == null ? 0 : c.GcGen0,
-                    GcGen1 = c == null ? 0 : c.GcGen1,
-                    GcGen2 = c == null ? 0 : c.GcGen2,
-                    HeapMemory = c == null ? 0 : c.HeapMemory,
-                    ThreadCount = c == null ? 0 : c.ThreadCount
+                    GcGen0 = c == null ? 0 : c.GcGen0_Raw.ToInt(),
+                    GcGen1 = c == null ? 0 : c.GcGen1_Raw.ToInt(),
+                    GcGen2 = c == null ? 0 : c.GcGen2_Raw.ToInt(),
+                    HeapMemory = c == null ? 0 : c.HeapMemory_Raw.ToDouble(2),
+                    ProcessMemory  = c == null ? 0 : c.ProcessMemory_Raw.ToDouble(2),
+                    ThreadCount = c == null ? 0 : c.ThreadCount_Raw.ToInt()
+
                 });
 
             }

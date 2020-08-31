@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks; 
+using System.Threading.Tasks;
+using HttpReports.Core;
 using HttpReports.Core.Config;
 using HttpReports.Core.Models;
 using HttpReports.Core.Storage.FilterOptions;
@@ -14,6 +15,7 @@ using HttpReports.Dashboard.Services;
 using HttpReports.Dashboard.ViewModels;
 using HttpReports.Models;
 using HttpReports.Monitor;
+using HttpReports.Storage.Abstractions;
 using HttpReports.Storage.FilterOptions; 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -495,45 +497,9 @@ namespace HttpReports.Dashboard.Handle
 
 
         public async Task<string> GetIndexBasicData(QueryRequest request)
-        {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-
+        { 
             var start = request.Start.ToDateTime();
-            var end = request.End.ToDateTime();
-
-            #region BuildService
-            if (request.Service.IsEmpty() || request.Service == "ALL")
-            {
-                request.Service = "";
-            }
-
-            if (request.Instance.IsEmpty() || request.Instance == "ALL")
-            {
-                request.LocalIP = "";
-                request.LocalPort = 0;
-            }
-            else
-            {
-                request.LocalIP = request.Instance.Substring(0, request.Instance.LastIndexOf(':'));
-                request.LocalPort = request.Instance.Substring(request.Instance.LastIndexOf(':') + 1).ToInt();
-            }
-
-            #endregion
-
-            IndexPageDataFilterOption option = new IndexPageDataFilterOption {
-
-                Service = request.Service,
-                LocalIP = request.LocalIP,
-                LocalPort = request.LocalPort,
-                StartTime = start,
-                EndTime = end,
-                StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
-                EndTimeFormat = "yyyy-MM-dd HH:mm:ss",
-                Take = 6
-
-            };
-
+            var end = request.End.ToDateTime();  
 
             BasicFilter filter = new BasicFilter
             { 
@@ -541,47 +507,34 @@ namespace HttpReports.Dashboard.Handle
                 Instance = request.Instance,
                 StartTime = start,
                 EndTime = end,
-                Count = 6
+                Count = 6 
+            };   
+            
+            var basic = _storage.GetIndexBasicDataAsync(filter); 
 
-            }; 
+            var top = _storage.GetGroupData(filter,GroupType.Service); 
 
+            var range =  GetTimeRange(start,end);
 
-            var a0 = stopwatch.ElapsedMilliseconds;
+            var trend = _storage.GetServiceTrend(filter, range); 
 
-            var basic = await _storage.GetIndexBasicDataAsync(filter);
+            var heatmap = _storage.GetServiceHeatMap(filter,range);  
+           
+            await Task.WhenAll(basic,top,trend,heatmap);
 
-            var a1 = stopwatch.ElapsedMilliseconds;
-
-            var top = await _storage.GetGroupData(filter,GroupType.Service);
-
-            var a2 = stopwatch.ElapsedMilliseconds;
-
-            var range =  GetTimeRange(option.StartTime.Value, option.EndTime.Value);
-
-            var trend = await _storage.GetServiceTrend(filter, range);
-
-            var a3 = stopwatch.ElapsedMilliseconds; 
-
-            var heatmap = await _storage.GetServiceHeatMap(filter,range); 
-
-            var a4 = stopwatch.ElapsedMilliseconds;
-
-            //await Task.WhenAll(basic,top,trend,heatmap);
-
-            stopwatch.Stop();
-
-            return Json(new HttpResultEntity(1, "ok", new
+            var result = new HttpResultEntity(1, "ok", new
             {
-                Total = basic.Total,
-                ServerError = basic.ServerError,
-                Service = basic.Service,
-                Instance = basic.Instance,
-                Top = top, 
-                Trend = trend,
-                HeatMap = heatmap,
-                Cost = stopwatch.ElapsedMilliseconds
+                Total = basic.Result.Total,
+                ServerError = basic.Result.ServerError,
+                Service = basic.Result.Service,
+                Instance = basic.Result.Instance,
+                Top = top.Result,
+                Trend = trend.Result,
+                HeatMap = heatmap.Result
 
-            }));
+            }); 
+
+            return Json(result);
              
         }
 
@@ -590,68 +543,36 @@ namespace HttpReports.Dashboard.Handle
         public async Task<string> GetServiceBasicData(QueryRequest request)
         {
             var start = request.Start.ToDateTime();
-            var end = request.End.ToDateTime();
+            var end = request.End.ToDateTime();  
 
-            #region BuildService
-            if (request.Service.IsEmpty() || request.Service == "ALL")
-            {
-                request.Service = "";
-            }
-
-            if (request.Instance.IsEmpty() || request.Instance == "ALL")
-            {
-                request.LocalIP = "";
-                request.LocalPort = 0;
-            }
-            else
-            {
-                request.LocalIP = request.Instance.Substring(0, request.Instance.LastIndexOf(':'));
-                request.LocalPort = request.Instance.Substring(request.Instance.LastIndexOf(':') + 1).ToInt();
-            }
-
-            #endregion
-
-            IndexPageDataFilterOption option = new IndexPageDataFilterOption
-            {
-
-                Service = request.Service,
-                LocalIP = request.LocalIP,
-                LocalPort = request.LocalPort,
-                StartTime = start,
-                EndTime = end,
-                StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
-                EndTimeFormat = "yyyy-MM-dd HH:mm:ss",
-                Take = 6
-
-            };
-
-            BasicFilter filter = new BasicFilter { 
-            
+            BasicFilter filter = new BasicFilter {  
                 Service = request.Service,
                 Instance = request.Instance,
                 StartTime = start,
                 EndTime = end,
-                Count = 6 
-            
+                Count = 6  
             }; 
 
-            var route = await _storage.GetGroupData(filter, GroupType.Route);
+            var route = _storage.GetGroupData(filter, GroupType.Route);
 
-            var instance = await _storage.GetGroupData(filter, GroupType.Instance);
+            var instance = _storage.GetGroupData(filter, GroupType.Instance);
 
-            var range = GetTimeRange(option.StartTime.Value, option.EndTime.Value);
+            var range = GetTimeRange(start,end);
 
-            var app = await _storage.GetAppStatus(filter,range);
+            var app = _storage.GetAppStatus(filter,range);
 
+            await Task.WhenAll(route, instance, app);
 
-            return Json(new HttpResultEntity(1, "ok", new
+            var result = new HttpResultEntity(1, "ok", new
             {
-                route = route,
-                instance = instance,
+                route = route.Result,
+                instance = instance.Result,
                 range = range,
-                app = app
+                app = app.Result
 
-            })); 
+            });
+
+            return Json(result); 
 
         } 
 

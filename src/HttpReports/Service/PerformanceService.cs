@@ -52,7 +52,7 @@ namespace HttpReports.Service
         }
 
         public Task<Performance> GetPerformance(string Instance)
-        {
+        {  
             Performance performance = new Performance {  
 
                  Service = Options.Service.IsEmpty() ? "Default": Options.Service,
@@ -60,11 +60,11 @@ namespace HttpReports.Service
                  GCGen0 = Gen0CollectCount(),
                  GCGen1 = Gen1CollectCount(),
                  GCGen2 = Gen2CollectCount(),
-                 HeapMemory = GCHeapMemory().ToString().ToDouble(2),
+                 HeapMemory = Math.Round(GCHeapMemory(),2) ,  
                  ThreadCount = GetThreadCount(),
                  PendingThreadCount = GetPendingThreadCount(),
-                 ProcessMemory = ProcessMemory().ToString().ToDouble(2),
-                 ProcessCPU = ProcessCPU().ToString().ToDouble(2),
+                 ProcessMemory = Math.Round(ProcessMemory(),2),
+                 ProcessCPU = Math.Round(ProcessCPU(),2),
                  CreateTime = DateTime.Now 
             }; 
 
@@ -77,7 +77,7 @@ namespace HttpReports.Service
 
         private int Gen2CollectCount() => GC.CollectionCount(2);
 
-        private double GCHeapMemory() => GC.GetTotalMemory(false) / 1024 / 1024; 
+        private double GCHeapMemory() => GC.GetTotalMemory(false) / 1024.00 / 1024.00; 
 
         private int GetThreadCount()
         {

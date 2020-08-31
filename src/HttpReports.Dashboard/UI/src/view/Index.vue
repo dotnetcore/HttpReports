@@ -476,6 +476,7 @@ export default {
           Language: type,
         })
         .then((response) => {
+          
           //this.$message({ message: "Switch: " + type, type: "success" });
 
           this.$http.get(`/static/lang/${type}.json`).then((res) => {

@@ -1,7 +1,7 @@
 ﻿using System;
 
 using HttpReports;
-
+using HttpReports.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

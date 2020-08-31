@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using HttpReports;
+using HttpReports.Core;
 using HttpReports.Dashboard;
 using HttpReports.Dashboard.Handle;
 using HttpReports.Dashboard.Implements;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Quartz.Spi;
+using ServiceContainer = HttpReports.Dashboard.Implements.ServiceContainer;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

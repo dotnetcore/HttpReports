@@ -1,4 +1,5 @@
-﻿using HttpReports.Core.Config;
+﻿using HttpReports.Core;
+using HttpReports.Core.Config;
 using HttpReports.Dashboard.Implements;
 using HttpReports.Dashboard.Models; 
 using HttpReports.Models;
@@ -13,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ServiceContainer = HttpReports.Dashboard.Implements.ServiceContainer;
 
 namespace HttpReports.Dashboard.Services.Quartz
 {

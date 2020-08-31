@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-
+using HttpReports.Core;
 using HttpReports.Storage.SQLServer;
 
 using Microsoft.Extensions.DependencyInjection;

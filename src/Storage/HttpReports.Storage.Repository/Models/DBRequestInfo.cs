@@ -7,7 +7,11 @@ using System.Text;
 namespace HttpReports.Storage.Abstractions.Models
 { 
     [Table(Name = "RequestInfo" )] 
-    [Index("idx_info_id", "Id", true)] 
+    [Index("idx_info_id", "Id", true)]
+    [Index("idx_info_createtime", "CreateTime")]
+    [Index("idx_info_service", "Service")]
+    [Index("idx_info_instance", "Instance")]
+    [Index("idx_info_service_instance", "Service,Instance")] 
     public class DBRequestInfo
     { 
         [Column(IsPrimary = true,StringLength = 50)]

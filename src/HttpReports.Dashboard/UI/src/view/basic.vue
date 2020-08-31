@@ -192,9 +192,9 @@ export default {
 
     async query(newVal, oldVal) {  
        
-      var response = await this.load_basic_data();
-      this.basic_data = response.body.data; 
+      var response = await this.load_basic_data();  
 
+      this.load_board_data(response);
       this.load_service_call(response);
       this.load_slow_service(response);
       this.load_error_service(response);
@@ -205,9 +205,9 @@ export default {
   },
   async mounted() {      
       
-    var response = await this.load_basic_data();  
-    this.basic_data = response.body.data;  
-
+    var response = await this.load_basic_data();    
+      
+    this.load_board_data(response);
     this.load_service_call(response);
     this.load_slow_service(response);
     this.load_error_service(response);
@@ -216,8 +216,7 @@ export default {
     
   },
 
-activated(){
-
+activated(){ 
  
 
 },
@@ -227,26 +226,36 @@ deactivated(){
 },
 
   methods: {
-    async load_basic_data() {   
-     
-      this.$store.commit("set_basic_loading",true);  
-      var data = await Vue.http.post("GetIndexBasicData", this.$store.state.query);  
-      this.$store.commit("set_basic_loading",false);   
-      console.log("cost:"+ data.data.data.cost) 
-      return data;
-    },
+    async load_basic_data() {      
 
+      this.$store.commit("set_basic_loading",true);  
+      var response = await Vue.http.post("GetIndexBasicData", this.$store.state.query);  
+      this.$store.commit("set_basic_loading",false);    
+      return response;
+
+    }, 
+    load_board_data(response){
+
+      var data = response.body.data;
+
+      this.basic_data.total = data.total;
+      this.basic_data.serverError = data.serverError;
+      this.basic_data.service = data.service;
+      this.basic_data.instance = data.instance; 
+
+    }, 
     load_service_call(response) {
 
-      var source = [];
+      var source = []; 
 
-      response.data.data.top[0].forEach((item) => {
+      response.body.data.top[0].forEach((item) => {
         source.push({
-          key: item.service,
+          key: item.key,
           value: item.value,
         });
-      });
+      }); 
 
+     
       if (this.service_call_chart == null) {
         this.service_call_chart = new Bar(
           document.getElementById("service-call"),
@@ -283,9 +292,9 @@ deactivated(){
     load_slow_service(response) {
       var source = [];
 
-      response.data.data.top[1].forEach((item) => {
+      response.body.data.top[1].forEach((item) => {
         source.push({
-          key: item.service,
+          key: item.key,
           value: item.value,
         });
       });
@@ -325,11 +334,11 @@ deactivated(){
     },
 
     load_error_service(response) {
-      var source = [];
 
-      response.data.data.top[2].forEach((item) => {
+      var source = []; 
+      response.body.data.top[2].forEach((item) => {
         source.push({
-          key: item.service,
+          key: item.key,
           ms: item.value,
         });
       });
@@ -372,7 +381,7 @@ deactivated(){
       
       var source = [];
 
-      response.data.data.trend.forEach((item) => {
+      response.body.data.trend.forEach((item) => {
         source.push({
           service: item.keyField,
           time: item.timeField,
@@ -431,7 +440,7 @@ deactivated(){
 
       var source = []; 
 
-      response.data.data.heatMap.forEach((item) => {
+      response.body.data.heatMap.forEach((item) => {
         source.push({
           time: item.timeField,
           span: item.keyField,

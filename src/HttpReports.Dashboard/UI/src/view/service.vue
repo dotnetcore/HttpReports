@@ -96,7 +96,9 @@ export default {
     return {
       isCollapse: false,
       userName: "",
-      service_gc_chart:null
+      service_gc_chart:null,
+      service_memory_chart:null,
+      service_thread_chart:null
     };
   }, 
 computed: mapState({
@@ -105,7 +107,10 @@ computed: mapState({
   watch: {  
     async query(newVal, oldVal) {  
 
-       var response = await this.load_basic_data();  
+       var response = await this.load_basic_data();    
+       this.load_service_gc(response.body.data); 
+       this.load_service_memory(response.body.data); 
+       this.load_service_thread(response.body.data); 
      
     }, 
   }, 
@@ -122,8 +127,8 @@ computed: mapState({
     this.init_error_service();
 
     this.load_service_gc(response.body.data); 
-    this.load_service_memory(); 
-    this.load_service_thread();
+    this.load_service_memory(response.body.data); 
+    this.load_service_thread(response.body.data); 
   }, 
   methods: {
 
@@ -131,8 +136,7 @@ computed: mapState({
      
       this.$store.commit("set_service_loading",true);  
       var data = await Vue.http.post("GetServiceBasicData", this.$store.state.query);   
-      this.$store.commit("set_service_loading",false);  
-      console.log(data) 
+      this.$store.commit("set_service_loading",false);   
       return data;
 
     }, 
@@ -366,25 +370,24 @@ computed: mapState({
       data.app.forEach((item) => { 
 
         source.push({
-          service: "GcGen0",
+          key: "GcGen0",
           time: item.timeField,
           value: item.gcGen0,
         });
 
         source.push({
-          service: "GcGen1",
+          key: "GcGen1",
           time: item.timeField,
           value: item.gcGen1,
         });
 
         source.push({
-          service: "GcGen2",
+          key: "GcGen2",
           time: item.timeField,
           value: item.gcGen2,
         }); 
 
-      }); 
-    
+      });  
 
       if (this.service_gc_chart == null) {
         this.service_gc_chart = new Line(
@@ -399,7 +402,7 @@ computed: mapState({
             data: source,
             xField: "time",
             yField: "value",
-            seriesField: "service",
+            seriesField: "key",
             xAxis: {
               type: "dateTime",
               label: {
@@ -434,74 +437,135 @@ computed: mapState({
 
     },
 
-    load_service_memory: () => {
-      const data = [
-        { year: "1991", value: 3 },
-        { year: "1992", value: 4 },
-        { year: "1993", value: 3.5 },
-        { year: "1994", value: 5 },
-        { year: "1995", value: 4.9 },
-        { year: "1996", value: 6 },
-        { year: "1997", value: 7 },
-        { year: "1998", value: 9 },
-        { year: "1999", value: 13 },
-      ];
+    load_service_memory(data) {
+ 
+      var source = [];   
 
-      const linePlot = new Line(document.getElementById("service-memory"), {
-        title: {
-          visible: true,
-          text: "Memory",
-        },
-        forceFit: true,
-        padding: "auto",
-        data,
-        xField: "year",
-        yField: "value",
-        point: {
-          visible: true,
-        },
-        label: {
-          visible: true,
-          type: "point",
-        },
-      });
+      data.app.forEach((item) => { 
 
-      linePlot.render();
+        source.push({
+          key: "HeapMemory",
+          time: item.timeField,
+          value: item.heapMemory,
+        });
+
+        source.push({
+          key: "ProcessMemory",
+          time: item.timeField,
+          value: item.processMemory,
+        }); 
+
+      });  
+
+      if (this.service_memory_chart == null) {
+        this.service_memory_chart = new Line(
+          document.getElementById("service-memory"),
+          {
+            title: {
+              visible: true,
+              text: "Memory",
+            },
+
+            forceFit: true,
+            data: source,
+            xField: "time",
+            yField: "value",
+            seriesField: "key",
+            xAxis: {
+              type: "dateTime",
+              label: {
+                visible: true,
+                autoHide: true,
+                autoRotate: false,
+              },
+            },
+            animation: {
+              appear: {
+                animation: "clipingWithData",
+              },
+            },
+            yAxis: {
+              formatter: (v) => v,
+            },
+            legend: {
+              visible: false,
+            },
+            label: {
+              visible: true,
+              type: "line",
+            },
+            smooth: true,
+          }
+        );
+
+        this.service_memory_chart.render();
+      } else {
+        this.service_memory_chart.changeData(source);
+      } 
+ 
     },
 
-    load_service_thread: () => {
-      const data = [
-        { year: "1991", value: 3 },
-        { year: "1992", value: 4 },
-        { year: "1993", value: 3.5 },
-        { year: "1994", value: 5 },
-        { year: "1995", value: 4.9 },
-        { year: "1996", value: 6 },
-        { year: "1997", value: 7 },
-        { year: "1998", value: 9 },
-        { year: "1999", value: 13 },
-      ];
+    load_service_thread(data){ 
+      
+      var source = [];   
 
-      const linePlot = new Line(document.getElementById("service-thread"), {
-        title: {
-          visible: true,
-          text: "Thread",
-        },
-        forceFit: true,
-        padding: "auto",
-        data,
-        xField: "year",
-        yField: "value",
-        point: {
-          visible: true,
-        },
-        label: {
-          visible: true,
-          type: "point",
-        },
-      });
+      data.app.forEach((item) => { 
 
-      linePlot.render();
+        source.push({
+          key: "Thread",
+          time: item.timeField,
+          value: item.threadCount,
+        });
+ 
+
+      });  
+
+      if (this.service_thread_chart == null) {
+        this.service_thread_chart = new Line(
+          document.getElementById("service-thread"),
+          {
+            title: {
+              visible: true,
+              text: "Thread",
+            },
+
+            forceFit: true,
+            data: source,
+            xField: "time",
+            yField: "value",
+            seriesField: "key",
+            xAxis: {
+              type: "dateTime",
+              label: {
+                visible: true,
+                autoHide: true,
+                autoRotate: false,
+              },
+            },
+            animation: {
+              appear: {
+                animation: "clipingWithData",
+              },
+            },
+            yAxis: {
+              formatter: (v) => v,
+            },
+            legend: {
+              visible: false,
+            },
+            label: {
+              visible: true,
+              type: "line",
+            },
+            smooth: true,
+          }
+        );
+
+        this.service_thread_chart.render();
+      } else {
+        this.service_thread_chart.changeData(source);
+      }  
+
     } 
 
   },

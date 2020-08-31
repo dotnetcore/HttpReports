@@ -1,41 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using HttpReports.Core; 
-using HttpReports.Core.Models;
+﻿using HttpReports.Core.Models;
 using HttpReports.Core.Storage.FilterOptions;
 using HttpReports.Models;
-using HttpReports.Monitor; 
 using HttpReports.Storage.FilterOptions;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace HttpReports
+namespace HttpReports.Core
 {
-    /// <summary>
-    /// 储存库接口
-    /// </summary>
     public interface IHttpReportsStorage
-    { 
-        Task InitAsync(); 
+    {
+        Task InitAsync();
 
- 
+
         Task AddRequestInfoAsync(RequestBag bag);
 
 
-        Task AddRequestInfoAsync(List<RequestBag> list, CancellationToken token); 
+        Task AddRequestInfoAsync(List<RequestBag> list, CancellationToken token);
 
 
-        Task<IndexPageData> GetIndexBasicDataAsync(BasicFilter filter);   
+        Task<IndexPageData> GetIndexBasicDataAsync(BasicFilter filter);
 
-        Task<List<BaseTimeModel>> GetServiceTrend(BasicFilter filter,List<string> Time);
+        Task<List<BaseTimeModel>> GetServiceTrend(BasicFilter filter, List<string> Time);
 
         Task<List<BaseTimeModel>> GetServiceHeatMap(BasicFilter filter, List<string> Time);
 
 
-        Task<IEnumerable<string>> GetTopServiceLoad(BasicFilter filter);  
-    
+        Task<IEnumerable<string>> GetTopServiceLoad(BasicFilter filter);
 
-        Task<List<List<TopServiceResponse>>> GetGroupData(BasicFilter filter,GroupType groupType);
+
+        Task<List<List<TopServiceResponse>>> GetGroupData(BasicFilter filter, GroupType groupType);
 
 
         Task<List<APPTimeModel>> GetAppStatus(BasicFilter filter, List<string> range);
@@ -45,23 +41,23 @@ namespace HttpReports
 
 
 
-        Task<List<ServiceInstanceInfo>> GetServiceInstance(DateTime startTime); 
+        Task<List<ServiceInstanceInfo>> GetServiceInstance(DateTime startTime);
 
         #region Statistics
 
-        
+
         Task<List<UrlRequestCount>> GetUrlRequestStatisticsAsync(RequestInfoFilterOption filterOption);
 
-      
-        Task<List<RequestAvgResponeTime>> GetRequestAvgResponeTimeStatisticsAsync(RequestInfoFilterOption filterOption);  
-      
+
+        Task<List<RequestAvgResponeTime>> GetRequestAvgResponeTimeStatisticsAsync(RequestInfoFilterOption filterOption);
+
         Task<List<StatusCodeCount>> GetStatusCodeStatisticsAsync(RequestInfoFilterOption filterOption);
 
-        
+
         Task<List<ResponeTimeGroup>> GetGroupedResponeTimeStatisticsAsync(GroupResponeTimeFilterOption filterOption);
 
-        
-        Task<IndexPageData> GetIndexPageDataAsync(IndexPageDataFilterOption filterOption); 
+
+        Task<IndexPageData> GetIndexPageDataAsync(IndexPageDataFilterOption filterOption);
 
         /// <summary>
         /// 搜索请求信息
@@ -87,7 +83,7 @@ namespace HttpReports
         #endregion Statistics
 
         #region Monitor
-         
+
         Task<bool> AddMonitorJob(MonitorJob job);
 
         Task<List<Performance>> GetPerformances(PerformanceFilterIOption option);
@@ -98,7 +94,7 @@ namespace HttpReports
 
         Task<MonitorJob> GetMonitorJob(string Id);
 
-        Task<List<MonitorJob>> GetMonitorJobs();  
+        Task<List<MonitorJob>> GetMonitorJobs();
 
 
         #region Query
@@ -131,11 +127,11 @@ namespace HttpReports
 
         Task<SysUser> CheckLogin(string Username, string Password);
 
-        Task<SysUser> GetSysUser(string UserName); 
+        Task<SysUser> GetSysUser(string UserName);
 
         Task<bool> UpdateLoginUser(SysUser model);
 
-        Task<(RequestInfo,RequestDetail)> GetRequestInfoDetail(string Id); 
+        Task<(RequestInfo, RequestDetail)> GetRequestInfoDetail(string Id);
 
         Task<RequestInfo> GetRequestInfo(string Id);
 
@@ -147,7 +143,7 @@ namespace HttpReports
 
         Task<string> GetSysConfig(string Key);
 
-        Task<bool> AddPerformanceAsync(Performance performance);  
+        Task<bool> AddPerformanceAsync(Performance performance);
 
     }
 }

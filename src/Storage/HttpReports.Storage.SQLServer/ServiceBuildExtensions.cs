@@ -1,4 +1,5 @@
 ﻿using HttpReports;
+using HttpReports.Core;
 using HttpReports.Storage.SQLServer;
 using System;
 

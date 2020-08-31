@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 
 using HttpReports;
+using HttpReports.Core;
 using HttpReports.Storage.MySql;
 
 [assembly: InternalsVisibleTo("HttpReports.Test")]

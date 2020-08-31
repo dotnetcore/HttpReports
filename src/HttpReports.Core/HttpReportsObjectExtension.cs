@@ -10,6 +10,14 @@ namespace HttpReports
             return num;
         }
 
+
+        public static int ToInt(this decimal str)
+        { 
+           return Convert.ToInt32(str);  
+        } 
+         
+
+
         public static int ToInt(this double dou)
         {
             return Convert.ToInt32(dou);
@@ -45,6 +53,25 @@ namespace HttpReports
         }
 
         public static double ToDouble(this string str, int digits = -1)
+        {
+            try
+            {
+                if (digits == -1)
+                {
+                    return Convert.ToDouble(str);
+                }
+                else
+                {
+                    return Math.Round(Convert.ToDouble(str), digits);
+                }
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
+        }
+
+        public static double ToDouble(this decimal str, int digits = -1)
         {
             try
             {

@@ -1,4 +1,5 @@
-﻿using HttpReports.Core.Config; 
+﻿using HttpReports.Core;
+using HttpReports.Core.Config; 
 using HttpReports.Dashboard.Services.Quartz;
 using HttpReports.Models;
 using HttpReports.Monitor;

@@ -27,21 +27,20 @@ const store = new Vuex.Store({
       state.lang = data;  
     },
     set_tag: (state, data) => state.tag = data,
-    set_query(state,data) {
+    set_query(state,data) {  
       
-      if (data != null) {
-
-        if (data.service == "ALL") {
-           data.service == "";
+      if (data != null) {  
+        if (data.service == "ALL") {  
+           data.service = "";
         }
 
         if (data.instance == "ALL") {
-          data.instance == "";
+          data.instance = "";
        } 
        
-      }
+     } 
 
-      state.query = data
+      state.query = data;
 
     },
     set_basic_loading:(state,data) => state.basic_loading = data,
