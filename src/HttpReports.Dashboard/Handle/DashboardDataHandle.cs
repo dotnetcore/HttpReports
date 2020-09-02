@@ -553,7 +553,7 @@ namespace HttpReports.Dashboard.Handle
                 Count = 6  
             }; 
 
-            var route = _storage.GetGroupData(filter, GroupType.Route);
+            var endpoint = _storage.GetGroupData(filter, GroupType.Route);
 
             var instance = _storage.GetGroupData(filter, GroupType.Instance);
 
@@ -561,11 +561,11 @@ namespace HttpReports.Dashboard.Handle
 
             var app = _storage.GetAppStatus(filter,range);
 
-            await Task.WhenAll(route, instance, app);
+            await Task.WhenAll(endpoint, instance, app);
 
             var result = new HttpResultEntity(1, "ok", new
             {
-                route = route.Result,
+                endpoint = endpoint.Result,
                 instance = instance.Result,
                 range = range,
                 app = app.Result

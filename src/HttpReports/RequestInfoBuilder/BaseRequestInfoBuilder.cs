@@ -30,7 +30,7 @@ namespace HttpReports
 
             if (IsFilterRequest(context)) return (null, null); 
 
-            // Build RequestInfo
+            // Build RequestInfo 
 
             Uri uri = new Uri(Options.Urls);
             var request = ModelCreator.CreateRequestInfo();
@@ -38,7 +38,8 @@ namespace HttpReports
             var remoteIP = context.Request.Headers["X-Forwarded-For"].FirstOrDefault();
 
             request.RemoteIP = remoteIP.IsEmpty() ? context.Connection.RemoteIpAddress?.MapToIPv4()?.ToString() : remoteIP;
-            request.Instance = uri.Host + ":" + uri.Port; 
+            request.Instance = uri.Host + ":" + uri.Port;
+            request.LoginUser = context.User?.Identity?.Name;
             request.StatusCode = context.Response.StatusCode; 
             request.Method = context.Request.Method;
             request.Url = context.Request.Path;
@@ -60,6 +61,7 @@ namespace HttpReports
             if (request.Url == null) request.Url = string.Empty;
             if (request.Method == null) request.Method = string.Empty;
             if (request.RemoteIP == null) request.RemoteIP = string.Empty;
+            if (request.LoginUser == null) request.LoginUser = string.Empty;
 
             return request;
         }

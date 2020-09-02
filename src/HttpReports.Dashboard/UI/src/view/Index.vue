@@ -125,6 +125,11 @@
             <span slot="title">{{ this.$store.state.lang.ServiceTag }}</span>
           </el-menu-item>
 
+          <el-menu-item index="/topology">
+            <i class="fa fa-snowflake-o"></i>
+            <span slot="title">{{ this.$store.state.lang.Topology }}</span>
+          </el-menu-item>
+
           <el-menu-item index="/detail">
             <i class="fa fa-bars"></i>
             <span slot="title">{{ this.$store.state.lang.Menu_RequestList }}</span>

@@ -6,7 +6,8 @@ import Index from '@/view/index'
 import Basic from '@/view/basic'
 import Service from '@/view/service'
 import Detail from '@/view/detail'
-import Alarm from '@/view/alarm'   
+import Alarm from '@/view/alarm'
+import Topology from '@/view/topology' 
 
 Vue.use(Router) 
 
@@ -37,6 +38,10 @@ export default new Router({
         {
           path: '/service',
           component: Service
+        },
+        {
+          path: '/topology',
+          component: Topology
         },
         {
           path: '/detail',

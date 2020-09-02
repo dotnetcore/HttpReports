@@ -47,7 +47,7 @@ namespace HttpReports.Test
                 {
                     List<Core.RequestBag> requestBags = new List<Core.RequestBag>();
 
-                    for (int c = 0; c < 100; c++)
+                    for (int c = 0; c < 500; c++)
                     {
                         requestBags.Add(new Core.RequestBag(new RequestInfo
                         {

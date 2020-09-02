@@ -12,6 +12,7 @@
   "dependencies": {
     "@antv/g2": "^4.0.14",
     "@antv/g2plot": "^1.1.19",
+    "@antv/g6": "^3.7.0",
     "animate.css": "^4.1.0",
     "element-ui": "^2.13.2",
     "font-awesome": "^4.7.0",
