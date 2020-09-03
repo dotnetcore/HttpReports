@@ -45,7 +45,20 @@ namespace HttpReports.Core.Config
             {
                 return string.Empty;
             }
-        }   
+        }
+
+        public static string GetTraceParentService(this HttpContext context)
+        {
+            if (context.Items.ContainsKey(BasicConfig.ActiveParentSpanService))
+            {
+                return context.Items[BasicConfig.ActiveParentSpanService].ToString();
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+
 
     }
 }

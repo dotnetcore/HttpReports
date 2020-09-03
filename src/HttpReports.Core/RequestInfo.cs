@@ -9,7 +9,11 @@ namespace HttpReports
 
         public string Service { get; set; }
 
-        public string Instance { get; set; }
+        public string ParentService { get; set; }
+
+
+        public string Instance { get; set; } 
+        
 
         public string Route { get; set; }
 

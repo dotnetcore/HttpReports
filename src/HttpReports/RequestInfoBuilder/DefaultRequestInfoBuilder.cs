@@ -36,7 +36,8 @@ namespace HttpReports.RequestInfoBuilder
 
             requestDetail.RequestId = request.Id = context.GetTraceId();
 
-            request.ParentId = context.GetTraceParentId(); 
+            request.ParentId = context.GetTraceParentId();
+            request.ParentService = context.GetTraceParentService();
 
             return (request, requestDetail);
         }

@@ -30,7 +30,8 @@ namespace HttpReports.Test
             var count = 100000;
             var random = new Random();
 
-            string[] Services = { "User", "SendOrder", "PostOrder", "Payment", "Log", "DataCenter", "Student","Master" };
+            string[] Services = { "User", "Order", "Weixin", "Payment", "Log", "DataCenter", "Student","Master" };
+            string[] ParentServices = { "", "", "", "", "", "", "", "","","","","", "Order", "User", "Weixin" };
             string[] LocalIPs = { "192.168.1.1", "192.168.1.2", "192.168.1.3", "192.168.1.4", "192.168.1.5", "192.168.1.6" };
 
             string[] Route = { "Login","Payment","Search","QueryData","GetCofnig","LoadData" };
@@ -54,6 +55,7 @@ namespace HttpReports.Test
                             Id = MD5_16(Guid.NewGuid().ToString()),
                             ParentId = MD5_16(Guid.NewGuid().ToString()),
                             Service = Services[new Random().Next(0, Services.Length - 1)],
+                            ParentService = ParentServices[new Random().Next(0, ParentServices.Length - 1)],
                             Route =  Services[new Random().Next(0, Services.Length - 1)] + "/" + Route[new Random().Next(0, Route.Length - 1)],
                             Url = "/HttpReportsData/GetServiceInstance",
                             RequestType = "http",

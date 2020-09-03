@@ -20,8 +20,8 @@ namespace HttpReports.Dashboard.WebAPP
        
         public void ConfigureServices(IServiceCollection services) 
         { 
-            services.AddHttpReports().UsePostgreSQLStorage(); 
-            services.AddHttpReportsDashboard().UsePostgreSQLStorage(); 
+            services.AddHttpReports().UseMySqlStorage(); 
+            services.AddHttpReportsDashboard().UseMySqlStorage(); 
 
             services.AddCors(c =>
             { 

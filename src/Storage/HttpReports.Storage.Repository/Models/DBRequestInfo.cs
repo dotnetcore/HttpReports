@@ -10,6 +10,7 @@ namespace HttpReports.Storage.Abstractions.Models
     [Index("idx_info_id", "Id", true)]
     [Index("idx_info_createtime", "CreateTime")]
     [Index("idx_info_service", "Service")]
+    [Index("idx_info_service_parentservice", "Service,ParentService")]
     [Index("idx_info_instance", "Instance")]
     [Index("idx_info_service_instance", "Service,Instance")] 
     public class DBRequestInfo
@@ -22,6 +23,10 @@ namespace HttpReports.Storage.Abstractions.Models
 
         [Column(StringLength = 50)]
         public string Service { get; set; }
+
+
+        [Column(StringLength = 50)]
+        public string ParentService { get; set; }
 
         [Column(StringLength = 50)]  
         public string Instance { get; set; }

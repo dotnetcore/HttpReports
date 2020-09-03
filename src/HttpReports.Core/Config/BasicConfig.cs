@@ -34,6 +34,8 @@ namespace HttpReports.Core.Config
 
         public const string ActiveParentSpanId = "HttpReports.Trace.ParentSpan.Id";
 
+        public const string ActiveParentSpanService = "HttpReports.Trace.ParentSpan.Service";
+
 
         public const string AuthToken = "HttpReports.Auth.Token";
 
