@@ -359,6 +359,7 @@ export default {
 
   computed: mapState({
     basic_loading: (state) => state.basic_loading,
+    topology_loading: (state) => state.topology_loading,
     detail_loading: (state) => state.detail_loading,
     service_loading:(state) => state.service_loading
   }),
@@ -375,6 +376,12 @@ export default {
         this.loading = newVal;
       }
     }, 
+    topology_loading(newVal, oldVal) {
+      var path = this.$router.app._route.path;
+      if (path == "/topology") {
+        this.loading = newVal;
+      }
+    },  
     detail_loading(newVal, oldVal) {
       var path = this.$router.app._route.path;
       if (path == "/detail") {

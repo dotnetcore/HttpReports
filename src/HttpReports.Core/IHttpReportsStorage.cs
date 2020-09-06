@@ -34,6 +34,10 @@ namespace HttpReports.Core
         Task<List<List<TopServiceResponse>>> GetGroupData(BasicFilter filter, GroupType groupType);
 
 
+        Task<List<BaseNode>> GetTopologyData(BasicFilter filter);
+
+
+
         Task<List<APPTimeModel>> GetAppStatus(BasicFilter filter, List<string> range);
 
 
@@ -59,12 +63,8 @@ namespace HttpReports.Core
 
         Task<IndexPageData> GetIndexPageDataAsync(IndexPageDataFilterOption filterOption);
 
-        /// <summary>
-        /// 搜索请求信息
-        /// </summary>
-        /// <param name="filterOption"></param>
-        /// <returns></returns>
-        Task<RequestInfoSearchResult> SearchRequestInfoAsync(RequestInfoSearchFilterOption filterOption);
+        
+        Task<RequestInfoSearchResult> GetSearchRequestInfoAsync(QueryDetailFilter filter);
 
         /// <summary>
         /// 获取请求次数统计
@@ -129,7 +129,7 @@ namespace HttpReports.Core
 
         Task<SysUser> GetSysUser(string UserName);
 
-        Task<bool> UpdateLoginUser(SysUser model);
+        Task<bool> UpdateLoginUser(SysUser model); 
 
         Task<(RequestInfo, RequestDetail)> GetRequestInfoDetail(string Id);
 

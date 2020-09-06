@@ -1,44 +1,258 @@
 
+<style>
+@media screen and (min-width: 1410px) {
+  .detailDrawer .el-drawer {
+    width: 30% !important;
+  }
+}
+
+@media screen and (max-width: 1410px) {
+  .detailDrawer .el-drawer {
+    width: 40% !important;
+  }
+}
+
+.detailDrawer .el-drawer {
+  padding: 20px 20px;
+  overflow: auto;
+}
+
+.traceDrawer .el-drawer {
+  padding: 20px 80px;
+}
+
+.custom-tree-node { 
+    font-size: 14px;
+    padding-right: 8px;
+    width: 100%; ;
+}
+
+.custom-tree-node:hover{
+
+background-color: #dadada;
+
+}
+
+.traceDrawer .el-tree-node__content{
+ 
+   height: 30px;
+  
+}
+
+.traceDrawer .el-tag--mini{
+    
+    height: 20px;
+    line-height: 16px;
+
+}
+
+.trace-bar{
+
+  float: right; 
+  border-bottom: 2px solid #409eff;
+
+}
+
+
+</style>>
+
+</style>
+
+
   <template>
   <div>
     <el-row>
       <el-col :span="24">
         <el-card class="box-card">
-          <el-form :inline="true" :model="formInline" class="demo-form-inline" labelPosition="top">
-            <el-form-item label="审批人">
-              <el-input size="medium" v-model="formInline.user"></el-input>
+          <el-form :inline="true" :model="requestQuery" class="demo-form-inline">
+            <el-form-item :label="this.$store.state.lang.RequestId">
+              <el-input size="mini" v-model="requestQuery.requestId"></el-input>
             </el-form-item>
 
-            <el-form-item label="审批人">
-              <el-input size="medium" v-model="formInline.user"></el-input>
+            <el-form-item :label="this.$store.state.lang.Request_RequestUrl">
+              <el-input size="mini" v-model="requestQuery.url"></el-input>
             </el-form-item>
 
-            <el-form-item label="审批人">
-              <el-input size="medium" v-model="formInline.user"></el-input>
+            <el-form-item :label="this.$store.state.lang.StatusCode">
+              <el-input size="mini" v-model="requestQuery.statusCode"></el-input>
             </el-form-item>
 
-            <el-form-item label="审批人">
-              <el-input size="medium" v-model="formInline.user"></el-input>
+            <el-form-item :label="this.$store.state.lang.RequestBody">
+              <el-input size="mini" v-model="requestQuery.request"></el-input>
             </el-form-item>
 
-            <el-form-item label="审批人">
-              <el-input size="medium" v-model="formInline.user"></el-input>
-            </el-form-item>
-
-            <el-form-item label="审批人">
-              <el-input size="medium" v-model="formInline.user"></el-input>
+            <el-form-item :label="this.$store.state.lang.ResponseBody">
+              <el-input size="mini" v-model="requestQuery.response"></el-input>
             </el-form-item>
           </el-form>
 
-          <el-table :data="tableData" stripe style="width: 100%">
-            <el-table-column prop="date" label="日期" width="180"></el-table-column>
-            <el-table-column prop="name" label="姓名" width="180"></el-table-column>
-            <el-table-column prop="address" label="地址"></el-table-column>
+          <el-table :border="true" :data="requestData" stripe height="580" size="small">
+            <el-table-column prop="id" :label="this.$i18n.t('RequestId')"></el-table-column>
+            <el-table-column prop="service" :label="this.$i18n.t('ServiceTag')"></el-table-column>
+            <el-table-column prop="instance" :label="this.$i18n.t('InstanceTag')"></el-table-column>
+            <el-table-column prop="route" :label="this.$i18n.t('Request_RequestUrl')"></el-table-column>
+            <el-table-column prop="method" width="80" :label="this.$i18n.t('Request_Type')"></el-table-column>
+            <el-table-column prop="milliseconds" width="80" :label="this.$i18n.t('Request_Time')"></el-table-column>
+            <el-table-column prop="statusCode" width="80" :label="this.$i18n.t('StatusCode')"></el-table-column>
+            <el-table-column prop="loginUser" :label="this.$i18n.t('LoginInfo')"></el-table-column>
+            <el-table-column prop="remoteIP" :label="this.$i18n.t('remoteIP')"></el-table-column>
+            <el-table-column prop="createTime" :label="this.$i18n.t('Request_CreateTime')"></el-table-column>
+            <el-table-column prop="id" :label="this.$i18n.t('Detail')" width="130">
+              <template slot-scope="scope">
+                <el-button
+                  style="margin-left:10px;margin-right:10px"
+                  title="detail"
+                  type="primary"
+                  icon="el-icon-more-outline"
+                  circle
+                  size="mini"
+                  @click="load_detail(scope.row.id)"
+                ></el-button>
+                <el-button
+                  title="trace"
+                  type="success"
+                  icon="el-icon-s-promotion"
+                  circle
+                  size="mini"
+                  @click="load_trace(scope.row.id)"
+                ></el-button>
+              </template>
+            </el-table-column>
           </el-table>
 
-          <el-pagination style="margin-top:20px" background layout="prev, pager, next" :total="1000"></el-pagination>
+          <el-pagination
+            style="margin-top:14px"
+            @size-change="this.pageSizeChange"
+            @current-change="this.pageCurrentChange"
+            :current-page="this.requestPage.pageNumber"
+            :page-sizes="[10, 20, 50, 100]"
+            :page-size="this.requestPage.pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="this.requestPage.total"
+          ></el-pagination>
 
+          <el-drawer
+            class="detailDrawer"
+            direction="rtl"
+            title="detailDrawer"
+            :visible.sync="detailDrawer"
+            :with-header="false"
+          >
+            <h4>{{ this.$store.state.lang.Request_BasicInfo }}</h4>
 
+            <el-form  :inline="true" ref="form" :model="info" label-width="80px" size="mini">
+              <el-form-item :label="this.$store.state.lang.RequestId">
+                <el-input style="width:150px" v-model="info.id"></el-input>
+              </el-form-item>
+
+              <el-form-item :label="this.$store.state.lang.ParentId">
+                <el-input style="width:150px" v-model="info.parentId"></el-input>
+              </el-form-item>
+
+              <el-form-item :label="this.$store.state.lang.ServiceTag">
+                <el-input style="width:150px" v-model="info.service"></el-input>
+              </el-form-item>
+
+               <el-form-item :label="this.$store.state.lang.ParentService">
+                <el-input style="width:150px" v-model="info.parentService"></el-input>
+              </el-form-item> 
+
+              <el-form-item :label="this.$store.state.lang.InstanceTag">
+                <el-input style="width:150px" v-model="info.instance"></el-input>
+              </el-form-item>   
+            
+              <el-form-item :label="this.$store.state.lang.Request_Type">
+                <el-input style="width:150px" v-model="info.method"></el-input>
+              </el-form-item>
+
+              <el-form-item :label="this.$store.state.lang.Request_Time">
+                <el-input style="width:150px" v-model="info.milliseconds"></el-input>
+              </el-form-item>
+
+              <el-form-item :label="this.$store.state.lang.StatusCode">
+                <el-input style="width:150px" v-model="info.statusCode"></el-input>
+              </el-form-item>
+
+              <el-form-item :label="this.$store.state.lang.LoginInfo">
+                <el-input style="width:150px" v-model="info.loginUser"></el-input>
+              </el-form-item>
+
+              <el-form-item :label="this.$store.state.lang.RemoteIP">
+                <el-input style="width:150px" v-model="info.remoteIP"></el-input>
+              </el-form-item> 
+              
+              <el-form-item :label="this.$store.state.lang.Request_RequestUrl">
+                <el-input style="width:396px" v-model="info.route"></el-input>
+              </el-form-item>
+
+              <el-form-item :label="this.$store.state.lang.Request_CreateTime">
+                <el-input style="width:396px" v-model="info.createTime"></el-input>
+              </el-form-item>
+            </el-form>
+
+            <h4>{{ this.$store.state.lang.Request_DetailInfo }}</h4>
+
+            <el-form :inline="true" ref="form" :model="detail" label-width="100px" size="mini">
+              <el-form-item :label="this.$store.state.lang.QueryString">
+                <el-input type="textarea" style="width:380px" v-model="detail.queryString"></el-input>
+              </el-form-item>
+
+              <el-form-item :label="this.$store.state.lang.QueryHeader">
+                <el-input type="textarea" style="width:380px" v-model="detail.header"></el-input>
+              </el-form-item>
+
+              <el-form-item label="Cookie">
+                <el-input type="textarea" style="width:380px" v-model="detail.cookie"></el-input>
+              </el-form-item>
+
+              <el-form-item :label="this.$store.state.lang.RequestBody">
+                <el-input type="textarea" style="width:380px" v-model="detail.requestBody"></el-input>
+              </el-form-item>
+
+              <el-form-item :label="this.$store.state.lang.RequestBody">
+                <el-input type="textarea" style="width:380px" v-model="detail.responseBody"></el-input>
+              </el-form-item>
+
+              <el-form-item :label="this.$store.state.lang.ErrorMessage">
+                <el-input type="textarea" style="width:380px" v-model="detail.errorMessage"></el-input>
+              </el-form-item>
+
+              <el-form-item :label="this.$store.state.lang.ErrorStack">
+                <el-input type="textarea" style="width:380px" v-model="detail.errorStack"></el-input>
+              </el-form-item>
+            </el-form>
+          </el-drawer>
+
+          <el-drawer
+            class="traceDrawer"
+            direction="ttb"
+            size="40%"
+            title="detailTrace"
+            :visible.sync="traceDrawer"
+            :with-header="false"
+          >
+            <h4>Trace</h4>
+
+            <el-tree
+              :default-expand-all="true"
+              :data="trace_tree_data"
+              :props="defaultProps"
+              :expand-on-click-node="false"
+              @node-click="handleNodeClick"
+            >
+              <span class="custom-tree-node" slot-scope="{ data }">
+                <el-tag type="primary" effect="dark" size="mini">{{ data.info.service }}</el-tag> 
+                <span style="font-size:12px;margin-left:12px">{{ data.info.url }}</span>
+                <span style="font-size:12px;margin-left:12px">{{ data.info.method }}</span>
+                <span style="font-size:12px;margin-left:12px">{{ data.info.statusCode }}</span>  
+                <el-button style="font-size:12px;margin-left:12px" type="text" size="mini" @click="load_detail(data.info.id)">{{ data.title }}</el-button>    
+             
+                <span class="trace-bar">111</span>
+
+              </span>  
+
+            </el-tree>
+          </el-drawer>
         </el-card>
       </el-col>
     </el-row>
@@ -46,80 +260,161 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+import Vue from "vue";
+import ComboViewLayer from "@antv/g2plot/lib/combo/base";
+
 export default {
   data() {
     return {
-      tableData: [
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄",
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄",
-        },
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄",
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄",
-        },
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄",
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄",
-        },
-      ],
-      formInline: {
-        user: "",
-        region: "",
+      test:"ccc",
+      trace_tree_data: [],
+      defaultProps: {
+        children: "children",
+        label: "label",
       },
+      selectId: "",
+      detailDrawer: false,
+      traceDrawer: false,
+      requestQuery: {
+        requestId: "",
+        url: "",
+        statusCode: "",
+        request: "",
+        response: "",
+      },
+      requestPage: {
+        total: 0,
+        pageNumber: 1,
+        pageSize: 20,
+      },
+      requestData: [],
+      info: {},
+      detail: {},
     };
   },
   methods: {
-    onSubmit() {
-      
+    onSubmit() {},
+    handleNodeClick(data) {
+      console.log(data);
+    },
+    format(percentage) {  
+       return `${percentage}%`;
+    },
+    pageSizeChange(val) {
+      this.requestPage.pageSize = val;
+      this.load();
+    },
+    pageCurrentChange(val) {
+      this.requestPage.pageNumber = val;
+      this.load();
+    },
+    cutTime(time) {
+      time = time.replace("T", " ").replace("."," "); 
+      time = time.substr(0, 23);
+
+      if(time.length == 22) { time = time + "0" }
+      if(time.length == 21) { time = time + "00" } 
+      if(time.length == 20) { time = time + "000" } 
+      if(time.length == 19) { time = time + " 000" } 
+      return time;
+
+    },
+    parseNode(nodes) {
+      if (nodes == null) return null;
+
+      var list = [];
+
+      nodes.forEach((x) => {
+        list.push({
+          info: x.info,
+          title:this.$store.state.lang.Detail,
+          // label: x.info.id,
+          label:"",
+          children: this.parseNode(x.nodes),
+        });
+      });
+
+      return list;
+    },
+    async load() {
+      var response = await this.load_basic_data();
+      this.load_table(response);
+    },
+    async load_basic_data() {
+      this.$store.commit("set_detail_loading", true);
+      var response = await Vue.http.post("GetDetailData", {
+        service: this.$store.state.query.service,
+        instance: this.$store.state.query.instance,
+        start: this.$store.state.query.start,
+        end: this.$store.state.query.end,
+        requestId: this.requestQuery.requestId,
+        url: this.requestQuery.url,
+        requestBody: this.requestQuery.request,
+        responseBody: this.requestQuery.response,
+        statusCode:
+          this.requestQuery.statusCode == "" ? 0 : this.requestQuery.statusCode,
+        pageNumber: this.requestPage.pageNumber,
+        pageSize: this.requestPage.pageSize,
+      });
+      this.$store.commit("set_detail_loading", false);
+      return response;
+    },
+    async load_detail(id) {
+      var response = await Vue.http.post("GetRequestInfoDetail", { id });
+      this.detailDrawer = true;
+      this.info = response.body.data.info;
+      if (this.info != null) {
+        this.info.createTime = this.cutTime(this.info.createTime);
+      }
+
+      this.detail = response.body.data.detail;
+      if (this.detail != null) {
+        this.detail.createTime = this.cutTime(this.detail.createTime);
+      }
+      console.log(response);
+    },
+    async load_trace(id) {
+      var response = await Vue.http.post("GetTraceList", { id });
+
+      var tree = response.body.data;
+      console.log(tree);
+
+      this.traceDrawer = true;
+
+      this.trace_tree_data = [];
+
+      var that = this;
+
+      this.trace_tree_data.push({
+        info: tree.info,
+        title:this.$store.state.lang.Detail,
+        // label: tree.info.id,
+         label:"",
+        children: this.parseNode(tree.nodes),
+      });
+    },
+    load_table(response) {
+
+      this.requestData = [];
+
+      this.requestPage.total = response.body.total;
+
+      response.body.list.forEach((x) => {
+        x.createTime = this.cutTime(x.createTime);
+        this.requestData.push(x);
+      });
+    },
+  },
+  async mounted() {
+    this.load();
+  },
+  computed: mapState({
+    query: (state) => state.query,
+  }),
+  watch: {
+    async query(newVal, oldVal) {
+      this.load();
     },
   },
 };

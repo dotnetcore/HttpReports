@@ -115,7 +115,45 @@ namespace HttpReports.Storage.Abstractions
             await freeSql.Insert(requestInfos).ExecuteAffrowsAsync();
 
             await freeSql.Insert(requestDetails).ExecuteAffrowsAsync();
-        } 
+        }
+
+
+        public async Task<RequestInfoSearchResult> GetSearchRequestInfoAsync(QueryDetailFilter filter)
+        {
+            List<string> detailId = default;
+
+            if (!filter.RequestBody.IsEmpty() || !filter.ResponseBody.IsEmpty())
+            {
+                detailId = await freeSql.Select<RequestDetail>()
+               .Where(x => x.CreateTime >= filter.StartTime && x.CreateTime < filter.EndTime)
+               .WhereIf(!filter.RequestBody.IsEmpty(), x => x.RequestBody.Contains(filter.RequestBody))
+               .WhereIf(!filter.ResponseBody.IsEmpty(), x => x.ResponseBody.Contains(filter.RequestBody))
+               .Limit(100)
+               .ToListAsync(x => x.Id); 
+            } 
+
+            var list = await freeSql.Select<RequestInfo>()
+                .Where(x => x.CreateTime >= filter.StartTime && x.CreateTime <= filter.EndTime)
+                .WhereIf(!filter.Service.IsEmpty(), x => x.Service == filter.Service)
+                .WhereIf(!filter.Instance.IsEmpty(), x => x.Instance == filter.Instance)
+                .WhereIf(!filter.RequestId.IsEmpty(), x => x.Id == filter.RequestId)
+                .WhereIf(filter.StatusCode > 0, x => x.StatusCode == filter.StatusCode)
+                .WhereIf(!filter.Url.IsEmpty(), x => x.Url.Contains(filter.Url))
+                .WhereIf(detailId != null && detailId.Any(), x => detailId.Contains(x.Id))
+                .Count(out var total)
+                .Page(filter.PageNumber, filter.PageSize)
+                .OrderByDescending(x => x.CreateTime)
+                .ToListAsync();
+
+            RequestInfoSearchResult result = new RequestInfoSearchResult() { 
+            
+                List = list,
+                Total = total.ToInt() 
+
+            };
+
+            return result; 
+        }
 
 
         public async Task<bool> AddPerformanceAsync(Performance performance)
@@ -234,6 +272,28 @@ namespace HttpReports.Storage.Abstractions
             return result; 
         }
 
+
+        public async Task<List<BaseNode>> GetTopologyData(BasicFilter filter)
+        { 
+            var result = await freeSql.Select<RequestInfo>()
+                .Where(x => x.CreateTime >= filter.StartTime && x.CreateTime < filter.EndTime)
+                .Where(x => !string.IsNullOrEmpty(x.ParentService))
+                .Where(x => x.Service != x.ParentService)
+                .GroupBy(x => new
+                { 
+                    x.Service,
+                    x.ParentService
+
+                }).ToListAsync(x => new BaseNode {
+                
+                    Key = x.Key.Service,
+                    StringValue = x.Key.ParentService 
+                
+                });
+
+            return result;  
+        } 
+
         public async Task<IndexPageData> GetIndexBasicDataAsync(BasicFilter filter)
         { 
             IndexPageData result = new IndexPageData();
@@ -297,19 +357,18 @@ namespace HttpReports.Storage.Abstractions
             throw new NotImplementedException();
         }
 
-        public Task<RequestInfo> GetRequestInfo(string Id)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<RequestInfo> GetRequestInfo(string Id)
+            => await freeSql.Select<RequestInfo>().Where(x => x.Id == Id).ToOneAsync();
 
-        public Task<List<RequestInfo>> GetRequestInfoByParentId(string ParentId)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<List<RequestInfo>> GetRequestInfoByParentId(string ParentId)
+          => await freeSql.Select<RequestInfo>().Where(x => x.ParentId == ParentId).ToListAsync();
 
-        public Task<(RequestInfo, RequestDetail)> GetRequestInfoDetail(string Id)
+        public async Task<(RequestInfo, RequestDetail)> GetRequestInfoDetail(string Id)
         {
-            throw new NotImplementedException();
+            var info = await freeSql.Select<RequestInfo>().Where(x => x.Id == Id).ToOneAsync();
+            var detail = await freeSql.Select<RequestDetail>().Where(x => x.RequestId == Id).ToOneAsync();
+
+            return (info ?? new RequestInfo(),detail ?? new RequestDetail());
         }
 
         public Task<RequestTimesStatisticsResult> GetRequestTimesStatisticsAsync(TimeSpanStatisticsFilterOption filterOption)
@@ -488,14 +547,8 @@ namespace HttpReports.Storage.Abstractions
         {
             throw new NotImplementedException();
         } 
-        
 
-        public Task<RequestInfoSearchResult> SearchRequestInfoAsync(RequestInfoSearchFilterOption filterOption)
-        {
-            throw new NotImplementedException();
-        }
 
-        
 
         public Task<bool> UpdateLoginUser(SysUser model)
         {

@@ -157,8 +157,7 @@
       </el-col>
     </el-row>
   </div>
-</template> 
-
+</template>  
 
 <script>
 import { Line } from "@antv/g2plot";

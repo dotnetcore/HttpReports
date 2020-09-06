@@ -90,14 +90,14 @@ namespace HttpReports.Dashboard
 
 
                 //VaildToken
-                if (!_authService.ValidToken(httpContext, handle, router))
-                {
-                    httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                //if (!_authService.ValidToken(httpContext, handle, router))
+                //{
+                //    httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
 
-                    await httpContext.Response.WriteAsync("Unauthorized");
+                //    await httpContext.Response.WriteAsync("Unauthorized");
 
-                    return;
-                }
+                //    return;
+                //}
 
                 handle.Context = DashboardContext;
 

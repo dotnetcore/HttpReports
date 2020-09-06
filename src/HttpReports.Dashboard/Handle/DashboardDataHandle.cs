@@ -539,6 +539,33 @@ namespace HttpReports.Dashboard.Handle
         }
 
 
+        public async Task<string> GetDetailData(QueryDetailRequest request)
+        {
+            var start = request.Start.ToDateTime();
+            var end = request.End.ToDateTime();
+
+            QueryDetailFilter filter = new QueryDetailFilter
+            {
+                Service = request.Service,
+                Instance = request.Instance,
+                StartTime = start,
+                EndTime = end,
+                RequestId = request.RequestId,
+                Url = request.Url,
+                StatusCode = request.StatusCode,
+                RequestBody = request.RequestBody,
+                ResponseBody = request.ResponseBody,
+                PageNumber = request.PageNumber == 0 ? 1 : request.PageNumber,
+                PageSize = request.PageSize == 0 ? 20 : request.PageSize 
+
+            }; 
+
+            var result = await _storage.GetSearchRequestInfoAsync(filter);
+
+            return Json(result); 
+        } 
+         
+
 
         public async Task<string> GetServiceBasicData(QueryRequest request)
         {
@@ -574,7 +601,29 @@ namespace HttpReports.Dashboard.Handle
 
             return Json(result); 
 
-        } 
+        }
+
+
+        public async Task<string> GetTopologyData(QueryRequest request)
+        {
+            var start = request.Start.ToDateTime();
+            var end = request.End.ToDateTime();
+
+            BasicFilter filter = new BasicFilter
+            {
+                Service = request.Service,
+                Instance = request.Instance,
+                StartTime = start,
+                EndTime = end 
+
+            };
+
+            var Edges = await _storage.GetTopologyData(filter);
+
+            List<string> Nodes = Edges.Select(x => x.Key).Concat(Edges.Select(x => x.StringValue)).Distinct().ToList(); 
+            return Json(new { Nodes , Edges}); 
+
+        }
 
 
         public List<string> GetTimeRange(DateTime start, DateTime end)
@@ -599,55 +648,8 @@ namespace HttpReports.Dashboard.Handle
                 }  
             } 
             return Time;   
-        } 
-
-
-        public async Task<string> GetRequestList(GetRequestListRequest request)
-        {
-            #region BuildService
-            if (request.Service.IsEmpty() || request.Service == "ALL")
-            {
-                request.Service = "";
-            }
-
-            if (request.Instance.IsEmpty() || request.Instance == "ALL")
-            {
-                request.LocalIP = "";
-                request.LocalPort = 0;
-            }
-            else
-            {
-                request.LocalIP = request.Instance.Substring(0, request.Instance.LastIndexOf(':'));
-                request.LocalPort = request.Instance.Substring(request.Instance.LastIndexOf(':') + 1).ToInt();
-            }
-
-            #endregion 
-
-            var result = await _storage.SearchRequestInfoAsync(new RequestInfoSearchFilterOption()
-            {
-                TraceId = request.TraceId,
-                StatusCodes = request.StatusCode.IsEmpty() ? null : request.StatusCode.Split(',').Select(x => x.ToInt()).ToArray(),
-                Service = request.Service,
-                LocalIP = request.LocalIP,
-                LocalPort =request.LocalPort,
-                IP = request.IP,
-                Url = request.Url,
-                StartTime = request.Start.ToDateTime(),
-                EndTime = request.End.TryToDateTime(),
-                Page = request.pageNumber,
-                PageSize = request.pageSize,
-                IsOrderByField = true,
-                Field = RequestInfoFields.CreateTime,
-                IsAscend = false,
-                StartTimeFormat = "yyyy-MM-dd HH:mm:ss",
-                EndTimeFormat = "yyyy-MM-dd HH:mm:ss",
-                Request = request.Request,
-                Response = request.Response
-
-            });
-
-            return Json(new { total = result.AllItemCount, rows = result.List });
-        }
+        }  
+ 
 
         public async Task<string> EditMonitor(MonitorJobRequest request)
         {
@@ -770,7 +772,7 @@ namespace HttpReports.Dashboard.Handle
 
             var tree = await GetRequestInfoTrace(new ByIdRequest { Id = parent.Id });
 
-            return Json(new HttpResultEntity(1, "ok", new List<RequestInfoTrace>() { tree }));
+            return Json(new HttpResultEntity(1, "ok", tree ));
         }
 
         public async Task<string> GetRequestInfoDetail(ByIdRequest req)
@@ -802,23 +804,25 @@ namespace HttpReports.Dashboard.Handle
             }
         }
 
-        private async Task<RequestInfoTrace> GetRequestInfoTrace(ByIdRequest req)
+        private async Task<RequestTraceTree> GetRequestInfoTrace(ByIdRequest req)
         {
             var requestInfo = await _storage.GetRequestInfo(req.Id);
 
-            var requestInfoTrace = MapRequestInfo(requestInfo);
+            var requestInfoTrace = new RequestTraceTree
+            { 
+                Info = requestInfo,
+                Nodes = default
+            };
 
             var childs = await _storage.GetRequestInfoByParentId(requestInfo.Id);
 
             if (childs != null && childs.Count > 0)
             {
-                requestInfoTrace.Nodes = new List<RequestInfoTrace>();
+                requestInfoTrace.Nodes = new List<RequestTraceTree>();
             }
 
             foreach (var item in childs)
             {
-                var child = MapRequestInfo(item);
-
                 var trace = await GetRequestInfoTrace(new ByIdRequest { 
                 
                     Id = item.Id
@@ -828,25 +832,7 @@ namespace HttpReports.Dashboard.Handle
             }
 
             return requestInfoTrace;
-        }
-
-        private RequestInfoTrace MapRequestInfo(RequestInfo requestInfo)
-        {
-            return new RequestInfoTrace
-            {
-
-                Id = requestInfo.Id,
-                Text = requestInfo.Id,
-                Service = requestInfo.Service,
-                Url = requestInfo.Url,
-                Milliseconds = requestInfo.Milliseconds,
-                StatusCode = requestInfo.StatusCode,
-                RequestType = requestInfo.RequestType
-
-            };
-
         } 
-
 
     }
 }

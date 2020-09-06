@@ -167,88 +167,8 @@ Select AVG(Milliseconds) ART From {TablePrefix}RequestInfo {where};";
             }, "获取首页数据异常");
 
             return result;
-        }   
-
-        /// <summary>
-        /// 获取请求信息
-        /// </summary>
-        /// <param name="filterOption"></param>
-        /// <returns></returns>
-        public async Task<RequestInfoSearchResult> SearchRequestInfoAsync(RequestInfoSearchFilterOption filterOption)
-        {
-            var whereBuilder = new StringBuilder(BuildSqlFilter(filterOption), 512);
-
-            var sqlBuilder = new StringBuilder($"Select * From {TablePrefix}RequestInfo ", 512);
-
-            if (whereBuilder.Length == 0)
-            {
-                whereBuilder.Append("Where 1=1 ");
-            }
-
-            if (!filterOption.IP.IsEmpty())
-            {
-                whereBuilder.Append($" AND IP = '{filterOption.IP}' ");
-            }
-
-            if (!filterOption.Url.IsEmpty())
-            {
-                whereBuilder.Append($" AND  Url like '%{filterOption.Url}%' ");
-            }
-
-
-            if (!filterOption.TraceId.IsEmpty())
-            {
-                whereBuilder.Append($" AND ID = '{filterOption.TraceId}' ");
-            }
-
-
-            if (filterOption.StatusCodes != null)
-            {
-                if (filterOption.StatusCodes.Length == 1)
-                {
-                    whereBuilder.Append($" AND StatusCode = {filterOption.StatusCodes[0]} ");
-                }
-                else
-                {
-                    whereBuilder.Append($" AND StatusCode in ({string.Join(",", filterOption.StatusCodes)}) ");
-                } 
-            }
-
-
-            // Query Detail
-            IEnumerable<string> RequestIdCollection = await QueryDetailAsync(filterOption);
-
-            if (RequestIdCollection != null && RequestIdCollection.Any())
-            {
-                whereBuilder.Append($" AND Id IN ({string.Join(",",RequestIdCollection.Select(x => "'" + x + "'" ))}) ");
-            } 
-
-            var where = whereBuilder.ToString();
-
-            sqlBuilder.Append(where);
-            sqlBuilder.Append(BuildSqlControl(filterOption));
-
-            var sql = sqlBuilder.ToString();
-
-            TraceLogSql(sql);
-
-            var countSql = $"Select count(1) From {TablePrefix}RequestInfo " + where;
-            TraceLogSql(countSql);
-
-            var result = new RequestInfoSearchResult()
-            {
-                SearchOption = filterOption,
-            };
-
-            await LoggingSqlOperation(async connection =>
-            {
-                result.AllItemCount = connection.QueryFirstOrDefault<int>(countSql);
-
-                result.List.AddRange((await connection.QueryAsync<RequestInfo>(sql)).ToArray());
-            }, "查询请求信息列表异常");
-
-            return result;
-        }
+        }    
+        
 
 
         private async Task<IEnumerable<string>> QueryDetailAsync(RequestInfoSearchFilterOption option)
@@ -733,69 +653,18 @@ Select AVG(Milliseconds) ART From {TablePrefix}RequestInfo {where};";
               await connection.QueryFirstOrDefaultAsync<SysUser>(sql, new { UserName })
 
             ));
-        }
-
-        public async Task<(RequestInfo, RequestDetail)> GetRequestInfoDetail(string Id)
-        {
-            string sql = $" Select * From {TablePrefix}RequestInfo Where Id = @Id";
-
-            TraceLogSql(sql);
-
-            var requestInfo = await LoggingSqlOperation(async connection => (
-
-             await connection.QueryFirstOrDefaultAsync<RequestInfo>(sql, new { Id })
-
-           ));
-
-            string detailSql = $" Select * From {TablePrefix}RequestDetail Where RequestId = @Id";
-
-            TraceLogSql(detailSql);
-
-            var requestDetail = await LoggingSqlOperation(async connection => (
-
-             await connection.QueryFirstOrDefaultAsync<RequestDetail>(detailSql, new { Id })
-
-           ));
-
-            return (requestInfo, requestDetail);
-        }
+        } 
+       
 
         private string MD5_16(string source)
         {
             MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
             string val = BitConverter.ToString(md5.ComputeHash(UTF8Encoding.Default.GetBytes(source)), 4, 8).Replace("-", "").ToLower();
             return val;
-        }
+        } 
+         
 
-        public async Task<RequestInfo> GetRequestInfo(string Id)
-        {
-            string sql = $" Select * From {TablePrefix}RequestInfo Where Id = @Id";
-
-            TraceLogSql(sql);
-
-            var requestInfo = await LoggingSqlOperation(async connection => (
-
-             await connection.QueryFirstOrDefaultAsync<RequestInfo>(sql, new { Id })
-
-           ));
-
-            return requestInfo;
-        }
-
-        public async Task<List<RequestInfo>> GetRequestInfoByParentId(string ParentId)
-        {
-            string sql = $"Select * From {TablePrefix}RequestInfo Where ParentId = @ParentId Order By CreateTime ";
-
-            TraceLogSql(sql);
-
-            var requestInfo = await LoggingSqlOperation(async connection => (
-
-             await connection.QueryAsync<RequestInfo>(sql, new { ParentId })
-
-           ));
-
-            return requestInfo.Select(x => x as RequestInfo).ToList();
-        }
+        
 
         public async Task ClearData(string StartTime)
         {

@@ -18,6 +18,10 @@ namespace HttpReports.Core.Storage.FilterOptions
 
         public int Count { get; set; }
 
+        public int PageNumber { get; set; }
+
+        public int PageSize { get; set; }
+
 
     }
 }

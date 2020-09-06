@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-card class="box-card">
-       <div style="height:620px" id="main-chart"></div>
+      <div style="height:620px;width:100%" id="main-chart"></div>
     </el-card>
   </div>
 </template>
@@ -12,161 +12,119 @@
 }
 </style>
 
-<script> 
+<script>
+import G6 from "@antv/g6";
+import { mapState } from "vuex";
+import Vue from "vue";
 
-import G6 from '@antv/g6';
-
-export default { 
+export default {
   data() {
     return {
-        startVal: 0,
-        endVal: 2017
-      }
+      topology_chart: null,
+    };
   },
   created: function () {},
-  mounted(){ 
-
-      const data = {
-  nodes: [
-    {
-      id: '0',
-      label: '0',
-    },
-    {
-      id: '1',
-      label: '1',
-    },
-    {
-      id: '2',
-      label: '2',
-    },
-    {
-      id: '3',
-      label: '3',
-    },
-    {
-      id: '4',
-      label: '4',
-    },
-    {
-      id: '5',
-      label: '5',
-    },
-    {
-      id: '6',
-      label: '6',
-    },
-    {
-      id: '7',
-      label: '7',
-    },
-    {
-      id: '8',
-      label: '8',
-    },
-    {
-      id: '9',
-      label: '9',
-    },
-  ],
-  edges: [
-    {
-      source: '0',
-      target: '1',
-    },
-    {
-      source: '0',
-      target: '2',
-    },
-    {
-      source: '0',
-      target: '3',
-    },
-    {
-      source: '0',
-      target: '4',
-    },
-    {
-      source: '0',
-      target: '5',
-    },
-    {
-      source: '0',
-      target: '7',
-    },
-    {
-      source: '0',
-      target: '8',
-    },
-    {
-      source: '0',
-      target: '9',
-    },
-    {
-      source: '2',
-      target: '3',
-    },
-    {
-      source: '4',
-      target: '5',
-    },
-    {
-      source: '4',
-      target: '6',
-    },
-    {
-      source: '5',
-      target: '6',
-    },
-  ],
-};
-
-const width = document.getElementById('main-chart').scrollWidth;
-const height = document.getElementById('main-chart').scrollHeight || 500;
-const graph = new G6.Graph({
-  container: 'main-chart',
-  width,
-  height,
-  layout: {
-    type: 'force',
-    preventOverlap: true,
-    nodeSize: 100,
-  },
-  modes: {
-    default: ['drag-node'],
-  },
-  defaultNode: {
-    size: 50,
-    color: '#5B8FF9',
-    style: {
-      lineWidth: 2,
-      fill: '#C6E5FF',
+  computed: mapState({
+    query: (state) => state.query,
+  }),
+  watch: {
+    async query(newVal, oldVal) {
+      var response = await this.load_basic_data(); 
+      this.load_tololpgy(response);
     },
   },
-  defaultEdge: {
-    size: 1,
-    color: '#e2e2e2',
+  methods: {
+    async load_basic_data() {
+      this.$store.commit("set_topology_loading", true);
+      var response = await Vue.http.post(
+        "GetTopologyData",
+        this.$store.state.query
+      );
+      this.$store.commit("set_topology_loading", false); 
+
+      return response;
+    },
+    refreshDragedNodePosition(e) {
+      const model = e.item.get("model");
+      model.fx = e.x;
+      model.fy = e.y;
+    },
+    load_tololpgy(response) {
+      var source = {
+        nodes: [],
+        edges: [],
+      };
+
+      response.body.nodes.forEach((x) => {
+        source.nodes.push({
+          id: x,
+          label: x,
+        });
+      });
+
+      response.body.edges.forEach((x) => {
+        source.edges.push({
+          source: x.key,
+          target: x.stringValue,
+        });
+      });
+
+      if (this.topology_chart != null) {
+        this.topology_chart.changeData(source);
+        return;
+      }
+
+      this.topology_chart = new G6.Graph({
+        container: "main-chart",
+        width: document.getElementById("main-chart").scrollWidth,
+        height: document.getElementById("main-chart").scrollHeight,
+        layout: {
+          type: "force",
+          preventOverlap: true,
+          nodeSize: 100,
+          linkDistance: 120,
+        },
+        modes: {
+          default: ["drag-canvas", "zoom-canvas", "drag-node"],
+        },
+        defaultNode: {
+          size: 50,
+          color: "#5B8FF9",
+          style: {
+            lineWidth: 2,
+            fill: "#C6E5FF",
+          },
+          labelCfg: {
+            position: "bottom",
+          },
+        },
+        defaultEdge: {
+          size: 1,
+          color: "#e2e2e2",
+          style: {
+            startArrow: true,
+          },
+        },
+      });
+
+      this.topology_chart.data(source);
+      this.topology_chart.render();
+
+      this.topology_chart.on("node:dragstart", (e) => {
+        this.topology_chart.layout();
+        this.refreshDragedNodePosition(e);
+      });
+      this.topology_chart.on("node:drag", (e) => {
+        this.refreshDragedNodePosition(e);
+      });
+
+
+    },
   },
-});
-graph.data(data);
-graph.render();
+  async mounted() {
 
-function refreshDragedNodePosition(e) {
-  const model = e.item.get('model');
-  model.fx = e.x;
-  model.fy = e.y;
-}
-graph.on('node:dragstart', (e) => {
-  graph.layout();
-  refreshDragedNodePosition(e);
-});
-graph.on('node:drag', (e) => {
-  refreshDragedNodePosition(e);
-});
-
-
-
-
+    var response = await this.load_basic_data(); 
+    this.load_tololpgy(response); 
 
   }
 };

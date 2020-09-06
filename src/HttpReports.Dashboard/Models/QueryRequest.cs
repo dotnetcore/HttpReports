@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Principal;
 using System.Text;
 
 namespace HttpReports.Dashboard.Models
@@ -19,6 +20,10 @@ namespace HttpReports.Dashboard.Models
         public string LocalIP { get; set; }
 
         public int LocalPort { get; set; }
+
+        public int PageNumber { get; set; }
+
+        public int PageSize { get; set; }
 
 
     }
