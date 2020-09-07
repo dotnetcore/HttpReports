@@ -46,17 +46,19 @@ background-color: #dadada;
 
 }
 
-.trace-bar{
-
+.trace-bar{ 
+  width: 420px;
   float: right; 
-  border-bottom: 2px solid #409eff;
-
+  border-bottom: 2px solid #409eff; 
+  font-size: 12px;
+  text-indent: -60px;
+  height: 14px;
+  line-height: 28px; 
+  text-align: left;
 }
 
 
-</style>>
-
-</style>
+</style> 
 
 
   <template>
@@ -247,7 +249,7 @@ background-color: #dadada;
                 <span style="font-size:12px;margin-left:12px">{{ data.info.statusCode }}</span>  
                 <el-button style="font-size:12px;margin-left:12px" type="text" size="mini" @click="load_detail(data.info.id)">{{ data.title }}</el-button>    
              
-                <span class="trace-bar">111</span>
+                <span class="trace-bar" :style="'width:' + data.width +'px;margin-left:' + data.marginLeft +'px' " >{{ data.info.milliseconds + "ms" }}</span>
 
               </span>  
 
@@ -269,6 +271,8 @@ export default {
     return {
       test:"ccc",
       trace_tree_data: [],
+      trace_tree_top:{ }, 
+      top_width:420,
       defaultProps: {
         children: "children",
         label: "label",
@@ -310,6 +314,7 @@ export default {
       this.load();
     },
     cutTime(time) {
+
       time = time.replace("T", " ").replace("."," "); 
       time = time.substr(0, 23);
 
@@ -320,22 +325,47 @@ export default {
       return time;
 
     },
+    getTimeSpan(time){  
+
+      var date = this.cutTime(time);
+      var year = date.substr(0,4)
+      var month = date.substr(5,2);
+      var day = date.substr(8,2);
+      var hour = date.substr(11,2);
+      var minute = date.substr(14,2);
+      var second = date.substr(17,2);
+      var millisecond = date.substr(20,3);
+
+      var newDate = new Date(year,month,day,hour,minute,second,millisecond);
+
+      var timespan = newDate.getTime(); 
+
+      return timespan;
+
+    },  
     parseNode(nodes) {
+
       if (nodes == null) return null;
 
-      var list = [];
+      var list = []; 
+
+      var top = this.trace_tree_top;   
+      
+      this.getTimeSpan(top.createTime);
 
       nodes.forEach((x) => {
         list.push({
-          info: x.info,
-          title:this.$store.state.lang.Detail,
-          // label: x.info.id,
+          info: x.info, 
+          width:parseInt(this.top_width * (x.info.milliseconds / top.milliseconds)),
+          marginLeft: parseInt(((this.getTimeSpan(x.info.createTime) - this.getTimeSpan(top.createTime)) / top.milliseconds) * this.top_width),
+          title:this.$store.state.lang.Detail, 
           label:"",
           children: this.parseNode(x.nodes),
         });
-      });
+      }); 
 
       return list;
+
     },
     async load() {
       var response = await this.load_basic_data();
@@ -375,6 +405,7 @@ export default {
       console.log(response);
     },
     async load_trace(id) {
+
       var response = await Vue.http.post("GetTraceList", { id });
 
       var tree = response.body.data;
@@ -384,15 +415,19 @@ export default {
 
       this.trace_tree_data = [];
 
-      var that = this;
+      var that = this; 
+
+      this.trace_tree_top = tree.info;
 
       this.trace_tree_data.push({
-        info: tree.info,
-        title:this.$store.state.lang.Detail,
-        // label: tree.info.id,
-         label:"",
-        children: this.parseNode(tree.nodes),
+        info: tree.info, 
+        width:this.top_width,
+        marginLeft:0,
+        title:this.$store.state.lang.Detail, 
+        label:"",
+        children: this.parseNode(tree.nodes), 
       });
+
     },
     load_table(response) {
 

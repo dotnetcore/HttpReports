@@ -41,7 +41,7 @@ namespace HttpReports.Dashboard.WebAPP
             app.UseCors("Policy");
 
 
-            //app.UseHttpReports();
+            app.UseHttpReports();
             app.UseHttpReportsDashboard();
 
             if (env.IsDevelopment())

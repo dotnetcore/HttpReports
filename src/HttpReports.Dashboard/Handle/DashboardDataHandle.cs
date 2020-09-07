@@ -826,6 +826,7 @@ namespace HttpReports.Dashboard.Handle
                 var trace = await GetRequestInfoTrace(new ByIdRequest { 
                 
                     Id = item.Id
+
                 });
 
                 requestInfoTrace.Nodes.Add(trace);

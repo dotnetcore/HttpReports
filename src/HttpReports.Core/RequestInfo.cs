@@ -33,5 +33,6 @@ namespace HttpReports
         public string LoginUser { get; set; }
 
         public DateTime CreateTime { get; set; } 
+
     }
 }

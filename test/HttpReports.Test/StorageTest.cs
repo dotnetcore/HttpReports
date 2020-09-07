@@ -121,6 +121,20 @@ namespace HttpReports.Test
                     }
                 }
 
+                int cost = 0;
+                bags.Reverse();
+
+                var current = DateTime.Now;
+
+                foreach (var item in bags)
+                {
+                    var t = new Random().Next(20, 3000); 
+                    cost = cost + t;
+                    item.RequestInfo.Milliseconds = cost;
+                    item.RequestInfo.CreateTime = current = current.AddMilliseconds(-cost);  
+                }
+
+
                 Storage.AddRequestInfoAsync(bags, System.Threading.CancellationToken.None).Wait();
 
                 Task.Delay(new Random().Next(5000, 10000)).Wait();
