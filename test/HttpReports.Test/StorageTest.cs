@@ -127,9 +127,8 @@ namespace HttpReports.Test
                 var current = DateTime.Now;
 
                 foreach (var item in bags)
-                {
-                    var t = new Random().Next(20, 3000); 
-                    cost = cost + t;
+                { 
+                    cost = cost + new Random().Next(100, 3000);  
                     item.RequestInfo.Milliseconds = cost;
                     item.RequestInfo.CreateTime = current = current.AddMilliseconds(-cost);  
                 }
