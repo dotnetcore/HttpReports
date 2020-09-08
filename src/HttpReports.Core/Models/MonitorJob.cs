@@ -21,12 +21,11 @@ namespace HttpReports.Models
 
         public string Mobiles { get; set; }
 
-        public int Status { get; set; }
+        public int Status { get; set; } 
+
+        public string Service { get; set; } 
 
         public string Instance { get; set; }
-
-        public string Service { get; set; }
-
 
         public string Payload { get; set; }
 
