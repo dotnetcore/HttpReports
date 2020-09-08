@@ -29,7 +29,7 @@
   background-color: #d3dce6;
 }
 
-.el-row {
+.vue-basic .el-row {
   margin-top: 20px;
   margin-bottom: 20px;
 }
@@ -68,7 +68,7 @@
 
  
 <template>
-  <div>
+  <div class="vue-basic">
     <el-row :gutter="20" class="tag">
       <el-col :span="6">
         <el-card class="box-card">

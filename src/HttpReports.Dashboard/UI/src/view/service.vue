@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="vue-service">
     <el-tabs style="margin-top:10px">
       <el-tab-pane :label="this.$store.state.lang.EndpointTab">
         <el-row class="box-chart" :gutter="20">
@@ -69,7 +69,7 @@
 </template>
 
 <style>
-.el-row {
+.vue-service .el-row {
   margin-top: 20px;
 }
 

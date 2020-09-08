@@ -46,17 +46,21 @@ background-color: #dadada;
 
 }
 
-.trace-bar{ 
-  width: 420px;
-  float: right; 
+.trace-bar{    
   border-bottom: 2px solid #409eff; 
   font-size: 12px;
   text-indent: -60px;
   height: 14px;
   line-height: 28px; 
   text-align: left;
+  display: inline-block;
 }
 
+.trace-bar-span{ 
+  width: 420px;
+  float: right; 
+
+}
 
 </style> 
 
@@ -135,7 +139,7 @@ background-color: #dadada;
 
           <el-drawer
             class="detailDrawer"
-            direction="rtl"
+            direction="ltr"
             title="detailDrawer"
             :visible.sync="detailDrawer"
             :with-header="false"
@@ -247,9 +251,13 @@ background-color: #dadada;
                 <span style="font-size:12px;margin-left:12px">{{ data.info.url }}</span>
                 <span style="font-size:12px;margin-left:12px">{{ data.info.method }}</span>
                 <span style="font-size:12px;margin-left:12px">{{ data.info.statusCode }}</span>  
-                <el-button style="font-size:12px;margin-left:12px" type="text" size="mini" @click="load_detail(data.info.id)">{{ data.title }}</el-button>    
-             
-                <span class="trace-bar" :style="'width:' + data.width +'px;margin-left:' + data.marginLeft +'px' " >{{ data.info.milliseconds + "ms" }}</span>
+                <el-button style="font-size:12px;margin-left:12px" type="text" size="mini" @click="load_detail(data.info.id)">{{ data.title }}</el-button> 
+
+                <span class="trace-bar-span"> 
+
+                  <span class="trace-bar" :style="'width:' + data.width +'px;' " >{{ data.info.milliseconds + "ms" }}</span>
+
+                </span>    
 
               </span>  
 
@@ -351,9 +359,10 @@ export default {
 
       var top = this.trace_tree_top;   
       
-      this.getTimeSpan(top.createTime);
+      this.getTimeSpan(top.createTime); 
 
-      nodes.forEach((x) => {
+      nodes.forEach((x) => { 
+
         list.push({
           info: x.info, 
           width:parseInt(this.top_width * (x.info.milliseconds / top.milliseconds)),
