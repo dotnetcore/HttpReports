@@ -648,44 +648,9 @@ namespace HttpReports.Dashboard.Handle
                 }  
             } 
             return Time;   
-        }  
- 
+        }    
 
-        public async Task<string> EditMonitor(MonitorJobRequest request)
-        {
-            string vaild = _monitorService.VaildMonitorJob(request);
-
-            if (!vaild.IsEmpty())
-                return Json(new HttpResultEntity(-1, vaild, null));
-
-            MonitorJob model = _monitorService.GetMonitorJob(request);
-
-            if (request.Id.IsEmpty() || request.Id == "0")
-                await _storage.AddMonitorJob(model);
-            else
-                await _storage.UpdateMonitorJob(model);
-
-            await _scheduleService.UpdateMonitorJobAsync();
-
-            return Json(new HttpResultEntity(1, "ok", null));
-        }
-
-        public async Task<string> GetMonitor(ByIdRequest req)
-        {
-            string Id = req.Id;
-
-            if (Id.IsEmpty() || Id == "0")
-                return string.Empty;
-
-            var job = await _storage.GetMonitorJob(Id);
-
-            if (job == null)
-                return string.Empty;
-
-            var request = _monitorService.GetMonitorJobRequest(job);
-
-            return Json(new HttpResultEntity(1, "ok", request));
-        }
+       
 
         public async Task<string> DeleteJob(ByIdRequest req)
         {
