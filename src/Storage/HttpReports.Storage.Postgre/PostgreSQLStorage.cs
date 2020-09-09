@@ -99,40 +99,8 @@ namespace HttpReports.Storage.PostgreSQL
                     }
                 }
             }
-        }
-
-
-
-
-        public async Task<bool> AddMonitorJob(MonitorJob job)
-        {
-            job.Id = MD5_16(Guid.NewGuid().ToString());
-
-            string sql = $@"Insert Into ""{Prefix}MonitorJob"" 
-            (Id,Title,Description,CronLike,Emails,WebHook,Mobiles,Status,Service,Instance,PayLoad,CreateTime)
-             Values (@Id,@Title,@Description,@CronLike,@Emails,@WebHook, @Mobiles,@Status,@Service,@Instance,@PayLoad,@CreateTime)";
-
-            TraceLogSql(sql);
-
-            return await LoggingSqlOperation(async connection => (
-
-            await connection.ExecuteAsync(sql, job)
-
-            ) > 0);
-
-        } 
-       
-
-        public async Task<bool> DeleteMonitorJob(string Id)
-        {
-            string sql = $@"Delete From ""{Prefix}MonitorJob"" Where Id = @Id ";
-
-            TraceLogSql(sql);
-
-            return await LoggingSqlOperation(async connection =>
-            (await connection.ExecuteAsync(sql, new { Id })) > 0);
-        }
-
+        }  
+     
 
         public async Task<IndexPageData> GetIndexPageDataAsync(IndexPageDataFilterOption filterOption)
         {
@@ -567,18 +535,7 @@ Select AVG(Milliseconds) AS ART From ""{Prefix}RequestInfo"" {where};";
             return val;
         }
 
-        public async Task<MonitorJob> GetMonitorJob(string Id)
-        {
-            string sql = $@"Select * From ""{Prefix}MonitorJob"" Where Id = @Id ";
-
-            TraceLogSql(sql);
-
-            return await LoggingSqlOperation(async connection => (
-
-              await connection.QueryFirstOrDefaultAsync<MonitorJob>(sql, new { Id })
-
-            ));
-        } 
+      
        
 
         public async Task ClearData(string StartTime)

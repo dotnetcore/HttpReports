@@ -1,5 +1,6 @@
 ﻿using HttpReports.Core;
 using HttpReports.Core.Config;
+using HttpReports.Core.Models;
 using HttpReports.Dashboard.Implements;
 using HttpReports.Dashboard.Models; 
 using HttpReports.Models;

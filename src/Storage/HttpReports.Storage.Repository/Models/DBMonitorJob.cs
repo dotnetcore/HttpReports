@@ -50,6 +50,14 @@ namespace HttpReports.Storage.Abstractions.Models
         public string Payload { get; set; }
 
 
+        [Column(StringLength = 50)]
+        public string StartTime { get; set; }
+
+
+        [Column(StringLength = 50)]
+        public string EndTime { get; set; }
+
+
         public DateTime CreateTime { get; set; }
 
     }

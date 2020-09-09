@@ -165,13 +165,10 @@ namespace HttpReports.Storage.Abstractions
         }
 
 
-        public async Task<List<MonitorJob>> GetMonitorJobs() => await freeSql.Select<MonitorJob>().ToListAsync(); 
-        
+        public async Task<List<MonitorJob>> GetMonitorJobs() => await freeSql.Select<MonitorJob>().ToListAsync();
 
-        public Task<bool> AddMonitorJob(MonitorJob job)
-        {
-            throw new NotImplementedException();
-        } 
+
+        public async Task<bool> AddMonitorJob(MonitorJob job) => await freeSql.Insert<MonitorJob>().ExecuteAffrowsAsync() > 0;
         
       
 
@@ -183,11 +180,11 @@ namespace HttpReports.Storage.Abstractions
             throw new NotImplementedException();
         }
 
-        public Task<bool> DeleteMonitorJob(string Id)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<bool> DeleteMonitorJob(string Id) => 
+            
+            await freeSql.Delete<MonitorJob>().Where(x => x.Id == Id).ExecuteAffrowsAsync() > 0;
 
+       
         public async Task<List<APPTimeModel>> GetAppStatus(BasicFilter filter, List<string> range)
         {  
             var format = GetDateFormat(filter);
@@ -331,10 +328,7 @@ namespace HttpReports.Storage.Abstractions
             throw new NotImplementedException();
         }
 
-        public Task<MonitorJob> GetMonitorJob(string Id)
-        {
-            throw new NotImplementedException();
-        } 
+        public async Task<MonitorJob> GetMonitorJob(string Id) => await freeSql.Select<MonitorJob>().Where(x => x.Id == Id).ToOneAsync();
        
 
         public Task<List<Performance>> GetPerformances(PerformanceFilterIOption option)
@@ -555,10 +549,11 @@ namespace HttpReports.Storage.Abstractions
             throw new NotImplementedException();
         }
 
-        public Task<bool> UpdateMonitorJob(MonitorJob job)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<bool> UpdateMonitorJob(MonitorJob job) => 
+
+            await freeSql.Update<MonitorJob>(job).Where(x => x.Id == job.Id).ExecuteAffrowsAsync() > 0;
+
+
 
         private string MD5_16(string source)
         {
