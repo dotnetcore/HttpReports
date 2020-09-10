@@ -2,11 +2,11 @@
   <div>
     <el-tabs style="margin-top:10px" tab-position="top">
       <el-tab-pane label="监控">
-        <el-card class="box-card">
+        <el-card class="box-card" >
           <el-row>
             <el-button
               size="mini"
-              @click="dialogFormVisible = true"
+              @click="this.showdialog" 
               icon="el-icon-circle-plus-outline"
               type="primary"
             >新增监控</el-button>
@@ -35,7 +35,7 @@
       </el-tab-pane>
     </el-tabs>
 
-    <el-dialog title="新增监控" :visible.sync="dialogFormVisible">
+    <el-dialog top="5%" title="新增监控"  :visible.sync="dialogFormVisible">
       <el-form size="small" ref="form" :model="monitor" label-width="80px">
         <el-form-item label="标题">
           <el-input v-model="monitor.title"></el-input>
@@ -47,13 +47,19 @@
 
         <el-form-item label="服务实例">
           <el-select v-model="monitor.service">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+            <el-option
+                v-for="item in this.tag.service"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value" ></el-option>
           </el-select>
 
           <el-select v-model="monitor.instance" style="margin-left:12px">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+           <el-option
+                v-for="item in this.tag.instance"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value" ></el-option>
           </el-select>
         </el-form-item>
 
@@ -79,15 +85,18 @@
             v-model="monitor.endTime"
             :picker-options="{  start: '00:00',
             step: '00:30',
-            end: '23:00',
-      minTime: startTime   }"
+            end: '23:00'  }"
           ></el-time-select>
         </el-form-item>
 
         <el-form-item label="执行频率">
           <el-select v-model="monitor.interval">
-            <el-option label="1分钟" value="1分钟"></el-option>
-            <el-option label="3分钟" value="3分钟"></el-option>
+            <el-option :label="this.$store.state.lang.Monitor_Time1Min" value="0 0/1 * * * ?"></el-option> 
+            <el-option :label="this.$store.state.lang.Monitor_Time3Min" value="0 0/3 * * * ?"></el-option> 
+            <el-option :label="this.$store.state.lang.Monitor_Time5Min" value="0 0/5 * * * ?"></el-option> 
+            <el-option :label="this.$store.state.lang.Monitor_Time10Min" value="0 0/10 * * * ?"></el-option> 
+            <el-option :label="this.$store.state.lang.Monitor_Time30Min" value="0 0/30 * * * ?"></el-option> 
+            <el-option :label="this.$store.state.lang.Monitor_Time1Hour" value="0 0 0/1 * * ?"></el-option> 
           </el-select>
         </el-form-item>
 
@@ -96,9 +105,30 @@
         </el-form-item>
 
         <el-tabs type="border-card">
-          <el-tab-pane label="响应时间监控">响应时间监控</el-tab-pane>
-          <el-tab-pane label="服务错误监控">服务错误监控</el-tab-pane>
-          <el-tab-pane label="负载监控">负载监控</el-tab-pane> 
+          <el-tab-pane label="响应时间监控">  
+
+             <el-switch active-text="开启" v-model="monitor.responseTimeMonitorRule.enabled"></el-switch> 
+             <span style="margin-left:16px;margin-right:8px;font-size:12px">超时时间(ms)</span>
+             <el-input-number  :step="100" size="small" v-model="monitor.responseTimeMonitorRule.timeout"></el-input-number>  
+
+          </el-tab-pane>
+          <el-tab-pane label="服务错误监控">
+
+             <el-switch active-text="开启" v-model="monitor.errorMonitorRule.enabled"></el-switch> 
+             <span style="margin-left:16px;margin-right:8px;font-size:12px">错误占比(0.00)</span>
+             <el-input-number :precision="2" :max="1" :min="0" :step="0.01" size="small" v-model="monitor.errorMonitorRule.percentage"></el-input-number>
+
+          </el-tab-pane>
+          <el-tab-pane label="负载监控">
+
+            <el-switch active-text="开启" v-model="monitor.callMonitorRule.enabled"></el-switch> 
+            <span style="margin-left:16px;margin-right:8px;font-size:12px">最小值</span>
+            <el-input-number style="width:100px" :controls="false" :min="0"  size="small" v-model="monitor.callMonitorRule.min"></el-input-number>
+
+            <span style="margin-left:16px;margin-right:8px;font-size:12px">最大值</span>
+            <el-input-number style="width:100px" :controls="false" :min="0"  size="small" v-model="monitor.callMonitorRule.max"></el-input-number>
+
+          </el-tab-pane> 
         </el-tabs>
       </el-form>
 
@@ -117,29 +147,42 @@
 </style>
 
 <script>
+
+import { mapState } from "vuex";
+import Vue from "vue";  
+
 export default {
   data() {
     return {
       dialogFormVisible: false,
+      tag:{
+          service:[],
+          instance:[]
+      },
       monitor: {
         title: "",
         description: "",
         service: "",
-        instance: "",
+        instance: "", 
         emails: "",
         webhook: "",
         startTime: "",
         endTime: "",
         enabled: true,
-        interval: "",
-        name: "",
-        region: "",
-        date1: "",
-        date2: "",
-        delivery: false,
-        type: [],
-        resource: "",
-        desc: "",
+        interval: "", 
+        responseTimeMonitorRule:{
+          enabled:false,
+          timeout:0
+        },
+        errorMonitorRule:{
+          enabled:false,
+          percentage:0
+        },
+        callMonitorRule:{
+           enabled:false,
+           min:0,
+           max:0
+        } 
       },
       tableData: [
         {
@@ -179,7 +222,36 @@ export default {
       ],
     };
   },
+  methods:{
+
+    showdialog(){
+
+      this.dialogFormVisible = true; 
+      this.locaServiceInstance();
+
+    },
+    locaServiceInstance(){   
+
+        this.tag.service = [];
+        this.tag.service.push({ value: "ALL", label: "ALL" });
+
+        this.tag.instance = [];
+        this.tag.instance.push({ value: "ALL", label: "ALL" });
+
+        this.$store.state.tag.forEach((item) => {
+          this.tag.service.push({ value: item.service, label: item.service });
+        });
+
+        this.monitor.service = "ALL";
+        this.monitor.instance = "ALL"; 
+
+    } 
+
+  },
   created: function () {},
-  mounted() {},
+  mounted() {  
+ 
+
+  },
 };
 </script>

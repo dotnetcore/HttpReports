@@ -28,9 +28,7 @@ namespace HttpReports.Core.Models
     {
         public int Status { get; set; }
 
-        public double Percentage { get; set; }
-
-        public int ErrorCount { get; set; }
+        public double Percentage { get; set; } 
     }
 
 

@@ -49,7 +49,7 @@ const store = new Vuex.Store({
     set_topology_loading:(state,data) => state.topology_loading = data,
     set_service_loading:(state,data) => state.service_loading = data,
     set_detail_loading:(state,data) => state.detail_loading = data,
-    set_route:(state,data) => state.route = data,
+    set_route:(state,data) => state.route = data, 
 
   }
 

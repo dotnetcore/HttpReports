@@ -270,6 +270,7 @@ background-color: #dadada;
 </template>
 
 <script>
+
 import { mapState } from "vuex";
 import Vue from "vue";
 import ComboViewLayer from "@antv/g2plot/lib/combo/base";

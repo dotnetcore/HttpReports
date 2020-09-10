@@ -553,7 +553,8 @@ export default {
       this.isCollapse = !this.isCollapse;
     },
     initServiceInstance() {
-      this.$http.post("GetServiceInstance", {}).then((response) => {
+      this.$http.post("GetServiceInstance", {}).then((response) => { 
+
         this.$store.commit("set_tag", response.body.data);
 
         this.service = [];
@@ -568,6 +569,7 @@ export default {
 
         this.select_service = "ALL";
         this.select_instance = "ALL";
+
       });
     },
   },
