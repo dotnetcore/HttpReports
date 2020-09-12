@@ -14,30 +14,12 @@ namespace HttpReports.Storage.Abstractions.Models
             [Column(IsPrimary = true, StringLength = 50)]
             public string Id { get; set; }
 
+            [Column(StringLength = 50)]
+            public string JobId { get; set; }
+
 
             [Column(StringLength = 255)]
             public string Title { get; set; }
-
-
-            [Column(StringLength = 255)]
-            public string Description { get; set; }
-
-
-            [Column(StringLength = 50)]
-            public string CronLike { get; set; }
-
-            [Column(StringLength = 255)]
-            public string WebHook { get; set; }
-
-
-            [Column(StringLength = 255)]
-            public string Emails { get; set; }
-
-
-            [Column(StringLength = 50)]
-            public string Mobiles { get; set; }
-
-            public int Status { get; set; }
 
 
             [Column(StringLength = 50)]
@@ -47,12 +29,18 @@ namespace HttpReports.Storage.Abstractions.Models
             [Column(StringLength = 50)]
             public string Instance { get; set; }
 
-            [Column(DbType = "text")]
-            public string Payload { get; set; }
+
+            [Column(StringLength = 50)]
+            public string Cronlike { get; set; }
 
 
-            public DateTime CreateTime { get; set; }
+            [Column(StringLength = 1000)]
+            public string Body { get; set; } 
 
+
+            public DateTime CreateTime { get; set; }   
+ 
+           
         }
     } 
 

@@ -38,12 +38,8 @@ namespace HttpReports.Core
 
 
 
-        Task<List<APPTimeModel>> GetAppStatus(BasicFilter filter, List<string> range);
-
-
-        //--------------------------------------------------------------------------------------
-
-
+        Task<List<APPTimeModel>> GetAppStatus(BasicFilter filter, List<string> range); 
+ 
 
         Task<List<ServiceInstanceInfo>> GetServiceInstance(DateTime startTime);
 
@@ -84,7 +80,7 @@ namespace HttpReports.Core
 
         #region Monitor
 
-        Task<bool> AddMonitorJob(MonitorJob job);
+        Task<bool> AddMonitorJob(MonitorJob job); 
 
         Task<List<Performance>> GetPerformances(PerformanceFilterIOption option);
 

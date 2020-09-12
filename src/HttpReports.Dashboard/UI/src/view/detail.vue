@@ -103,25 +103,22 @@ background-color: #dadada;
             <el-table-column prop="loginUser" :label="this.$i18n.t('LoginInfo')"></el-table-column>
             <el-table-column prop="remoteIP" :label="this.$i18n.t('remoteIP')"></el-table-column>
             <el-table-column prop="createTime" :label="this.$i18n.t('Request_CreateTime')"></el-table-column>
-            <el-table-column prop="id" :label="this.$i18n.t('Detail')" width="130">
+            <el-table-column prop="id" :label="this.$i18n.t('Monitor_Operation')" width="160">
               <template slot-scope="scope">
                 <el-button
-                  style="margin-left:10px;margin-right:10px"
-                  title="detail"
+                  style="margin-left:4px;padding:4px 8px" 
                   type="primary"
-                  icon="el-icon-more-outline"
-                  circle
+                  icon="el-icon-more-outline" 
                   size="mini"
                   @click="load_detail(scope.row.id)"
-                ></el-button>
+                >{{ scope._self.$i18n.t('Detail') }}</el-button>
                 <el-button
-                  title="trace"
-                  type="success"
-                  icon="el-icon-s-promotion"
-                  circle
+                  style="margin-left:4px;padding:4px 8px" 
+                  type="danger"
+                  icon="el-icon-s-promotion" 
                   size="mini"
                   @click="load_trace(scope.row.id)"
-                ></el-button>
+                >{{ scope._self.$i18n.t('Request_Trace') }}</el-button>
               </template>
             </el-table-column>
           </el-table>

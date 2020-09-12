@@ -19,26 +19,26 @@ namespace HttpReports.Core.Models
     {
         public int Status { get; set; }
 
-        public int TimeoutMs { get; set; }
+        public int Timeout { get; set; }
 
-        public double Percentage { get; set; }
+        public int Percentage { get; set; }
     }
 
     public class ErrorMonitorRule
     {
         public int Status { get; set; }
 
-        public double Percentage { get; set; } 
+        public int Percentage { get; set; } 
     }
 
 
     public class CallMonitorRule
     {
-        public int Status { get; set; }
-
-        public int Max { get; set; }
+        public int Status { get; set; } 
 
         public int Min { get; set; }
+
+        public int Max { get; set; }
 
     }
 }

@@ -648,9 +648,43 @@ namespace HttpReports.Dashboard.Handle
                 }  
             } 
             return Time;   
-        }    
+        }
 
-       
+
+        public async Task<string> GetMonitorJob(ByIdRequest req)
+        {
+            var model = await _storage.GetMonitorJob(req.Id);
+
+            return Json(new HttpResultEntity(1, "ok", model));
+        }
+
+
+        public async Task<string> GetMonitorJobs()
+        { 
+            var list = await _storage.GetMonitorJobs(); 
+
+            return Json(new HttpResultEntity(1, "ok", list));
+        } 
+
+
+        public async Task<string> AddOrUpdateMonitorJob(MonitorJob job)
+        { 
+            bool result = false;
+
+            if (job.Id.IsEmpty())
+            { 
+                result = await _storage.AddMonitorJob(job);
+            }
+            else
+            {
+                result = await _storage.UpdateMonitorJob(job);
+            }
+
+            await _scheduleService.UpdateMonitorJobAsync();
+
+            return Json(new HttpResultEntity(1, "ok", result));
+        } 
+
 
         public async Task<string> DeleteJob(ByIdRequest req)
         {

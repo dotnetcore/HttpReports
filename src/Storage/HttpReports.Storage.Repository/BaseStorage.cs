@@ -165,11 +165,20 @@ namespace HttpReports.Storage.Abstractions
         }
 
 
-        public async Task<List<MonitorJob>> GetMonitorJobs() => await freeSql.Select<MonitorJob>().ToListAsync();
+        public async Task<List<MonitorJob>> GetMonitorJobs() => await freeSql.Select<MonitorJob>().OrderByDescending(x => x.CreateTime ).ToListAsync();
 
 
-        public async Task<bool> AddMonitorJob(MonitorJob job) => await freeSql.Insert<MonitorJob>().ExecuteAffrowsAsync() > 0;
-        
+        public async Task<bool> AddMonitorJob(MonitorJob job) 
+        {
+            job.CreateTime = DateTime.Now;
+            job.Id = MD5_16(Guid.NewGuid().ToString());
+
+           return await freeSql.Insert<MonitorJob>(job).ExecuteAffrowsAsync() > 0; 
+
+        }
+
+        public async Task<bool> UpdateMonitorJob(MonitorJob job) => await freeSql.Update<MonitorJob>().SetSource(job).IgnoreColumns(x => x.CreateTime).ExecuteAffrowsAsync() > 0;
+         
       
 
         public async Task<SysUser> CheckLogin(string Username, string Password) 
@@ -547,12 +556,7 @@ namespace HttpReports.Storage.Abstractions
         public Task<bool> UpdateLoginUser(SysUser model)
         {
             throw new NotImplementedException();
-        }
-
-        public async Task<bool> UpdateMonitorJob(MonitorJob job) => 
-
-            await freeSql.Update<MonitorJob>(job).Where(x => x.Id == job.Id).ExecuteAffrowsAsync() > 0;
-
+        } 
 
 
         private string MD5_16(string source)

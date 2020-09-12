@@ -37,7 +37,7 @@ position: relative;
 
 .card-body h3 {
   margin-left: 2px;
-  font-size: 32px;
+  font-size: 24px;
   margin-bottom: 0.5rem;
   line-height: 1.2;
   color: #ffffff;
@@ -123,7 +123,7 @@ position: relative;
       <div class="card-body">
         <img class="logo-img" src="/static/logo3.png" />
 
-        <h3 class="logo-title">HttpReports</h3>
+        <h3 class="logo-title">HttpReports  APM</h3>
 
         <p>{{ this.$store.state.lang.Login_UserName }}</p>
 

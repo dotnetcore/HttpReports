@@ -38,7 +38,7 @@ namespace HttpReports.Dashboard.Services
 
         public async Task InitAsync()
         {
-            await ClearDataJobAsync();
+            await CreateDataJobAsync();
 
             await InitMonitorJobAsync();
 
@@ -124,7 +124,7 @@ namespace HttpReports.Dashboard.Services
             }  
         }
 
-        public async Task ClearDataJobAsync()
+        public async Task CreateDataJobAsync()
         {
             var job = JobBuilder.Create<ClearReportsDataJob>().Build();
 
