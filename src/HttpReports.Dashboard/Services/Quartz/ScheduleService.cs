@@ -18,7 +18,7 @@ namespace HttpReports.Dashboard.Services
     { 
         private const string SchedulerGroup = "HttpReports_Scheduler";
 
-        private const string SchedulerTag = "monitor_";
+        private const string SchedulerTag = "Monitor_";
 
         public IScheduler scheduler;
 
@@ -38,7 +38,7 @@ namespace HttpReports.Dashboard.Services
 
         public async Task InitAsync()
         {
-            await CreateDataJobAsync();
+            await AutoClearDataJobAsync();
 
             await InitMonitorJobAsync();
 
@@ -48,9 +48,9 @@ namespace HttpReports.Dashboard.Services
 
         public async Task InitMonitorJobAsync()
         { 
-            List<MonitorJob> list = await _storage.GetMonitorJobs();
+            List<MonitorJob> list = await _storage.GetMonitorJobs();  
 
-            if (list == null || list.Count == 0)
+            if (list == null || !list.Any())
             {
                 return;
             }
@@ -124,13 +124,17 @@ namespace HttpReports.Dashboard.Services
             }  
         }
 
-        public async Task CreateDataJobAsync()
-        {
-            var job = JobBuilder.Create<ClearReportsDataJob>().Build();
+        public async Task AutoClearDataJobAsync()
+        { 
+            if (_options.ExpireDay > 0)
+            {
+                var job = JobBuilder.Create<ClearReportsDataJob>().Build();
 
-            var trigger = TriggerBuilder.Create().WithCronSchedule(BasicConfig.ClearDataCornLike).Build();
+                var trigger = TriggerBuilder.Create().WithCronSchedule(BasicConfig.ClearDataCornLike).Build();
 
-            await scheduler.ScheduleJob(job, trigger);
+                await scheduler.ScheduleJob(job, trigger);
+            } 
+          
         }
 
     }

@@ -18,6 +18,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using FreeSql;
 using System.Linq.Expressions;
+using HttpReports.Core.Storage;
 
 namespace HttpReports.Storage.Abstractions
 {
@@ -184,9 +185,15 @@ namespace HttpReports.Storage.Abstractions
         public async Task<SysUser> CheckLogin(string Username, string Password) 
             => await freeSql.Select<SysUser>().Where(x => x.UserName == Username && x.Password == Password).ToOneAsync(); 
 
-        public Task ClearData(string StartTime)
-        {
-            throw new NotImplementedException();
+        public async Task ClearData(string StartTime)
+        { 
+            await freeSql.Delete<RequestInfo>().Where(x => x.CreateTime <= StartTime.ToDateTime()).ExecuteAffrowsAsync();
+
+            await freeSql.Delete<RequestDetail>().Where(x => x.CreateTime <= StartTime.ToDateTime()).ExecuteAffrowsAsync();
+
+            await freeSql.Delete<Performance>().Where(x => x.CreateTime <= StartTime.ToDateTime()).ExecuteAffrowsAsync();
+
+            //await freeSql.Delete<MonitorAlarm>().Where(x => x.CreateTime <= StartTime.ToDateTime()).ExecuteAffrowsAsync();
         }
 
         public async Task<bool> DeleteMonitorJob(string Id) => 
@@ -348,12 +355,8 @@ namespace HttpReports.Storage.Abstractions
         public Task<List<RequestAvgResponeTime>> GetRequestAvgResponeTimeStatisticsAsync(RequestInfoFilterOption filterOption)
         {
             throw new NotImplementedException();
-        }
-
-        public Task<int> GetRequestCountAsync(RequestCountFilterOption filterOption)
-        {
-            throw new NotImplementedException();
-        }
+        } 
+        
 
         public Task<(int Max, int All)> GetRequestCountWithWhiteListAsync(RequestCountWithListFilterOption filterOption)
         {
@@ -530,9 +533,50 @@ namespace HttpReports.Storage.Abstractions
             throw new NotImplementedException();
         }
 
-        public Task<int> GetTimeoutResponeCountAsync(RequestCountFilterOption filterOption, int timeoutThreshold)
+        public async Task<(int timeout,int total)> GetTimeoutResponeCountAsync(ResponseTimeTaskFilter filter)
         {
-            throw new NotImplementedException();
+            var timeout = await freeSql.Select<RequestInfo>().Where(x => x.CreateTime >= filter.StartTime && x.CreateTime < filter.EndTime)
+                .Where(x => x.Milliseconds >= filter.TimeoutMS)
+                .WhereIf(!filter.Service.IsEmpty(), x => x.Service == filter.Service)
+                .WhereIf(!filter.Instance.IsEmpty(), x => x.Instance == filter.Instance)
+                .CountAsync(); 
+
+            var total = await freeSql.Select<RequestInfo>().Where(x => x.CreateTime >= filter.StartTime && x.CreateTime < filter.EndTime) 
+                .WhereIf(!filter.Service.IsEmpty(), x => x.Service == filter.Service)
+                .WhereIf(!filter.Instance.IsEmpty(), x => x.Instance == filter.Instance)
+                .CountAsync();
+
+            return (timeout.ToInt(),total.ToInt());
+        }
+
+
+        public async Task<(int error, int total)> GetErrorResponeCountAsync(ResponseErrorTaskFilter filter)
+        { 
+            var error = await freeSql.Select<RequestInfo>().Where(x => x.CreateTime >= filter.StartTime && x.CreateTime < filter.EndTime)
+                   .Where(x => x.StatusCode >= 400)
+                   .WhereIf(!filter.Service.IsEmpty(), x => x.Service == filter.Service)
+                   .WhereIf(!filter.Instance.IsEmpty(), x => x.Instance == filter.Instance)
+                   .CountAsync();
+
+            var total = await freeSql.Select<RequestInfo>().Where(x => x.CreateTime >= filter.StartTime && x.CreateTime < filter.EndTime)
+                .WhereIf(!filter.Service.IsEmpty(), x => x.Service == filter.Service)
+                .WhereIf(!filter.Instance.IsEmpty(), x => x.Instance == filter.Instance)
+                .CountAsync();
+
+            return (error.ToInt(), total.ToInt());
+
+        }
+
+
+        public async Task<int> GetCallCountAsync(RequestCountTaskFilter filter)
+        { 
+            var total = await freeSql.Select<RequestInfo>().Where(x => x.CreateTime >= filter.StartTime && x.CreateTime < filter.EndTime)
+                .WhereIf(!filter.Service.IsEmpty(), x => x.Service == filter.Service)
+                .WhereIf(!filter.Instance.IsEmpty(), x => x.Instance == filter.Instance)
+                .CountAsync();
+
+            return total.ToInt();
+
         }
 
         public async Task<IEnumerable<string>> GetTopServiceLoad(BasicFilter filter)

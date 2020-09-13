@@ -27,9 +27,7 @@ namespace HttpReports.Dashboard.Handle
 {
     public class DashboardDataHandle : DashboardHandleBase
     {
-        private readonly IHttpReportsStorage _storage;
-
-        private readonly MonitorService _monitorService;
+        private readonly IHttpReportsStorage _storage; 
 
         private readonly ScheduleService _scheduleService; 
 
@@ -39,10 +37,9 @@ namespace HttpReports.Dashboard.Handle
         private IAuthService _authService;
 
 
-        public DashboardDataHandle(IServiceProvider serviceProvider, IAuthService authService, IHttpReportsStorage storage, MonitorService monitorService, ScheduleService scheduleService,LocalizeService localizeService) : base(serviceProvider)
+        public DashboardDataHandle(IServiceProvider serviceProvider, IAuthService authService, IHttpReportsStorage storage, ScheduleService scheduleService,LocalizeService localizeService) : base(serviceProvider)
         {
-            _storage = storage;
-            _monitorService = monitorService;
+            _storage = storage; 
             _scheduleService = scheduleService; 
             _localizeService = localizeService;
             _authService = authService;

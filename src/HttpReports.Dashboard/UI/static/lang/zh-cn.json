@@ -126,6 +126,7 @@
   "Monitor_TitleTooLong": "标题过长",
   "Monitor_DescTooLong": "描述过长",
   "Monitor_MustSelectNode": "至少要选择一个服务",
+  "Monitor_Time_Range": "执行时间格式错误",
   "Monitor_EmailNotNull":"邮箱不能为空",
   "Monitor_Email_Rule":"长度在 5 到 200 个字符",
   "Monitor_WebHook_Rule":"长度在 5 到 100 个字符",

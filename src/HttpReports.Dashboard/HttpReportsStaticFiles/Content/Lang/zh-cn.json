@@ -47,6 +47,8 @@
   "Index_OldPwd": "旧密码",
   "Index_NewPwd": "新密码",
   "Index_UserSave": "保 存",
+  "Min": "最小值",
+  "Max": "最大值",
   "User_OldPasswordError": "旧密码错误",
   "User_AccountFormatError": "用户名格式错误",
   "User_NewPassFormatError": "新密码格式错误",

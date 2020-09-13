@@ -187,6 +187,12 @@ namespace HttpReports.Dashboard.Services
         public string User_UpdateSuccess => GetValue();
         public string Warning_Current => GetValue();
         public string Warning_Threshold => GetValue();
+
+        public string Min => GetValue();
+
+        public string Max => GetValue();
+
+
         public string Warning_TimeRange => GetValue();
         public string Warning_Title => GetValue();
 

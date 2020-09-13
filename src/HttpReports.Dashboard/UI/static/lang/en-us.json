@@ -131,6 +131,7 @@
   "Monitor_Email_Rule":"The length is between 5 and 200 characters",
   "Monitor_WebHook_Rule":"The length is between 5 and 100 characters",
   "Monitor_MustSelectNode": "Select at least one service",
+  "Monitor_Time_Range": "Execution time format error",
   "Monitor_EmailOrWebHookNotNull": "Notification mailbox and push address cannot both be empty",
   "Monitor_EmailTooLong": "Mailbox too long",
   "Monitor_WebHookTooLong": "Push address too long",

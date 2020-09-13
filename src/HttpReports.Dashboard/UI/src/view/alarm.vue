@@ -48,10 +48,7 @@
               </template>
 
             </el-table-column>
-          </el-table>
-
-
-          </el-table>
+          </el-table> 
         </el-card>
       </el-tab-pane>
 
@@ -431,6 +428,16 @@ export default {
             return;
           }
 
+          if ((this.monitor.startTime == '' && !this.monitor.endTime == '') || (!this.monitor.startTime == '' && this.monitor.endTime == '')) {
+            
+            this.$message({
+              message: this.$i18n.t("Monitor_Time_Range"),
+              type: "warning",
+            });
+            return;
+
+          } 
+
           if (
             !this.monitor.responseTimeMonitor.enabled &&
             !this.monitor.errorMonitor.enabled &&
@@ -501,6 +508,7 @@ export default {
     },
 
     showdialog() {
+      this.resetForm();
       this.dialogFormVisible = true;
       this.locaServiceInstance();
     },

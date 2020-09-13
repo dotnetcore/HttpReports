@@ -1,4 +1,5 @@
 ﻿using HttpReports.Core.Models;
+using HttpReports.Core.Storage;
 using HttpReports.Core.Storage.FilterOptions;
 using HttpReports.Models;
 using HttpReports.Storage.FilterOptions;
@@ -93,29 +94,17 @@ namespace HttpReports.Core
         Task<List<MonitorJob>> GetMonitorJobs();
 
 
-        #region Query
-
-        /// <summary>
-        /// 获取请求总次数
-        /// </summary>
-        /// <param name="filterOption"></param>
-        /// <returns></returns>
-        Task<int> GetRequestCountAsync(RequestCountFilterOption filterOption);
-
-        /// <summary>
-        /// 依据白名单获取请求次数
-        /// </summary>
-        /// <param name="filterOption"></param>
-        /// <returns></returns>
+        #region Query 
+         
         Task<(int Max, int All)> GetRequestCountWithWhiteListAsync(RequestCountWithListFilterOption filterOption);
 
-        /// <summary>
-        /// 获取超时响应统计
-        /// </summary>
-        /// <param name="filterOption"></param>
-        /// <param name="timeoutThreshold"></param>
-        /// <returns></returns>
-        Task<int> GetTimeoutResponeCountAsync(RequestCountFilterOption filterOption, int timeoutThreshold);
+      
+        Task<(int timeout, int total)> GetTimeoutResponeCountAsync(ResponseTimeTaskFilter filter);
+
+        Task<(int error, int total)> GetErrorResponeCountAsync(ResponseErrorTaskFilter filter);
+
+        Task<int> GetCallCountAsync(CallCountTaskFilter filter);
+
 
         #endregion Query
 

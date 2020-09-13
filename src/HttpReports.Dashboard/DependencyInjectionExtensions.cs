@@ -49,9 +49,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSingleton<IAlarmService, AlarmService>();
 
-            services.AddSingleton<IAuthService, AuthService>();
-
-            services.AddSingleton<MonitorService>();
+            services.AddSingleton<IAuthService, AuthService>(); 
 
             services.AddSingleton<ScheduleService>(); 
 

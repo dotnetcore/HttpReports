@@ -12,8 +12,7 @@ namespace HttpReports.Dashboard.Models
         public string Instance { get; set; }
 
 
-        public string Start { get; set; }
-
+        public string Start { get; set; } 
 
         public string End { get; set; }
 
