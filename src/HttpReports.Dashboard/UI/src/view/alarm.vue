@@ -227,6 +227,13 @@
 </template> 
 
 <style>
+
+.el-timeline-item{
+
+  padding-top: 16px;
+
+}
+
 .el-tabs__header {
   margin: 0;
 }
@@ -308,20 +315,7 @@ export default {
         },
       },
       tableData: [],
-      activities: [
-        {
-          content: "活动按期开始",
-          timestamp: "2018-04-15",
-        },
-        {
-          content: "通过审核",
-          timestamp: "2018-04-13",
-        },
-        {
-          content: "创建成功",
-          timestamp: "2018-04-11",
-        },
-      ],
+      activities: [],
     };
   },
   methods: {
@@ -403,6 +397,23 @@ export default {
       } else {
         return cronlike;
       }
+    },
+
+    async loadMonitorAlarm(){
+
+      var response = await Vue.http.get("GetMonitorAlarms");   
+
+      this.activities = [];
+      response.body.data.forEach(x => {
+
+        this.activities.push({
+          content:x.body,
+          timestamp: this.cutTime(x.createTime)
+
+        }); 
+
+      }); 
+
     },
     async loadMonitorJob() {
 
@@ -573,6 +584,7 @@ export default {
   created: function () {},
   async mounted() {
     await this.loadMonitorJob();
+    await this.loadMonitorAlarm();
   },
 };
 </script>

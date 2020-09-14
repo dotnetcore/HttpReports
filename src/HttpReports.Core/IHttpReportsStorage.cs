@@ -81,7 +81,11 @@ namespace HttpReports.Core
 
         #region Monitor
 
-        Task<bool> AddMonitorJob(MonitorJob job); 
+        Task<bool> AddMonitorJob(MonitorJob job);
+
+        Task<bool> AddMonitorAlarm(MonitorAlarm alarm);
+
+        Task<List<MonitorAlarm>> GetMonitorAlarms(BasicFilter filter);
 
         Task<List<Performance>> GetPerformances(PerformanceFilterIOption option);
 

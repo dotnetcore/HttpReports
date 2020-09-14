@@ -14,6 +14,7 @@ using Quartz;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using ServiceContainer = HttpReports.Dashboard.Implements.ServiceContainer;
@@ -128,6 +129,13 @@ namespace HttpReports.Dashboard.Services.Quartz
                 return new AlarmOption()
                 {
                     IsHtml = true,
+                    Alarm = new MonitorAlarm { 
+
+                        JobId = job.Id,
+                        Body = $"【{job.Title}】 {_lang.Warning_Threshold}：{(payload.ResponseTimeMonitor.Percentage * 0.01).ToString("F2")}%  {_lang.Warning_Current}：{percent.ToString("F2")}% ",
+                        CreateTime = DateTime.Now
+                    
+                    }, 
                     Content = $@"
                           <br>
                           <b>【{_lang.Monitor_Type_Timeout}】 </b>
@@ -184,6 +192,14 @@ namespace HttpReports.Dashboard.Services.Quartz
                 return new AlarmOption()
                 {
                     IsHtml = true,
+                    Alarm = new MonitorAlarm
+                    {
+
+                        JobId = job.Id,
+                        Body = $"【{job.Title}】 {_lang.Warning_Threshold}：{(payload.ErrorMonitor.Percentage * 0.01).ToString("F2")}%  {_lang.Warning_Current}：{percent.ToString("F2")}% ",
+                        CreateTime = DateTime.Now
+
+                    },
                     Content = $@"
                           <br>
                           <b>【{_lang.Monitor_Type_RequestError}】 </b>
@@ -233,6 +249,14 @@ namespace HttpReports.Dashboard.Services.Quartz
                 return new AlarmOption()
                 {
                     IsHtml = true,
+                    Alarm = new MonitorAlarm
+                    {
+
+                        JobId = job.Id,
+                        Body = $"【{job.Title}】 {_lang.Warning_Threshold}：{_lang.Min}：{payload.CallMonitor.Min} {_lang.Max}：{payload.CallMonitor.Max}  {_lang.Warning_Current}：{total} ",
+                        CreateTime = DateTime.Now
+
+                    },
                     Content = $@"
                           <br>
                           <b>【{_lang.Monitor_Type_RequestCount}】 </b>

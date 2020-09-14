@@ -771,6 +771,19 @@ namespace HttpReports.Dashboard.Handle
             return Json(new HttpResultEntity(1, "ok", tree ));
         }
 
+        public async Task<string> GetMonitorAlarms(QueryRequest request)
+        {
+            var list = await _storage.GetMonitorAlarms(new BasicFilter { 
+            
+                PageSize = 100,
+                PageNumber = 1
+            
+            });
+
+            return Json(new HttpResultEntity(1, "ok", list)); 
+
+        }
+
         public async Task<string> GetRequestInfoDetail(ByIdRequest req)
         {
             var (requestInfo, requestDetail) = await _storage.GetRequestInfoDetail(req.Id);
@@ -799,6 +812,8 @@ namespace HttpReports.Dashboard.Handle
                 });
             }
         }
+
+
 
         private async Task<RequestTraceTree> GetRequestInfoTrace(ByIdRequest req)
         {

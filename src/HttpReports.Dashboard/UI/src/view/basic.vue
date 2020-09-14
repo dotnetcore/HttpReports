@@ -266,15 +266,16 @@ deactivated(){
             yAxis: {
               visible: true,
             },
+            //barSize:2,
             forceFit: true,
             data: source,
             xField: "value",
             yField: "key",
             label: {
-              visible: true,
+              visible: true, 
               adjustPosition: true,
               formatter: (v) => v,
-              position: "left",
+              position: "right",
             },
             events: {
               onTitleDblClick: (e) => console.log(e),
@@ -309,6 +310,7 @@ deactivated(){
             yAxis: {
               visible: true,
             },
+            //barSize:2,
             forceFit: true,
             data: source,
             xField: "value",
@@ -318,7 +320,7 @@ deactivated(){
               visible: true,
               adjustPosition: true,
               formatter: (v) => v,
-              position: "left",
+              position: "right",
             },
             events: {
               onTitleDblClick: (e) => console.log(e),
@@ -353,6 +355,7 @@ deactivated(){
             yAxis: {
               visible: true,
             },
+            //barSize:2,
             forceFit: true,
             data: source,
             xField: "ms",
@@ -362,7 +365,7 @@ deactivated(){
               visible: true,
               adjustPosition: true,
               formatter: (v) => v,
-              position: "left",
+              position: "right",
             },
             events: {
               onTitleDblClick: (e) => console.log(e),

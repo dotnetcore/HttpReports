@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-
+using HttpReports.Core;
 using HttpReports.Dashboard.Models; 
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Logging;
@@ -22,13 +22,16 @@ namespace HttpReports.Dashboard.Services
 
         private LocalizeService _localizeService;
 
+        private IHttpReportsStorage _storage;
+
         private Localize lang => _localizeService.Current;
 
-        public AlarmService(IOptions<DashboardOptions> options, ILogger<AlarmService> logger,LocalizeService localizeService)
+        public AlarmService(IOptions<DashboardOptions> options, ILogger<AlarmService> logger,LocalizeService localizeService, IHttpReportsStorage storage)
         {
             Options = options.Value;
             Logger = logger;
             _localizeService = localizeService;
+            _storage = storage;
         }
 
         private async Task SendMessageAsync(MimeMessage message)
@@ -63,7 +66,9 @@ namespace HttpReports.Dashboard.Services
 
            await NotifyEmailAsync(option);
 
-           await NotifyWebHookAsync(option); 
+           await NotifyWebHookAsync(option);
+
+           await NotifyAlarmAsync(option);
 
         }
 
@@ -128,7 +133,14 @@ namespace HttpReports.Dashboard.Services
                 await SendMessageAsync(message); 
 
             } 
-        } 
+        }
 
+        private async Task NotifyAlarmAsync(AlarmOption option)
+        {
+            if (option.Alarm == null) return;
+
+            await  _storage.AddMonitorAlarm(option.Alarm);
+
+        }
     }
 }

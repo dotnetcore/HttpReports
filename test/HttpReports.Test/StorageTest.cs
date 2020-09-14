@@ -49,7 +49,7 @@ namespace HttpReports.Test
                 {
                     List<Core.RequestBag> requestBags = new List<Core.RequestBag>();
 
-                    for (int c = 0; c < 500; c++)
+                    for (int c = 0; c < 100; c++)
                     {
                         var _Service = Services[new Random().Next(0, Services.Length - 1)];
                         var _ParentService = ParentServices[new Random().Next(0, ParentServices.Length - 1)];
@@ -67,7 +67,7 @@ namespace HttpReports.Test
                             RequestType = "http",
                             Method = "POST",
                             LoginUser = LoginUsers[new Random().Next(0, LoginUsers.Length - 1)],
-                            Milliseconds = new Random().Next(1, 2000),
+                            Milliseconds = new Random().Next(1, 1600),
                             StatusCode = new Random().Next(1, 10) > 3 ? 200 : 500,
                             RemoteIP = "192.168.1.1",
                             Instance = LocalIPs[new Random().Next(0, LocalIPs.Length - 1)] + ":" + LocalPort[new Random().Next(0, LocalPort.Length - 1)],

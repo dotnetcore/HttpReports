@@ -62,6 +62,7 @@ namespace HttpReports.Storage.Abstractions
                     freeSql.CodeFirst.SyncStructure<DBRequestDetail>();
                     freeSql.CodeFirst.SyncStructure<DBPerformance>();
                     freeSql.CodeFirst.SyncStructure<DBMonitorJob>();
+                    freeSql.CodeFirst.SyncStructure<DBMonitorAlarm>();
                     freeSql.CodeFirst.SyncStructure<DBSysUser>();
                     freeSql.CodeFirst.SyncStructure<DBSysConfig>();
 
@@ -157,6 +158,17 @@ namespace HttpReports.Storage.Abstractions
         }
 
 
+        public async Task<bool> AddMonitorAlarm(MonitorAlarm alarm)  
+        {
+            alarm.Id = MD5_16(Guid.NewGuid().ToString());
+            return await freeSql.Insert<MonitorAlarm>(alarm).ExecuteAffrowsAsync() > 0; 
+        }
+
+        public async Task<List<MonitorAlarm>> GetMonitorAlarms(BasicFilter filter)
+        { 
+            return await freeSql.Select<MonitorAlarm>().OrderByDescending(x => x.CreateTime).Page(filter.PageNumber, filter.PageSize).ToListAsync();  
+        }  
+
         public async Task<bool> AddPerformanceAsync(Performance performance)
         {
             performance.Id = MD5_16(Guid.NewGuid().ToString());
@@ -193,7 +205,7 @@ namespace HttpReports.Storage.Abstractions
 
             await freeSql.Delete<Performance>().Where(x => x.CreateTime <= StartTime.ToDateTime()).ExecuteAffrowsAsync();
 
-            //await freeSql.Delete<MonitorAlarm>().Where(x => x.CreateTime <= StartTime.ToDateTime()).ExecuteAffrowsAsync();
+            await freeSql.Delete<MonitorAlarm>().Where(x => x.CreateTime <= StartTime.ToDateTime()).ExecuteAffrowsAsync();
         }
 
         public async Task<bool> DeleteMonitorJob(string Id) => 
@@ -568,7 +580,7 @@ namespace HttpReports.Storage.Abstractions
         }
 
 
-        public async Task<int> GetCallCountAsync(RequestCountTaskFilter filter)
+        public async Task<int> GetCallCountAsync(CallCountTaskFilter filter)
         { 
             var total = await freeSql.Select<RequestInfo>().Where(x => x.CreateTime >= filter.StartTime && x.CreateTime < filter.EndTime)
                 .WhereIf(!filter.Service.IsEmpty(), x => x.Service == filter.Service)
