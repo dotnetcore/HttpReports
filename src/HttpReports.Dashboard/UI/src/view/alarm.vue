@@ -318,6 +318,16 @@ export default {
       activities: [],
     };
   },
+  computed: mapState({
+    query: (state) => state.query 
+  }),
+   watch: {
+    async query(newVal, oldVal) { 
+
+      await this.loadMonitorAlarm();
+      
+    },
+  },
   methods: {
 
     async editJob(id){   

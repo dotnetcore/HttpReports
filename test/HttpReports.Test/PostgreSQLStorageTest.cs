@@ -29,8 +29,7 @@ namespace HttpReports.Test
 
 
             });
-            services.AddTransient<PostgreSQLStorage>();
-            services.AddSingleton<PostgreConnectionFactory>();
+            services.AddTransient<PostgreSQLStorage>(); 
 
             _storage = services.BuildServiceProvider().GetRequiredService<PostgreSQLStorage>();
             await _storage.InitAsync();

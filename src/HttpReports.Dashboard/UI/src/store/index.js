@@ -20,7 +20,8 @@ const store = new Vuex.Store({
     basic_loading:false, 
     service_loading:false,  
     detail_loading:false,
-    topology_loading:false
+    topology_loading:false,
+    alarm_loading:false,
   },  
   mutations: { 
     set_token: (state, data) => state.token = data,
@@ -48,7 +49,7 @@ const store = new Vuex.Store({
     set_detail_loading:(state,data) => state.detail_loading = data,
     set_topology_loading:(state,data) => state.topology_loading = data,
     set_service_loading:(state,data) => state.service_loading = data,
-    set_detail_loading:(state,data) => state.detail_loading = data,
+    set_alarm_loading:(state,data) => state.alarm_loading = data,
     set_route:(state,data) => state.route = data, 
 
   }

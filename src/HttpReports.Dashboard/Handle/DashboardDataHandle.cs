@@ -775,7 +775,7 @@ namespace HttpReports.Dashboard.Handle
         {
             var list = await _storage.GetMonitorAlarms(new BasicFilter { 
             
-                PageSize = 100,
+                PageSize = 20,
                 PageNumber = 1
             
             });

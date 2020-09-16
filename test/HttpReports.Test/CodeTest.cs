@@ -17,6 +17,7 @@ namespace HttpReports.Test
             var result = rule.Where(x => x == '%').ToList();
 
             Assert.IsTrue(result.Count() > 0); 
-        } 
+        }   
+
     }
 }

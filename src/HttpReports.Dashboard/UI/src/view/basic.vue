@@ -85,7 +85,7 @@
 
       <el-col :span="6">
         <el-card class="box-card">
-          <i class="el-icon-message-solid icon-rounded pull-left bgc2"></i>
+          <i class="el-icon-close icon-rounded pull-left bgc2"></i>
 
           <div class="stats">
             <h5>

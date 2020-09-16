@@ -27,11 +27,9 @@ namespace HttpReports.Test
             {
                 o.ConnectionString = "DataBase=HttpReports;Data Source=localhost;User Id=root;Password=123456;";
                 o.DeferSecond = 3;
-                o.DeferThreshold = 5;
-                o.EnableDefer = true;
+                o.DeferThreshold = 5; 
             });
-            services.AddTransient<MySqlStorage>();
-            services.AddSingleton<MySqlConnectionFactory>();
+            services.AddTransient<MySqlStorage>(); 
 
             _storage = services.BuildServiceProvider().GetRequiredService<MySqlStorage>();
             await _storage.InitAsync();

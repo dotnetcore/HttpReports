@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
-using Dapper;
+using System.Threading.Tasks; 
 using HttpReports.Core.Diagnostics; 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -56,39 +55,8 @@ namespace HttpReports.Dashboard.WebAPP
         {
             //string address = "http://moa.hengyinfs.com";
 
-            string address = "http://localhost:5010"; 
+            string address = "http://localhost:5010";  
            
-
-            app.Map("/SqlClient", builder => { 
-               
-
-                builder.Run(async context => 
-                { 
-
-                    SqlConnection connection = new SqlConnection("Max Pool Size = 512;server=localhost;uid=sa;pwd=123456;database=HttpReports;");
-                    var count = await connection.QueryFirstOrDefaultAsync<dynamic>("select * from requestinfo");
-
-                    await context.Response.WriteAsync("ok"); 
-
-                }); 
-            
-            });
-
-
-            app.Map("/MySql", builder => {
-
-                builder.Run(async context =>
-                {   
-
-                    MySqlConnection connection = new MySqlConnection("DataBase=HttpReports;Data Source=localhost;User Id=root;Password=123456;");
-                    var count = await connection.QueryFirstOrDefaultAsync<dynamic>("select * from requestinfo");
-
-                    await context.Response.WriteAsync("ok");
-
-                });
-
-            }); 
-
 
             app.Map("/HttpClient", builder =>
             {
