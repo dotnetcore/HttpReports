@@ -156,13 +156,14 @@ export default {
   created: function () {},
   methods: {
     submit(item) {
+
       var that = this;
 
       if (
         this.basic.isEmpty(this.username) ||
         this.basic.isEmpty(this.password)
       ) {
-        this.$message({ message: "请输入用户名或密码！", type: "warning" });
+        this.$message({ message: this.$i18n.t("Login_CheckRule") , type: "warning" });
         return;
       }
 
@@ -180,16 +181,10 @@ export default {
 
           localStorage.setItem("token", response.body.data);
           localStorage.setItem("username", this.username);
-          that.$store.commit("set_token", response.body.data);
+          that.$store.commit("set_token", response.body.data); 
+           
+           that.$router.push({ path: "/" });
 
-          this.$message({
-            message: "登录成功",
-            type: "success",
-            duration: 1000,
-            onClose: function () {
-              that.$router.push({ path: "/" });
-            },
-          });
         });
     },
   },

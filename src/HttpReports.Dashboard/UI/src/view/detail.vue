@@ -409,14 +409,16 @@ export default {
       if (this.detail != null) {
         this.detail.createTime = this.cutTime(this.detail.createTime);
       }
-      console.log(response);
+   
     },
+    activated(){   
+     this.$store.commit("set_detail_loading",false);  
+   }, 
     async load_trace(id) {
 
       var response = await Vue.http.post("GetTraceList", { id });
 
-      var tree = response.body.data;
-      console.log(tree);
+      var tree = response.body.data; 
 
       this.traceDrawer = true;
 

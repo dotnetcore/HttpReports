@@ -592,6 +592,9 @@ export default {
     },
   },
   created: function () {},
+  activated(){   
+     this.$store.commit("set_alarm_loading",false);  
+  }, 
   async mounted() {
     await this.loadMonitorJob();
     await this.loadMonitorAlarm();

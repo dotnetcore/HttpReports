@@ -27,6 +27,9 @@ export default {
   computed: mapState({
     query: (state) => state.query,
   }),
+  activated(){   
+     this.$store.commit("set_topology_loading",false);  
+  },
   watch: {
     async query(newVal, oldVal) {
       var response = await this.load_basic_data(); 

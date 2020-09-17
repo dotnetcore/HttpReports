@@ -107,6 +107,9 @@ export default {
       service_thread_chart:null
     };
   }, 
+  activated(){   
+     this.$store.commit("set_service_loading",false);  
+   }, 
 computed: mapState({
     query: (state) => state.query 
   }),
@@ -151,9 +154,8 @@ computed: mapState({
      
       this.$store.commit("set_service_loading",true);  
       var data = await Vue.http.post("GetServiceBasicData", this.$store.state.query);   
-      this.$store.commit("set_service_loading",false);     
-
-      console.log(data)
+      this.$store.commit("set_service_loading",false);  
+   
       return data;
 
     },  

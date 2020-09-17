@@ -11,23 +11,24 @@
         label-position="left"
         label-width="100px"
         style="padding:0 30px"
+        class="editModal"
       >
         <el-form-item :label="this.$store.state.lang.Login_UserName">
-          <el-input v-model="setUserInfo.name"></el-input>
+          <el-input size="small" v-model="setUserInfo.name"></el-input>
         </el-form-item>
 
         <el-form-item :label="this.$store.state.lang.Index_OldPwd">
-          <el-input type="password" v-model="setUserInfo.oldPwd"></el-input>
+          <el-input size="small" type="password" v-model="setUserInfo.oldPwd"></el-input>
         </el-form-item>
 
         <el-form-item :label="this.$store.state.lang.Index_NewPwd">
-          <el-input type="password" v-model="setUserInfo.newPwd"></el-input>
+          <el-input size="small" type="password" v-model="setUserInfo.newPwd"></el-input>
         </el-form-item>
       </el-form>
 
       <span slot="footer" class="dialog-footer">
-        <el-button @click="UpdateDialogVisible = false">{{ this.$store.state.lang.Button_Cancel }}</el-button>
-        <el-button type="primary" @click="updateUserInfo">{{ this.$store.state.lang.Button_OK }}</el-button>
+        <el-button size="small" @click="UpdateDialogVisible = false">{{ this.$store.state.lang.Button_Cancel }}</el-button>
+        <el-button size="small" type="primary" @click="updateUserInfo">{{ this.$store.state.lang.Button_OK }}</el-button>
       </span>
     </el-dialog>
 
@@ -50,7 +51,7 @@
 
         <i
           @click="reload"
-          title="refresh"
+          title="Refresh"
           :class="[loading?'refresh fa-spin el-icon-refresh-right':'refresh el-icon-refresh-right']"
         ></i>
       </div>
@@ -228,6 +229,12 @@
 
 .index-body {
   background-color: #f3f3f3;
+}
+
+.editModal .el-form-item__label{
+
+    font-size: 12px;
+
 }
 
 .el-dropdown-link i {
