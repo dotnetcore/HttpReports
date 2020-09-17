@@ -108,7 +108,7 @@ export default {
     };
   }, 
   activated(){   
-     this.$store.commit("set_service_loading",false);  
+     //this.$store.commit("set_service_loading",false);  
    }, 
 computed: mapState({
     query: (state) => state.query 

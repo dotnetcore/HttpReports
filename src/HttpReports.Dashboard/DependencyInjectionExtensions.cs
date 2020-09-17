@@ -60,7 +60,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddHttpReportsHttpCollector(); 
 
             return new HttpReportsBuilder(services, configuration);
-        }  
+        }   
 
         public static IApplicationBuilder UseHttpReportsDashboard(this IApplicationBuilder app)
         { 

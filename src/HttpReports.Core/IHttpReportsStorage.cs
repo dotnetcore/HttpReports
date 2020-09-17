@@ -44,7 +44,7 @@ namespace HttpReports.Core
 
         Task<List<ServiceInstanceInfo>> GetServiceInstance(DateTime startTime);
 
-        #region Statistics
+      
 
 
         Task<List<UrlRequestCount>> GetUrlRequestStatisticsAsync(RequestInfoFilterOption filterOption);
@@ -63,23 +63,11 @@ namespace HttpReports.Core
         
         Task<RequestInfoSearchResult> GetSearchRequestInfoAsync(QueryDetailFilter filter);
 
-        /// <summary>
-        /// 获取请求次数统计
-        /// </summary>
-        /// <param name="filterOption"></param>
-        /// <returns></returns>
+      
         Task<RequestTimesStatisticsResult> GetRequestTimesStatisticsAsync(TimeSpanStatisticsFilterOption filterOption);
 
-        /// <summary>
-        /// 获取响应时间统计
-        /// </summary>
-        /// <param name="filterOption"></param>
-        /// <returns></returns>
-        Task<ResponseTimeStatisticsResult> GetResponseTimeStatisticsAsync(TimeSpanStatisticsFilterOption filterOption);
-
-        #endregion Statistics
-
-        #region Monitor
+     
+        Task<ResponseTimeStatisticsResult> GetResponseTimeStatisticsAsync(TimeSpanStatisticsFilterOption filterOption); 
 
         Task<bool> AddMonitorJob(MonitorJob job);
 
@@ -95,10 +83,8 @@ namespace HttpReports.Core
 
         Task<MonitorJob> GetMonitorJob(string Id);
 
-        Task<List<MonitorJob>> GetMonitorJobs();
-
-
-        #region Query 
+        Task<List<MonitorJob>> GetMonitorJobs(); 
+       
          
         Task<(int Max, int All)> GetRequestCountWithWhiteListAsync(RequestCountWithListFilterOption filterOption);
 
@@ -107,12 +93,8 @@ namespace HttpReports.Core
 
         Task<(int error, int total)> GetErrorResponeCountAsync(ResponseErrorTaskFilter filter);
 
-        Task<int> GetCallCountAsync(CallCountTaskFilter filter);
-
-
-        #endregion Query
-
-        #endregion Monitor
+        Task<int> GetCallCountAsync(CallCountTaskFilter filter); 
+        
 
         Task<SysUser> CheckLogin(string Username, string Password);
 

@@ -538,12 +538,11 @@ namespace HttpReports.Storage.Abstractions
         public Task<List<StatusCodeCount>> GetStatusCodeStatisticsAsync(RequestInfoFilterOption filterOption)
         {
             throw new NotImplementedException();
-        } 
-
-        public Task<SysUser> GetSysUser(string UserName)
-        {
-            throw new NotImplementedException();
         }
+
+        public async Task<SysUser> GetSysUser(string UserName)
+            => await freeSql.Select<SysUser>().Where(x => x.UserName == UserName).ToOneAsync();
+
 
         public async Task<(int timeout,int total)> GetTimeoutResponeCountAsync(ResponseTimeTaskFilter filter)
         {
@@ -609,10 +608,8 @@ namespace HttpReports.Storage.Abstractions
 
 
 
-        public Task<bool> UpdateLoginUser(SysUser model)
-        {
-            throw new NotImplementedException();
-        } 
+        public async Task<bool> UpdateLoginUser(SysUser model) 
+            => await freeSql.Update<SysUser>().SetSource(model).Where(x => x.Id == model.Id).ExecuteAffrowsAsync() > 0;  
 
 
         private string MD5_16(string source)

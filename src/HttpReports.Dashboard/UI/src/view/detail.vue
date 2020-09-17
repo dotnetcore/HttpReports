@@ -412,7 +412,7 @@ export default {
    
     },
     activated(){   
-     this.$store.commit("set_detail_loading",false);  
+     //this.$store.commit("set_detail_loading",false);  
    }, 
     async load_trace(id) {
 

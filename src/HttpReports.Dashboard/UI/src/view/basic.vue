@@ -216,7 +216,7 @@ export default {
   },
 
 activated(){   
-  this.$store.commit("set_basic_loading",false);  
+  //this.$store.commit("set_basic_loading",false);  
 }, 
 deactivated(){
  

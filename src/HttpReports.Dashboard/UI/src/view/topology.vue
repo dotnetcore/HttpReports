@@ -28,7 +28,7 @@ export default {
     query: (state) => state.query,
   }),
   activated(){   
-     this.$store.commit("set_topology_loading",false);  
+     //this.$store.commit("set_topology_loading",false);  
   },
   watch: {
     async query(newVal, oldVal) {

@@ -344,7 +344,7 @@ export default {
         this.monitor.startTime = job.startTime;
         this.monitor.endTime = job.endTime;
         this.monitor.description = job.description;
-        this.monitor.interval = this.parseCronlike(job.cronLike); 
+        this.monitor.interval = job.cronLike; 
         this.monitor.webhook = job.webHook; 
         this.monitor.service = job.service == "" ? "ALL" : job.service;  
 
@@ -593,7 +593,7 @@ export default {
   },
   created: function () {},
   activated(){   
-     this.$store.commit("set_alarm_loading",false);  
+     //this.$store.commit("set_alarm_loading",false);  
   }, 
   async mounted() {
     await this.loadMonitorJob();

@@ -136,6 +136,7 @@ position: relative;
         <button
           size="small"
           @click="submit"
+          v-on:keyup.enter="submit"
           class="btn login-form__btn submit w-100"
         >{{ this.$store.state.lang.Login_Button }}</button>
       </div>
@@ -153,7 +154,16 @@ export default {
       password: "",
     };
   },
-  created: function () {},
+  created: function () {
+
+    document.onkeydown = e => {
+    let _key=window.event.keyCode;
+    if(_key===13){
+      this.submit()
+    }
+  } 
+
+  },
   methods: {
     submit(item) {
 
