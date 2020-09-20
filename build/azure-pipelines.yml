@@ -1,0 +1,59 @@
+
+jobs:    
+
+- job: Windows
+  pool:
+    vmImage: 'windows-latest'
+  
+  steps:
+
+  - task: DotNetCoreInstaller@1
+    displayName: install Sdk
+    inputs:
+      version: '3.1.100'      
+
+  - script: dotnet tool install --global FlubuCore.Tool --version 5.1.8
+    displayName: 'install flubu'
+
+  - script: flubu build
+    displayName: Compile
+
+  - script: flubu pack
+    displayName: pack
+
+
+- job: Ubuntu
+  pool:
+    vmImage: 'ubuntu-latest'
+  
+  steps:
+
+  - task: DotNetCoreInstaller@1
+    displayName: install Sdk
+    inputs:
+      version: '3.1.100'      
+
+  - script: dotnet tool install --global FlubuCore.Tool --version 5.1.8
+    displayName: 'install flubu'
+
+  - script: flubu build
+    displayName: Compile
+   
+- job: MacOS
+  pool:
+    vmImage: 'macOS-latest'
+  
+  steps:
+
+  - task: DotNetCoreInstaller@1
+    displayName: install Sdk
+    inputs:
+      version: '3.1.100'      
+
+  - script: dotnet tool install --global FlubuCore.Tool --version 5.1.8
+    displayName: 'install flubu'
+
+  - script: flubu build
+    displayName: Compile
+    workingDirectory: src
+

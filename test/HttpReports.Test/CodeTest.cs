@@ -9,6 +9,7 @@ namespace HttpReports.Test
     [TestClass]
     public class CodeTest
     {
+
         [TestMethod]
         public void Test1()
         {

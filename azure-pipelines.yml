@@ -1,59 +1,34 @@
+# ASP.NET Core (.NET Framework)
+# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
-jobs:    
+trigger:
+- master
 
-- job: Windows
-  pool:
-    vmImage: 'windows-latest'
-  
-  steps:
+pool:
+  vmImage: 'windows-latest'
 
-  - task: DotNetCoreInstaller@1
-    displayName: install Sdk
-    inputs:
-      version: '3.1.100'      
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
 
-  - script: dotnet tool install --global FlubuCore.Tool --version 5.1.8
-    displayName: 'install flubu'
+steps:
+- task: NuGetToolInstaller@1
 
-  - script: flubu build
-    displayName: Compile
+- task: NuGetCommand@2
+  inputs:
+    restoreSolution: '$(solution)'
 
-  - script: flubu pack
-    displayName: pack
+- task: VSBuild@1
+  inputs:
+    solution: '$(solution)'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
 
-
-- job: Ubuntu
-  pool:
-    vmImage: 'ubuntu-latest'
-  
-  steps:
-
-  - task: DotNetCoreInstaller@1
-    displayName: install Sdk
-    inputs:
-      version: '3.1.100'      
-
-  - script: dotnet tool install --global FlubuCore.Tool --version 5.1.8
-    displayName: 'install flubu'
-
-  - script: flubu build
-    displayName: Compile
-   
-- job: MacOS
-  pool:
-    vmImage: 'macOS-latest'
-  
-  steps:
-
-  - task: DotNetCoreInstaller@1
-    displayName: install Sdk
-    inputs:
-      version: '3.1.100'      
-
-  - script: dotnet tool install --global FlubuCore.Tool --version 5.1.8
-    displayName: 'install flubu'
-
-  - script: flubu build
-    displayName: Compile
-    workingDirectory: src
-
+- task: VSTest@2
+  inputs:
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
