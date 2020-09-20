@@ -97,7 +97,7 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item :label="this.$store.state.lang.Monitor_Email" prop="emails">
+        <el-form-item :label="$t('Monitor_Email')" prop="emails">
           <el-input v-model="monitor.emails"></el-input>
         </el-form-item>
 
@@ -335,35 +335,44 @@ export default {
        this.showdialog();
 
         var response = await Vue.http.post("GetMonitorJob", {id});  
-        var job = response.body.data;  
-        
-        this.monitor.id = job.id; 
-        this.monitor.title = job.title;
-        this.monitor.emails = job.emails;
-        this.monitor.enabled = job.status > 0; 
-        this.monitor.startTime = job.startTime;
-        this.monitor.endTime = job.endTime;
-        this.monitor.description = job.description;
-        this.monitor.interval = job.cronLike; 
-        this.monitor.webhook = job.webHook; 
-        this.monitor.service = job.service == "" ? "ALL" : job.service;  
+        var job = response.body.data;   
 
-        this.alarm_serviceChange(this.monitor.service); 
-        this.monitor.instance = job.instance == "" ? "ALL" : job.instance;
+        var model = {};
+        
+        model.id = job.id; 
+        model.title = job.title;
+        model.emails = job.emails;
+        model.enabled = job.status > 0; 
+        model.startTime = job.startTime;
+        model.endTime = job.endTime;
+        model.description = job.description;
+        model.interval = job.cronLike; 
+        model.webhook = job.webHook; 
+        model.service = job.service == "" ? "ALL" : job.service;  
+
+        this.alarm_serviceChange(model.service); 
+        model.instance = job.instance == "" ? "ALL" : job.instance;
 
         var payload = JSON.parse(job.payload); 
 
-        this.monitor.responseTimeMonitor.enabled = payload.responseTimeMonitor.status > 0;
-        this.monitor.responseTimeMonitor.timeout = payload.responseTimeMonitor.timeout;
-        this.monitor.responseTimeMonitor.percentage = payload.responseTimeMonitor.percentage; 
 
-        this.monitor.errorMonitor.enabled = payload.errorMonitor.status > 0;
-        this.monitor.errorMonitor.percentage = payload.errorMonitor.percentage; 
+        model.responseTimeMonitor = {};
+        model.responseTimeMonitor.enabled = payload.responseTimeMonitor.status > 0;
+        model.responseTimeMonitor.timeout = payload.responseTimeMonitor.timeout;
+        model.responseTimeMonitor.percentage = payload.responseTimeMonitor.percentage; 
 
 
-        this.monitor.callMonitor.enabled = payload.callMonitor.status > 0;
-        this.monitor.callMonitor.min = payload.callMonitor.min; 
-        this.monitor.callMonitor.max = payload.callMonitor.max; 
+        model.errorMonitor = {};
+        model.errorMonitor.enabled = payload.errorMonitor.status > 0;
+        model.errorMonitor.percentage = payload.errorMonitor.percentage; 
+
+        model.callMonitor = {};
+        model.callMonitor.enabled = payload.callMonitor.status > 0;
+        model.callMonitor.min = payload.callMonitor.min; 
+        model.callMonitor.max = payload.callMonitor.max; 
+
+        this.monitor = model; 
+
         
     },
     async deleteJob(id){ 
@@ -393,17 +402,17 @@ export default {
     },
     parseCronlike(cronlike) {
       if (cronlike == "0 0/1 * * * ?") {
-        return this.$store.state.lang.Monitor_Time1Min;
+        return  this.$t("Monitor_Time1Min");
       } else if (cronlike == "0 0/3 * * * ?") {
-        return this.$store.state.lang.Monitor_Time3Min;
+        return this.$t("Monitor_Time3Min");
       } else if (cronlike == "0 0/5 * * * ?") {
-        return this.$store.state.lang.Monitor_Time5Min;
+        return this.$t("Monitor_Time5Min");
       } else if (cronlike == "0 0/10 * * * ?") {
-        return this.$store.state.lang.Monitor_Time10Min;
+        return this.$t("Monitor_Time10Min");
       } else if (cronlike == "0 0/30 * * * ?") {
-        return this.$store.state.lang.Monitor_Time30Min;
+        return this.$t("Monitor_Time30Min");
       } else if (cronlike == "0 0 0/1 * * ?") {
-        return this.$store.state.lang.Monitor_Time1Hour;
+        return this.$t("Monitor_Time1Hour");
       } else {
         return cronlike;
       }
@@ -411,9 +420,10 @@ export default {
 
     async loadMonitorAlarm(){
 
-      var response = await Vue.http.get("GetMonitorAlarms");   
+      var response = await Vue.http.get("GetMonitorAlarms");  
 
       this.activities = [];
+
       response.body.data.forEach(x => {
 
         this.activities.push({
@@ -424,22 +434,28 @@ export default {
 
       }); 
 
+      this.activities.reverse();
+
     },
     async loadMonitorJob() {
 
-      var response = await Vue.http.get("GetMonitorJobs");   
+      var response = await Vue.http.get("GetMonitorJobs");  
 
-      response.body.data.forEach((x) => {
+      response.body.data.forEach((x) => {  
+
         x.createTime = this.cutTime(x.createTime);
         x.cronLike = this.parseCronlike(x.cronLike);
         x.instance = x.instance == "" ? "ALL" : x.instance;
-        x.startTime = x.startTime + " - " + x.endTime;
+        x.startTime = x.startTime + "-" + x.endTime;
+
       });
 
       this.tableData = response.body.data;
     },
-    async submitForm(formName) {
-      this.$refs[formName].validate(async (valid) => {
+    async submitForm(formName) { 
+
+      this.$refs[formName].validate(async (valid) => { 
+
         if (valid) {
           if (this.monitor.service == "ALL") {
             this.$message({
@@ -504,10 +520,13 @@ export default {
             status: this.monitor.enabled ? 1 : 0,
             service: this.monitor.service,
             instance: this.monitor.instance,
-            startTime: this.monitor.startTime,
-            endTime: this.monitor.endTime,
+            startTime: this.monitor.startTime == null ? "" : this.monitor.startTime,
+            endTime: this.monitor.endTime == null ? "" : this.monitor.endTime,
             payload: JSON.stringify(payload),
           };
+
+          if (job.service == "ALL") { job.service = "";}
+          if (job.instance == "ALL") { job.instance = "";} 
 
           var response = await Vue.http.post("AddOrUpdateMonitorJob", job);
 
@@ -588,12 +607,15 @@ export default {
       });
 
       this.monitor.service = this.tag.service[0].value;
-      this.monitor.instance = "ALL";
+      this.monitor.instance = "ALL";   
+      
+      this.alarm_serviceChange(this.monitor.service); 
+
     },
   },
   created: function () {},
   activated(){   
-     //this.$store.commit("set_alarm_loading",false);  
+     this.$store.commit("set_index_loading_timestamp",Date.parse(new Date()));  
   }, 
   async mounted() {
     await this.loadMonitorJob();

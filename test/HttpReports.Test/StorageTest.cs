@@ -53,17 +53,18 @@ namespace HttpReports.Test
                     {
                         var _Service = Services[new Random().Next(0, Services.Length - 1)];
                         var _ParentService = ParentServices[new Random().Next(0, ParentServices.Length - 1)];
+                        var _url = Services[new Random().Next(0, Services.Length - 1)] + "/" + Route[new Random().Next(0, Route.Length - 1)];
 
                         if (_ParentService == _Service) _ParentService = string.Empty;
 
                         requestBags.Add(new Core.RequestBag(new RequestInfo
                         {
                             Id = MD5_16(Guid.NewGuid().ToString()),
-                            ParentId = MD5_16(Guid.NewGuid().ToString()),
+                            ParentId = "",
                             Service = _Service,
                             ParentService = _ParentService,
-                            Route = Services[new Random().Next(0, Services.Length - 1)] + "/" + Route[new Random().Next(0, Route.Length - 1)],
-                            Url = "/HttpReportsData/GetServiceInstance",
+                            Route = _url,
+                            Url = _url,
                             RequestType = "http",
                             Method = "POST",
                             LoginUser = LoginUsers[new Random().Next(0, LoginUsers.Length - 1)],

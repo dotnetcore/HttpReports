@@ -27,8 +27,82 @@
       </el-form>
 
       <span slot="footer" class="dialog-footer">
-        <el-button size="small" @click="UpdateDialogVisible = false">{{ this.$store.state.lang.Button_Cancel }}</el-button>
-        <el-button size="small" type="primary" @click="updateUserInfo">{{ this.$store.state.lang.Button_OK }}</el-button>
+        <el-button
+          size="small"
+          @click="UpdateDialogVisible = false"
+        >{{ this.$store.state.lang.Button_Cancel }}</el-button>
+        <el-button
+          size="small"
+          type="primary"
+          @click="updateUserInfo"
+        >{{ this.$store.state.lang.Button_OK }}</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog
+      class="aboutDialog"
+      :title="$t('About')"
+      :visible.sync="aboutDialogVisible"
+      width="36%"
+    >
+      <h3>HttpReports</h3>
+
+      <p>
+        <span>Dashboard</span>
+        <span>v2.0</span>
+      </p>
+
+      <p>
+        <span>{{ $t('Docs') }}</span>
+         <a
+          style="color: #409eff;text-decoration: none;"
+          target="_blank"
+          href="https://www.yuque.com/httpreports/docs"
+        >https://www.yuque.com/httpreports/docs</a>
+      </p>
+
+      <p>
+        <a
+          style="color: #409eff;text-decoration:none;"
+          target="_blank"
+          href="https://github.com/dotnetcore/HttpReports"
+        >https://github.com/dotnetcore/HttpReports</a>
+      </p>
+
+      <p> 
+         <a
+          style="color: #409eff;text-decoration: none;font-size:12px"
+          target="_blank"
+          href="https://github.com/dotnetcore/HttpReports/blob/master/docs/LICENSE"
+        >MIT协议</a>
+
+         <a
+          style="color: #409eff;text-decoration:none; margin-left:20px;font-size:12px"
+          target="_blank"
+          href="https://github.com/dotnetcore"
+        >.NET Core Community</a>
+
+      </p> 
+
+      <el-collapse  accordion>
+        <el-collapse-item :title="$t('Communication')" name="1">
+           
+           <img style="width:100%"  src="/static/communication.jpg" /> 
+
+        </el-collapse-item>
+        <el-collapse-item :title="$t('Donation')" name="2">
+           <img style="width:100%" src="/static/donation.jpg" />
+
+           <a style="color: #409eff;text-decoration: none;"  target="_blank" href="https://www.yuque.com/httpreports/docs/pl212y" >{{ $t('DonationDetail') }}</a> 
+        </el-collapse-item> 
+      </el-collapse>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button
+          size="small"
+          type="primary"
+          @click="aboutDialogVisible = false"
+        >{{ $t('Button_OK') }}</el-button>
       </span>
     </el-dialog>
 
@@ -50,7 +124,7 @@
         ></i>
 
         <i
-          @click="reload"
+          @click="manualReload"
           title="Refresh"
           :class="[loading?'refresh fa-spin el-icon-refresh-right':'refresh el-icon-refresh-right']"
         ></i>
@@ -58,6 +132,14 @@
 
       <div class="navbar-right">
         <div class="nav-item">
+          <span class="el-dropdown-link nav-user">
+            <i
+              style="font-size:26px"
+              class="el-icon-s-opportunity"
+              @click="aboutDialogVisible = true"
+            ></i>
+          </span>
+
           <span class="el-dropdown-link nav-user">
             <i style="font-size:26px" class="el-icon-rank" @click="handleFullScreen"></i>
           </span>
@@ -182,9 +264,9 @@
               v-model="range"
               type="datetimerange"
               :picker-options="pickerOptions"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
+              :range-separator="$t('To')"
+              :start-placeholder="$t('StartTime')"
+              :end-placeholder="$t('EndTime')"
               align="right"
               @change="timeChange"
             ></el-date-picker>
@@ -213,15 +295,18 @@
         <!--内容区域-->
 
         <keep-alive>
-            <router-view></router-view>
+          <router-view></router-view>
         </keep-alive>
-
       </el-main>
     </el-container>
   </el-container>
 </template>
 
 <style>
+.aboutDialog .el-dialog__body {
+  padding: 0px 20px;
+}
+
 .el-menu-item i {
   font-size: 18px;
   margin-right: 8px;
@@ -231,10 +316,8 @@
   background-color: #f3f3f3;
 }
 
-.editModal .el-form-item__label{
-
-    font-size: 12px;
-
+.editModal .el-form-item__label {
+  font-size: 12px;
 }
 
 .el-dropdown-link i {
@@ -277,6 +360,7 @@ export default {
       fullscreen: false,
       isCollapse: false,
       UpdateDialogVisible: false,
+      aboutDialogVisible: false,
       autoTimer: null,
       userName: localStorage.getItem("username"),
       setUserInfo: {
@@ -368,10 +452,15 @@ export default {
     basic_loading: (state) => state.basic_loading,
     topology_loading: (state) => state.topology_loading,
     detail_loading: (state) => state.detail_loading,
-    service_loading:(state) => state.service_loading
+    service_loading: (state) => state.service_loading,
+    alarm_loading: (state) => state.alarm_loading,
+    index_loading_timestamp: (state) => state.index_loading_timestamp,
   }),
   watch: {
-    basic_loading(newVal, oldVal) { 
+    index_loading_timestamp(newval, oldVal) {
+      this.loading = false;
+    },
+    basic_loading(newVal, oldVal) {
       var path = this.$router.app._route.path;
       if (path == "/" || path == "/basic") {
         this.loading = newVal;
@@ -382,13 +471,19 @@ export default {
       if (path == "/service") {
         this.loading = newVal;
       }
-    }, 
+    },
+    alarm_loading(newVal, oldVal) {
+      var path = this.$router.app._route.path;
+      if (path == "/alarm") {
+        this.loading = newVal;
+      }
+    },
     topology_loading(newVal, oldVal) {
       var path = this.$router.app._route.path;
       if (path == "/topology") {
         this.loading = newVal;
       }
-    },  
+    },
     detail_loading(newVal, oldVal) {
       var path = this.$router.app._route.path;
       if (path == "/detail") {
@@ -402,6 +497,19 @@ export default {
       var now = new Date();
       now.setMinutes(now.getMinutes() - minutes);
       return now;
+    },
+
+    manualReload(){  
+
+      var second = parseInt((new Date().getTime() - this.range[1].getTime()) / 1000); 
+
+      this.range = [
+        basic.addSecond(this.range[0], second),
+        basic.addSecond(this.range[1], second),
+      ]; 
+
+      this.reload();
+
     },
     refresh() {
       this.range = [
@@ -441,6 +549,27 @@ export default {
       this.reload();
     },
     timeChange(data) {
+      if (data == null) {
+        
+        this.range = [this.getLastTime(), new Date()];
+
+        return;
+      }
+
+      if (
+        new Date(data[1]).getTime() - new Date(data[0]).getTime() >
+        1000 * 60 * 60 * 24
+      ) {
+        this.$message({
+          message: this.$store.state.lang.TimeRange_ToLong,
+          type: "warning",
+        });
+
+        this.range = [this.getLastTime(), new Date()];
+
+        return;
+      }
+
       this.reload();
     },
     reload() {
@@ -495,13 +624,10 @@ export default {
           Language: type,
         })
         .then((response) => {
-          
           //this.$message({ message: "Switch: " + type, type: "success" });
 
           this.$http.get(`/static/lang/${type}.json`).then((res) => {
-            this.$store.commit("set_lang", res.body);
-
-            //this.$forceUpdate();
+            this.$store.commit("set_lang", res.body); 
 
             window.location.reload();
           });
@@ -560,8 +686,7 @@ export default {
       this.isCollapse = !this.isCollapse;
     },
     initServiceInstance() {
-      this.$http.post("GetServiceInstance", {}).then((response) => { 
-
+      this.$http.post("GetServiceInstance", {}).then((response) => {
         this.$store.commit("set_tag", response.body.data);
 
         this.service = [];
@@ -576,7 +701,6 @@ export default {
 
         this.select_service = "ALL";
         this.select_instance = "ALL";
-
       });
     },
   },

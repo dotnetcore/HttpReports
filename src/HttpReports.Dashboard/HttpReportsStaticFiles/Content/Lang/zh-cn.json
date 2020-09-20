@@ -115,6 +115,7 @@
   "Monitor_ConfirmStop": "确认要停止任务吗?",
   "Monitor_ConfirmDelete": "确认要删除任务吗?",
   "Monitor_Add": "添加",
+  "To":"至",
   "Monitor_Title": "标题",
   "Monitor_Description": "描述",
   "Monitor_State": "状态",

@@ -140,7 +140,7 @@ namespace HttpReports.Storage.Abstractions
                 .WhereIf(!filter.Instance.IsEmpty(), x => x.Instance == filter.Instance)
                 .WhereIf(!filter.RequestId.IsEmpty(), x => x.Id == filter.RequestId)
                 .WhereIf(filter.StatusCode > 0, x => x.StatusCode == filter.StatusCode)
-                .WhereIf(!filter.Url.IsEmpty(), x => x.Url.Contains(filter.Url))
+                .WhereIf(!filter.Route.IsEmpty(), x => x.Route.Contains(filter.Route))
                 .WhereIf(detailId != null && detailId.Any(), x => detailId.Contains(x.Id))
                 .Count(out var total)
                 .Page(filter.PageNumber, filter.PageSize)

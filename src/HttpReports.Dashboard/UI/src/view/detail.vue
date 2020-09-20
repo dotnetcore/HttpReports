@@ -75,9 +75,11 @@ background-color: #dadada;
               <el-input size="mini" v-model="requestQuery.requestId"></el-input>
             </el-form-item>
 
-            <el-form-item :label="this.$store.state.lang.Request_RequestUrl">
-              <el-input size="mini" v-model="requestQuery.url"></el-input>
-            </el-form-item>
+
+            <el-form-item :label="this.$store.state.lang.Request_Request_Route">
+              <el-input size="mini" v-model="requestQuery.route"></el-input>
+            </el-form-item> 
+           
 
             <el-form-item :label="this.$store.state.lang.StatusCode">
               <el-input size="mini" v-model="requestQuery.statusCode"></el-input>
@@ -101,7 +103,7 @@ background-color: #dadada;
             <el-table-column prop="milliseconds" width="80" :label="this.$i18n.t('Request_Time')"></el-table-column>
             <el-table-column prop="statusCode" width="80" :label="this.$i18n.t('StatusCode')"></el-table-column>
             <el-table-column prop="loginUser" :label="this.$i18n.t('LoginInfo')"></el-table-column>
-            <el-table-column prop="remoteIP" :label="this.$i18n.t('remoteIP')"></el-table-column>
+            <el-table-column prop="remoteIP" :label="this.$i18n.t('RemoteIP')"></el-table-column>
             <el-table-column prop="createTime" :label="this.$i18n.t('Request_CreateTime')"></el-table-column>
             <el-table-column prop="id" :label="this.$i18n.t('Monitor_Operation')" width="160">
               <template slot-scope="scope">
@@ -183,9 +185,13 @@ background-color: #dadada;
               <el-form-item :label="this.$store.state.lang.RemoteIP">
                 <el-input style="width:150px" v-model="info.remoteIP"></el-input>
               </el-form-item> 
+
+              <el-form-item :label="this.$store.state.lang.Request_Request_Route">
+                <el-input style="width:396px" v-model="info.route"></el-input>
+              </el-form-item>
               
               <el-form-item :label="this.$store.state.lang.Request_RequestUrl">
-                <el-input style="width:396px" v-model="info.route"></el-input>
+                <el-input style="width:396px" v-model="info.url"></el-input>
               </el-form-item>
 
               <el-form-item :label="this.$store.state.lang.Request_CreateTime">
@@ -212,7 +218,7 @@ background-color: #dadada;
                 <el-input type="textarea" style="width:380px" v-model="detail.requestBody"></el-input>
               </el-form-item>
 
-              <el-form-item :label="this.$store.state.lang.RequestBody">
+              <el-form-item :label="this.$store.state.lang.ResponseBody">
                 <el-input type="textarea" style="width:380px" v-model="detail.responseBody"></el-input>
               </el-form-item>
 
@@ -288,7 +294,7 @@ export default {
       traceDrawer: false,
       requestQuery: {
         requestId: "",
-        url: "",
+        route: "",
         statusCode: "",
         request: "",
         response: "",
@@ -386,14 +392,15 @@ export default {
         start: this.$store.state.query.start,
         end: this.$store.state.query.end,
         requestId: this.requestQuery.requestId,
-        url: this.requestQuery.url,
+        route: this.requestQuery.route,
         requestBody: this.requestQuery.request,
         responseBody: this.requestQuery.response,
         statusCode:
           this.requestQuery.statusCode == "" ? 0 : this.requestQuery.statusCode,
         pageNumber: this.requestPage.pageNumber,
         pageSize: this.requestPage.pageSize,
-      });
+      }); 
+
       this.$store.commit("set_detail_loading", false);
       return response;
     },
@@ -412,7 +419,7 @@ export default {
    
     },
     activated(){   
-     //this.$store.commit("set_detail_loading",false);  
+      this.$store.commit("set_index_loading_timestamp",Date.parse(new Date()));  
    }, 
     async load_trace(id) {
 
