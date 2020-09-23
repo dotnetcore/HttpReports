@@ -296,20 +296,7 @@ namespace HttpReports.Dashboard.Handle
             await _scheduleService.UpdateMonitorJobAsync();
 
             return Json(new HttpResultEntity(1, "ok", null));
-        }
-
-        [AllowAnonymous]
-        public async Task<string> CheckUserLogin(SysUser user)
-        {
-            var model = await _storage.CheckLogin(user.UserName.Trim(), user.Password.Trim().MD5());
-
-            if (model == null)
-                return Json(new HttpResultEntity(-1, _lang.Login_UserOrPassError, null));
-
-            Context.HttpContext.SetCookie(BasicConfig.LoginCookieId, user.UserName, 60 * 30 * 7);
-
-            return Json(new HttpResultEntity(1, _lang.Login_Success, null));
-        }
+        } 
 
 
         [AllowAnonymous]

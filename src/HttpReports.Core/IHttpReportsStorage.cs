@@ -1,11 +1,8 @@
-﻿using HttpReports.Core.Models;
-using HttpReports.Core.Storage;
+﻿using HttpReports.Core.Models; 
 using HttpReports.Core.Storage.FilterOptions;
-using HttpReports.Models;
-using HttpReports.Storage.FilterOptions;
+using HttpReports.Models; 
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Collections.Generic; 
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -39,35 +36,13 @@ namespace HttpReports.Core
 
 
 
-        Task<List<APPTimeModel>> GetAppStatus(BasicFilter filter, List<string> range); 
- 
+        Task<List<APPTimeModel>> GetAppStatus(BasicFilter filter, List<string> range);
+
 
         Task<List<ServiceInstanceInfo>> GetServiceInstance(DateTime startTime);
 
-      
 
-
-        Task<List<UrlRequestCount>> GetUrlRequestStatisticsAsync(RequestInfoFilterOption filterOption);
-
-
-        Task<List<RequestAvgResponeTime>> GetRequestAvgResponeTimeStatisticsAsync(RequestInfoFilterOption filterOption);
-
-        Task<List<StatusCodeCount>> GetStatusCodeStatisticsAsync(RequestInfoFilterOption filterOption);
-
-
-        Task<List<ResponeTimeGroup>> GetGroupedResponeTimeStatisticsAsync(GroupResponeTimeFilterOption filterOption);
-
-
-        Task<IndexPageData> GetIndexPageDataAsync(IndexPageDataFilterOption filterOption);
-
-        
         Task<RequestInfoSearchResult> GetSearchRequestInfoAsync(QueryDetailFilter filter);
-
-      
-        Task<RequestTimesStatisticsResult> GetRequestTimesStatisticsAsync(TimeSpanStatisticsFilterOption filterOption);
-
-     
-        Task<ResponseTimeStatisticsResult> GetResponseTimeStatisticsAsync(TimeSpanStatisticsFilterOption filterOption); 
 
         Task<bool> AddMonitorJob(MonitorJob job);
 
@@ -75,32 +50,27 @@ namespace HttpReports.Core
 
         Task<List<MonitorAlarm>> GetMonitorAlarms(BasicFilter filter);
 
-        Task<List<Performance>> GetPerformances(PerformanceFilterIOption option);
-
         Task<bool> UpdateMonitorJob(MonitorJob job);
 
         Task<bool> DeleteMonitorJob(string Id);
 
         Task<MonitorJob> GetMonitorJob(string Id);
 
-        Task<List<MonitorJob>> GetMonitorJobs(); 
-       
-         
-        Task<(int Max, int All)> GetRequestCountWithWhiteListAsync(RequestCountWithListFilterOption filterOption);
+        Task<List<MonitorJob>> GetMonitorJobs();
 
-      
+
         Task<(int timeout, int total)> GetTimeoutResponeCountAsync(ResponseTimeTaskFilter filter);
 
         Task<(int error, int total)> GetErrorResponeCountAsync(ResponseErrorTaskFilter filter);
 
-        Task<int> GetCallCountAsync(CallCountTaskFilter filter); 
-        
+        Task<int> GetCallCountAsync(CallCountTaskFilter filter);
+
 
         Task<SysUser> CheckLogin(string Username, string Password);
 
         Task<SysUser> GetSysUser(string UserName);
 
-        Task<bool> UpdateLoginUser(SysUser model); 
+        Task<bool> UpdateLoginUser(SysUser model);
 
         Task<(RequestInfo, RequestDetail)> GetRequestInfoDetail(string Id);
 
