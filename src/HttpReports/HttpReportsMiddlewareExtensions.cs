@@ -7,8 +7,7 @@ using HttpReports;
 using HttpReports.Core;
 using HttpReports.Core.Diagnostics;
 using HttpReports.Diagnostic.AspNetCore;
-using HttpReports.Diagnostic.HttpClient; 
-using HttpReports.RequestInfoBuilder;
+using HttpReports.Diagnostic.HttpClient;  
 using HttpReports.Service; 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -47,8 +46,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static IHttpReportsBuilder AddHttpReportsService(this IServiceCollection services, IConfiguration configuration)
         {   
-            services.AddSingleton<IHttpInvokeProcesser, DefaultHttpInvokeProcesser>();
-            services.AddSingleton<IRequestInfoBuilder, DefaultRequestInfoBuilder>();
+            services.AddSingleton<IRequestProcesser, DefaultRequestProcesser>();
+            services.AddSingleton<IRequestBuilder, DefaultRequestBuilder>();
             services.AddSingleton<IBackgroundService, HttpReportsBackgroundService>();
             services.AddSingleton<IPerformanceService,PerformanceService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

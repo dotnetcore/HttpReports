@@ -3,25 +3,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using HttpReports.Core;
-using HttpReports.Core.Config;
-using HttpReports.Core.Models;
-using HttpReports.Core.Storage.FilterOptions;
+using HttpReports.Core; 
+using HttpReports.Core.Models; 
+using HttpReports.Core.StorageFilters;
 using HttpReports.Dashboard.DTO;
 using HttpReports.Dashboard.Implements;
 using HttpReports.Dashboard.Models;
 using HttpReports.Dashboard.Models.ViewModels;
 using HttpReports.Dashboard.Services; 
 using HttpReports.Dashboard.ViewModels;
-using HttpReports.Models;
-using HttpReports.Monitor;
-using HttpReports.Storage.Abstractions;
-using HttpReports.Storage.FilterOptions; 
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization; 
+using HttpReports.Models; 
+using Microsoft.AspNetCore.Authorization; 
 
 namespace HttpReports.Dashboard.Handle
 {

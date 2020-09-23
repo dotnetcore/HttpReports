@@ -11,6 +11,8 @@
     <Version>1.6.3</Version>
     <PackageLicenseFile></PackageLicenseFile>
     <PackageId>HttpReports</PackageId>
+    <AssemblyName>HttpReports</AssemblyName>
+    <RootNamespace>HttpReports</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

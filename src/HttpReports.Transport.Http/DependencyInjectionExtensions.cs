@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Text;
 using HttpReports;
-using HttpReports.Core.Config;
+using HttpReports.Core;
 using HttpReports.Transport.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions; 
@@ -29,14 +29,12 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddHttpClient(BasicConfig.HttpReportsHttpClient,client => {
 
                 client.DefaultRequestHeaders.Clear(); 
-                client.Timeout = TimeSpan.FromSeconds(30);
+                client.Timeout = TimeSpan.FromSeconds(10);
 
             });
 
             builder.Services.RemoveAll<IReportsTransport>();
-            builder.Services.AddSingleton<IReportsTransport, HttpTransport>();
-            builder.Services.RemoveAll<IModelCreator>();
-            builder.Services.AddSingleton<IModelCreator, ModelCreator>();
+            builder.Services.AddSingleton<IReportsTransport, HttpTransport>(); 
             return builder;
         }
     }

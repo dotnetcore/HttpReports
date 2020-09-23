@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using HttpReports.Core.Config;
+using HttpReports.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -15,21 +15,21 @@ namespace HttpReports
 {
     internal class DefaultHttpReportsMiddleware
     {
-        private readonly RequestDelegate _next;
+        private readonly RequestDelegate Next;
 
-        public IRequestInfoBuilder RequestInfoBuilder { get; }
+        public IRequestBuilder RequestBuilder { get; }
 
-        public IHttpInvokeProcesser InvokeProcesser { get; }
+        public IRequestProcesser InvokeProcesser { get; }
 
         private HttpReportsOptions Options { get; }
 
         public ILogger<DefaultHttpReportsMiddleware> Logger { get; }
 
-        public DefaultHttpReportsMiddleware(RequestDelegate next, IOptions<HttpReportsOptions> options, IRequestInfoBuilder requestInfoBuilder, IHttpInvokeProcesser invokeProcesser, ILogger<DefaultHttpReportsMiddleware> logger)
+        public DefaultHttpReportsMiddleware(RequestDelegate next, IOptions<HttpReportsOptions> options, IRequestBuilder requestBuilder, IRequestProcesser invokeProcesser, ILogger<DefaultHttpReportsMiddleware> logger)
         {
-            _next = next;
+            Next = next;
             Logger = logger;
-            RequestInfoBuilder = requestInfoBuilder;
+            RequestBuilder = requestBuilder;
             InvokeProcesser = invokeProcesser;
             Options = options.Value;
         }
@@ -38,7 +38,7 @@ namespace HttpReports
         {
             if (context.Request.Path.HasValue && context.Request.Path.Value == "/")
             {
-                await _next(context);
+                await Next(context);
                 return;
             }
 
@@ -57,7 +57,7 @@ namespace HttpReports
         {
             if (FilterRequest(context))
             {
-                await _next(context);
+                await Next(context);
                 return;
             } 
 
@@ -76,7 +76,7 @@ namespace HttpReports
             {
                 context.Response.Body = responseMemoryStream;
 
-                await _next(context);
+                await Next(context);
 
             } 
             finally
@@ -109,7 +109,7 @@ namespace HttpReports
 
             try
             {
-                await _next(context);
+                await Next(context);
 
             }
             finally

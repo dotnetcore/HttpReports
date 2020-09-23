@@ -1,4 +1,4 @@
-﻿using HttpReports.Core.Config;
+﻿using HttpReports.Core;
 using HttpReports.Dashboard.Handle;
 using HttpReports.Dashboard.Implements;
 using HttpReports.Dashboard.Route;

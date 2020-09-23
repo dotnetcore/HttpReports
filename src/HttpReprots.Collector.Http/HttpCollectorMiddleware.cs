@@ -1,6 +1,5 @@
 ﻿using HttpReports;
-using HttpReports.Core;
-using HttpReports.Core.Config;
+using HttpReports.Core; 
 using HttpReports.Core.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;

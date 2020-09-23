@@ -1,6 +1,6 @@
 ﻿using Grpc.Core;
 using Grpc.Core.Interceptors;
-using HttpReports.Core.Config;
+using HttpReports.Core;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;

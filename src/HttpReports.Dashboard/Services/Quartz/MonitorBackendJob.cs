@@ -1,21 +1,16 @@
-﻿using HttpReports.Core;
-using HttpReports.Core.Config;
-using HttpReports.Core.Models;
-using HttpReports.Core.Storage.FilterOptions;
+﻿using HttpReports.Core; 
+using HttpReports.Core.Models; 
+using HttpReports.Core.StorageFilters;
 using HttpReports.Dashboard.Implements;
 using HttpReports.Dashboard.Models; 
-using HttpReports.Models;
-using HttpReports.Monitor;
-using HttpReports.Storage.FilterOptions;
+using HttpReports.Models; 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Quartz;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Threading;
+using System.Linq; 
 using System.Threading.Tasks;
 using ServiceContainer = HttpReports.Dashboard.Implements.ServiceContainer;
 

@@ -1,6 +1,5 @@
 ﻿using HttpReports;
-using HttpReports.Core;
-using HttpReports.Core.Config;
+using HttpReports.Core; 
 using HttpReprots.Collector.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -23,15 +22,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
         } 
         public static IApplicationBuilder UseHttpReportsHttpCollector(this IApplicationBuilder app)
-        { 
-            app.Map(BasicConfig.TransportPath, builder => {
 
-                builder.UseMiddleware<HttpCollectorMiddleware>();  
+            => app.Map(BasicConfig.TransportPath, builder 
+                
+                => builder.UseMiddleware<HttpCollectorMiddleware>());  
 
-            }); 
-
-            return app;
-        } 
-        
     }
 }

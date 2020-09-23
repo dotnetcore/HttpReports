@@ -44,9 +44,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
 
         private static IHttpReportsBuilder UseHttpReportsDashboardService(this IServiceCollection services, IConfiguration configuration)
-        {  
-            services.AddSingleton<IModelCreator, DefaultModelCreator>();
-
+        {    
             services.AddSingleton<IAlarmService, AlarmService>();
 
             services.AddSingleton<IAuthService, AuthService>(); 

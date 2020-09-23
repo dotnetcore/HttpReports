@@ -1,7 +1,5 @@
-﻿using HttpReports.Core;
-using HttpReports.Core.Config;
-using HttpReports.Core.Models;
-using HttpReports.Core.Storage.FilterOptions;
+﻿using HttpReports.Core; 
+using HttpReports.Core.Models; 
 using HttpReports.Models; 
 using HttpReports.Storage.Abstractions.Models; 
 using System;
@@ -11,7 +9,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq; 
 using FreeSql;
-using System.Linq.Expressions; 
+using System.Linq.Expressions;
+using HttpReports.Core.ViewModels;
+using HttpReports.Core.StorageFilters;
 
 namespace HttpReports.Storage.Abstractions
 {
@@ -63,8 +63,8 @@ namespace HttpReports.Storage.Abstractions
                         await freeSql.Insert(new SysUser
                         {
                             Id = MD5_16(Guid.NewGuid().ToString()),
-                            UserName = Core.Config.BasicConfig.DefaultUserName,
-                            Password = Core.Config.BasicConfig.DefaultPassword
+                            UserName = BasicConfig.DefaultUserName,
+                            Password = BasicConfig.DefaultPassword
 
                         }).ExecuteAffrowsAsync();
                     }

@@ -1,5 +1,4 @@
-﻿using HttpReports.Core;
-using HttpReports.Core.Config;
+﻿using HttpReports.Core; 
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;

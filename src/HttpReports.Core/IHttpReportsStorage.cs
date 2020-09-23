@@ -1,10 +1,11 @@
-﻿using HttpReports.Core.Models; 
-using HttpReports.Core.Storage.FilterOptions;
-using HttpReports.Models; 
+﻿using HttpReports.Core.Models;  
+using HttpReports.Models;
+using HttpReports.Core.ViewModels;
 using System;
 using System.Collections.Generic; 
 using System.Threading;
 using System.Threading.Tasks;
+using HttpReports.Core.StorageFilters;
 
 namespace HttpReports.Core
 {

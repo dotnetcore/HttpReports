@@ -1,4 +1,4 @@
-﻿using HttpReports.Core.Config;
+﻿using HttpReports.Core;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;

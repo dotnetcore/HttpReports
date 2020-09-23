@@ -31,9 +31,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IHttpReportsBuilder UseDirectlyReportsTransport(this IHttpReportsBuilder builder)
         {  
             builder.Services.RemoveAll<IReportsTransport>();
-            builder.Services.AddSingleton<IReportsTransport,DirectlyReportsTransport>();
-            builder.Services.RemoveAll<IModelCreator>();
-            builder.Services.AddSingleton<IModelCreator, DefaultModelCreator>(); 
+            builder.Services.AddSingleton<IReportsTransport,DirectlyReportsTransport>(); 
 
             return builder;
         } 

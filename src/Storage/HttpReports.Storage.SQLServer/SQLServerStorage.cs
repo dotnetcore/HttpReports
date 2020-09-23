@@ -1,25 +1,6 @@
-﻿ 
-using HttpReports.Core;
-using HttpReports.Core.Config;
-using HttpReports.Core.Models;
-using HttpReports.Core.Storage.FilterOptions;
-using HttpReports.Models;
-using HttpReports.Monitor;
-using HttpReports.Storage.Abstractions;
-using HttpReports.Storage.FilterOptions;
-using HttpReports.Storage.Abstractions.Models;
+﻿using HttpReports.Storage.Abstractions; 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Options; 
 
 namespace HttpReports.Storage.SQLServer
 {
