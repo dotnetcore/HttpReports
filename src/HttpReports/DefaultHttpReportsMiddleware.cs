@@ -143,7 +143,7 @@ namespace HttpReports
         private async Task<string> GetRequestBodyAsync(HttpContext context)
         {
             try
-            {
+            { 
                 if (context.Request.ContentType.IsEmpty() || !context.Request.ContentType.Contains("application/json"))
                 {
                     return string.Empty;
@@ -278,7 +278,7 @@ namespace HttpReports
 
                     var ruleList = rule.ToList();
 
-                    if (!ruleList.Where(x => x == '%').Any())
+                    if (!ruleList.Where(x => x == '*').Any())
                     {
                         if (path == rule)
                         {
@@ -286,23 +286,23 @@ namespace HttpReports
                         } 
 
                     }
-                    else if (ruleList.Where(x => x == '%').Count() >= 2)
+                    else if (ruleList.Where(x => x == '*').Count() >= 2)
                     {
-                        if (path.Contains(rule.Replace("%", "")))
+                        if (path.Contains(rule.Replace("*", "")))
                         {
                             return true;
                         }
                     }
-                    else if (ruleList.Where(x => x == '%').Count() == 1 && rule.LastOrDefault() == '%')
+                    else if (ruleList.Where(x => x == '*').Count() == 1 && rule.LastOrDefault() == '*')
                     {
-                        if (path.StartsWith(rule.Replace("%", "")))
+                        if (path.StartsWith(rule.Replace("*", "")))
                         {
                             return true;
                         }
                     } 
-                    else if (ruleList.Where(x => x == '%').Count() == 1 && rule.FirstOrDefault() == '%')
+                    else if (ruleList.Where(x => x == '*').Count() == 1 && rule.FirstOrDefault() == '*')
                     {
-                        if (path.EndsWith(rule.Replace("%", "")))
+                        if (path.EndsWith(rule.Replace("*", "")))
                         {
                             return true;
                         }

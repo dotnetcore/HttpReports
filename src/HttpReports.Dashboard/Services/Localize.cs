@@ -130,6 +130,9 @@ namespace HttpReports.Dashboard.Services
         public string Monitor_Type_RequestCount_Desc => GetValue();
         public string Monitor_Type_RequestCount_Info => GetValue();
         public string Monitor_Type_RequestError => GetValue();
+
+        public string To => GetValue();
+
         public string Monitor_Type_RequestError_Desc => GetValue();
         public string Monitor_Type_RequestError_Info => GetValue();
         public string Monitor_Type_Timeout => GetValue();

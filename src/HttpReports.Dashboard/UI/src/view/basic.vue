@@ -78,7 +78,7 @@
             <h5>
               <strong>{{ this.basic_data.total }}</strong>
             </h5>
-            <span>{{ this.$store.state.lang.Index_RequestCount }}</span>
+            <span>{{ $t('Index_RequestCount') }}</span>
           </div>
         </el-card>
       </el-col>
@@ -91,7 +91,7 @@
             <h5>
               <strong>{{ this.basic_data.serverError }}</strong>
             </h5>
-            <span>{{ this.$store.state.lang.Index_Errors }}</span>
+            <span>{{ $t('Index_Errors') }}</span>
           </div>
         </el-card>
       </el-col>
@@ -104,7 +104,7 @@
             <h5>
               <strong>{{ this.basic_data.service }}</strong>
             </h5>
-            <span>{{ this.$store.state.lang.ServiceTag }}</span>
+            <span>{{ $t('ServiceTag') }}</span>
           </div>
         </el-card>
       </el-col>
@@ -117,7 +117,7 @@
             <h5>
               <strong>{{ this.basic_data.instance }}</strong>
             </h5>
-            <span>{{ this.$store.state.lang.InstanceTag }}</span>
+            <span>{{ $t('InstanceTag') }}</span>
           </div>
         </el-card>
       </el-col>
@@ -216,7 +216,7 @@ export default {
   },
 
 activated(){   
-  //this.$store.commit("set_basic_loading",false);  
+   this.$store.commit("set_index_loading_timestamp",Date.parse(new Date()));   
 }, 
 deactivated(){
  
@@ -250,7 +250,7 @@ deactivated(){
           key: item.key,
           value: item.value,
         });
-      }); 
+      });  
 
      
       if (this.service_call_chart == null) {
@@ -259,7 +259,7 @@ deactivated(){
           {
             title: {
               visible: true,
-              text: this.$store.state.lang.ServiceLoad,
+              text: this.$t('ServiceLoad'),
             },
             yAxis: {
               visible: true,
@@ -303,7 +303,7 @@ deactivated(){
           {
             title: {
               visible: true,
-              text: this.$store.state.lang.SlowService,
+              text: this.$t('SlowService'),
             },
             yAxis: {
               visible: true,
@@ -348,7 +348,7 @@ deactivated(){
           {
             title: {
               visible: true,
-              text: this.$store.state.lang.ErrorService,
+              text: this.$t('ErrorService'),
             },
             yAxis: {
               visible: true,
@@ -395,7 +395,7 @@ deactivated(){
           {
             title: {
               visible: true,
-              text: this.$store.state.lang.ServiceLoad,
+              text: this.$t('ServiceLoad'),
             },
 
             forceFit: true,
@@ -454,7 +454,7 @@ deactivated(){
           {
             title: {
               visible: true,
-              text: this.$store.state.lang.Index_Heatmap,
+              text: this.$t('Index_Heatmap'),
             },
             legend: {
               visible: false,

@@ -132,20 +132,20 @@ namespace HttpReports.Dashboard.Services.Quartz
                     Alarm = new MonitorAlarm { 
 
                         JobId = job.Id,
-                        Body = $"【{job.Title}】 {_lang.Warning_Threshold}：{(payload.ResponseTimeMonitor.Percentage * 0.01).ToString("F2")}%  {_lang.Warning_Current}：{percent.ToString("F2")}% ",
+                        Body =  $@"【{job.Title}】 {_lang.Monitor_Type_Timeout} --- {_lang.Warning_Threshold}:{payload.ResponseTimeMonitor.Timeout}ms, {(payload.ResponseTimeMonitor.Percentage).ToString("F2")}%    {_lang.Warning_Current}：{ (percent * 100.00) .ToString("F2")}% ",
                         CreateTime = DateTime.Now
                     
                     }, 
                     Content = $@"
                           <br>
-                          <b>【{_lang.Monitor_Type_Timeout}】 </b>
-                          <p>{_lang.Warning_Threshold}：{(payload.ResponseTimeMonitor.Percentage * 0.01).ToString("F2")}%  {_lang.Warning_Current}：{percent.ToString("F2")}% </p>
+                          <b>{_lang.Monitor_Type_Timeout} </b>
+                          <p>{_lang.Monitor_Title}：{job.Title} </p>
+                          <p>{_lang.Warning_Threshold}： {payload.ResponseTimeMonitor.Timeout}ms {(payload.ResponseTimeMonitor.Percentage).ToString("F2")}%   {_lang.Warning_Current}：{(percent * 100.00) .ToString("F2")}% </p>
                           <p>{_lang.Warning_Title}：{job.Title}</p>
                           <p>{_lang.Monitor_ServiceNode}：{job.Service}</p>
                           <p>{_lang.Monitor_InstanceName}：{(job.Instance.IsEmpty() ? "ALL" : job.Instance)} </p>
                           <p>{_lang.Monitor_Frequency}：{ParseJobCronString(job.CronLike)} </p>
-                          <p>{_lang.Warning_TimeRange}：{start.ToStandardTime()}-{end.ToStandardTime()} </p>"
-
+                          <p>{_lang.Warning_TimeRange}：{start.ToStandardTime()} {_lang.To} {end.ToStandardTime()} </p>" 
 
                 };
             }
@@ -196,19 +196,20 @@ namespace HttpReports.Dashboard.Services.Quartz
                     {
 
                         JobId = job.Id,
-                        Body = $"【{job.Title}】 {_lang.Warning_Threshold}：{(payload.ErrorMonitor.Percentage * 0.01).ToString("F2")}%  {_lang.Warning_Current}：{percent.ToString("F2")}% ",
+                        Body = $"【{job.Title}】 {_lang.Monitor_Type_RequestError} --- {_lang.Warning_Threshold}：{(payload.ErrorMonitor.Percentage).ToString("F2")}%  {_lang.Warning_Current}：{(percent * 100.00) .ToString("F2")}% ",
                         CreateTime = DateTime.Now
 
                     },
                     Content = $@"
                           <br>
-                          <b>【{_lang.Monitor_Type_RequestError}】 </b>
-                          <p>{_lang.Warning_Threshold}：{(payload.ErrorMonitor.Percentage * 0.01).ToString("F2")}%  {_lang.Warning_Current}：{percent.ToString("F2")}% </p>
+                          <b>{_lang.Monitor_Type_RequestError} </b>
+                          <p>{_lang.Monitor_Title}：{job.Title} </p>
+                          <p>{_lang.Warning_Threshold}：{(payload.ErrorMonitor.Percentage).ToString("F2")}%  {_lang.Warning_Current}：{(percent * 100.00) .ToString("F2")}% </p>
                           <p>{_lang.Warning_Title}：{job.Title}</p>
                           <p>{_lang.Monitor_ServiceNode}：{job.Service}</p>
                           <p>{_lang.Monitor_InstanceName}：{(job.Instance.IsEmpty() ? "ALL" : job.Instance)} </p>
                           <p>{_lang.Monitor_Frequency}：{ParseJobCronString(job.CronLike)} </p>
-                          <p>{_lang.Warning_TimeRange}：{start.ToStandardTime()}-{end.ToStandardTime()} </p>"
+                          <p>{_lang.Warning_TimeRange}：{start.ToStandardTime()} {_lang.To} {end.ToStandardTime()} </p>"
 
 
                 };
@@ -253,19 +254,20 @@ namespace HttpReports.Dashboard.Services.Quartz
                     {
 
                         JobId = job.Id,
-                        Body = $"【{job.Title}】 {_lang.Warning_Threshold}：{_lang.Min}：{payload.CallMonitor.Min} {_lang.Max}：{payload.CallMonitor.Max}  {_lang.Warning_Current}：{total} ",
+                        Body = $"【{job.Title}】 {_lang.Monitor_Type_RequestCount} --- {_lang.Warning_Threshold}：{_lang.Min} {payload.CallMonitor.Min} {_lang.Max} {payload.CallMonitor.Max}  {_lang.Warning_Current}：{total} ",
                         CreateTime = DateTime.Now
 
                     },
                     Content = $@"
                           <br>
-                          <b>【{_lang.Monitor_Type_RequestCount}】 </b>
+                          <b>{_lang.Monitor_Type_RequestCount} </b>
+                          <p>{_lang.Monitor_Title}：{job.Title} </p>
                           <p>{_lang.Warning_Threshold}：{_lang.Min}：{payload.CallMonitor.Min} {_lang.Max}：{payload.CallMonitor.Max}  {_lang.Warning_Current}：{total} </p>
                           <p>{_lang.Warning_Title}：{job.Title}</p>
                           <p>{_lang.Monitor_ServiceNode}：{job.Service}</p>
                           <p>{_lang.Monitor_InstanceName}：{(job.Instance.IsEmpty() ? "ALL" : job.Instance)} </p>
                           <p>{_lang.Monitor_Frequency}：{ParseJobCronString(job.CronLike)} </p>
-                          <p>{_lang.Warning_TimeRange}：{start.ToStandardTime()}-{end.ToStandardTime()} </p>" 
+                          <p>{_lang.Warning_TimeRange}：{start.ToStandardTime()} {_lang.To} {end.ToStandardTime()} </p>" 
 
                 };
             }

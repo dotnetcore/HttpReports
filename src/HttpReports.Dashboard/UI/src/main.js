@@ -18,7 +18,10 @@ import zhLocale from 'element-ui/lib/locale/lang/zh-CN'
 
  
 import { basic } from '@/common/basic.js'
-Vue.prototype.basic = basic    
+Vue.prototype.basic = basic 
+
+// Vue.config.productionTip = false;
+// Vue.config.silent = true
 
 Vue.use(VueI18n)  
 Vue.use(animate)

@@ -1,6 +1,7 @@
 <template>
   <div>
     <el-card class="box-card">
+      <h3 style="font-size:17px;font-weight: 500;margin-left:30px">{{ $t('ServiceRelationship') }}</h3>
       <div style="height:620px;width:100%" id="main-chart"></div>
     </el-card>
   </div>
@@ -28,7 +29,7 @@ export default {
     query: (state) => state.query,
   }),
   activated(){   
-     //this.$store.commit("set_topology_loading",false);  
+    this.$store.commit("set_index_loading_timestamp",Date.parse(new Date()));  
   },
   watch: {
     async query(newVal, oldVal) {

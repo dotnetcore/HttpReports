@@ -121,6 +121,7 @@ position: relative;
       ></vue-particles>
 
       <div class="card-body">
+        
         <img class="logo-img" src="/static/logo3.png" />
 
         <h3 class="logo-title">HttpReports  APM</h3>

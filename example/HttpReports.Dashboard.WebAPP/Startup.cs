@@ -29,24 +29,16 @@ namespace HttpReports.Dashboard.WebAPP
                     policy.WithOrigins("http://localhost:8080").AllowAnyHeader().AllowAnyMethod(); 
 
                 });
-            });
-
-
+            }); 
 
         } 
       
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseCors("Policy");
-
+            app.UseCors("Policy"); 
 
             app.UseHttpReports();
-            app.UseHttpReportsDashboard();
-
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            } 
+            app.UseHttpReportsDashboard(); 
 
             MapRoute(app);
         }

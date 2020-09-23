@@ -141,7 +141,7 @@ namespace HttpReports.Dashboard.Handle
                 StartTime = start,
                 EndTime = end,
                 RequestId = request.RequestId,
-                Url = request.Url,
+                Route = request.Route,
                 StatusCode = request.StatusCode,
                 RequestBody = request.RequestBody,
                 ResponseBody = request.ResponseBody,

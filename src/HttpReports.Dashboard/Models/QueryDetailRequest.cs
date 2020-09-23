@@ -8,7 +8,7 @@ namespace HttpReports.Dashboard.Models
     {
         public string RequestId { get; set; }
 
-        public string Url { get; set; }
+        public string Route { get; set; }
 
         public int StatusCode { get; set; }
 

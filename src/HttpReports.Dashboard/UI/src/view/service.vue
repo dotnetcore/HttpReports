@@ -108,7 +108,7 @@ export default {
     };
   }, 
   activated(){   
-     //this.$store.commit("set_service_loading",false);  
+     this.$store.commit("set_index_loading_timestamp",Date.parse(new Date()));    
    }, 
 computed: mapState({
     query: (state) => state.query 
@@ -177,10 +177,10 @@ computed: mapState({
           {
             title: {
               visible: true,
-              text: this.$store.state.lang.EndpointCall,
+              text: this.$t('EndpointCall'),
             },
             yAxis: {
-              visible: true,
+              visible: true
             },
             forceFit: true,
             data: source,
@@ -190,7 +190,7 @@ computed: mapState({
               visible: true,
               adjustPosition: true,
               formatter: (v) => v,
-              position: "left",
+              position: "right",
             },
             events: {
               onTitleDblClick: (e) => console.log(e),
@@ -222,11 +222,17 @@ computed: mapState({
           {
             title: {
               visible: true,
-              text: this.$store.state.lang.SlowEndpoint,
+              text: this.$t('SlowEndpoint'),
             },
             yAxis: {
               visible: true,
+               label:{ 
+                visible:true,
+                autoHide:true,
+                offsetY:500
+              }
             },
+            //barSize:2,
             forceFit: true,
             data: source,
             xField: "value",
@@ -236,7 +242,7 @@ computed: mapState({
               visible: true,
               adjustPosition: true,
               formatter: (v) => v,
-              position: "left",
+              position: "right",
             },
             events: {
               onTitleDblClick: (e) => console.log(e),
@@ -268,7 +274,7 @@ computed: mapState({
           {
             title: {
               visible: true,
-              text: this.$store.state.lang.ErrorEndpoint,
+              text: this.$t('ErrorEndpoint'),
             },
             yAxis: {
               visible: true,
@@ -281,8 +287,12 @@ computed: mapState({
             label: {
               visible: true,
               adjustPosition: true,
-              formatter: (v) => v,
-              position: "left",
+              formatter: (v,t) => {
+                
+                return v;
+
+              },
+              position: "right",
             },
             events: {
               onTitleDblClick: (e) => console.log(e),
@@ -314,7 +324,7 @@ computed: mapState({
           {
             title: {
               visible: true,
-              text: this.$store.state.lang.InstanceCall,
+              text: this.$t('InstanceCall'),
             },
             yAxis: {
               visible: true,
@@ -327,7 +337,7 @@ computed: mapState({
               visible: true,
               adjustPosition: true,
               formatter: (v) => v,
-              position: "left",
+              position: "right",
             },
             events: {
               onTitleDblClick: (e) => console.log(e),
@@ -358,7 +368,7 @@ computed: mapState({
           {
             title: {
               visible: true,
-              text: this.$store.state.lang.SlowInstance,
+              text: this.$t('SlowInstance'),
             },
             yAxis: {
               visible: true,
@@ -372,7 +382,7 @@ computed: mapState({
               visible: true,
               adjustPosition: true,
               formatter: (v) => v,
-              position: "left",
+              position: "right",
             },
             events: {
               onTitleDblClick: (e) => console.log(e),
@@ -403,7 +413,7 @@ computed: mapState({
           {
             title: {
               visible: true,
-              text: this.$store.state.lang.ErrorInstance,
+              text: this.$t('ErrorInstance'),
             },
             yAxis: {
               visible: true,
@@ -417,7 +427,7 @@ computed: mapState({
               visible: true,
               adjustPosition: true,
               formatter: (v) => v,
-              position: "left",
+              position: "right",
             },
             events: {
               onTitleDblClick: (e) => console.log(e),
