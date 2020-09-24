@@ -1,8 +1,11 @@
-﻿using System; 
-namespace HttpReports
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace HttpReports.Core.Models
 {
-    public class RequestInfo 
-    {  
+    public class RequestInfo
+    {
         public string Id { get; set; }
 
         public string ParentId { get; set; }
@@ -12,8 +15,8 @@ namespace HttpReports
         public string ParentService { get; set; }
 
 
-        public string Instance { get; set; } 
-        
+        public string Instance { get; set; }
+
 
         public string Route { get; set; }
 
@@ -32,7 +35,7 @@ namespace HttpReports
 
         public string LoginUser { get; set; }
 
-        public DateTime CreateTime { get; set; } 
+        public DateTime CreateTime { get; set; }
 
     }
 }

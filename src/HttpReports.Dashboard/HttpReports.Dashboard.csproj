@@ -18,6 +18,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="UI\**" />
+    <EmbeddedResource Remove="UI\**" />
+    <None Remove="UI\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Remove="HttpReportsStaticFiles\Content\css\form-elements.css" />
   </ItemGroup>
 
@@ -47,10 +53,6 @@
 
   <ItemGroup>
     <Page Include="HttpReportsStaticFiles\Content\css\form-elements.css" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="UI\src\view\" />
   </ItemGroup> 
   
 

@@ -1,18 +1,14 @@
 ﻿using HttpReports.Core;
-using HttpReports.Dashboard.Handle;
-using HttpReports.Dashboard.Implements;
-using HttpReports.Dashboard.Route;
+using HttpReports.Dashboard.Abstractions;
+using HttpReports.Dashboard.Handles; 
+using HttpReports.Dashboard.Routes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
-using System;
-using System.Collections;
-using System.Collections.Concurrent;
+using System; 
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading;
+using System.Reflection; 
 
 namespace HttpReports.Dashboard.Services
 {

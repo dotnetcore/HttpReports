@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HttpReports.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 

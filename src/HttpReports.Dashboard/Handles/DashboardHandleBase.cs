@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HttpReports.Dashboard.Handle
+namespace HttpReports.Dashboard.Handles
 {
     public abstract class DashboardHandleBase : IDashboardHandle
     {

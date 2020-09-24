@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using HttpReports.Core; 
 using HttpReports.Core.Models; 
 using HttpReports.Core.StorageFilters;
+using HttpReports.Dashboard.Abstractions;
 using HttpReports.Dashboard.DTO;
 using HttpReports.Dashboard.Implements;
 using HttpReports.Dashboard.Models;
@@ -16,21 +17,21 @@ using HttpReports.Models;
 using HttpReports.Storage.Abstractions;
 using Microsoft.AspNetCore.Authorization; 
 
-namespace HttpReports.Dashboard.Handle
+namespace HttpReports.Dashboard.Handles
 {
     public class DashboardDataHandle : DashboardHandleBase
     {
         private readonly IHttpReportsStorage _storage; 
 
-        private readonly ScheduleService _scheduleService; 
+        private readonly IScheduleService _scheduleService; 
 
-        private readonly LocalizeService _localizeService;  
+        private readonly ILocalizeService _localizeService;  
         private Localize _lang => _localizeService.Current; 
 
         private IAuthService _authService;
 
 
-        public DashboardDataHandle(IServiceProvider serviceProvider, IAuthService authService, IHttpReportsStorage storage, ScheduleService scheduleService,LocalizeService localizeService) : base(serviceProvider)
+        public DashboardDataHandle(IServiceProvider serviceProvider, IAuthService authService, IHttpReportsStorage storage, IScheduleService scheduleService, ILocalizeService localizeService) : base(serviceProvider)
         {
             _storage = storage; 
             _scheduleService = scheduleService; 

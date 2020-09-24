@@ -1,11 +1,11 @@
-﻿using HttpReports.Dashboard.Handle; 
+﻿using HttpReports.Dashboard.Handles; 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace HttpReports.Dashboard.Route
+namespace HttpReports.Dashboard.Routes
 {
     public static class DashboardRoutes
     {

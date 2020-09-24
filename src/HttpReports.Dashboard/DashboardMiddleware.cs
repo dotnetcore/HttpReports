@@ -4,8 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using HttpReports.Dashboard.Handle;
-using HttpReports.Dashboard.Route;
+using HttpReports.Dashboard.Handles;
+using HttpReports.Dashboard.Routes;
 using System.Reflection;
 using System.Linq;
 using Newtonsoft.Json;
@@ -17,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using HttpReports.Dashboard.Services;
 using System.Net;
 using Org.BouncyCastle.Utilities.IO;
+using HttpReports.Dashboard.Abstractions;
 
 namespace HttpReports.Dashboard
 {

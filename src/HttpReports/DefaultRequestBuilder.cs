@@ -5,7 +5,8 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web;
-using HttpReports.Core; 
+using HttpReports.Core;
+using HttpReports.Core.Models;
 using Microsoft.AspNetCore.Http;  
 using Newtonsoft.Json;
 

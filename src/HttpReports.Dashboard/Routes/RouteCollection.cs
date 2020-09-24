@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace HttpReports.Dashboard.Route
+namespace HttpReports.Dashboard.Routes
 {
     public class RouteCollection
     {

@@ -4,11 +4,11 @@ using System.Reflection;
 using HttpReports;
 using HttpReports.Core;
 using HttpReports.Dashboard;
-using HttpReports.Dashboard.Handle;
+using HttpReports.Dashboard.Abstractions;
+using HttpReports.Dashboard.Handles;
 using HttpReports.Dashboard.Implements;
-using HttpReports.Dashboard.Route;
+using HttpReports.Dashboard.Routes;
 using HttpReports.Dashboard.Services; 
-using HttpReports.Dashboard.Services.Quartz;
 using HttpReports.Storage.Abstractions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -46,16 +46,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static IHttpReportsBuilder UseHttpReportsDashboardService(this IServiceCollection services, IConfiguration configuration)
         {    
-            services.AddSingleton<IAlarmService, AlarmService>();
+            services.AddSingleton<IAlarmService, AlarmService>(); 
+            services.AddSingleton<IAuthService, AuthService>();  
+            services.AddSingleton<IScheduleService, ScheduleService>();  
+            services.AddSingleton<ILocalizeService,LocalizeService>(); 
 
-            services.AddSingleton<IAuthService, AuthService>(); 
-
-            services.AddSingleton<ScheduleService>(); 
-
-            services.AddSingleton<LocalizeService>();
-
-            services.AddHandleService();
-
+            services.AddHandleService(); 
             services.AddHttpReportsHttpCollector(); 
 
             return new HttpReportsBuilder(services, configuration);
@@ -68,11 +64,12 @@ namespace Microsoft.Extensions.DependencyInjection
             ConfigRoute(app); 
 
             var storage = app.ApplicationServices.GetRequiredService<IHttpReportsStorage>() ?? throw new ArgumentNullException("Storage Not Found");
+
             storage.InitAsync().Wait();
 
-            app.ApplicationServices.GetService<ScheduleService>().InitAsync().Wait(); 
+            app.ApplicationServices.GetService<IScheduleService>().InitAsync().Wait(); 
 
-            var localizeService = app.ApplicationServices.GetRequiredService<LocalizeService>() ?? throw new ArgumentNullException("localizeService Not Found");
+            var localizeService = app.ApplicationServices.GetRequiredService<ILocalizeService>() ?? throw new ArgumentNullException("localizeService Not Found");
 
             localizeService.InitAsync().Wait();
 

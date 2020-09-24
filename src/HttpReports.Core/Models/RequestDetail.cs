@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace HttpReports
+namespace HttpReports.Core.Models
 {
-    public class RequestDetail  
+    public class RequestDetail
     {
         public string Id { get; set; }
         public string RequestId { get; set; }
@@ -15,7 +15,7 @@ namespace HttpReports
         public string RequestBody { get; set; }
         public string ResponseBody { get; set; }
         public string ErrorMessage { get; set; }
-        public string ErrorStack { get; set; } 
+        public string ErrorStack { get; set; }
         public DateTime CreateTime { get; set; }
 
     }

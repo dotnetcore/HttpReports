@@ -13,5 +13,6 @@ namespace HttpReports.Dashboard.ViewModels
         public string OldPwd { get; set; }
 
         public string NewPwd { get; set; } 
+
     }
 }

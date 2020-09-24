@@ -1,6 +1,7 @@
 ﻿using HttpReports.Core; 
 using HttpReports.Core.Models; 
 using HttpReports.Core.StorageFilters;
+using HttpReports.Dashboard.Abstractions;
 using HttpReports.Dashboard.Implements;
 using HttpReports.Dashboard.Models; 
 using HttpReports.Models;
@@ -15,7 +16,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ServiceContainer = HttpReports.Dashboard.Implements.ServiceContainer;
 
-namespace HttpReports.Dashboard.Services.Quartz
+namespace HttpReports.Dashboard.Services
 {
     public class MonitorBackendJob : IJob
     {
@@ -39,7 +40,7 @@ namespace HttpReports.Dashboard.Services.Quartz
             _storage = _storage ?? ServiceContainer.provider.GetService(typeof(IHttpReportsStorage)) as IHttpReportsStorage;
             _alarmService = _alarmService ?? ServiceContainer.provider.GetService(typeof(IAlarmService)) as IAlarmService; 
             _logger = _logger ?? ServiceContainer.provider.GetService(typeof(ILogger<MonitorBackendJob>)) as ILogger<MonitorBackendJob>;
-            _lang = _lang ?? (ServiceContainer.provider.GetService(typeof(LocalizeService)) as LocalizeService).Current; 
+            _lang = _lang ?? (ServiceContainer.provider.GetService(typeof(ILocalizeService)) as ILocalizeService).Current; 
 
             MonitorJob job = context.JobDetail.JobDataMap.Get("job") as MonitorJob;
 
@@ -49,7 +50,7 @@ namespace HttpReports.Dashboard.Services.Quartz
 
                 ResponseTimeTask,ResponseErrorTask,RequestCountTask
 
-           }, job, payload); 
+            },job, payload); 
            
             await AlarmAsync(response.Select(x => x.Result).ToList(), job);
 
@@ -82,10 +83,8 @@ namespace HttpReports.Dashboard.Services.Quartz
                 }
             }
 
-        }
+        } 
 
-
-        
         private async Task<AlarmOption> ResponseTimeTask(MonitorJob job, MonitorJobPayload payload)
         {
             if (payload.ResponseTimeMonitor == null) return null; 

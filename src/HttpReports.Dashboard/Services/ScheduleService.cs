@@ -1,19 +1,18 @@
-﻿using HttpReports.Core; 
-using HttpReports.Dashboard.Services.Quartz;
+﻿using HttpReports.Core;
+using HttpReports.Dashboard.Abstractions;
 using HttpReports.Models;
 using HttpReports.Storage.Abstractions;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Quartz;
-using Quartz.Impl;
-using System;
+using Quartz.Impl; 
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace HttpReports.Dashboard.Services
 {
-    public class ScheduleService
+    public class ScheduleService: IScheduleService
     { 
         private const string SchedulerGroup = "HttpReports_Scheduler";
 
@@ -42,8 +41,7 @@ namespace HttpReports.Dashboard.Services
             await InitMonitorJobAsync();
 
             await scheduler.Start();
-        } 
-       
+        }  
 
         public async Task InitMonitorJobAsync()
         { 
@@ -63,7 +61,7 @@ namespace HttpReports.Dashboard.Services
           
         }
 
-        private async Task ScheduleJobAsync(MonitorJob model)
+        public async Task ScheduleJobAsync(MonitorJob model)
         { 
             var job = JobBuilder.Create<MonitorBackendJob>().
                    WithIdentity(SchedulerTag + model.Id, SchedulerGroup)
@@ -75,7 +73,7 @@ namespace HttpReports.Dashboard.Services
 
         }
 
-        private async Task DeleteJobAsync(IJobDetail job)
+        public async Task DeleteJobAsync(IJobDetail job)
         {
             if (scheduler.CheckExists(job.Key).Result)
             {

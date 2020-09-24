@@ -1,15 +1,11 @@
-﻿using HttpReports.Core;
-using HttpReports.Dashboard.Implements;
-using HttpReports.Storage.Abstractions;
+﻿using HttpReports.Storage.Abstractions;
 using Microsoft.Extensions.Options;
 using Quartz;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System; 
 using System.Threading.Tasks;
 using ServiceContainer = HttpReports.Dashboard.Implements.ServiceContainer;
 
-namespace HttpReports.Dashboard.Services.Quartz
+namespace HttpReports.Dashboard.Services 
 {
     public class ClearReportsDataJob : IJob
     {

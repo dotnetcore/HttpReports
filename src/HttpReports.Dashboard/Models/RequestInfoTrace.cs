@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace HttpReports.Dashboard.DTO
+namespace HttpReports.Dashboard.Models
 {
-    public class RequestInfoTrace 
+    public class RequestInfoTrace
     {
         public string Text { get; set; }
 
@@ -23,4 +23,5 @@ namespace HttpReports.Dashboard.DTO
         public List<RequestInfoTrace> Nodes { get; set; }
 
     }
+
 }

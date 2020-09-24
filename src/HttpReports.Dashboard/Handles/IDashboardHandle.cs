@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace HttpReports.Dashboard.Handle
+namespace HttpReports.Dashboard.Handles
 {
     public interface IDashboardHandle
     {

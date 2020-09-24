@@ -8,7 +8,7 @@ namespace HttpReports.Dashboard.Models.ViewModels
     {
         public string Service { get; set; }
 
-        public List<string> Instance { get; set; }   
+        public List<string> Instance { get; set; }    
 
     }
 }

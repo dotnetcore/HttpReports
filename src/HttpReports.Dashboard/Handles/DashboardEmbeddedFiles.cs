@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HttpReports.Dashboard.Handle
+namespace HttpReports.Dashboard.Handles
 {
     public class DashboardEmbeddedFiles
     {
