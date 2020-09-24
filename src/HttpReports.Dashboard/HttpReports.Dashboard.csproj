@@ -24,15 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Remove="HttpReportsStaticFiles\Content\css\form-elements.css" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="HttpReportsStaticFiles\Content\bootstrap\select\select.css" />
-    <None Remove="HttpReportsStaticFiles\Content\bootstrap\select\select.js" />
     <None Remove="HttpReportsStaticFiles\Content\Lang\en-us.json" />
     <None Remove="HttpReportsStaticFiles\Content\Lang\zh-cn.json" />
-    <None Remove="HttpReportsStaticFiles\Content\page\performance.js" />
   </ItemGroup> 
    
 
@@ -49,10 +42,6 @@
     <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
     <PackageReference Include="Quartz" Version="3.0.7" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Include="HttpReportsStaticFiles\Content\css\form-elements.css" />
   </ItemGroup> 
   
 
