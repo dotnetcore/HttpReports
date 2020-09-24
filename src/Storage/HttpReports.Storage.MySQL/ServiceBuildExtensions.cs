@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 
 using HttpReports;
 using HttpReports.Core;
+using HttpReports.Storage.Abstractions;
 using HttpReports.Storage.MySql;
 
 [assembly: InternalsVisibleTo("HttpReports.Test")]
@@ -28,9 +29,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
         internal static IHttpReportsBuilder UseMySqlStorageService(this IHttpReportsBuilder builder)
         {  
-            builder.Services.AddSingleton<IHttpReportsStorage, MySqlStorage>(); 
+            builder.Services.AddSingleton<IHttpReportsStorage, MySqlStorage>();
 
-            return builder.UseDirectlyReportsTransport();
+            return builder;
 
         }  
     }

@@ -1,5 +1,6 @@
 ﻿using HttpReports.Core;
-using HttpReports.Core.Config;
+using HttpReports.Dashboard.Abstractions;
+using HttpReports.Storage.Abstractions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
@@ -11,13 +12,13 @@ using System.Threading.Tasks;
 
 namespace HttpReports.Dashboard.Services
 {
-    public class LocalizeService
+    public class LocalizeService: ILocalizeService
     { 
         private readonly Dictionary<string, Localize> _localize = new Dictionary<string, Localize>();
         private readonly IHttpReportsStorage _storage;
         private readonly ILogger<LocalizeService> _logger;
 
-        public Localize Current { get; private set; }
+        public Localize Current { get; set; }
 
         public IEnumerable<string> Langs => _localize.Keys;
 
@@ -77,7 +78,7 @@ namespace HttpReports.Dashboard.Services
             return Current;
         }
 
-        private void LoadLocalize(string name, string json)
+        public void LoadLocalize(string name, string json)
         {
             name = name.ToLowerInvariant();
             var resource = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);

@@ -1,4 +1,4 @@
-﻿using HttpReports.Dashboard.Route;
+﻿using HttpReports.Dashboard.Routes;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;

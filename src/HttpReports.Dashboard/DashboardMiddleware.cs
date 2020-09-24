@@ -4,8 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using HttpReports.Dashboard.Handle;
-using HttpReports.Dashboard.Route;
+using HttpReports.Dashboard.Handles;
+using HttpReports.Dashboard.Routes;
 using System.Reflection;
 using System.Linq;
 using Newtonsoft.Json;
@@ -17,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using HttpReports.Dashboard.Services;
 using System.Net;
 using Org.BouncyCastle.Utilities.IO;
+using HttpReports.Dashboard.Abstractions;
 
 namespace HttpReports.Dashboard
 {
@@ -45,8 +46,7 @@ namespace HttpReports.Dashboard
                 if (!requestUrl.StartsWith("/HttpReports"))
                 {
                     await _next(httpContext);
-                    return;
-
+                    return; 
                 }
 
 
@@ -82,14 +82,9 @@ namespace HttpReports.Dashboard
                 {
                     httpContext.Response.StatusCode = 404;
                     return;
-                }
-
+                } 
 
                 //Authorization
-                await AuthorizeHelper.AuthorizeAsync(httpContext, handle, router);
-
-
-                //VaildToken
                 //if (!_authService.ValidToken(httpContext, handle, router))
                 //{
                 //    httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;

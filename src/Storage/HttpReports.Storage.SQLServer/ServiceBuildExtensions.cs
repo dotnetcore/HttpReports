@@ -1,5 +1,6 @@
 ﻿using HttpReports;
 using HttpReports.Core;
+using HttpReports.Storage.Abstractions;
 using HttpReports.Storage.SQLServer;
 using System;
 
@@ -25,8 +26,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static IHttpReportsBuilder UseSQLServerStorageService(this IHttpReportsBuilder builder)
         { 
-            builder.Services.AddTransient<IHttpReportsStorage, SQLServerStorage>(); 
-            return builder.UseDirectlyReportsTransport();
+            builder.Services.AddTransient<IHttpReportsStorage, SQLServerStorage>();
+
+            return builder;
         }
 
     }

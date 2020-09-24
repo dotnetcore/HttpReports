@@ -1,5 +1,6 @@
 ﻿using HttpReports.Core;
 using HttpReports.Core.Diagnostics;
+using HttpReports.Storage.Abstractions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;

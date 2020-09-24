@@ -1,24 +1,17 @@
-﻿using HttpReports.Core;
-using HttpReports.Core.Config;
-using HttpReports.Core.Models;
-using HttpReports.Core.Storage.FilterOptions;
-using HttpReports.Models;
-using HttpReports.Monitor;
-using HttpReports.Storage.Abstractions.Models;
-using HttpReports.Storage.FilterOptions;
+﻿using HttpReports.Core; 
+using HttpReports.Core.Models; 
+using HttpReports.Models; 
+using HttpReports.Storage.Abstractions.Models; 
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
+using System.Linq; 
 using FreeSql;
 using System.Linq.Expressions;
-using HttpReports.Core.Storage;
+using HttpReports.Core.ViewModels;
+using HttpReports.Core.StorageFilters;
 
 namespace HttpReports.Storage.Abstractions
 {
@@ -26,37 +19,36 @@ namespace HttpReports.Storage.Abstractions
     {
         public IFreeSql freeSql { get; set; }
 
-        public BaseStorageOptions _options { get; set; }   
+        public BaseStorageOptions _options { get; set; }
 
         public AsyncCallbackDeferFlushCollection<RequestBag> _deferFlushCollection { get; set; }
 
 
         public BaseStorage(BaseStorageOptions options)
-        {   
+        {
             _options = options;
 
-            _deferFlushCollection = new AsyncCallbackDeferFlushCollection<RequestBag>(AddRequestInfoAsync, _options.DeferThreshold, _options.DeferSecond); 
+            _deferFlushCollection = new AsyncCallbackDeferFlushCollection<RequestBag>(AddRequestInfoAsync, _options.DeferThreshold, _options.DeferSecond);
 
-            freeSql = new FreeSql.FreeSqlBuilder().UseConnectionString(_options.DataType,_options.ConnectionString).UseNoneCommandParameter(true).Build();
+            freeSql = new FreeSql.FreeSqlBuilder().UseConnectionString(_options.DataType, _options.ConnectionString).UseNoneCommandParameter(true).Build();
 
         }
 
 
-        public async Task SetLanguage(string Language) =>
+        public async Task SetLanguage(string Language)
+            =>  await freeSql.Update<SysConfig>().Set(x => x.Value == Language).Where(x => x.Key == BasicConfig.Language).ExecuteAffrowsAsync();
 
-            await freeSql.Update<SysConfig>().Set(x => x.Value == Language).Where(x => x.Key == BasicConfig.Language).ExecuteAffrowsAsync();
 
-
-        public async Task<string> GetSysConfig(string Key) =>
-
-            await freeSql.Select<SysConfig>().Where(x => x.Key == Key).ToOneAsync(x => x.Value);
+        public async Task<string> GetSysConfig(string Key)
+            => await freeSql.Select<SysConfig>().Where(x => x.Key == Key).ToOneAsync(x => x.Value);
 
 
         public async Task InitAsync()
         {
             try
             {
-                await Task.Run(async () => { 
+                await Task.Run(async () =>
+                {
 
                     freeSql.CodeFirst.SyncStructure<DBRequestInfo>();
                     freeSql.CodeFirst.SyncStructure<DBRequestDetail>();
@@ -71,8 +63,8 @@ namespace HttpReports.Storage.Abstractions
                         await freeSql.Insert(new SysUser
                         {
                             Id = MD5_16(Guid.NewGuid().ToString()),
-                            UserName = Core.Config.BasicConfig.DefaultUserName,
-                            Password = Core.Config.BasicConfig.DefaultPassword
+                            UserName = BasicConfig.DefaultUserName,
+                            Password = BasicConfig.DefaultPassword
 
                         }).ExecuteAffrowsAsync();
                     }
@@ -97,22 +89,23 @@ namespace HttpReports.Storage.Abstractions
             {
                 throw new Exception("Database init failed：" + ex.Message, ex);
             }
-        } 
+        }
 
 
-        public async Task AddRequestInfoAsync(RequestBag bag) => 
+        public async Task AddRequestInfoAsync(RequestBag bag) =>
 
-            await Task.Run(() => {
+            await Task.Run(() =>
+            {
 
-            _deferFlushCollection.Flush(bag);
+                _deferFlushCollection.Flush(bag);
 
-        });   
+            });
 
         public async Task AddRequestInfoAsync(List<RequestBag> list, System.Threading.CancellationToken token)
         {
             List<RequestInfo> requestInfos = list.Select(x => x.RequestInfo).ToList();
 
-            List<RequestDetail> requestDetails = list.Select(x => x.RequestDetail).ToList(); 
+            List<RequestDetail> requestDetails = list.Select(x => x.RequestDetail).ToList();
 
             await freeSql.Insert(requestInfos).ExecuteAffrowsAsync();
 
@@ -131,8 +124,8 @@ namespace HttpReports.Storage.Abstractions
                .WhereIf(!filter.RequestBody.IsEmpty(), x => x.RequestBody.Contains(filter.RequestBody))
                .WhereIf(!filter.ResponseBody.IsEmpty(), x => x.ResponseBody.Contains(filter.RequestBody))
                .Limit(100)
-               .ToListAsync(x => x.Id); 
-            } 
+               .ToListAsync(x => x.Id);
+            }
 
             var list = await freeSql.Select<RequestInfo>()
                 .Where(x => x.CreateTime >= filter.StartTime && x.CreateTime <= filter.EndTime)
@@ -147,27 +140,28 @@ namespace HttpReports.Storage.Abstractions
                 .OrderByDescending(x => x.CreateTime)
                 .ToListAsync();
 
-            RequestInfoSearchResult result = new RequestInfoSearchResult() { 
-            
+            RequestInfoSearchResult result = new RequestInfoSearchResult()
+            {
+
                 List = list,
-                Total = total.ToInt() 
+                Total = total.ToInt()
 
             };
 
-            return result; 
+            return result;
         }
 
 
-        public async Task<bool> AddMonitorAlarm(MonitorAlarm alarm)  
+        public async Task<bool> AddMonitorAlarm(MonitorAlarm alarm)
         {
             alarm.Id = MD5_16(Guid.NewGuid().ToString());
-            return await freeSql.Insert<MonitorAlarm>(alarm).ExecuteAffrowsAsync() > 0; 
+            return await freeSql.Insert<MonitorAlarm>(alarm).ExecuteAffrowsAsync() > 0;
         }
 
         public async Task<List<MonitorAlarm>> GetMonitorAlarms(BasicFilter filter)
-        { 
-            return await freeSql.Select<MonitorAlarm>().OrderByDescending(x => x.CreateTime).Page(filter.PageNumber, filter.PageSize).ToListAsync();  
-        }  
+        {
+            return await freeSql.Select<MonitorAlarm>().OrderByDescending(x => x.CreateTime).Page(filter.PageNumber, filter.PageSize).ToListAsync();
+        }
 
         public async Task<bool> AddPerformanceAsync(Performance performance)
         {
@@ -178,27 +172,26 @@ namespace HttpReports.Storage.Abstractions
         }
 
 
-        public async Task<List<MonitorJob>> GetMonitorJobs() => await freeSql.Select<MonitorJob>().OrderByDescending(x => x.CreateTime ).ToListAsync();
+        public async Task<List<MonitorJob>> GetMonitorJobs() => await freeSql.Select<MonitorJob>().OrderByDescending(x => x.CreateTime).ToListAsync();
 
 
-        public async Task<bool> AddMonitorJob(MonitorJob job) 
+        public async Task<bool> AddMonitorJob(MonitorJob job)
         {
             job.CreateTime = DateTime.Now;
             job.Id = MD5_16(Guid.NewGuid().ToString());
 
-           return await freeSql.Insert<MonitorJob>(job).ExecuteAffrowsAsync() > 0; 
+            return await freeSql.Insert<MonitorJob>(job).ExecuteAffrowsAsync() > 0;
 
         }
 
         public async Task<bool> UpdateMonitorJob(MonitorJob job) => await freeSql.Update<MonitorJob>().SetSource(job).IgnoreColumns(x => x.CreateTime).ExecuteAffrowsAsync() > 0;
          
-      
 
-        public async Task<SysUser> CheckLogin(string Username, string Password) 
-            => await freeSql.Select<SysUser>().Where(x => x.UserName == Username && x.Password == Password).ToOneAsync(); 
+        public async Task<SysUser> CheckLogin(string Username, string Password)
+            => await freeSql.Select<SysUser>().Where(x => x.UserName == Username && x.Password == Password).ToOneAsync();
 
         public async Task ClearData(string StartTime)
-        { 
+        {
             await freeSql.Delete<RequestInfo>().Where(x => x.CreateTime <= StartTime.ToDateTime()).ExecuteAffrowsAsync();
 
             await freeSql.Delete<RequestDetail>().Where(x => x.CreateTime <= StartTime.ToDateTime()).ExecuteAffrowsAsync();
@@ -208,13 +201,13 @@ namespace HttpReports.Storage.Abstractions
             await freeSql.Delete<MonitorAlarm>().Where(x => x.CreateTime <= StartTime.ToDateTime()).ExecuteAffrowsAsync();
         }
 
-        public async Task<bool> DeleteMonitorJob(string Id) => 
-            
+        public async Task<bool> DeleteMonitorJob(string Id) =>
+
             await freeSql.Delete<MonitorJob>().Where(x => x.Id == Id).ExecuteAffrowsAsync() > 0;
 
-       
+
         public async Task<List<APPTimeModel>> GetAppStatus(BasicFilter filter, List<string> range)
-        {  
+        {
             var format = GetDateFormat(filter);
 
             var list = await freeSql.Select<Performance>()
@@ -223,9 +216,10 @@ namespace HttpReports.Storage.Abstractions
                 .WhereIf(!filter.Instance.IsEmpty(), x => x.Instance == filter.Instance)
                 .GroupBy(x => new
                 {
-                    TimeField = x.CreateTime.ToString(format)  
+                    TimeField = x.CreateTime.ToString(format)
 
-                }).ToListAsync(x => new APPTimeModel {
+                }).ToListAsync(x => new APPTimeModel
+                {
 
                     TimeField = x.Key.TimeField,
                     GcGen0_Raw = x.Avg(x.Value.GCGen0),
@@ -233,7 +227,7 @@ namespace HttpReports.Storage.Abstractions
                     GcGen2_Raw = x.Avg(x.Value.GCGen2),
                     HeapMemory_Raw = x.Avg(x.Value.HeapMemory),
                     ProcessMemory_Raw = x.Avg(x.Value.ProcessMemory),
-                    ThreadCount_Raw = x.Avg(x.Value.ThreadCount) 
+                    ThreadCount_Raw = x.Avg(x.Value.ThreadCount)
 
                 });
 
@@ -251,76 +245,83 @@ namespace HttpReports.Storage.Abstractions
                     GcGen1 = c == null ? 0 : c.GcGen1_Raw.ToInt(),
                     GcGen2 = c == null ? 0 : c.GcGen2_Raw.ToInt(),
                     HeapMemory = c == null ? 0 : c.HeapMemory_Raw.ToDouble(2),
-                    ProcessMemory  = c == null ? 0 : c.ProcessMemory_Raw.ToDouble(2),
+                    ProcessMemory = c == null ? 0 : c.ProcessMemory_Raw.ToDouble(2),
                     ThreadCount = c == null ? 0 : c.ThreadCount_Raw.ToInt()
 
                 });
 
             }
 
-            return model; 
+            return model;
 
 
         }
 
-        public async Task<List<List<TopServiceResponse>>> GetGroupData(BasicFilter filter,GroupType groupType)
+        public async Task<List<List<TopServiceResponse>>> GetGroupData(BasicFilter filter, GroupType groupType)
         {
             var expression = GetServiceExpression(filter);
 
-            Expression<Func<RequestInfo, string>> exp = default; 
-            if (groupType == GroupType.Service) exp = x => x.Service; 
+            Expression<Func<RequestInfo, string>> exp = default;
+            if (groupType == GroupType.Service) exp = x => x.Service;
             if (groupType == GroupType.Instance) exp = x => x.Instance;
-            if (groupType == GroupType.Route) exp = x => x.Route; 
-          
-            List<List<TopServiceResponse>> result = new List<List<TopServiceResponse>>(); 
+            if (groupType == GroupType.Route) exp = x => x.Route;
+
+            List<List<TopServiceResponse>> result = new List<List<TopServiceResponse>>();
 
             var GroupTotal = await freeSql.Select<RequestInfo>().Where(expression).GroupBy(exp).
-                OrderByDescending(x => x.Count()).Limit(filter.Count).ToListAsync(x => new TopServiceResponse {  
-                    Key = x.Key, Value = x.Count() 
-                });  
+                OrderByDescending(x => x.Count()).Limit(filter.Count).ToListAsync(x => new TopServiceResponse
+                {
+                    Key = x.Key,
+                    Value = x.Count()
+                });
 
             var GroupErrorTotal = await freeSql.Select<RequestInfo>().Where(expression).GroupBy(exp).
-                OrderByDescending(x => x.Avg(x.Value.Milliseconds)).Limit(filter.Count).ToListAsync(x => new TopServiceResponse  {
-                    Key = x.Key, Value = Convert.ToInt32(x.Avg(x.Value.Milliseconds)) 
-            });
+                OrderByDescending(x => x.Avg(x.Value.Milliseconds)).Limit(filter.Count).ToListAsync(x => new TopServiceResponse
+                {
+                    Key = x.Key,
+                    Value = Convert.ToInt32(x.Avg(x.Value.Milliseconds))
+                });
 
             var GroupAvg = await freeSql.Select<RequestInfo>().Where(expression).Where(x => x.StatusCode == 500).GroupBy(exp)
-                .OrderByDescending(x => x.Count()).Limit(filter.Count).ToListAsync(x => new TopServiceResponse { 
-                Key = x.Key,  Value = x.Count() 
-            });
+                .OrderByDescending(x => x.Count()).Limit(filter.Count).ToListAsync(x => new TopServiceResponse
+                {
+                    Key = x.Key,
+                    Value = x.Count()
+                });
 
 
             result.Add(GroupTotal);
             result.Add(GroupErrorTotal);
-            result.Add(GroupAvg); 
+            result.Add(GroupAvg);
 
-            return result; 
+            return result;
         }
 
 
         public async Task<List<BaseNode>> GetTopologyData(BasicFilter filter)
-        { 
+        {
             var result = await freeSql.Select<RequestInfo>()
                 .Where(x => x.CreateTime >= filter.StartTime && x.CreateTime < filter.EndTime)
                 .Where(x => !string.IsNullOrEmpty(x.ParentService))
                 .Where(x => x.Service != x.ParentService)
                 .GroupBy(x => new
-                { 
+                {
                     x.Service,
                     x.ParentService
 
-                }).ToListAsync(x => new BaseNode {
-                
+                }).ToListAsync(x => new BaseNode
+                {
+
                     Key = x.Key.Service,
-                    StringValue = x.Key.ParentService 
-                
+                    StringValue = x.Key.ParentService
+
                 });
 
-            return result;  
-        } 
+            return result;
+        }
 
         public async Task<IndexPageData> GetIndexBasicDataAsync(BasicFilter filter)
-        { 
+        {
             IndexPageData result = new IndexPageData();
 
             var expression = GetServiceExpression(filter);
@@ -345,35 +346,8 @@ namespace HttpReports.Storage.Abstractions
 
         }
 
-        public Task<List<ResponeTimeGroup>> GetGroupedResponeTimeStatisticsAsync(GroupResponeTimeFilterOption filterOption)
-        {
-            throw new NotImplementedException();
-        } 
-
-
-        public Task<IndexPageData> GetIndexPageDataAsync(IndexPageDataFilterOption filterOption)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<MonitorJob> GetMonitorJob(string Id) => await freeSql.Select<MonitorJob>().Where(x => x.Id == Id).ToOneAsync();
-       
-
-        public Task<List<Performance>> GetPerformances(PerformanceFilterIOption option)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<RequestAvgResponeTime>> GetRequestAvgResponeTimeStatisticsAsync(RequestInfoFilterOption filterOption)
-        {
-            throw new NotImplementedException();
-        } 
-        
-
-        public Task<(int Max, int All)> GetRequestCountWithWhiteListAsync(RequestCountWithListFilterOption filterOption)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<MonitorJob> GetMonitorJob(string Id)
+            => await freeSql.Select<MonitorJob>().Where(x => x.Id == Id).ToOneAsync();
 
         public async Task<RequestInfo> GetRequestInfo(string Id)
             => await freeSql.Select<RequestInfo>().Where(x => x.Id == Id).ToOneAsync();
@@ -386,24 +360,15 @@ namespace HttpReports.Storage.Abstractions
             var info = await freeSql.Select<RequestInfo>().Where(x => x.Id == Id).ToOneAsync();
             var detail = await freeSql.Select<RequestDetail>().Where(x => x.RequestId == Id).ToOneAsync();
 
-            return (info ?? new RequestInfo(),detail ?? new RequestDetail());
+            return (info ?? new RequestInfo(), detail ?? new RequestDetail());
         }
 
-        public Task<RequestTimesStatisticsResult> GetRequestTimesStatisticsAsync(TimeSpanStatisticsFilterOption filterOption)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<ResponseTimeStatisticsResult> GetResponseTimeStatisticsAsync(TimeSpanStatisticsFilterOption filterOption)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<List<BaseTimeModel>> GetServiceHeatMap(BasicFilter filter, List<string> Time)
         {
             var format = GetDateFormat(filter);
 
-            var expression = GetServiceExpression(filter); 
+            var expression = GetServiceExpression(filter);
 
             string[] span = { "0-200", "200-400", "400-600", "600-800", "800-1000", "1000-1200", "1200-1400", "1400-1600", "1600+" };
 
@@ -428,7 +393,7 @@ namespace HttpReports.Storage.Abstractions
                 {
                     KeyField = x.Key.KeyField,
                     TimeField = x.Key.TimeField,
-                    ValueField = x.Count() 
+                    ValueField = x.Count()
 
                 });
 
@@ -451,7 +416,7 @@ namespace HttpReports.Storage.Abstractions
                 }
             }
 
-            return model; 
+            return model;
 
         }
 
@@ -462,39 +427,42 @@ namespace HttpReports.Storage.Abstractions
                 x.Service,
                 x.Instance
 
-            }).OrderBy(x => x.Key.Service).OrderBy(x => x.Key.Instance).ToListAsync(x => new ServiceInstanceInfo { 
-            
-               Service =  x.Key.Service,
-               Instance = x.Key.Instance  
-            
-            }); 
-            
+            }).OrderBy(x => x.Key.Service).OrderBy(x => x.Key.Instance).ToListAsync(x => new ServiceInstanceInfo
+            {
+
+                Service = x.Key.Service,
+                Instance = x.Key.Instance
+
+            });
+
         }
 
         public async Task<List<BaseTimeModel>> GetServiceTrend(BasicFilter filter, List<string> range)
         {
-            IEnumerable<string> service = new List<string>() { filter.Service };  
+            IEnumerable<string> service = new List<string>() { filter.Service };
 
-            if (filter.Service.IsEmpty()) service = await GetTopServiceLoad(filter); 
+            if (filter.Service.IsEmpty()) service = await GetTopServiceLoad(filter);
 
             var expression = GetServiceExpression(filter);
 
             var format = GetDateFormat(filter);
 
-           var list = await freeSql.Select<RequestInfo>().Where(expression)
+            var list = await freeSql.Select<RequestInfo>().Where(expression)
 
-                 .GroupBy(x => new {
+                  .GroupBy(x => new
+                  {
 
-                     KeyField = x.Service,
-                     TimeField = x.CreateTime.ToString(format)
+                      KeyField = x.Service,
+                      TimeField = x.CreateTime.ToString(format)
 
-                 }).ToListAsync(x => new BaseTimeModel {
+                  }).ToListAsync(x => new BaseTimeModel
+                  {
 
-                    KeyField =  x.Key.KeyField,
-                    TimeField = x.Key.TimeField, 
-                    ValueField = x.Count()
+                      KeyField = x.Key.KeyField,
+                      TimeField = x.Key.TimeField,
+                      ValueField = x.Count()
 
-                 });
+                  });
 
 
             var model = new List<BaseTimeModel>();
@@ -516,7 +484,7 @@ namespace HttpReports.Storage.Abstractions
                 }
             }
 
-            return model;  
+            return model;
 
         }
 
@@ -529,40 +497,33 @@ namespace HttpReports.Storage.Abstractions
             else
             {
                 return "HH:mm";
-            } 
-        
-        }
+            }
 
-
-
-        public Task<List<StatusCodeCount>> GetStatusCodeStatisticsAsync(RequestInfoFilterOption filterOption)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<SysUser> GetSysUser(string UserName)
             => await freeSql.Select<SysUser>().Where(x => x.UserName == UserName).ToOneAsync();
 
 
-        public async Task<(int timeout,int total)> GetTimeoutResponeCountAsync(ResponseTimeTaskFilter filter)
+        public async Task<(int timeout, int total)> GetTimeoutResponeCountAsync(ResponseTimeTaskFilter filter)
         {
             var timeout = await freeSql.Select<RequestInfo>().Where(x => x.CreateTime >= filter.StartTime && x.CreateTime < filter.EndTime)
                 .Where(x => x.Milliseconds >= filter.TimeoutMS)
                 .WhereIf(!filter.Service.IsEmpty(), x => x.Service == filter.Service)
                 .WhereIf(!filter.Instance.IsEmpty(), x => x.Instance == filter.Instance)
-                .CountAsync(); 
+                .CountAsync();
 
-            var total = await freeSql.Select<RequestInfo>().Where(x => x.CreateTime >= filter.StartTime && x.CreateTime < filter.EndTime) 
+            var total = await freeSql.Select<RequestInfo>().Where(x => x.CreateTime >= filter.StartTime && x.CreateTime < filter.EndTime)
                 .WhereIf(!filter.Service.IsEmpty(), x => x.Service == filter.Service)
                 .WhereIf(!filter.Instance.IsEmpty(), x => x.Instance == filter.Instance)
                 .CountAsync();
 
-            return (timeout.ToInt(),total.ToInt());
+            return (timeout.ToInt(), total.ToInt());
         }
 
 
         public async Task<(int error, int total)> GetErrorResponeCountAsync(ResponseErrorTaskFilter filter)
-        { 
+        {
             var error = await freeSql.Select<RequestInfo>().Where(x => x.CreateTime >= filter.StartTime && x.CreateTime < filter.EndTime)
                    .Where(x => x.StatusCode >= 400)
                    .WhereIf(!filter.Service.IsEmpty(), x => x.Service == filter.Service)
@@ -580,7 +541,7 @@ namespace HttpReports.Storage.Abstractions
 
 
         public async Task<int> GetCallCountAsync(CallCountTaskFilter filter)
-        { 
+        {
             var total = await freeSql.Select<RequestInfo>().Where(x => x.CreateTime >= filter.StartTime && x.CreateTime < filter.EndTime)
                 .WhereIf(!filter.Service.IsEmpty(), x => x.Service == filter.Service)
                 .WhereIf(!filter.Instance.IsEmpty(), x => x.Instance == filter.Instance)
@@ -592,24 +553,18 @@ namespace HttpReports.Storage.Abstractions
 
         public async Task<IEnumerable<string>> GetTopServiceLoad(BasicFilter filter)
         {
-            var expression = GetServiceExpression(filter);  
+            var expression = GetServiceExpression(filter);
 
             return await freeSql.Select<RequestInfo>().Where(expression)
                 .GroupBy(x => x.Service)
                 .OrderByDescending(x => x.Count())
                 .Limit(filter.Count)
-                .ToListAsync(x => x.Key); 
+                .ToListAsync(x => x.Key);
         }
 
-        public Task<List<UrlRequestCount>> GetUrlRequestStatisticsAsync(RequestInfoFilterOption filterOption)
-        {
-            throw new NotImplementedException();
-        } 
 
-
-
-        public async Task<bool> UpdateLoginUser(SysUser model) 
-            => await freeSql.Update<SysUser>().SetSource(model).Where(x => x.Id == model.Id).ExecuteAffrowsAsync() > 0;  
+        public async Task<bool> UpdateLoginUser(SysUser model)
+            => await freeSql.Update<SysUser>().SetSource(model).Where(x => x.Id == model.Id).ExecuteAffrowsAsync() > 0;
 
 
         private string MD5_16(string source)

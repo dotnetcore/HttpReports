@@ -6,9 +6,9 @@ namespace HttpReports
 {
     public interface IReportsTransport
     {
-        Task Transport(RequestBag bag);
+        Task SendDataAsync(RequestBag bag);
 
-        Task Transport(Performance performance); 
+        Task SendDataAsync(Performance performance); 
 
     }
 }

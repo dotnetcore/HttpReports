@@ -2,7 +2,9 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using HttpReports.Core;
-using HttpReports.Dashboard.Models; 
+using HttpReports.Dashboard.Abstractions;
+using HttpReports.Dashboard.Models;
+using HttpReports.Storage.Abstractions;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -20,13 +22,13 @@ namespace HttpReports.Dashboard.Services
 
         private ILogger<AlarmService> Logger;
 
-        private LocalizeService _localizeService;
+        private ILocalizeService _localizeService;
 
         private IHttpReportsStorage _storage;
 
         private Localize lang => _localizeService.Current;
 
-        public AlarmService(IOptions<DashboardOptions> options, ILogger<AlarmService> logger,LocalizeService localizeService, IHttpReportsStorage storage)
+        public AlarmService(IOptions<DashboardOptions> options, ILogger<AlarmService> logger, ILocalizeService localizeService, IHttpReportsStorage storage)
         {
             Options = options.Value;
             Logger = logger;

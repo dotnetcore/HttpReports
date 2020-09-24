@@ -1,5 +1,4 @@
-﻿using HttpReports.Core;
-using HttpReports.Core.Config;
+﻿using HttpReports.Core; 
 using HttpReports.Core.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -34,14 +33,14 @@ namespace HttpReports.Transport.Http
             _RequestBagCollection = new AsyncCallbackDeferFlushCollection<RequestBag>(Push, _options.DeferThreshold,_options.DeferSecond); 
         }   
 
-        public Task Transport(RequestBag bag)
+        public Task SendDataAsync(RequestBag bag)
         { 
             _RequestBagCollection.Flush(bag);
 
             return Task.CompletedTask;
         }
 
-        public async Task Transport(Performance performance)
+        public async Task SendDataAsync(Performance performance)
         {
             await Retry(async () => {
 

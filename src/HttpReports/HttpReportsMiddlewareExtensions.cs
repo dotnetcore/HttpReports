@@ -7,15 +7,11 @@ using HttpReports;
 using HttpReports.Core;
 using HttpReports.Core.Diagnostics;
 using HttpReports.Diagnostic.AspNetCore;
-using HttpReports.Diagnostic.HttpClient; 
-using HttpReports.RequestInfoBuilder;
-using HttpReports.Service; 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
+using HttpReports.Diagnostic.HttpClient;  
+using HttpReports.Services; 
+using Microsoft.AspNetCore.Builder; 
+using Microsoft.AspNetCore.Http; 
+using Microsoft.Extensions.Configuration; 
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -47,26 +43,24 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static IHttpReportsBuilder AddHttpReportsService(this IServiceCollection services, IConfiguration configuration)
         {   
-            services.AddSingleton<IHttpInvokeProcesser, DefaultHttpInvokeProcesser>();
-            services.AddSingleton<IRequestInfoBuilder, DefaultRequestInfoBuilder>();
+            services.AddSingleton<IRequestProcesser, DefaultRequestProcesser>();
+            services.AddSingleton<IRequestBuilder, DefaultRequestBuilder>();
             services.AddSingleton<IBackgroundService, HttpReportsBackgroundService>();
             services.AddSingleton<IPerformanceService,PerformanceService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IDiagnosticListener, HttpClientDiagnosticListener>();
             services.AddSingleton<IDiagnosticListener, AspNetCoreDiagnosticListener>();
             services.AddSingleton<ISegmentContext, SegmentContext>();
-            services.AddSingleton<TraceDiagnsticListenerObserver>();   
+            services.AddSingleton<TraceDiagnsticListenerObserver>();
 
-            return new HttpReportsBuilder(services, configuration).UseDirectlyReportsTransport();
+            return new HttpReportsBuilder(services, configuration);
         }
 
         public static IApplicationBuilder UseHttpReports(this IApplicationBuilder app)
         { 
             ServiceContainer.Provider = app.ApplicationServices.GetRequiredService<IServiceProvider>() ?? throw new ArgumentNullException("ServiceProvider Init Failed"); 
 
-            Activity.DefaultIdFormat = ActivityIdFormat.W3C;
-
-            app.ApplicationServices.GetService<IHttpReportsStorage>()?.InitAsync().Wait(); 
+            Activity.DefaultIdFormat = ActivityIdFormat.W3C; 
 
             var backgroundService = app.ApplicationServices.GetRequiredService<IBackgroundService>();  
             backgroundService.StartAsync(app); 
@@ -79,7 +73,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             TraceDiagnsticListenerObserver observer = app.ApplicationServices.GetRequiredService<TraceDiagnsticListenerObserver>();  
 
-            System.Diagnostics.DiagnosticListener.AllListeners.Subscribe(observer);
+            DiagnosticListener.AllListeners.Subscribe(observer);
 
             return app;
         }

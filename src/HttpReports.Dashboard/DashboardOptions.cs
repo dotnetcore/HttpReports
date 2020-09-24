@@ -1,0 +1,23 @@
+﻿using HttpReports.Core;
+using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace HttpReports.Dashboard
+{
+    public class DashboardOptions : IOptions<DashboardOptions>
+    {
+        public bool UseHome { get; set; } = true;
+        public bool AllowAnonymous { get; set; } = false;
+
+        public MailOptions Mail { get; set; } = new MailOptions();
+
+        public int ExpireDay { get; set; } = BasicConfig.ExpireDay;
+
+        public string  TablePrefix { get; set; }
+
+
+        public DashboardOptions Value => this; 
+    }  
+}

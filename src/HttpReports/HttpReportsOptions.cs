@@ -7,16 +7,14 @@ namespace HttpReports
     {  
         public string Service { get; set; } = "Default";
 
-        public string Node { get; set; }
+        public string Server { get; set; } = "localhost:80";
 
-        public bool Switch { get; set; } = true;
 
-        public bool FilterStaticFile { get; set; } = true;
+        public bool Switch { get; set; } = true; 
 
-        public string[] FilterRequest { get; set; } = new string[] { };
+        public string[] FilterRequest { get; set; } = { }; 
 
-        public string Urls { get; set; } = "http://localhost:80"; 
-       
         public HttpReportsOptions Value => this;
+
     } 
 }

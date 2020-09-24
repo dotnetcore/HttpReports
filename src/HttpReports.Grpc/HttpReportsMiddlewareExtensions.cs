@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using HttpReports;
-using HttpReports.Grpc;
-using HttpReports.RequestInfoBuilder;
+using HttpReports.Grpc; 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
