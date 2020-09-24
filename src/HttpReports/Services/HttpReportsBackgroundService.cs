@@ -16,7 +16,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HttpReports.Service
+namespace HttpReports.Services
 {
     public class HttpReportsBackgroundService : IBackgroundService
     { 
@@ -59,11 +59,11 @@ namespace HttpReports.Service
             {
                 Uri uri = new Uri(_options.Server); 
 
-                Performance p = await _performanceService.GetPerformance(uri.Host+":"+uri.Port); 
+                Performance performance = await _performanceService.GetPerformance(uri.Host + ":" + uri.Port); 
 
-                if (p != null)
+                if (performance != null)
                 {
-                    await _transport.Transport(p);
+                    await _transport.SendDataAsync(performance);
                 }
 
                 await Task.Delay(TimeSpan.FromSeconds(10), Token); 

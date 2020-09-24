@@ -8,9 +8,9 @@ namespace HttpReports.Core
 {
     public interface IHttpReportsCollector
     {
-        Task WriteRequestBag(List<RequestBag> list);
+        Task WriteDataAsync(List<RequestBag> list);
 
-        Task WritePerformance(Performance performance);
+        Task WriteDataAsync(Performance performance);
 
     }
 }

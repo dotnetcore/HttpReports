@@ -1,6 +1,7 @@
 ﻿using HttpReports.Core; 
 using HttpReports.Dashboard.Services.Quartz;
-using HttpReports.Models; 
+using HttpReports.Models;
+using HttpReports.Storage.Abstractions;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Quartz;

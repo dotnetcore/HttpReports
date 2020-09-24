@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using HttpReports.Core;
+using HttpReports.Storage.Abstractions;
 using HttpReports.Storage.PostgreSQL;
 
 using Microsoft.Extensions.DependencyInjection;

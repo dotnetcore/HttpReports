@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using HttpReports.Core;
+using HttpReports.Storage.Abstractions;
 using HttpReports.Storage.MySql;
 
 using Microsoft.Extensions.DependencyInjection;

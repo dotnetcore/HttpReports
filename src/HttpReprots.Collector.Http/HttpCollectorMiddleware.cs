@@ -73,7 +73,7 @@ namespace HttpReprots.Collector.Http
                             bags.Add(new RequestBag(item.RequestInfo as RequestInfo,item.RequestDetail as RequestDetail));
                         } 
 
-                        await _collector.WriteRequestBag(bags);
+                        await _collector.WriteDataAsync(bags);
                     }
                 }
                 catch (Exception ex)
@@ -87,7 +87,7 @@ namespace HttpReprots.Collector.Http
             {
                 var package = JsonConvert.DeserializeObject<Performance>(Body) as Performance;
 
-                await _collector.WritePerformance(package);
+                await _collector.WriteDataAsync(package);
             }  
         }  
     }

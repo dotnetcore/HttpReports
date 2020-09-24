@@ -1,5 +1,6 @@
 ﻿using HttpReports;
 using HttpReports.Core;
+using HttpReports.Storage.Abstractions;
 using HttpReports.Storage.PostgreSQL;
 using System;
 using System.Collections.Generic;
@@ -27,9 +28,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
         internal static IHttpReportsBuilder UsePostgreSQLStorageService(this IHttpReportsBuilder builder)
         { 
-            builder.Services.AddSingleton<IHttpReportsStorage, PostgreSQLStorage>(); 
+            builder.Services.AddSingleton<IHttpReportsStorage, PostgreSQLStorage>();
 
-            return builder.UseDirectlyReportsTransport();
+            return builder;
         }
 
     }

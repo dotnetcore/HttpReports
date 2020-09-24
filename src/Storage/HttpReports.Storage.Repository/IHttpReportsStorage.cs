@@ -1,18 +1,19 @@
-﻿using HttpReports.Core.Models;  
-using HttpReports.Models;
+﻿using HttpReports.Core;
+using HttpReports.Core.Models;
+using HttpReports.Core.StorageFilters;
 using HttpReports.Core.ViewModels;
+using HttpReports.Models;
 using System;
-using System.Collections.Generic; 
+using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using HttpReports.Core.StorageFilters;
 
-namespace HttpReports.Core
+namespace HttpReports.Storage.Abstractions
 {
     public interface IHttpReportsStorage
     {
         Task InitAsync();
-
 
         Task AddRequestInfoAsync(RequestBag bag);
 

@@ -2,7 +2,8 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using HttpReports.Core;
-using HttpReports.Dashboard.Models; 
+using HttpReports.Dashboard.Models;
+using HttpReports.Storage.Abstractions;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

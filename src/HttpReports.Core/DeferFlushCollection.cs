@@ -87,6 +87,7 @@ namespace HttpReports
             FlushSecond = flushSecond;
 
             _autoFlushCTS = new CancellationTokenSource();
+
             Task.Run(AutoFlushAsync, _autoFlushCTS.Token);
         }
 

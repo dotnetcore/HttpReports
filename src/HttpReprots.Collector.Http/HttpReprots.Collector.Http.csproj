@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
+    <ProjectReference Include="..\Storage\HttpReports.Storage.Repository\HttpReports.Storage.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

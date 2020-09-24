@@ -1,5 +1,6 @@
 ﻿using HttpReports.Core;
 using HttpReports.Dashboard.Implements;
+using HttpReports.Storage.Abstractions;
 using Microsoft.Extensions.Options;
 using Quartz;
 using System;

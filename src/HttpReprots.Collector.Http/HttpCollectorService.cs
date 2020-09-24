@@ -1,6 +1,7 @@
 ﻿using HttpReports;
 using HttpReports.Core;
 using HttpReports.Core.Models;
+using HttpReports.Storage.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,12 +19,12 @@ namespace HttpReprots.Collector.Http
             Storage = storage;
         }
 
-        public async Task WriteRequestBag(List<RequestBag> list)
+        public async Task WriteDataAsync(List<RequestBag> list)
         { 
             await Storage.AddRequestInfoAsync(list,new System.Threading.CancellationToken());  
         }
 
-        public async Task WritePerformance(Performance performance)
+        public async Task WriteDataAsync(Performance performance)
         {
             await Storage.AddPerformanceAsync(performance); 
         } 

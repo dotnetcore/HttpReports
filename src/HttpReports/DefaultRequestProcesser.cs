@@ -26,7 +26,7 @@ namespace HttpReports
 
             if (requestInfo != null && requestDetail != null)
             {
-                ReportsTransport.Transport(new Core.RequestBag(requestInfo,requestDetail));  
+                ReportsTransport.SendDataAsync(new Core.RequestBag(requestInfo,requestDetail));  
             }
         }
     }

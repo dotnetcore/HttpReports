@@ -137,8 +137,7 @@ namespace HttpReports
                     InvokeProcesser.Process(context, stopwatch);
                 }
             }
-        }
-
+        } 
 
         private async Task<string> GetRequestBodyAsync(HttpContext context)
         {

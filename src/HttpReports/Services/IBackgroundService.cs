@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HttpReports.Service
+namespace HttpReports.Services
 {
     public interface IBackgroundService
     { 
