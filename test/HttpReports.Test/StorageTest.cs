@@ -39,9 +39,16 @@ namespace HttpReports.Test
 
             int[] LocalPort = { 8801, 8802, 8803, 8804, 8805, 8806 };
 
+            Task.Run(()=> { Insert(); });
+            Task.Run(() => { Insert(); });  
+            Task.Run(() => { Insert(); });
+            Task.Run(() => { Insert(); });
+            Task.Run(() => { Insert(); });
+            Task.Run(() => { Insert(); });
+
             Insert();
 
-            return Task.CompletedTask;
+            return Task.CompletedTask;  
 
             void Insert()
             {
@@ -101,7 +108,7 @@ namespace HttpReports.Test
 
                     Debug.WriteLine(i * 100);
 
-                    Task.Delay(new Random().Next(1000, 5000)).Wait();
+                    //Task.Delay(new Random().Next(1000, 5000)).Wait();
 
                 }
 
