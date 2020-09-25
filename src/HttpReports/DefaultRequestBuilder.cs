@@ -7,7 +7,8 @@ using System.Text;
 using System.Web;
 using HttpReports.Core;
 using HttpReports.Core.Models;
-using Microsoft.AspNetCore.Http;  
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace HttpReports
@@ -16,9 +17,9 @@ namespace HttpReports
     {
         protected HttpReportsOptions Options;
 
-        public DefaultRequestBuilder(HttpReportsOptions options)
+        public DefaultRequestBuilder(IOptions<HttpReportsOptions> options)
         {
-            Options = options;
+            Options = options.Value;
         }
 
 

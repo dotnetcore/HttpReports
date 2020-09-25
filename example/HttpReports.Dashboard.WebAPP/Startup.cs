@@ -18,9 +18,10 @@ namespace HttpReports.Dashboard.WebAPP
     {
        
         public void ConfigureServices(IServiceCollection services) 
-        { 
-            services.AddHttpReports().UseMySqlStorage(); 
-            services.AddHttpReportsDashboard().UseMySqlStorage(); 
+        {
+            services.AddHttpReports().UseHttpTransport(); 
+
+            services.AddHttpReportsDashboard().UseSQLServerStorage(); 
 
             services.AddCors(c =>
             { 
