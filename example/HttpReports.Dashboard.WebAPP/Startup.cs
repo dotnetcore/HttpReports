@@ -15,8 +15,8 @@ using MySql.Data.MySqlClient;
 namespace HttpReports.Dashboard.WebAPP
 {
     public class Startup
-    {
-       
+    { 
+
         public void ConfigureServices(IServiceCollection services) 
         {
             services.AddHttpReports().UseHttpTransport(); 
@@ -30,6 +30,7 @@ namespace HttpReports.Dashboard.WebAPP
                     policy.WithOrigins("http://localhost:8080").AllowAnyHeader().AllowAnyMethod(); 
 
                 });
+
             }); 
 
         } 

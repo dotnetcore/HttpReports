@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 using HttpReports.Core; 
 using HttpReports.Core.Models; 
 using HttpReports.Core.StorageFilters;
-using HttpReports.Dashboard.Abstractions;
-using HttpReports.Dashboard.DTO;
+using HttpReports.Dashboard.Abstractions; 
 using HttpReports.Dashboard.Implements;
 using HttpReports.Dashboard.Models;
 using HttpReports.Dashboard.Models.ViewModels;
@@ -60,7 +59,7 @@ namespace HttpReports.Dashboard.Handles
                 }  
             } 
 
-           return Json(new HttpResultEntity(1,"ok", response));  
+           return Json(true,response);  
         }     
 
         [AllowAnonymous]
@@ -68,7 +67,7 @@ namespace HttpReports.Dashboard.Handles
         {
             var lang = await _storage.GetSysConfig(BasicConfig.Language);
 
-            return Json(new HttpResultEntity(1, "ok", lang ));
+            return Json(true,lang);
         } 
 
        
@@ -76,7 +75,7 @@ namespace HttpReports.Dashboard.Handles
         { 
             await _localizeService.SetLanguageAsync(request.Language); 
 
-            return Json(new HttpResultEntity(1, "ok", null));
+            return Json(true);
         } 
 
 
@@ -106,19 +105,19 @@ namespace HttpReports.Dashboard.Handles
            
             await Task.WhenAll(basic,top,trend,heatmap);
 
-            var result = new HttpResultEntity(1, "ok", new
-            {
+            var result = new {
+
                 Total = basic.Result.Total,
                 ServerError = basic.Result.ServerError,
                 Service = basic.Result.Service,
                 Instance = basic.Result.Instance,
                 Top = top.Result,
                 Trend = trend.Result,
-                HeatMap = heatmap.Result
+                HeatMap = heatmap.Result 
 
-            }); 
+            };  
 
-            return Json(result);
+            return Json(true,result);
              
         }
 
@@ -146,7 +145,7 @@ namespace HttpReports.Dashboard.Handles
 
             var result = await _storage.GetSearchRequestInfoAsync(filter);
 
-            return Json(result); 
+            return Json(true,result); 
         } 
          
 
@@ -174,16 +173,16 @@ namespace HttpReports.Dashboard.Handles
 
             await Task.WhenAll(endpoint, instance, app);
 
-            var result = new HttpResultEntity(1, "ok", new
+            var result = new
             {
                 endpoint = endpoint.Result,
                 instance = instance.Result,
                 range = range,
-                app = app.Result
+                app = app.Result 
 
-            });
+            };
 
-            return Json(result); 
+            return Json(true,result); 
 
         }
 
@@ -205,7 +204,7 @@ namespace HttpReports.Dashboard.Handles
             var Edges = await _storage.GetTopologyData(filter);
 
             List<string> Nodes = Edges.Select(x => x.Key).Concat(Edges.Select(x => x.StringValue)).Distinct().ToList(); 
-            return Json(new { Nodes , Edges}); 
+            return Json(true, new { Nodes , Edges}); 
 
         }
 
@@ -239,7 +238,7 @@ namespace HttpReports.Dashboard.Handles
         {
             var model = await _storage.GetMonitorJob(req.Id);
 
-            return Json(new HttpResultEntity(1, "ok", model));
+            return Json(true,model);
         }
 
 
@@ -247,7 +246,7 @@ namespace HttpReports.Dashboard.Handles
         { 
             var list = await _storage.GetMonitorJobs(); 
 
-            return Json(new HttpResultEntity(1, "ok", list));
+            return Json(true,list);
         } 
 
 
@@ -266,7 +265,7 @@ namespace HttpReports.Dashboard.Handles
 
             await _scheduleService.UpdateMonitorJobAsync();
 
-            return Json(new HttpResultEntity(1, "ok", result));
+            return Json(true,result);
         } 
 
 
@@ -276,7 +275,7 @@ namespace HttpReports.Dashboard.Handles
 
             await _scheduleService.UpdateMonitorJobAsync();
 
-            return Json(new HttpResultEntity(1, "ok", null));
+            return Json(true);
         }
 
         public async Task<string> ChangeJobState(ByIdRequest req)
@@ -289,7 +288,7 @@ namespace HttpReports.Dashboard.Handles
 
             await _scheduleService.UpdateMonitorJobAsync();
 
-            return Json(new HttpResultEntity(1, "ok", null));
+            return Json(true);
         } 
 
 
@@ -299,11 +298,11 @@ namespace HttpReports.Dashboard.Handles
             var model = await _storage.CheckLogin(user.UserName.Trim(), user.Password.Trim().MD5());
 
             if (model == null)
-                return Json(new HttpResultEntity(-1, _lang.Login_UserOrPassError, null));
+                return Json(false, _lang.Login_UserOrPassError, null);
 
             var token = _authService.BuildToken(); 
 
-            return Json(new HttpResultEntity(1, _lang.Login_Success,token));
+            return Json(true, _lang.Login_Success, token);
         }  
 
 
@@ -313,17 +312,17 @@ namespace HttpReports.Dashboard.Handles
 
             if (user.Password != request.OldPwd.MD5())
             {
-                return Json(new HttpResultEntity(-1, _lang.User_OldPasswordError, null));
+                return Json(false, _lang.User_OldPasswordError, null);
             }
 
             if (request.NewUserName.Length <= 2 || request.NewUserName.Length > 20)
             {
-                return Json(new HttpResultEntity(-1, _lang.User_AccountFormatError, null));
+                return Json(false, _lang.User_AccountFormatError,null);
             }
 
             if (request.OldPwd.Length <= 5 || request.OldPwd.Length > 20)
             {
-                return Json(new HttpResultEntity(-1, _lang.User_NewPassFormatError, null));
+                return Json(false, _lang.User_NewPassFormatError,null);
             } 
 
             await _storage.UpdateLoginUser(new SysUser
@@ -331,9 +330,9 @@ namespace HttpReports.Dashboard.Handles
                 Id = user.Id,
                 UserName = request.NewUserName,
                 Password = request.NewPwd.MD5()
-            });
+            }); 
 
-            return Json(new HttpResultEntity(1, _lang.UpdateSuccess, null));
+            return Json(false, _lang.UpdateSuccess, null);
         }
 
         public async Task<string> GetTraceList(ByIdRequest req)
@@ -342,7 +341,7 @@ namespace HttpReports.Dashboard.Handles
 
             var tree = await GetRequestInfoTrace(new ByIdRequest { Id = parent.Id });
 
-            return Json(new HttpResultEntity(1, "ok", tree ));
+            return Json(true,tree);
         }
 
         public async Task<string> GetMonitorAlarms(QueryRequest request)
@@ -354,7 +353,7 @@ namespace HttpReports.Dashboard.Handles
             
             });
 
-            return Json(new HttpResultEntity(1, "ok", list)); 
+            return Json(true,list); 
 
         }
 
@@ -362,12 +361,12 @@ namespace HttpReports.Dashboard.Handles
         {
             var (requestInfo, requestDetail) = await _storage.GetRequestInfoDetail(req.Id);
 
-            return Json(new HttpResultEntity(1, "ok", new
+            return Json(true, new
             { 
                 Info = requestInfo,
                 Detail = requestDetail 
 
-            }));
+            });
         } 
       
 
