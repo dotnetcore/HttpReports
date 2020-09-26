@@ -48,8 +48,7 @@ namespace HttpReports.Storage.Abstractions
             try
             {
                 await Task.Run(async () =>
-                {
-
+                { 
                     freeSql.CodeFirst.SyncStructure<DBRequestInfo>();
                     freeSql.CodeFirst.SyncStructure<DBRequestDetail>();
                     freeSql.CodeFirst.SyncStructure<DBPerformance>();
@@ -268,6 +267,15 @@ namespace HttpReports.Storage.Abstractions
 
             List<List<TopServiceResponse>> result = new List<List<TopServiceResponse>>();
 
+
+            var c1 = freeSql.Select<RequestInfo>().Where(expression).GroupBy(exp).
+                OrderByDescending(x => x.Count()).Limit(filter.Count).ToSql(x => new TopServiceResponse
+                {
+                    Key = x.Key,
+                    Value = x.Count()
+                });
+
+
             var GroupTotal = await freeSql.Select<RequestInfo>().Where(expression).GroupBy(exp).
                 OrderByDescending(x => x.Count()).Limit(filter.Count).ToListAsync(x => new TopServiceResponse
                 {
@@ -275,11 +283,25 @@ namespace HttpReports.Storage.Abstractions
                     Value = x.Count()
                 });
 
-            var GroupErrorTotal = await freeSql.Select<RequestInfo>().Where(expression).GroupBy(exp).
-                OrderByDescending(x => x.Avg(x.Value.Milliseconds)).Limit(filter.Count).ToListAsync(x => new TopServiceResponse
+            var c2 = freeSql.Select<RequestInfo>().Where(expression).GroupBy(exp).
+                OrderByDescending(x => x.Avg(x.Value.Milliseconds * 1.00m)).Limit(filter.Count).ToSql(x => new TopServiceResponse
                 {
                     Key = x.Key,
-                    Value = Convert.ToInt32(x.Avg(x.Value.Milliseconds))
+                    Value = Convert.ToInt32(x.Avg(x.Value.Milliseconds * 1.00m ))
+                });
+
+            var GroupErrorTotal = await freeSql.Select<RequestInfo>().Where(expression).GroupBy(exp).
+                OrderByDescending(x => x.Avg(x.Value.Milliseconds * 1.00m)).Limit(filter.Count).ToListAsync(x => new TopServiceResponse
+                {
+                    Key = x.Key,
+                    Value =  Convert.ToInt32( x.Avg(x.Value.Milliseconds * 1.00m))
+                });
+
+            var c3 = freeSql.Select<RequestInfo>().Where(expression).Where(x => x.StatusCode == 500).GroupBy(exp)
+                .OrderByDescending(x => x.Count()).Limit(filter.Count).ToSql(x => new TopServiceResponse
+                {
+                    Key = x.Key,
+                    Value = x.Count()
                 });
 
             var GroupAvg = await freeSql.Select<RequestInfo>().Where(expression).Where(x => x.StatusCode == 500).GroupBy(exp)
@@ -326,9 +348,12 @@ namespace HttpReports.Storage.Abstractions
 
             var expression = GetServiceExpression(filter);
 
-            result.Total = (await freeSql.Select<RequestInfo>().Where(expression).CountAsync()).ToInt();
+            result.Total = (await freeSql.Select<RequestInfo>().Where(expression).CountAsync()).ToInt();  
             result.ServerError = (await freeSql.Select<RequestInfo>().Where(expression).Where(x => x.StatusCode == 500).CountAsync()).ToInt();
             result.Service = (await freeSql.Select<RequestInfo>().Where(expression).GroupBy(x => x.Service).CountAsync()).ToInt();
+
+            var c4 = freeSql.Select<RequestInfo>().Where(expression).GroupBy(x => x.Instance).ToSql(x => x.Count());
+
             result.Instance = (await freeSql.Select<RequestInfo>().Where(expression).GroupBy(x => x.Instance).CountAsync()).ToInt();
 
             return result;
@@ -422,6 +447,20 @@ namespace HttpReports.Storage.Abstractions
 
         public async Task<List<ServiceInstanceInfo>> GetServiceInstance(DateTime startTime)
         {
+            var sql = freeSql.Select<RequestInfo>().Where(x => x.CreateTime >= startTime).GroupBy(x => new
+            {
+                x.Service,
+                x.Instance
+
+            }).OrderBy(x => x.Key.Service).OrderBy(x => x.Key.Instance).ToSql(x => new ServiceInstanceInfo
+            {
+
+                Service = x.Key.Service,
+                Instance = x.Key.Instance
+
+            }); 
+
+
             return await freeSql.Select<RequestInfo>().Where(x => x.CreateTime >= startTime).GroupBy(x => new
             {
                 x.Service,

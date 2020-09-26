@@ -8,7 +8,7 @@ namespace HttpReports.Core.ViewModels
     { 
         public string Key { get; set; }
 
-        public int Value { get; set; }
+        public int Value { get; set; } 
 
     }
 }

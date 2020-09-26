@@ -11,7 +11,7 @@ namespace HttpReports.Test
         [TestMethod] 
         public void EmailTest()
         {
-            
+            Console.WriteLine("222");
         } 
 
     }

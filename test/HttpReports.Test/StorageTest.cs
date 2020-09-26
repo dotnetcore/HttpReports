@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HttpReports.Core;
 using HttpReports.Core.Models;
+using HttpReports.Core.StorageFilters;
 using HttpReports.Storage.Abstractions;
 using Microsoft.VisualBasic.CompilerServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -16,15 +17,27 @@ namespace HttpReports.Test
 {
     [TestClass]
     public abstract class StorageTest<T> where T : IHttpReportsStorage
-    {
+    {  
         public abstract T Storage { get; }
 
         protected virtual TimeSpan? DeferTime { get; set; } = null;
 
+        public BasicFilter filter = new BasicFilter { 
+
+            Service = "",
+            Instance = "",
+            StartTime = DateTime.Now.AddDays(-1).AddHours(-4),
+            EndTime = DateTime.Now,
+            Count = 6
+
+        };
+
+
+        #region basic
         [TestInitialize]
         public abstract Task Init();
 
-        [TestMethod]
+        [TestMethod] 
         public Task InsertTestAsync()
         {
             var startTime = DateTime.Now.AddSeconds(-1);
@@ -40,12 +53,12 @@ namespace HttpReports.Test
 
             int[] LocalPort = { 8801, 8802, 8803, 8804, 8805, 8806 };
 
-            //Task.Run(()=> Insert());
-            //Task.Run(() => Insert());
-            //Task.Run(() => Insert());
-            //Task.Run(() => Insert());
-            //Task.Run(() => Insert());
-            //Task.Run(() => Insert());
+            Task.Run(() => Insert());
+            Task.Run(() => Insert());
+            Task.Run(() => Insert());
+            Task.Run(() => Insert());
+            Task.Run(() => Insert());
+            Task.Run(() => Insert());
 
             Insert();
 
@@ -67,7 +80,7 @@ namespace HttpReports.Test
 
                         requestBags.Add(new Core.RequestBag(new RequestInfo
                         {
-                            Id = MD5_16(Guid.NewGuid().ToString()),
+                            Id = Utils.MD5_16(Guid.NewGuid().ToString()),
                             ParentId = "",
                             Service = _Service,
                             ParentService = _ParentService,
@@ -109,7 +122,7 @@ namespace HttpReports.Test
 
                     Debug.WriteLine(i * 100);
 
-                    Task.Delay(new Random().Next(1000, 5000)).Wait();
+                    //Task.Delay(new Random().Next(1000, 5000)).Wait();
 
                 }
 
@@ -118,12 +131,38 @@ namespace HttpReports.Test
         }
 
 
+
+        public List<string> GetTimeRange(DateTime start, DateTime end)
+        {
+            List<string> Time = new List<string>();
+
+            if ((end - start).TotalHours <= 1)
+            {
+                while (start <= end)
+                {
+                    Time.Add(start.ToString("HH:mm"));
+                    start = start.AddMinutes(1);
+                }
+
+            }
+            else
+            {
+                while (start <= end)
+                {
+                    Time.Add(start.ToString("dd-HH"));
+                    start = start.AddHours(1);
+                }
+            }
+            return Time;
+        }
+
+
         [TestMethod]
         public void TraceTest()
         {
             while (true)
             {
-                int times = new Random().Next(1,10);
+                int times = new Random().Next(1, 10);
 
                 List<RequestBag> bags = new List<RequestBag>();
 
@@ -155,10 +194,10 @@ namespace HttpReports.Test
                 var current = DateTime.Now;
 
                 foreach (var item in bags)
-                { 
-                    cost = cost + new Random().Next(100, 3000);  
+                {
+                    cost = cost + new Random().Next(100, 3000);
                     item.RequestInfo.Milliseconds = cost;
-                    item.RequestInfo.CreateTime = current = current.AddMilliseconds(-cost);  
+                    item.RequestInfo.CreateTime = current = current.AddMilliseconds(-cost);
                 }
 
 
@@ -166,7 +205,7 @@ namespace HttpReports.Test
 
                 Task.Delay(new Random().Next(5000, 10000)).Wait();
 
-            } 
+            }
 
         }
 
@@ -187,12 +226,12 @@ namespace HttpReports.Test
 
             if (_ParentService == _Service) _ParentService = string.Empty;
 
-            var route = Services[new Random().Next(0, Services.Length - 1)] + "/" + Route[new Random().Next(0, Route.Length - 1)]; 
+            var route = Services[new Random().Next(0, Services.Length - 1)] + "/" + Route[new Random().Next(0, Route.Length - 1)];
 
             RequestInfo info = new RequestInfo
-            { 
-                Id = MD5_16(Guid.NewGuid().ToString()),
-                ParentId = MD5_16(Guid.NewGuid().ToString()),
+            {
+                Id = Utils.MD5_16(Guid.NewGuid().ToString()),
+                ParentId = Utils.MD5_16(Guid.NewGuid().ToString()),
                 Service = _Service,
                 ParentService = _ParentService,
                 Route = route,
@@ -204,19 +243,145 @@ namespace HttpReports.Test
                 StatusCode = new Random().Next(1, 10) > 3 ? 200 : 500,
                 RemoteIP = "192.168.1.1",
                 Instance = LocalIPs[new Random().Next(0, LocalIPs.Length - 1)] + ":" + LocalPort[new Random().Next(0, LocalPort.Length - 1)],
-                CreateTime = DateTime.Now 
+                CreateTime = DateTime.Now
             };
 
-            return info; 
+            return info;
+
+        }
+
+        #endregion
+
+
+        [TestMethod]
+        public async Task GetServiceInstance()
+        {
+            var list = await Storage.GetServiceInstance(DateTime.Now.AddDays(-1));
+
+            Assert.IsNotNull(list);
+
+        }
+
+
+        [TestMethod]
+        public async Task GetIndexBasicDataAsync()
+        {
+            var basic = await Storage.GetIndexBasicDataAsync(filter);
+
+            Assert.IsNotNull(basic);
+
+        }
+
+
+        [TestMethod]
+        public async Task GetGroupDataByService()
+        { 
+            var top = await Storage.GetGroupData(filter, GroupType.Service);
+
+            Assert.IsNotNull(top); 
+        }
+
+
+        [TestMethod]
+        public async Task GetGroupDataByInstance()
+        {
+            var top = await Storage.GetGroupData(filter, GroupType.Instance);
+
+            Assert.IsNotNull(top);
+        }
+
+
+        [TestMethod]
+        public async Task GetAppStatus()
+        { 
+            var range = GetTimeRange(filter.StartTime, filter.EndTime);
+
+            var model = await Storage.GetAppStatus(filter,range);
+
+            Assert.IsNotNull(model);
+
+        }
+
+
+        [TestMethod]
+        public async Task GetGroupDataByRoute()
+        {
+            var top = await Storage.GetGroupData(filter, GroupType.Route);
+
+            Assert.IsNotNull(top);
+        }
+
+        [TestMethod]
+        public async Task GetTopologyData()
+        {
+            var model = await Storage.GetTopologyData(filter);
+
+            Assert.IsNotNull(model);
 
         } 
 
-         
-        private static string MD5_16(string source)
-        {
-            MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
-            string val = BitConverter.ToString(md5.ComputeHash(UTF8Encoding.Default.GetBytes(source)), 4, 8).Replace("-", "").ToLower();
-            return val;
+
+        [TestMethod]
+        public async Task GetServiceTrend()
+        { 
+            var range = GetTimeRange(filter.StartTime, filter.EndTime);
+
+            var trend = await Storage.GetServiceTrend(filter, range);
+
+            Assert.IsNotNull(trend);
         }
+
+
+        [TestMethod]
+        public async Task GetServiceHeatMap()
+        { 
+            var range = GetTimeRange(filter.StartTime, filter.EndTime); 
+
+            var heatmap = await Storage.GetServiceHeatMap(filter, range);
+
+            Assert.IsNotNull(heatmap); 
+
+        }
+
+        [TestMethod]
+        public async Task GetDetailData()
+        { 
+            QueryDetailFilter dataFilter = new QueryDetailFilter
+            {
+                Service = filter.Service,
+                Instance = filter.Instance,
+                StartTime = filter.StartTime,
+                EndTime = filter.EndTime,
+                RequestId = "",
+                Route = "",
+                StatusCode = 0,
+                RequestBody = "",
+                ResponseBody = "",
+                PageNumber = 1,
+                PageSize = 20
+
+            };
+
+            var result = await Storage.GetSearchRequestInfoAsync(dataFilter);
+
+            Assert.IsNotNull(result); 
+
+        }
+
+
+        [TestMethod]
+        public async Task GetRequestInfoDetail()
+        {
+            var ids =  new []{ "0035669a6f4a5660", "00367d3cdcf4f0df", "00375c122fe2d5b4" };
+
+            var id = ids[new Random().Next(0, ids.Length - 1)]; 
+
+            var result = await Storage.GetRequestInfo(id);
+
+            Assert.IsNotNull(result);
+
+        }
+
+
     }
 }

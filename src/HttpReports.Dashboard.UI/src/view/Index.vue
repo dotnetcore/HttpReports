@@ -271,6 +271,8 @@
               @change="timeChange"
             ></el-date-picker>
 
+            <el-button @click="manualReload" icon="el-icon-search" size="small" type="primary">{{ $t('Query') }}</el-button>
+
             <el-divider direction="vertical"></el-divider>
 
             <el-switch

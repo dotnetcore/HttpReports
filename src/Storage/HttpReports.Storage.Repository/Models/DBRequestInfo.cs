@@ -7,12 +7,19 @@ using System.Text;
 namespace HttpReports.Storage.Abstractions.Models
 { 
     [Table(Name = "RequestInfo" )] 
+
     [Index("idx_info_id", "Id", true)]
-    [Index("idx_info_createtime", "CreateTime")]
-    //[Index("idx_info_service", "Service")]
-    //[Index("idx_info_service_parentservice", "Service,ParentService")]
-    //[Index("idx_info_instance", "Instance")]
-    //[Index("idx_info_service_instance", "Service,Instance")] 
+    [Index("idx_info_service", "Service")] 
+    [Index("idx_info_instance", "Instance")]
+    [Index("idx_info_milliseconds", "Milliseconds")]
+    [Index("idx_info_statuscode", "StatusCode")] 
+    [Index("idx_info_createtime", "CreateTime")]     
+
+    [Index("idx_info_service_instance", "Service,Instance")] 
+    [Index("idx_info_service_parentservice", "Service,ParentService")]
+    [Index("idx_info_service_instance_milliseconds_time", "Service,Instance,Milliseconds,CreateTime")]
+    [Index("idx_info_service_instance_statuscode_time", "Service,Instance,StatusCode,CreateTime")]  
+
     public class DBRequestInfo
     { 
         [Column(IsPrimary = true,StringLength = 50)]

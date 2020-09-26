@@ -57,16 +57,16 @@ export default {
       var source = {
         nodes: [],
         edges: [],
-      };
+      }; 
 
-      response.body.nodes.forEach((x) => {
+      response.body.data.nodes.forEach((x) => {
         source.nodes.push({
           id: x,
           label: x,
         });
       });
 
-      response.body.edges.forEach((x) => {
+      response.body.data.edges.forEach((x) => {
         source.edges.push({
           source: x.key,
           target: x.stringValue,

@@ -311,8 +311,7 @@ export default {
   },
   methods: {
     onSubmit() {},
-    handleNodeClick(data) {
-      console.log(data);
+    handleNodeClick(data) { 
     },
     format(percentage) {  
        return `${percentage}%`;
@@ -423,7 +422,7 @@ export default {
    }, 
     async load_trace(id) {
 
-      var response = await Vue.http.post("GetTraceList", { id });
+      var response = await Vue.http.post("GetTraceList", { id }); 
 
       var tree = response.body.data; 
 
@@ -449,9 +448,9 @@ export default {
 
       this.requestData = [];
 
-      this.requestPage.total = response.body.total;
+      this.requestPage.total = response.body.data.total; 
 
-      response.body.list.forEach((x) => {
+      response.body.data.list.forEach((x) => {
         x.createTime = this.cutTime(x.createTime);
         this.requestData.push(x);
       });
