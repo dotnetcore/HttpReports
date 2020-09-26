@@ -24,7 +24,7 @@ namespace HttpReports.Test
 
             services.Configure<SQLServerStorageOptions>(o =>
             {
-                o.ConnectionString = "Max Pool Size = 512;server=localhost;uid=sa;pwd=123456;database=HttpReports;";
+                o.ConnectionString = "Max Pool Size = 512;server=localhost;uid=sa;pwd=123456;database=HttpReports;Connection Timeout=900;";
                 o.DeferSecond = 5;
                 o.DeferThreshold = 5;
             });
