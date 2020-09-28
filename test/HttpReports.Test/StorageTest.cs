@@ -26,8 +26,8 @@ namespace HttpReports.Test
 
             Service = "",
             Instance = "",
-            StartTime = DateTime.Now.AddDays(-1).AddHours(-4),
-            EndTime = DateTime.Now,
+            StartTime = DateTime.Now.AddHours(-10),
+            EndTime = DateTime.Now.AddHours(10),
             Count = 6
 
         };
@@ -353,7 +353,7 @@ namespace HttpReports.Test
                 StartTime = filter.StartTime,
                 EndTime = filter.EndTime,
                 RequestId = "",
-                Route = "",
+                Route = "Student/Search",
                 StatusCode = 0,
                 RequestBody = "",
                 ResponseBody = "",

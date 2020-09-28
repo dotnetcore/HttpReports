@@ -13,11 +13,14 @@ namespace HttpReports.Storage.Abstractions.Models
     [Index("idx_info_instance", "Instance")]
     [Index("idx_info_milliseconds", "Milliseconds")]
     [Index("idx_info_statuscode", "StatusCode")] 
-    [Index("idx_info_createtime", "CreateTime")]     
+    [Index("idx_info_createtime", "CreateTime")]
+    [Index("idx_info_route", "Route")]
 
-    [Index("idx_info_service_instance", "Service,Instance")] 
-    [Index("idx_info_service_parentservice", "Service,ParentService")]
-    [Index("idx_info_service_instance_milliseconds_time", "Service,Instance,Milliseconds,CreateTime")]
+    [Index("idx_info_service_instance", "Service,Instance")]
+    [Index("idx_info_instance_time", "Instance,CreateTime")]
+    [Index("idx_info_id_route_statuscode_time", "Id,Route,StatusCode,CreateTime")]
+    [Index("idx_info_service_parentservice_time", "Service,ParentService,CreateTime")]
+    [Index("idx_info_service_instance_milliseconds_time", "Service,Instance,Milliseconds,CreateTime")]  
     [Index("idx_info_service_instance_statuscode_time", "Service,Instance,StatusCode,CreateTime")]  
 
     public class DBRequestInfo

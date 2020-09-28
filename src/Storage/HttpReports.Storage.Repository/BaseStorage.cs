@@ -126,6 +126,20 @@ namespace HttpReports.Storage.Abstractions
                .ToListAsync(x => x.Id);
             }
 
+
+            var sql = freeSql.Select<RequestInfo>()
+                .Where(x => x.CreateTime >= filter.StartTime && x.CreateTime <= filter.EndTime)
+                .WhereIf(!filter.Service.IsEmpty(), x => x.Service == filter.Service)
+                .WhereIf(!filter.Instance.IsEmpty(), x => x.Instance == filter.Instance)
+                .WhereIf(!filter.RequestId.IsEmpty(), x => x.Id == filter.RequestId)
+                .WhereIf(filter.StatusCode > 0, x => x.StatusCode == filter.StatusCode)
+                .WhereIf(!filter.Route.IsEmpty(), x => x.Route == filter.Route)
+                .WhereIf(detailId != null && detailId.Any(), x => detailId.Contains(x.Id))
+                .Count(out var total2)
+                .Page(filter.PageNumber, filter.PageSize)
+                .OrderByDescending(x => x.CreateTime)
+                .ToSql();
+
             var list = await freeSql.Select<RequestInfo>()
                 .Where(x => x.CreateTime >= filter.StartTime && x.CreateTime <= filter.EndTime)
                 .WhereIf(!filter.Service.IsEmpty(), x => x.Service == filter.Service)
@@ -322,6 +336,23 @@ namespace HttpReports.Storage.Abstractions
 
         public async Task<List<BaseNode>> GetTopologyData(BasicFilter filter)
         {
+            var sql = freeSql.Select<RequestInfo>()
+                .Where(x => x.CreateTime >= filter.StartTime && x.CreateTime < filter.EndTime)
+                .Where(x => !string.IsNullOrEmpty(x.ParentService))
+                .Where(x => x.Service != x.ParentService)
+                .GroupBy(x => new
+                {
+                    x.Service,
+                    x.ParentService
+
+                }).ToSql(x => new BaseNode
+                {
+
+                    Key = x.Key.Service,
+                    StringValue = x.Key.ParentService
+
+                }); 
+
             var result = await freeSql.Select<RequestInfo>()
                 .Where(x => x.CreateTime >= filter.StartTime && x.CreateTime < filter.EndTime)
                 .Where(x => !string.IsNullOrEmpty(x.ParentService))
@@ -396,6 +427,32 @@ namespace HttpReports.Storage.Abstractions
             var expression = GetServiceExpression(filter);
 
             string[] span = { "0-200", "200-400", "400-600", "600-800", "800-1000", "1000-1200", "1200-1400", "1400-1600", "1600+" };
+
+            var sql = freeSql.Select<RequestInfo>().Where(expression)
+
+                .GroupBy(x => new
+                {
+                    KeyField = SqlExt.Case()
+                    .When(0 < x.Milliseconds && x.Milliseconds <= 200, "0-200")
+                    .When(200 < x.Milliseconds && x.Milliseconds <= 400, "200-400")
+                    .When(400 < x.Milliseconds && x.Milliseconds <= 600, "400-600")
+                    .When(600 < x.Milliseconds && x.Milliseconds <= 800, "600-800")
+                    .When(800 < x.Milliseconds && x.Milliseconds <= 1000, "800-1000")
+                    .When(1000 < x.Milliseconds && x.Milliseconds <= 1200, "1000-1200")
+                    .When(1200 < x.Milliseconds && x.Milliseconds <= 1400, "1200-1400")
+                    .When(1400 < x.Milliseconds && x.Milliseconds <= 1600, "1400-1600")
+                    .Else("1600+").End(),
+
+                    TimeField = x.CreateTime.ToString(format)
+
+                }).ToSql(x => new BaseTimeModel
+                {
+                    KeyField = x.Key.KeyField,
+                    TimeField = x.Key.TimeField,
+                    ValueField = x.Count()
+
+                }); 
+
 
             var list = await freeSql.Select<RequestInfo>().Where(expression)
 
