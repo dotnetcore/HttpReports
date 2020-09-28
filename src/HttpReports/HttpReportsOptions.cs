@@ -7,12 +7,15 @@ namespace HttpReports
     {  
         public string Service { get; set; } = "Default";
 
-        public string Server { get; set; } = "localhost:80";
+        public string Server { get; set; } = "localhost:80"; 
 
+        public bool Switch { get; set; } = true;
 
-        public bool Switch { get; set; } = true; 
+        public int MaxBytes { get; set; } = 20000;
 
-        public string[] FilterRequest { get; set; } = { }; 
+        public bool PayloadSwitch { get; set; } = true;
+
+        public string[] RequestFilter { get; set; } = { }; 
 
         public HttpReportsOptions Value => this;
 

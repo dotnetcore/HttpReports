@@ -137,17 +137,17 @@ namespace HttpReports
                     InvokeProcesser.Process(context, stopwatch);
                 }
             }
-        } 
+        }
 
         private async Task<string> GetRequestBodyAsync(HttpContext context)
         {
             try
-            { 
-                if (context.Request.ContentType.IsEmpty() || !context.Request.ContentType.Contains("application/json"))
+            {
+                if (context.Request.ContentType.IsEmpty() || !context.Request.ContentType.Contains("application/json") || !Options.PayloadSwitch || context.Request.Body.Length > Options.MaxBytes)
                 {
                     return string.Empty;
-                } 
-
+                }
+ 
                 string result = string.Empty;
 
                 context.Request.EnableBuffering();
@@ -170,8 +170,8 @@ namespace HttpReports
         private async Task<string> GetResponseBodyAsync(HttpContext context)
         {
             try
-            {  
-                if (context.Response.ContentType.IsEmpty() || !context.Response.ContentType.Contains("application/json"))
+            {
+                if (context.Response.ContentType.IsEmpty() || !context.Response.ContentType.Contains("application/json") || !Options.PayloadSwitch || context.Response.Body.Length > Options.MaxBytes)
                 {
                     context.Response.Body.Seek(0, SeekOrigin.Begin);
                     return string.Empty;
@@ -252,7 +252,7 @@ namespace HttpReports
 
         private bool FilterRequest(HttpContext context)
         {
-            if (Options.FilterRequest == null || Options.FilterRequest.Count() == 0)
+            if (Options.RequestFilter == null || Options.RequestFilter.Count() == 0)
             {
                 return false;
             } 
@@ -271,7 +271,7 @@ namespace HttpReports
             {
                 bool result = false;
 
-                foreach (var item in Options.FilterRequest)
+                foreach (var item in Options.RequestFilter)
                 {
                     var rule = item.ToLowerInvariant();
 

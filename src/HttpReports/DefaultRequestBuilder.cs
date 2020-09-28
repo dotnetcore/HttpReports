@@ -78,14 +78,14 @@ namespace HttpReports
 
                 Dictionary<string, string> cookies = context.Request.Cookies.ToList().ToDictionary(x => x.Key, x => x.Value);
 
-                if (cookies != null && cookies.Count > 0)
-                {
+                if (Options.PayloadSwitch && cookies != null && cookies.Count > 0)
+                { 
                     model.Cookie = JsonConvert.SerializeObject(cookies);
                 }
 
                 Dictionary<string, string> headers = context.Request.Headers.ToList().ToDictionary(x => x.Key, x => x.Value.ToString());
 
-                if (headers != null && headers.Count > 0)
+                if (Options.PayloadSwitch && headers != null && headers.Count > 0)
                 {
                     model.Header = HttpUtility.HtmlDecode(JsonConvert.SerializeObject(headers));
                 }
