@@ -21,7 +21,7 @@ namespace HttpReports.Dashboard.WebAPP
         {
             services.AddHttpReports().UseHttpTransport(); 
 
-            services.AddHttpReportsDashboard().UseSQLServerStorage(); 
+            //services.AddHttpReportsDashboard().UseSQLServerStorage(); 
 
             services.AddCors(c =>
             { 
@@ -39,8 +39,8 @@ namespace HttpReports.Dashboard.WebAPP
         {
             app.UseCors("Policy"); 
 
-            //app.UseHttpReports();
-            app.UseHttpReportsDashboard(); 
+            app.UseHttpReports();
+            //app.UseHttpReportsDashboard(); 
 
             MapRoute(app);
         }
