@@ -1,0 +1,3 @@
+<Playlist Version="1.0">
+  <Add Test="HttpReports.Test.MysqlStorageTest.GetAppStatus" />
+</Playlist>

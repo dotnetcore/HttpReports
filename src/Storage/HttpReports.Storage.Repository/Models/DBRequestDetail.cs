@@ -7,7 +7,7 @@ namespace HttpReports.Storage.Abstractions.Models
 {
 
     [Table(Name = "RequestDetail")]
-    [Index("idx_detail_id", "Id", true)]
+    [Index("idx_detail_id", "Id", true)] 
     public class DBRequestDetail
     {
         [Column(IsPrimary = true, StringLength = 50)]

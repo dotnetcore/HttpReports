@@ -78,7 +78,7 @@ namespace HttpReports.Test
 
                         if (_ParentService == _Service) _ParentService = string.Empty;
 
-                        requestBags.Add(new Core.RequestBag(new RequestInfo
+                        var info = new RequestInfo
                         {
                             Id = Utils.MD5_16(Guid.NewGuid().ToString()),
                             ParentId = "",
@@ -90,31 +90,34 @@ namespace HttpReports.Test
                             Method = "POST",
                             LoginUser = LoginUsers[new Random().Next(0, LoginUsers.Length - 1)],
 
-                            Milliseconds = _Service switch {  
+                            Milliseconds = _Service switch
+                            {
 
-                                "User" => new Random().Next(1400,1600),
+                                "User" => new Random().Next(1400, 1600),
                                 "Order" => new Random().Next(1200, 1600),
                                 "Weixin" => new Random().Next(600, 1600),
-                                "Log" => new Random().Next(100, 500), 
+                                "Log" => new Random().Next(100, 500),
                                 "Payment" => new Random().Next(100, 800),
                                 _ => new Random().Next(1, 1600)
 
                             },
-                            StatusCode = _Service switch {
-
+                            StatusCode = _Service switch
+                            { 
                                 "User" => new Random().Next(1, 10) > 1 ? 200 : 500,
                                 "Order" => new Random().Next(1, 10) > 3 ? 200 : 500,
                                 "Weixin" => new Random().Next(1, 10) > 7 ? 200 : 500,
                                 "Log" => new Random().Next(1, 10) > 6 ? 200 : 500,
                                 "Payment" => new Random().Next(1, 10) > 4 ? 200 : 500,
-                                _ => new Random().Next(1, 10) > 5 ? 200 : 500 
+                                _ => new Random().Next(1, 10) > 5 ? 200 : 500
 
-                            }, 
+                            },
                             RemoteIP = "192.168.1.1",
                             Instance = LocalIPs[new Random().Next(0, LocalIPs.Length - 1)] + ":" + LocalPort[new Random().Next(0, LocalPort.Length - 1)],
                             CreateTime = DateTime.Now
 
-                        }, null));
+                        };   
+
+                        requestBags.Add(new Core.RequestBag(info,null));
 
                     }
 

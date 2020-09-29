@@ -11,9 +11,15 @@ namespace HttpReports
 
         public bool Switch { get; set; } = true;
 
-        public int MaxBytes { get; set; } = 20000;
+        public int MaxBytes { get; set; } = 20000; 
 
-        public bool PayloadSwitch { get; set; } = true;
+        public bool WithRequest { get; set; } = false;
+
+        public bool WithResponse { get; set; } = false;
+
+        public bool WithCookie { get; set; } = false;
+
+        public bool WithHeader { get; set; } = false; 
 
         public string[] RequestFilter { get; set; } = { }; 
 
