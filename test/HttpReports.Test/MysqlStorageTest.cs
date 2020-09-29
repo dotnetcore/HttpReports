@@ -34,8 +34,23 @@ namespace HttpReports.Test
 
             _storage = services.BuildServiceProvider().GetRequiredService<MySqlStorage>();
             await _storage.InitAsync();
-        } 
-        
+        }
+
+
+
+        [TestMethod]
+        public new async Task GetRequestInfoDetail()
+        {
+            var ids = new[] { "0000329875d9c209", "000301f44e4e9524", "0005735c2c6240d5" };
+
+            var id = ids[new Random().Next(0, ids.Length - 1)];
+
+            var result = await Storage.GetRequestInfo(id);
+
+            Assert.IsNotNull(result);
+
+        }
+
 
     }
 }

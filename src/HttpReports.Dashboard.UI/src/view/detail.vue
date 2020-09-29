@@ -85,11 +85,11 @@ background-color: #dadada;
               <el-input size="mini" v-model="requestQuery.statusCode"></el-input>
             </el-form-item>
 
-            <el-form-item :label="this.$store.state.lang.RequestBody">
+            <el-form-item v-show="false" :label="this.$store.state.lang.RequestBody">
               <el-input size="mini" v-model="requestQuery.request"></el-input>
             </el-form-item>
 
-            <el-form-item :label="this.$store.state.lang.ResponseBody">
+            <el-form-item v-show="false" :label="this.$store.state.lang.ResponseBody">
               <el-input size="mini" v-model="requestQuery.response"></el-input>
             </el-form-item>
           </el-form>

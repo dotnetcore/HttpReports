@@ -47,11 +47,11 @@ namespace HttpReports.Test
             string[] Services = { "User", "User", "User", "User", "User", "Order", "Order", "Order", "Order", "Weixin", "Weixin","Payment", "Log", "Log","Log", "DataCenter", "Student", "Student", "Master" };
             string[] LoginUsers = { "Jack", "Blues", "Mark", "Tom", "Cat" };
             string[] ParentServices = { "User", "Order", "Weixin", "Payment", "Log", "DataCenter" };
-            string[] LocalIPs = { "192.168.1.1", "192.168.1.2", "192.168.1.3", "192.168.1.4", "192.168.1.5", "192.168.1.6" };
+            string[] LocalIPs = { "192.168.1.1", "192.168.1.1", "192.168.1.1", "192.168.1.2", "192.168.1.2", "192.168.1.2", "192.168.1.3", "192.168.1.3", "192.168.1.4", "192.168.1.5", "192.168.1.6" };
 
-            string[] Route = { "Login", "Payment", "Search", "QueryData", "GetCofnig", "LoadData" };
+            string[] Route = { "/User/Login", "/User/Payment", "/User/Payment", "/User/Payment", "/User/Payment", "/User/Payment", "/User/Search", "/User/Search", "/User/Search", "/Data/QueryData", "/Data/GetCofnig", "/Data/GetCofnig", "/User/LoadData" };
 
-            int[] LocalPort = { 8801, 8802, 8803, 8804, 8805, 8806 };
+            int[] LocalPort = { 8801, 8801, 8801, 8801, 8802, 8802, 8802, 8803, 8803, 8804, 8805, 8806 };
 
             Task.Run(() => Insert());
             Task.Run(() => Insert());
@@ -74,7 +74,7 @@ namespace HttpReports.Test
                     {
                         var _Service = Services[new Random().Next(0, Services.Length - 1)];
                         var _ParentService = ParentServices[new Random().Next(0, ParentServices.Length - 1)];
-                        var _url = Services[new Random().Next(0, Services.Length - 1)] + "/" + Route[new Random().Next(0, Route.Length - 1)];
+                        var _url =  Route[new Random().Next(0, Route.Length - 1)];
 
                         if (_ParentService == _Service) _ParentService = string.Empty;
 
@@ -373,9 +373,9 @@ namespace HttpReports.Test
 
 
         [TestMethod]
-        public async Task GetRequestInfoDetail()
+        public async  Task GetRequestInfoDetail()
         {
-            var ids =  new []{ "0035669a6f4a5660", "00367d3cdcf4f0df", "00375c122fe2d5b4" };
+            var ids =  new []{ "0000329875d9c209", "000301f44e4e9524", "0005735c2c6240d5" };
 
             var id = ids[new Random().Next(0, ids.Length - 1)]; 
 
