@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
@@ -15,6 +16,7 @@ namespace HttpReports.Dashboard.Handles
         static readonly Dictionary<string, string> ResponseType = new Dictionary<string, string>
         {
             { ".css","text/css"},
+            { ".html","text/html"},
             { ".ico","image/x-icon"},
             { ".png","image/png"},
             { ".js","application/javascript"},
@@ -47,7 +49,9 @@ namespace HttpReports.Dashboard.Handles
                 return Task.CompletedTask;
             });
 
-            path = BasicConfig.StaticFilesRoot + path.Replace("/","."); 
+            path = BasicConfig.StaticFilesRoot + path.Replace("/",".");
+
+            var list = _assembly.GetManifestResourceNames().ToList();
 
             using (var inputStream = _assembly.GetManifestResourceStream(path))
             {

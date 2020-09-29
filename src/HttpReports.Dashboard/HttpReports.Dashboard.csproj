@@ -24,8 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="HttpReportsStaticFiles\Content\Lang\en-us.json" />
-    <None Remove="HttpReportsStaticFiles\Content\Lang\zh-cn.json" />
+    <None Remove="HttpReportsStaticFiles\Resource\Lang\en-us.json" />
+    <None Remove="HttpReportsStaticFiles\Resource\Lang\zh-cn.json" />
   </ItemGroup> 
    
 
@@ -42,6 +42,10 @@
     <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
     <PackageReference Include="Quartz" Version="3.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="HttpReportsStaticFiles\UI\" />
   </ItemGroup> 
   
 

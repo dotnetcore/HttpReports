@@ -216,7 +216,7 @@ export default {
   },
 
 activated(){   
-   this.$store.commit("set_index_loading_timestamp",Date.parse(new Date()));   
+   //this.$store.commit("set_index_loading_timestamp",Date.parse(new Date()));   
 }, 
 deactivated(){
  

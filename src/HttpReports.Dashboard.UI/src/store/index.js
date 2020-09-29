@@ -2,8 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 
 Vue.use(Vuex); 
-import { basic } from '@/common/basic.js'
-import { data } from 'autoprefixer';
+import { basic } from '@/common/basic.js' 
 
 const store = new Vuex.Store({ 
   state: {

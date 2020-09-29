@@ -18,6 +18,7 @@ using HttpReports.Dashboard.Services;
 using System.Net;
 using Org.BouncyCastle.Utilities.IO;
 using HttpReports.Dashboard.Abstractions;
+using HttpReports.Core;
 
 namespace HttpReports.Dashboard
 {
@@ -43,14 +44,27 @@ namespace HttpReports.Dashboard
 
                 var requestUrl = httpContext.Request.Path.Value;
 
-                if (!requestUrl.StartsWith("/HttpReports"))
+                if (requestUrl == "/")
                 {
-                    await _next(httpContext);
-                    return; 
+                    requestUrl = $"{BasicConfig.StaticUIRoot}/index.html";
+                } 
+                else if (requestUrl.StartsWith("/static"))
+                {
+                    requestUrl = $"{BasicConfig.StaticUIRoot}{requestUrl}";
                 }
+                else
+                {
+                    if (!requestUrl.StartsWith("/HttpReportsData"))
+                    {
+                        await _next(httpContext);
+                        return;
+                    } 
+                  
+                } 
 
 
-                //EmbeddedFile 
+
+                //EmbeddedFile  
                 if (requestUrl.Contains("."))
                 {
                     await DashboardEmbeddedFiles.IncludeEmbeddedFile(httpContext, requestUrl);
@@ -65,8 +79,7 @@ namespace HttpReports.Dashboard
                 {
                     httpContext.Response.StatusCode = 404;
                     return;
-                }
-
+                } 
 
 
                 var DashboardContext = new DashboardContext(httpContext, router, options);
@@ -82,17 +95,17 @@ namespace HttpReports.Dashboard
                 {
                     httpContext.Response.StatusCode = 404;
                     return;
-                } 
+                }
 
                 //Authorization
-                //if (!_authService.ValidToken(httpContext, handle, router))
-                //{
-                //    httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                if (!_authService.ValidToken(httpContext, handle, router))
+                {
+                    httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
 
-                //    await httpContext.Response.WriteAsync("Unauthorized");
+                    await httpContext.Response.WriteAsync("Unauthorized");
 
-                //    return;
-                //}
+                    return;
+                }
 
                 handle.Context = DashboardContext;
 

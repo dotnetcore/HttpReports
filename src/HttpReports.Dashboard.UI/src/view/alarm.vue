@@ -615,7 +615,7 @@ export default {
   },
   created: function () {},
   activated(){   
-     this.$store.commit("set_index_loading_timestamp",Date.parse(new Date()));  
+     //this.$store.commit("set_index_loading_timestamp",Date.parse(new Date()));  
   }, 
   async mounted() {
     await this.loadMonitorJob();

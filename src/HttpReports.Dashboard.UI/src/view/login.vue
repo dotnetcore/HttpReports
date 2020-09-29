@@ -126,11 +126,11 @@ position: relative;
 
         <h3 class="logo-title">HttpReports  APM</h3>
 
-        <p>{{ this.$store.state.lang.Login_UserName }}</p>
+        <p>{{ $t('Login_UserName') }}</p>
 
         <el-input size="medium" v-model="username"></el-input>
 
-        <p>{{ this.$store.state.lang.Login_Password }}</p>
+        <p>{{ $t('Login_Password') }}</p>
 
         <el-input size="medium" type="password" v-model="password"></el-input>
 
@@ -139,7 +139,7 @@ position: relative;
           @click="submit"
           v-on:keyup.enter="submit"
           class="btn login-form__btn submit w-100"
-        >{{ this.$store.state.lang.Login_Button }}</button>
+        >{{ $t('Login_Button') }}</button>
       </div>
     </div>
   </el-container>

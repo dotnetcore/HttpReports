@@ -29,7 +29,7 @@ export default {
     query: (state) => state.query,
   }),
   activated(){   
-    this.$store.commit("set_index_loading_timestamp",Date.parse(new Date()));  
+    //this.$store.commit("set_index_loading_timestamp",Date.parse(new Date()));  
   },
   watch: {
     async query(newVal, oldVal) {

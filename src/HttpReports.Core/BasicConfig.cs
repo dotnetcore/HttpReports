@@ -60,6 +60,8 @@ namespace HttpReports.Core
 
         public const string StaticFilesRoot = "HttpReports.Dashboard";
 
+        public const string StaticUIRoot = "/HttpReportsStaticFiles/UI";
+
         public const string HttpReportsServerRegister = "/HttpReportsServerRegister";
 
         public const int PerformanceInerval = 10000; 

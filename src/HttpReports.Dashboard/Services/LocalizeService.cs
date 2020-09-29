@@ -31,10 +31,10 @@ namespace HttpReports.Dashboard.Services
         public async Task InitAsync()
         {
             var assembly = GetType().Assembly;
-            var files = assembly.GetManifestResourceNames().Where(m => m.StartsWith("HttpReports.Dashboard.HttpReportsStaticFiles.Content.Lang.") && m.EndsWith(".json"));
+            var files = assembly.GetManifestResourceNames().Where(m => m.StartsWith("HttpReports.Dashboard.HttpReportsStaticFiles.Resource.Lang.") && m.EndsWith(".json"));
             foreach (var item in files)
             {
-                var name = item.Replace("HttpReports.Dashboard.HttpReportsStaticFiles.Content.Lang.", string.Empty).Replace(".json", string.Empty); 
+                var name = item.Replace("HttpReports.Dashboard.HttpReportsStaticFiles.Resource.Lang.", string.Empty).Replace(".json", string.Empty); 
                 using (var memory = new MemoryStream())
                 {
                     using (var stream = assembly.GetManifestResourceStream(item))

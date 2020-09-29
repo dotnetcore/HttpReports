@@ -59,9 +59,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IApplicationBuilder UseHttpReportsDashboard(this IApplicationBuilder app)
         { 
-            ServiceContainer.provider = app.ApplicationServices.GetRequiredService<IServiceProvider>() ?? throw new ArgumentNullException("ServiceProvider Init Faild"); 
-
-            ConfigRoute(app); 
+            ServiceContainer.provider = app.ApplicationServices.GetRequiredService<IServiceProvider>() ?? throw new ArgumentNullException("ServiceProvider Init Failed");   
 
             var storage = app.ApplicationServices.GetRequiredService<IHttpReportsStorage>() ?? throw new ArgumentNullException("Storage Not Found");
 
@@ -79,44 +77,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return app;
         } 
-
-        /// <summary>
-        /// Configure user routing  
-        /// </summary>
-        /// <param name="UseHome"></param>
-        /// <param name="app"></param>
-        private static void ConfigRoute(IApplicationBuilder app)
-        {
-            var options = app.ApplicationServices.GetRequiredService<IOptions<DashboardOptions>>().Value;
-
-            app.Use(async (context, next) =>
-            {  
-                if (context.Request.Path.HasValue)
-                {
-                    string Route = context.Request.Path.Value.ToLowerInvariant();
-
-                    if (options.UseHome)
-                    {
-                        if (Route == "/")
-                        {
-                            context.Request.Path = "/HttpReports/Index";
-                        }  
-                    }
-                    else
-                    {
-                        if (Route == "dashboard" || Route == "/dashboard")
-                        {
-                            context.Request.Path = "/HttpReports/Index";
-                        } 
-                    }   
-                }
-
-                await next(); 
-
-            }); 
-         
-        }
-
+ 
 
         private static IServiceCollection AddHandleService(this IServiceCollection services)
         {

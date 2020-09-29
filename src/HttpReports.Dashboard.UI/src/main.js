@@ -17,7 +17,7 @@ import zhLocale from 'element-ui/lib/locale/lang/zh-CN'
 
 
  
-import { basic } from '@/common/basic.js'
+import { basic } from '@/common/basic.js' 
 Vue.prototype.basic = basic 
 
 // Vue.config.productionTip = false;
@@ -51,8 +51,6 @@ var vue = new Vue({
   router, 
   render: h => h(App),
   created:function () {    
-
-    var configUrl = window.location.href.substring(0, window.location.href.indexOf('index.html')) + "config.json";   
 
     setHttpFilter();  
 
@@ -106,11 +104,18 @@ var vue = new Vue({
 } 
 
 
-function setHttpFilter() {   
+function setHttpFilter() {  
+  
+  var server = "http://localhost:5010/HttpReportsData";
+ 
+  //var server = window.location.protocol + "//" + window.location.host + "/HttpReportsData";
 
-  Vue.http.options.root = "http://localhost:5010/HttpReportsData";  
+  Vue.http.options.root = server;
 
-  // VueResource 请求拦截器
+
+
+  // VueResource 请求拦截器 
+
   Vue.http.interceptors.push((request, next) => {
 
     var token = store.state.token; 
