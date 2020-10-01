@@ -91,14 +91,7 @@ namespace HttpReports.Storage.Abstractions
         }
 
 
-        public async Task AddRequestInfoAsync(RequestBag bag) =>
-
-            await Task.Run(() =>
-            {
-
-                _deferFlushCollection.Flush(bag);
-
-            });
+        public async Task AddRequestInfoAsync(RequestBag bag) => await Task.Run(() => _deferFlushCollection.Flush(bag));
 
         public async Task AddRequestInfoAsync(List<RequestBag> list, System.Threading.CancellationToken token)
         {

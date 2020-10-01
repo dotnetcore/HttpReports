@@ -26,7 +26,7 @@ namespace HttpReports.Test
 
             services.Configure<MySqlStorageOptions>(o =>
             {
-                o.ConnectionString = "DataBase=HttpReports;Data Source=localhost;User Id=root;Password=123456;";
+                o.ConnectionString = "DataBase=HttpReports;Data Source=localhost;User Id=root;Password=123456;"; 
                 o.DeferSecond = 3;
                 o.DeferThreshold = 5; 
             });

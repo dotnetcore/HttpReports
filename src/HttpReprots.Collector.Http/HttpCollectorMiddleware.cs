@@ -69,15 +69,14 @@ namespace HttpReprots.Collector.Http
                         List<RequestBag> bags = new List<RequestBag>();
 
                         foreach (var item in package)
-                        {
-                            bags.Add(new RequestBag(item.RequestInfo as RequestInfo,item.RequestDetail as RequestDetail));
-                        } 
-
-                        await _collector.WriteDataAsync(bags);
+                        { 
+                            await _collector.WriteDataAsync(new RequestBag(item.RequestInfo as RequestInfo, item.RequestDetail as RequestDetail));
+                        }  
                     }
                 }
                 catch (Exception ex)
                 {
+                    _logger.LogError(ex,"Collector Failed");
 
                     throw;
                 } 

@@ -356,7 +356,7 @@ namespace HttpReports.Test
                 StartTime = filter.StartTime,
                 EndTime = filter.EndTime,
                 RequestId = "",
-                Route = "Student/Search",
+                Route = "/User/Payment",
                 StatusCode = 0,
                 RequestBody = "",
                 ResponseBody = "",

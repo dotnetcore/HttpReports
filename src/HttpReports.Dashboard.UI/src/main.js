@@ -20,8 +20,8 @@ import zhLocale from 'element-ui/lib/locale/lang/zh-CN'
 import { basic } from '@/common/basic.js' 
 Vue.prototype.basic = basic 
 
-// Vue.config.productionTip = false;
-// Vue.config.silent = true
+ Vue.config.productionTip = false;
+ Vue.config.silent = true
 
 Vue.use(VueI18n)  
 Vue.use(animate)
@@ -73,8 +73,9 @@ var vue = new Vue({
 
     token = localStorage.getItem("token");  
 
-    if (basic.isEmpty(token)) {   
-
+    if (basic.isEmpty(token)) {  
+      
+        console.clear();
         router.push({ path: '/login' })  
     }
     else {
@@ -110,9 +111,7 @@ function setHttpFilter() {
  
   //var server = window.location.protocol + "//" + window.location.host + "/HttpReportsData";
 
-  Vue.http.options.root = server;
-
-
+  Vue.http.options.root = server; 
 
   // VueResource 请求拦截器 
 
@@ -130,8 +129,9 @@ function setHttpFilter() {
 
       if (response.status != 200) {
 
-        if (response.status == 401) { 
-
+        if (response.status == 401) {   
+         
+          console.clear();   
           router.push({ path: '/login' })  
           return;
         } 

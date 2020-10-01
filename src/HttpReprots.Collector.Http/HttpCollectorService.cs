@@ -19,9 +19,9 @@ namespace HttpReprots.Collector.Http
             Storage = storage;
         }
 
-        public async Task WriteDataAsync(List<RequestBag> list)
+        public async Task WriteDataAsync(RequestBag bag)
         { 
-            await Storage.AddRequestInfoAsync(list,new System.Threading.CancellationToken());  
+            await Storage.AddRequestInfoAsync(bag);  
         }
 
         public async Task WriteDataAsync(Performance performance)

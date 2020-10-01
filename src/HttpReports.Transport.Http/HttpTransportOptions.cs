@@ -7,9 +7,7 @@ namespace HttpReports.Transport.Http
 {
     public class HttpTransportOptions : IOptions<HttpTransportOptions>
     {
-        public Uri CollectorAddress { get; set; }
-
-        public bool EnableDefer { get; set; }
+        public Uri CollectorAddress { get; set; } 
 
         public int DeferSecond { get; set; }
          

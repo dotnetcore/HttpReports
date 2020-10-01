@@ -39,11 +39,11 @@ export default {
   },
   methods: {
     async load_basic_data() {
+
       this.$store.commit("set_topology_loading", true);
-      var response = await Vue.http.post(
-        "GetTopologyData",
-        this.$store.state.query
-      );
+
+      var response = await Vue.http.post( "GetTopologyData", this.$store.state.query ); 
+
       this.$store.commit("set_topology_loading", false); 
 
       return response;
