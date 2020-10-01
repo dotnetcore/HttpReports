@@ -7,7 +7,7 @@ namespace HttpReports
  
     public interface IRequestProcesser
     { 
-        void Process(HttpContext context, Stopwatch stopwatch);  
+        void Process(HttpContext context);  
 
 
     }

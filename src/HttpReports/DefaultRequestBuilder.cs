@@ -23,18 +23,28 @@ namespace HttpReports
         }
 
 
-        public (RequestInfo, RequestDetail) Build(HttpContext context, Stopwatch stopwatch)
+        public (RequestInfo, RequestDetail) Build(HttpContext context)
         {
-            var path = (context.Request.Path.Value ?? string.Empty).ToLowerInvariant();
+            var path = (context.Request.Path.Value ?? string.Empty);
 
             if (IsFilterRequest(context)) return (null, null);
 
+            var info = GetRequestInfo(context,path);
+
+            var detail = GetRequestDetail(context,info.Id);
+
+            return (info,detail);
+
+        } 
+
+
+        protected RequestInfo GetRequestInfo(HttpContext context,string path)
+        { 
             // Build RequestInfo  
             Uri uri = new Uri(Options.Server);
             var request = new RequestInfo();
 
-            var remoteIP = context.Request.Headers["X-Forwarded-For"].FirstOrDefault();
-
+            var remoteIP = context.Request.Headers["X-Forwarded-For"].FirstOrDefault(); 
             request.RemoteIP = remoteIP.IsEmpty() ? context.Connection.RemoteIpAddress?.MapToIPv4()?.ToString() : remoteIP;
             request.Instance = uri.Host + ":" + uri.Port;
             request.LoginUser = context.User?.Identity?.Name;
@@ -42,39 +52,36 @@ namespace HttpReports
             request.Method = context.Request.Method;
             request.Url = context.Request.Path;
             request.RequestType = (context.Request.ContentType ?? string.Empty).Contains("grpc") ? "grpc" : "http";
-            request.Milliseconds = ToInt32(stopwatch.ElapsedMilliseconds);
+            request.Milliseconds = context.Items[BasicConfig.HttpReportsTraceCost].ToString().ToInt();
             request.CreateTime = context.Items[BasicConfig.ActiveTraceCreateTime].ToDateTime();
 
-            path = path.Replace(@"///", @"/").Replace(@"//", @"/");
+            path = path.Replace(@"///", @"/").Replace(@"//", @"/"); 
 
-            var (requestInfo, requestDetail) = Build(context, request, path);
-
-            return (ParseRequestInfo(requestInfo), ParseRequestDetail(requestDetail));
-        }
-
-        protected (RequestInfo, RequestDetail) Build(HttpContext context, RequestInfo request, string path)
-        {
             request.Service = Options.Service.Substring(0, 1).ToUpper() + Options.Service.Substring(1);
-            request.Route = GetRoute(path);
-
-            RequestDetail requestDetail = GetRequestDetail(context, request);
-
-            requestDetail.RequestId = request.Id = context.GetTraceId();
-
+            request.Route = GetRoute(path);   
             request.ParentId = context.GetTraceParentId();
             request.ParentService = context.GetTraceParentService();
 
-            return (request, requestDetail);
-        }
 
-        protected RequestDetail GetRequestDetail(HttpContext context, RequestInfo request)
+            if (request.Service == null) request.Service = string.Empty;
+            if (request.Route == null) request.Route = string.Empty;
+            if (request.Url == null) request.Url = string.Empty;
+            if (request.Method == null) request.Method = string.Empty;
+            if (request.RemoteIP == null) request.RemoteIP = string.Empty;
+            if (request.LoginUser == null) request.LoginUser = string.Empty;
+
+            return request; 
+
+        }  
+
+        protected RequestDetail GetRequestDetail(HttpContext context, string RequestId)
         {
             RequestDetail model = new RequestDetail();
 
             if (context.Request != null)
             {
                 model.Id = context.GetUniqueId();
-                model.RequestId = request.Id;
+                model.RequestId = RequestId;
 
                 Dictionary<string, string> cookies = context.Request.Cookies.ToList().ToDictionary(x => x.Key, x => x.Value);
 
@@ -131,9 +138,9 @@ namespace HttpReports
 
                 model.Scheme = context.Request.Scheme;
                 model.QueryString = HttpUtility.UrlDecode(context.Request.QueryString.Value);
-            }
+            }  
 
-            return model;
+            return ParseRequestDetail(model);
         }
 
         protected IEnumerable<IRequestChain> GetRequestChains(HttpContext context, RequestInfo request)
@@ -141,19 +148,7 @@ namespace HttpReports
             var list = context.Items.ToList();
 
             return null;
-        }
-
-        private RequestInfo ParseRequestInfo(RequestInfo request)
-        {
-            if (request.Service == null) request.Service = string.Empty;
-            if (request.Route == null) request.Route = string.Empty;
-            if (request.Url == null) request.Url = string.Empty;
-            if (request.Method == null) request.Method = string.Empty;
-            if (request.RemoteIP == null) request.RemoteIP = string.Empty;
-            if (request.LoginUser == null) request.LoginUser = string.Empty;
-
-            return request;
-        }
+        } 
 
         private RequestDetail ParseRequestDetail(RequestDetail request)
         {
@@ -204,8 +199,7 @@ namespace HttpReports
             }
 
             return request;
-        }
-
+        } 
 
         private bool IsFilterRequest(HttpContext context)
         {

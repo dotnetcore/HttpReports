@@ -20,9 +20,9 @@ namespace HttpReports
             Configuration = configuration;
         }
 
-        public void Process(HttpContext context, Stopwatch stopwatch)
+        public void Process(HttpContext context)
         {
-            var (requestInfo, requestDetail) = RequestBuilder.Build(context, stopwatch);
+            var (requestInfo, requestDetail) = RequestBuilder.Build(context);
 
             if (requestInfo != null && requestDetail != null)
             {

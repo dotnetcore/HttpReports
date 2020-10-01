@@ -11,6 +11,6 @@ namespace HttpReports
     
     public interface IRequestBuilder
     { 
-        (RequestInfo,RequestDetail) Build(HttpContext context, Stopwatch stopwatch); 
+        (RequestInfo,RequestDetail) Build(HttpContext context); 
     }
 }

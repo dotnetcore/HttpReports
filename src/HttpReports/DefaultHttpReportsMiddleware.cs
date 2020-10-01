@@ -94,7 +94,7 @@ namespace HttpReports
 
                 if (!string.IsNullOrEmpty(context.Request.Path))
                 {
-                    InvokeProcesser.Process(context, stopwatch);
+                    InvokeProcesser.Process(context);
                 } 
             }
 
@@ -129,12 +129,13 @@ namespace HttpReports
                     responseBody = JsonConvert.SerializeObject(context.Items[BasicConfig.HttpReportsGrpcResponse]);
                 }
 
+                context.Items.Add(BasicConfig.HttpReportsTraceCost,stopwatch.ElapsedMilliseconds);
                 context.Items.Add(BasicConfig.HttpReportsRequestBody, requestBody);
                 context.Items.Add(BasicConfig.HttpReportsResponseBody, responseBody);
 
                 if (!string.IsNullOrEmpty(context.Request.Path))
                 {
-                    InvokeProcesser.Process(context, stopwatch);
+                    InvokeProcesser.Process(context);
                 }
             }
         }

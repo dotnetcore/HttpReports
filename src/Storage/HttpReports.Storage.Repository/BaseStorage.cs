@@ -117,21 +117,7 @@ namespace HttpReports.Storage.Abstractions
                .WhereIf(!filter.ResponseBody.IsEmpty(), x => x.ResponseBody.Contains(filter.RequestBody))
                .Limit(100)
                .ToListAsync(x => x.Id);
-            }
-
-
-            var sql = freeSql.Select<RequestInfo>()
-                .Where(x => x.CreateTime >= filter.StartTime && x.CreateTime <= filter.EndTime)
-                .WhereIf(!filter.Service.IsEmpty(), x => x.Service == filter.Service)
-                .WhereIf(!filter.Instance.IsEmpty(), x => x.Instance == filter.Instance)
-                .WhereIf(!filter.RequestId.IsEmpty(), x => x.Id == filter.RequestId)
-                .WhereIf(filter.StatusCode > 0, x => x.StatusCode == filter.StatusCode)
-                .WhereIf(!filter.Route.IsEmpty(), x => x.Route == filter.Route)
-                .WhereIf(detailId != null && detailId.Any(), x => detailId.Contains(x.Id))
-                .Count(out var total2)
-                .Page(filter.PageNumber, filter.PageSize)
-                .OrderByDescending(x => x.CreateTime)
-                .ToSql();
+            } 
 
             var list = await freeSql.Select<RequestInfo>()
                 .Where(x => x.CreateTime >= filter.StartTime && x.CreateTime <= filter.EndTime)
@@ -272,44 +258,21 @@ namespace HttpReports.Storage.Abstractions
             if (groupType == GroupType.Instance) exp = x => x.Instance;
             if (groupType == GroupType.Route) exp = x => x.Route;
 
-            List<List<TopServiceResponse>> result = new List<List<TopServiceResponse>>();
-
-
-            var c1 = freeSql.Select<RequestInfo>().Where(expression).GroupBy(exp).
-                OrderByDescending(x => x.Count()).Limit(filter.Count).ToSql(x => new TopServiceResponse
-                {
-                    Key = x.Key,
-                    Value = x.Count()
-                });
-
+            List<List<TopServiceResponse>> result = new List<List<TopServiceResponse>>(); 
 
             var GroupTotal = await freeSql.Select<RequestInfo>().Where(expression).GroupBy(exp).
                 OrderByDescending(x => x.Count()).Limit(filter.Count).ToListAsync(x => new TopServiceResponse
                 {
                     Key = x.Key,
                     Value = x.Count()
-                });
-
-            var c2 = freeSql.Select<RequestInfo>().Where(expression).GroupBy(exp).
-                OrderByDescending(x => x.Avg(x.Value.Milliseconds * 1.00m)).Limit(filter.Count).ToSql(x => new TopServiceResponse
-                {
-                    Key = x.Key,
-                    Value = Convert.ToInt32(x.Avg(x.Value.Milliseconds * 1.00m ))
-                });
-
+                }); 
+          
             var GroupErrorTotal = await freeSql.Select<RequestInfo>().Where(expression).GroupBy(exp).
                 OrderByDescending(x => x.Avg(x.Value.Milliseconds * 1.00m)).Limit(filter.Count).ToListAsync(x => new TopServiceResponse
                 {
                     Key = x.Key,
                     Value =  Convert.ToInt32( x.Avg(x.Value.Milliseconds * 1.00m))
-                });
-
-            var c3 = freeSql.Select<RequestInfo>().Where(expression).Where(x => x.StatusCode == 500).GroupBy(exp)
-                .OrderByDescending(x => x.Count()).Limit(filter.Count).ToSql(x => new TopServiceResponse
-                {
-                    Key = x.Key,
-                    Value = x.Count()
-                });
+                }); 
 
             var GroupAvg = await freeSql.Select<RequestInfo>().Where(expression).Where(x => x.StatusCode == 500).GroupBy(exp)
                 .OrderByDescending(x => x.Count()).Limit(filter.Count).ToListAsync(x => new TopServiceResponse
@@ -328,24 +291,7 @@ namespace HttpReports.Storage.Abstractions
 
 
         public async Task<List<BaseNode>> GetTopologyData(BasicFilter filter)
-        {
-            var sql = freeSql.Select<RequestInfo>()
-                .Where(x => x.CreateTime >= filter.StartTime && x.CreateTime < filter.EndTime)
-                .Where(x => !string.IsNullOrEmpty(x.ParentService))
-                .Where(x => x.Service != x.ParentService)
-                .GroupBy(x => new
-                {
-                    x.Service,
-                    x.ParentService
-
-                }).ToSql(x => new BaseNode
-                {
-
-                    Key = x.Key.Service,
-                    StringValue = x.Key.ParentService
-
-                }); 
-
+        { 
             var result = await freeSql.Select<RequestInfo>()
                 .Where(x => x.CreateTime >= filter.StartTime && x.CreateTime < filter.EndTime)
                 .Where(x => !string.IsNullOrEmpty(x.ParentService))
@@ -374,9 +320,7 @@ namespace HttpReports.Storage.Abstractions
 
             result.Total = (await freeSql.Select<RequestInfo>().Where(expression).CountAsync()).ToInt();  
             result.ServerError = (await freeSql.Select<RequestInfo>().Where(expression).Where(x => x.StatusCode == 500).CountAsync()).ToInt();
-            result.Service = (await freeSql.Select<RequestInfo>().Where(expression).GroupBy(x => x.Service).CountAsync()).ToInt();
-
-            var c4 = freeSql.Select<RequestInfo>().Where(expression).GroupBy(x => x.Instance).ToSql(x => x.Count());
+            result.Service = (await freeSql.Select<RequestInfo>().Where(expression).GroupBy(x => x.Service).CountAsync()).ToInt(); 
 
             result.Instance = (await freeSql.Select<RequestInfo>().Where(expression).GroupBy(x => x.Instance).CountAsync()).ToInt();
 
@@ -419,33 +363,7 @@ namespace HttpReports.Storage.Abstractions
 
             var expression = GetServiceExpression(filter);
 
-            string[] span = { "0-200", "200-400", "400-600", "600-800", "800-1000", "1000-1200", "1200-1400", "1400-1600", "1600+" };
-
-            var sql = freeSql.Select<RequestInfo>().Where(expression)
-
-                .GroupBy(x => new
-                {
-                    KeyField = SqlExt.Case()
-                    .When(0 < x.Milliseconds && x.Milliseconds <= 200, "0-200")
-                    .When(200 < x.Milliseconds && x.Milliseconds <= 400, "200-400")
-                    .When(400 < x.Milliseconds && x.Milliseconds <= 600, "400-600")
-                    .When(600 < x.Milliseconds && x.Milliseconds <= 800, "600-800")
-                    .When(800 < x.Milliseconds && x.Milliseconds <= 1000, "800-1000")
-                    .When(1000 < x.Milliseconds && x.Milliseconds <= 1200, "1000-1200")
-                    .When(1200 < x.Milliseconds && x.Milliseconds <= 1400, "1200-1400")
-                    .When(1400 < x.Milliseconds && x.Milliseconds <= 1600, "1400-1600")
-                    .Else("1600+").End(),
-
-                    TimeField = x.CreateTime.ToString(format)
-
-                }).ToSql(x => new BaseTimeModel
-                {
-                    KeyField = x.Key.KeyField,
-                    TimeField = x.Key.TimeField,
-                    ValueField = x.Count()
-
-                }); 
-
+            string[] span = { "0-200", "200-400", "400-600", "600-800", "800-1000", "1000-1200", "1200-1400", "1400-1600", "1600+" }; 
 
             var list = await freeSql.Select<RequestInfo>().Where(expression)
 
@@ -496,21 +414,7 @@ namespace HttpReports.Storage.Abstractions
         }
 
         public async Task<List<ServiceInstanceInfo>> GetServiceInstance(DateTime startTime)
-        {
-            var sql = freeSql.Select<RequestInfo>().Where(x => x.CreateTime >= startTime).GroupBy(x => new
-            {
-                x.Service,
-                x.Instance
-
-            }).OrderBy(x => x.Key.Service).OrderBy(x => x.Key.Instance).ToSql(x => new ServiceInstanceInfo
-            {
-
-                Service = x.Key.Service,
-                Instance = x.Key.Instance
-
-            }); 
-
-
+        {  
             return await freeSql.Select<RequestInfo>().Where(x => x.CreateTime >= startTime).GroupBy(x => new
             {
                 x.Service,
