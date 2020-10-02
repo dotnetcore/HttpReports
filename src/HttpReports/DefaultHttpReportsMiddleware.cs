@@ -85,6 +85,7 @@ namespace HttpReports
 
                 string responseBody = await GetResponseBodyAsync(context);
 
+                context.Items.Add(BasicConfig.HttpReportsTraceCost, stopwatch.ElapsedMilliseconds); 
                 context.Items.Add(BasicConfig.HttpReportsRequestBody, requestBody);
                 context.Items.Add(BasicConfig.HttpReportsResponseBody, responseBody);
 

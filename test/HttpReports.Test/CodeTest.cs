@@ -17,8 +17,18 @@ namespace HttpReports.Test
 
             var result = rule.Where(x => x == '%').ToList();
 
-            Assert.IsTrue(result.Count() > 0); 
-        }   
+            Assert.IsTrue(result.Count() > 0);
+        }
+
+
+        [TestMethod]
+        public void Test2()
+        {
+            string url = "http://dx.dabansuan.com.cn/click.htm?zid=3228&od=0";
+            int str = url.IndexOf("od");
+            url = url.Insert(str, "_au");
+
+        }
 
     }
 }
