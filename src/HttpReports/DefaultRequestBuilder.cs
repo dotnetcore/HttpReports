@@ -45,6 +45,8 @@ namespace HttpReports
             var request = new RequestInfo();
 
             var remoteIP = context.Request.Headers["X-Forwarded-For"].FirstOrDefault(); 
+
+            request.Id = context.GetUniqueId();
             request.RemoteIP = remoteIP.IsEmpty() ? context.Connection.RemoteIpAddress?.MapToIPv4()?.ToString() : remoteIP;
             request.Instance = uri.Host + ":" + uri.Port;
             request.LoginUser = context.User?.Identity?.Name;

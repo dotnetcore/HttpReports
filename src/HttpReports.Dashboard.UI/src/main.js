@@ -107,9 +107,9 @@ var vue = new Vue({
 
 function setHttpFilter() {  
   
-  var server = "http://localhost:5010/HttpReportsData";
+  //var server = "http://localhost:5010/HttpReportsData";
  
-  //var server = window.location.protocol + "//" + window.location.host + "/HttpReportsData";
+  var server = window.location.protocol + "//" + window.location.host + "/HttpReportsData";
 
   Vue.http.options.root = server; 
 

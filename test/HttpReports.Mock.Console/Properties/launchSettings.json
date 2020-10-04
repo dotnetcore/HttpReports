@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "HttpReports.Mock.Console": {
+      "commandName": "Project"
+    }
+  }
+}

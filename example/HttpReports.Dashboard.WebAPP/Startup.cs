@@ -19,11 +19,11 @@ namespace HttpReports.Dashboard.WebAPP
 
         public void ConfigureServices(IServiceCollection services) 
         {
-            services.AddHttpReports().UseHttpTransport(); 
-               
-            services.AddHttpReportsDashboard().UseMySqlStorage(); 
+            //services.AddHttpReports().UseHttpTransport();
 
-            services.AddCors(c =>
+            services.AddHttpReportsDashboard().UsePostgreSQLStorage(); 
+
+            services.AddCors(c => 
             { 
                 c.AddPolicy("Policy", policy =>
                 {
