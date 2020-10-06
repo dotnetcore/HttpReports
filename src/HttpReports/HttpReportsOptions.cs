@@ -7,7 +7,7 @@ namespace HttpReports
     {  
         public string Service { get; set; } = "Default";
 
-        public string Server { get; set; } = "localhost:80"; 
+        public string Server { get; set; } = "http://localhost:5000"; 
 
         public bool Switch { get; set; } = true;
 
