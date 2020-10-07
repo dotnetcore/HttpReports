@@ -1,6 +1,7 @@
 ﻿using System; 
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks; 
 using HttpReports;
@@ -9,21 +10,51 @@ using HttpReports.Core.Diagnostics;
 using HttpReports.Diagnostic.AspNetCore;
 using HttpReports.Diagnostic.HttpClient;  
 using HttpReports.Services; 
-using Microsoft.AspNetCore.Builder; 
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http; 
 using Microsoft.Extensions.Configuration; 
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class HttpReportsMiddlewareExtensions
     {
         public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services)
-        { 
-            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");  
-            
+        {
+            HttpReportsOptions options = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports").Get<HttpReportsOptions>();
+
+            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports"); 
+
+            var urls = services.BuildServiceProvider().GetService<IConfiguration>()[WebHostDefaults.ServerUrlsKey] ?? configuration["server.urls"];
+
+            if (!string.IsNullOrEmpty(urls))
+            {
+                var first = urls.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+
+                if (!string.IsNullOrEmpty(first))
+                {
+                    options.Server = first;
+                }   
+            }
+
             services.AddOptions();
-            services.Configure<HttpReportsOptions>(configuration); 
+            services.Configure<HttpReportsOptions>(_ => {
+
+                _.Server = options.Server;
+                _.Service = options.Service;
+                _.MaxBytes = options.MaxBytes;
+                _.RequestFilter = options.RequestFilter;
+                _.Switch = options.Switch;
+                _.WithCookie = options.WithCookie;
+                _.WithHeader = options.WithHeader;
+                _.WithRequest = options.WithRequest;
+                _.WithResponse = options.WithResponse; 
+                 
+            });  
 
             return services.AddHttpReportsService(configuration);
         }   

@@ -144,9 +144,11 @@ namespace HttpReports
         private async Task<string> GetRequestBodyAsync(HttpContext context)
         {
             try
-            {
-                if (context.Request.ContentType.IsEmpty() || !context.Request.ContentType.Contains("application/json") || !Options.WithRequest || context.Request.Body.Length > Options.MaxBytes)
-                {
+            {  
+                if (context.Request.ContentType.IsEmpty() || !context.Request.ContentType.Contains("application/json") || !Options.WithRequest 
+                    || 
+                    (context.Request.ContentLength.HasValue && context.Request.ContentLength.Value > Options.MaxBytes ))
+                { 
                     return string.Empty;
                 }
  

@@ -21,7 +21,7 @@ namespace HttpReports.Dashboard.WebAPP
         {
             services.AddHttpReports().UseHttpTransport();
 
-            services.AddHttpReportsDashboard().UsePostgreSQLStorage(); 
+            services.AddHttpReportsDashboard().UseMySqlStorage(); 
 
             services.AddCors(c => 
             { 
