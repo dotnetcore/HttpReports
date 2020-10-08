@@ -29,20 +29,27 @@ namespace Microsoft.Extensions.DependencyInjection
 
             IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports"); 
 
-            var urls = services.BuildServiceProvider().GetService<IConfiguration>()[WebHostDefaults.ServerUrlsKey] ?? configuration["server.urls"];
-
-            if (!string.IsNullOrEmpty(urls))
+            if (options.Server.IsEmpty())
             {
-                var first = urls.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+                var urls = services.BuildServiceProvider().GetService<IConfiguration>()[WebHostDefaults.ServerUrlsKey] ?? configuration["server.urls"];
 
-                if (!string.IsNullOrEmpty(first))
+                if (!urls.IsEmpty())
                 {
-                    options.Server = first;
-                }   
-            }
+                    var first = urls.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+
+                    if (!string.IsNullOrEmpty(first))
+                    {
+                        options.Server = first;
+                    }
+                }
+                else
+                {
+                    options.Server = "http://localhost:5000";
+                }
+            }  
 
             services.AddOptions();
-            services.Configure<HttpReportsOptions>(_ => {
+            services.Configure<HttpReportsOptions>(_ => { 
 
                 _.Server = options.Server;
                 _.Service = options.Service;
@@ -63,7 +70,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services, Action<HttpReportsOptions> options)
         {
-            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");  
+            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");   
+         
 
             services.AddOptions(); 
             services.Configure<HttpReportsOptions>(options);

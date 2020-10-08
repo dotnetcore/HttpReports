@@ -58,11 +58,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Diagnostic.AspN
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Grpc", "src\HttpReports.Grpc\HttpReports.Grpc.csproj", "{CEB34302-18F4-45EA-8BBF-D88AA6D2BBFC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Storage.Abstractions", "src\Storage\HttpReports.Storage.Repository\HttpReports.Storage.Abstractions.csproj", "{1B481218-1D57-4DF1-B65C-7229E095CF31}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HttpReports.Dashboard.UI", "HttpReports.Dashboard.UI", "{482FC5AD-FF84-4E25-AEB2-B11AD124CA30}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpReports.Mock.Console", "test\HttpReports.Mock.Console\HttpReports.Mock.Console.csproj", "{5EF52C05-DA0C-43C7-80BB-CC8DFF1B809F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Mock.Console", "test\HttpReports.Mock.Console\HttpReports.Mock.Console.csproj", "{5EF52C05-DA0C-43C7-80BB-CC8DFF1B809F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Storage.Abstractions", "src\Storage\HttpReports.Storage.Abstractions\HttpReports.Storage.Abstractions.csproj", "{F2A58077-AA17-4438-933A-20246D1E6E59}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -150,14 +150,14 @@ Global
 		{CEB34302-18F4-45EA-8BBF-D88AA6D2BBFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CEB34302-18F4-45EA-8BBF-D88AA6D2BBFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CEB34302-18F4-45EA-8BBF-D88AA6D2BBFC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1B481218-1D57-4DF1-B65C-7229E095CF31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1B481218-1D57-4DF1-B65C-7229E095CF31}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1B481218-1D57-4DF1-B65C-7229E095CF31}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1B481218-1D57-4DF1-B65C-7229E095CF31}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5EF52C05-DA0C-43C7-80BB-CC8DFF1B809F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5EF52C05-DA0C-43C7-80BB-CC8DFF1B809F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5EF52C05-DA0C-43C7-80BB-CC8DFF1B809F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5EF52C05-DA0C-43C7-80BB-CC8DFF1B809F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2A58077-AA17-4438-933A-20246D1E6E59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2A58077-AA17-4438-933A-20246D1E6E59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2A58077-AA17-4438-933A-20246D1E6E59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2A58077-AA17-4438-933A-20246D1E6E59}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -185,9 +185,9 @@ Global
 		{2F97D7FF-FE6B-47EE-A0BA-9350495E0188} = {A85327D1-9A3E-46C8-BD8E-620B22BF2AA1}
 		{9B8133DD-19D9-4453-91B0-A9C7AFB3017B} = {A85327D1-9A3E-46C8-BD8E-620B22BF2AA1}
 		{CEB34302-18F4-45EA-8BBF-D88AA6D2BBFC} = {BAF971BD-0546-4610-A9F6-6F6DC68E6FE7}
-		{1B481218-1D57-4DF1-B65C-7229E095CF31} = {1B6A48DF-6E7C-497B-94BF-2F61052CEF61}
 		{482FC5AD-FF84-4E25-AEB2-B11AD124CA30} = {BAF971BD-0546-4610-A9F6-6F6DC68E6FE7}
 		{5EF52C05-DA0C-43C7-80BB-CC8DFF1B809F} = {62236260-3E05-4E03-BF44-8061691CB8EE}
+		{F2A58077-AA17-4438-933A-20246D1E6E59} = {1B6A48DF-6E7C-497B-94BF-2F61052CEF61}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CF5EB1E6-E330-45DC-80A3-9A2CE692DDE5}

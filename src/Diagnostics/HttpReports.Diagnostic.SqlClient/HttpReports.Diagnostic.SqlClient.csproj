@@ -1,7 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>2.0.0</Version>
+    <Authors>SpringLee</Authors>
+    <PackageId>HttpReports.Diagnostic.SqlClient</PackageId>
+    <Description>HttpReports is a lightweight APM system developed for Net Core </Description>
+    <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
+    <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
+    <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>

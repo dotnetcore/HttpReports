@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.6.3</Version>
-    <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
-    <Description>HttpReports is a lightweight APM system developed for Net Core , it is also suitable for use in a micro-service architecture.</Description>
+    <Version>2.0.0</Version> 
+    <Description>HttpReports is a lightweight APM system developed for Net Core </Description>
     <Authors>SpringLee</Authors>
     <Company>HttpReports</Company>
     <PackageProjectUrl>https://github.com/dotnetcore/HttpReports</PackageProjectUrl>
     <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl>
+    <PackageIcon>logo3.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,7 +18,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
-    <ProjectReference Include="..\Storage\HttpReports.Storage.Repository\HttpReports.Storage.Abstractions.csproj" />
+    <ProjectReference Include="..\Storage\HttpReports.Storage.Abstractions\HttpReports.Storage.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\HttpReports.Dashboard.UI\static\logo3.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
