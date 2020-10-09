@@ -21,7 +21,9 @@ namespace HttpReports.Dashboard.WebAPP
         {
             services.AddHttpReports().UseHttpTransport();
 
-            services.AddHttpReportsDashboard().UseMySqlStorage(); 
+            //services.AddHttpReportsDashboard().UseMySqlStorage();
+
+            services.AddControllers();
 
             services.AddCors(c => 
             { 
@@ -40,15 +42,32 @@ namespace HttpReports.Dashboard.WebAPP
             app.UseCors("Policy"); 
 
             app.UseHttpReports();
-            app.UseHttpReportsDashboard(); 
+            //app.UseHttpReportsDashboard();  
+
 
             MapRoute(app);
+
+
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
+            app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+
+            }); 
+
         }
 
         public void MapRoute(IApplicationBuilder app)
         { 
-            string address = "http://localhost:5010";
-
+            string address = "http://localhost:5010"; 
 
             app.Map("/LoadTest", builder =>
             {
