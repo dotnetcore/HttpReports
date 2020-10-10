@@ -2,16 +2,19 @@
 
 [![Member project of .NET Core Community](https://img.shields.io/badge/member%20project%20of-NCC-9e20c9.svg)](https://github.com/dotnetcore)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/dotnetcore/HttpReports/blob/master/LICENSE) 
+![Nuget](https://img.shields.io/nuget/dt/HttpReports?style=flat-square)
+
+![](https://httpreports2-1259586045.cos.ap-shanghai.myqcloud.com/index1.png)
 
 ## Introduce
 
-HttpReports is a lightweight APM system developed for Net Core. Based on MIT open source protocol, using HttpReports can quickly build an integrated site of statistics, analysis, charts, monitoring and distributed tracking under the .net Core environment, which can adapt to Net Core WebAPI,MVC, Web project, build Dashboard panel by adding nuget package, easy to get started, it is also suitable for use in a micro-service architecture. 
+**HttpReports** is a lightweight APM system developed for Net Core. Based on MIT open source protocol, using HttpReports can quickly build an integrated site of statistics, analysis, charts, monitoring and distributed tracking under the .net Core environment, which can adapt to Net Core WebAPI,MVC, Web project, build Dashboard panel by adding nuget package, easy to get started, it is also suitable for use in a micro-service architecture. 
 
 Github ：**https://github.com/dotnetcore/HttpReports**   
 
-The online preview： **https://moa.hengyinfs.com** 
+The online preview： **http://122.51.188.23:8080**   
 
-account: admin password 123456 
+account: **admin** password **123456 **
 
 Open source is not easy, interested students welcome a wave of Github Star...
 
@@ -281,7 +284,9 @@ Github: https://github.com/dotnetcore/HttpReports
 If you use HttpReports in the project, or if you are interested, you can join the QQ group, News about HttpReports are published in QQ group. If You have any questions you can also add me on WeChat. 
 
 ![](https://lee-1259586045.cos.ap-shanghai.myqcloud.com/mywechat3.jpg)   
+
  
+  
 
  
 
