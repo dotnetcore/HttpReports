@@ -1,7 +1,7 @@
 ﻿ 
 
-[![Member project of .NET Core Community](https://img.shields.io/badge/member%20project%20of-NCC-9e20c9.svg)](https://github.com/dotnetcore)
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/dotnetcore/HttpReports/blob/master/LICENSE) 
+[![Member project of .NET Core Community](https://img.shields.io/badge/member%20project%20of-NCC-9e20c9.svg?style=flat-square)](https://github.com/dotnetcore)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/dotnetcore/HttpReports/blob/master/LICENSE) 
 ![Nuget](https://img.shields.io/nuget/dt/HttpReports?style=flat-square)
 
 ![](https://httpreports2-1259586045.cos.ap-shanghai.myqcloud.com/index1.png)
