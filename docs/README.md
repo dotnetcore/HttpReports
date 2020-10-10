@@ -1,11 +1,11 @@
 ﻿  
-<div align="center">
-
-<h2 align="center">HttpReports APM</h2> 
+<div align="center"> 
 
 [![Member project of .NET Core Community](https://img.shields.io/badge/member%20project%20of-NCC-9e20c9.svg?style=flat-square)](https://github.com/dotnetcore)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/dotnetcore/HttpReports/blob/master/LICENSE) 
-![Nuget](https://img.shields.io/nuget/dt/HttpReports?style=flat-square) 
+![Nuget](https://img.shields.io/nuget/dt/HttpReports?style=flat-square)  
+
+<h2 align="center">HttpReports APM</h2>  
 
 </div> 
 
