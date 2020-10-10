@@ -4,19 +4,26 @@
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/dotnetcore/HttpReports/blob/master/LICENSE) 
 ![Nuget](https://img.shields.io/nuget/dt/HttpReports?style=flat-square)
 
+<h2 align="center">HttpReports APM</h2> 
+
 ![](https://httpreports2-1259586045.cos.ap-shanghai.myqcloud.com/index1.png)
+ 
 
-## Introduce
+## HttpReports  
 
-**HttpReports** is a lightweight APM system developed for Net Core. Based on MIT open source protocol, using HttpReports can quickly build an integrated site of statistics, analysis, charts, monitoring and distributed tracking under the .net Core environment, which can adapt to Net Core WebAPI,MVC, Web project, build Dashboard panel by adding nuget package, easy to get started, it is also suitable for use in a micro-service architecture. 
 
-Github ：**https://github.com/dotnetcore/HttpReports**   
+**HttpReports** is an APM (application performance monitor) system for Net Core. Based on MIT open source protocol, The main functions include statistics, analysis, visualization, monitoring, tracking, etc，It is very suitable for use in microservices.
 
-The online preview： **http://122.51.188.23:8080**   
+**Github** ：**https://github.com/dotnetcore/HttpReports**   
 
-account: **admin** password **123456 **
+**Docs**
+zh-cn: **https://www.yuque.com/httpreports/docs**  
+en-us: **https://www.yuque.com/httpreports/docs?language=en-us**
 
-Open source is not easy, interested students welcome a wave of Github Star...
+**The online preview**： **http://122.51.188.23:8080**   
+
+account: **admin** password **123456 ** 
+
 
 ## Main features
 
