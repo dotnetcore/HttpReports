@@ -323,18 +323,14 @@ namespace HttpReports.Dashboard.Handles
             if (request.OldPwd.Length <= 5 || request.OldPwd.Length > 20)
             {
                 return Json(false, _lang.User_NewPassFormatError,null);
-            }
-
-            // PrePublish 
-            return Json(true, _lang.UpdateSuccess, null); 
+            }  
 
             await _storage.UpdateLoginUser(new SysUser
             {
                 Id = user.Id,
                 UserName = request.NewUserName,
                 Password = request.NewPwd.MD5()
-            });  
-            
+            });   
 
             return Json(true, _lang.UpdateSuccess, null);
         }
