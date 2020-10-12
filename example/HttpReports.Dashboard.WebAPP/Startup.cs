@@ -21,7 +21,7 @@ namespace HttpReports.Dashboard.WebAPP
         {
             services.AddHttpReports().UseHttpTransport();
 
-            //services.AddHttpReportsDashboard().UseMySqlStorage();
+            services.AddHttpReportsDashboard().UseSQLServerStorage();
 
             services.AddControllers();
 
@@ -42,7 +42,7 @@ namespace HttpReports.Dashboard.WebAPP
             app.UseCors("Policy"); 
 
             app.UseHttpReports();
-            //app.UseHttpReportsDashboard();  
+            app.UseHttpReportsDashboard();  
 
 
             MapRoute(app);
