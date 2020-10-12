@@ -19,9 +19,9 @@ namespace HttpReports.Dashboard.WebAPP
 
         public void ConfigureServices(IServiceCollection services) 
         {
-            services.AddHttpReports().UseHttpTransport().UseGrpc();
+            services.AddHttpReports().UseHttpTransport();
 
-            services.AddHttpReportsDashboard().UseMySqlStorage();
+            services.AddHttpReportsDashboard().UseSQLServerStorage();
 
             services.AddControllers();
 
