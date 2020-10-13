@@ -28,5 +28,22 @@ namespace HttpReports.Dashboard.WebAPP.Controllers
             }
             return Json(new { msg = "OK" });
         }
+
+        [HttpGet("ErrorTest")]
+        public async Task<IActionResult> Error()
+        { 
+            throw new Exception("error");
+
+            return await Task.FromResult(Content("ok"));
+             
+        }
+
+
+        [HttpGet("Test1")]
+        public async Task<IActionResult> Test1()
+        { 
+            return await Task.FromResult(Content("Test1"));
+
+        }
     }
 }

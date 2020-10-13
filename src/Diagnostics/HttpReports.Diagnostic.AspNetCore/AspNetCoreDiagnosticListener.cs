@@ -42,19 +42,21 @@ namespace HttpReports.Diagnostic.AspNetCore
         }
 
         public void OnNext(KeyValuePair<string, object> value)
-        { 
-            //if(value.Key == "Microsoft.AspNetCore.Diagnostics.UnhandledException")
-            //{
-            //    HttpContext context = _httpContextAccessor.HttpContext;
+        {
+            if (value.Key == "Microsoft.AspNetCore.Diagnostics.UnhandledException" || value.Key == "Microsoft.AspNetCore.Hosting.UnhandledException")
+            {
+                HttpContext context = _httpContextAccessor.HttpContext;
 
-            //    Exception exception = value.Value.GetType().GetProperty("exception").GetValue(value.Value) as Exception;
+                if (value.Value.GetType().GetProperty("exception").GetValue(value.Value) is Exception exception)
+                {
+                    if (context != null && exception != null)
+                    {
+                        context.Items.Add(BasicConfig.HttpReportsGlobalException, exception);
+                        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    }
+                }
+            } 
 
-            //    if (context != null && exception != null)
-            //    {
-            //        context.Items.Add(BasicConfig.HttpReportsGlobalException,exception);
-            //        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            //    } 
-            //} 
         }
     }
 }
