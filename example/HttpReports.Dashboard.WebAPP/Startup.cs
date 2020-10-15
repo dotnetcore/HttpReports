@@ -43,7 +43,7 @@ namespace HttpReports.Dashboard.WebAPP
 
             app.UseHttpReports();
 
-            app.UseMiddleware<ErrorMiddleware>();
+            //app.UseMiddleware<ErrorMiddleware>();
 
             //app.UseHttpReportsDashboard();  
 
@@ -95,8 +95,7 @@ namespace HttpReports.Dashboard.WebAPP
 
                 });
 
-            });
-
+            }); 
 
 
             app.Map("/Trace", builder =>
@@ -120,80 +119,7 @@ namespace HttpReports.Dashboard.WebAPP
 
                 });
 
-            });
-
-            app.Map("/Test1", builder =>
-            { 
-                builder.Run(async context =>
-                { 
-                    System.Threading.Thread.Sleep(new Random().Next(111,5555));
-
-                    HttpClient client = new HttpClient();
-                    var response = await client.GetStringAsync(address + "/Test2");
-                    await context.Response.WriteAsync(response);
-
-                });
-
-            });
-
-            app.Map("/Test2", builder =>
-            {
-                builder.Run(async context =>
-                {
-                    System.Threading.Thread.Sleep(new Random().Next(111, 5555));
-
-                    HttpClient client = new HttpClient();
-                    var response = await client.GetStringAsync(address + "/Test3");
-                    await context.Response.WriteAsync(response);
-
-                });
-
-            });
-
-            app.Map("/Test3", builder =>
-            {
-                builder.Run(async context =>
-                {
-                    System.Threading.Thread.Sleep(new Random().Next(111, 5555));
-
-                    HttpClient client = new HttpClient();
-                    var response = await client.GetStringAsync(address + "/Test4");
-                    await context.Response.WriteAsync(response);
-
-                });
-
-            });
-
-
-            app.Map("/Test4", builder =>
-            {
-                builder.Run(async context =>
-                {
-                    System.Threading.Thread.Sleep(new Random().Next(111, 5555));
-
-                    HttpClient client = new HttpClient();
-                    var response = await client.GetStringAsync(address + "/Test5");
-                    await context.Response.WriteAsync(response);
-
-                });
-
-            });
-
-
-            app.Map("/Test5", builder => {
-
-                builder.Run(async context => {
-
-                    System.Threading.Thread.Sleep(new Random().Next(111, 5555));
-
-                    await context.Response.WriteAsync("ok");
-
-                    return;
-
-                });
-
-            });  
-          
+            }); 
 
         }
 

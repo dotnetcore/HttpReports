@@ -41,11 +41,11 @@ namespace HttpReports.Storage.Abstractions.Models
         [Column(StringLength = 50)]  
         public string Instance { get; set; }
 
-        [Column(StringLength = 200)] 
+        [Column(StringLength = 100)] 
         public string Route { get; set; }
 
 
-        [Column(StringLength = 200)] 
+        [Column(StringLength = 100)] 
         public string Url { get; set; }
 
 
@@ -57,6 +57,7 @@ namespace HttpReports.Storage.Abstractions.Models
         public string Method { get; set; }
 
         public int Milliseconds { get; set; }
+
 
         public int StatusCode { get; set; }
 

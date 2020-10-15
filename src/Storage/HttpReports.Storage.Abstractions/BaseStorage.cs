@@ -97,7 +97,7 @@ namespace HttpReports.Storage.Abstractions
         {
             List<RequestInfo> requestInfos = list.Select(x => x.RequestInfo).ToList();
 
-            List<RequestDetail> requestDetails = list.Select(x => x.RequestDetail).ToList();
+            List<RequestDetail> requestDetails = list.Select(x => x.RequestDetail).ToList(); 
 
             await freeSql.Insert(requestInfos).ExecuteAffrowsAsync();
 

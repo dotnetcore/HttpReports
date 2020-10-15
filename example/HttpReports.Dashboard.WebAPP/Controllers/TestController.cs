@@ -45,5 +45,12 @@ namespace HttpReports.Dashboard.WebAPP.Controllers
             return await Task.FromResult(Content("Test1"));
 
         }
+
+        [HttpPost("Test2")]
+        public async Task<IActionResult> Test2()
+        {
+            return await Task.FromResult(Json(new { code = 1,msg = "ok"  }));
+
+        }
     }
 }
