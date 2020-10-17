@@ -21,7 +21,7 @@ namespace HttpReports.Dashboard.WebAPP
         {
             services.AddHttpReports().UseHttpTransport();
 
-            services.AddHttpReportsDashboard().UseSQLServerStorage();
+            services.AddHttpReportsDashboard().UsePostgreSQLStorage();
 
             services.AddControllers();
 
