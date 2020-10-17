@@ -45,11 +45,16 @@ namespace HttpReports
             if (!context.Request.ContentType.IsEmpty() && context.Request.ContentType.Contains("application/grpc"))
             {
                 await InvokeGrpcAsync(context);
-            }
-            else
+            } 
+            else if(!context.Request.ContentType.IsEmpty() && context.Request.ContentType.Contains("application/json"))
             {
                 await InvokeHttpAsync(context);
             }
+            else
+            {
+                await Next(context);
+            }
+             
         }
 
 

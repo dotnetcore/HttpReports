@@ -47,7 +47,7 @@ namespace HttpReports.Test
 
             var result = await Storage.GetRequestInfo(id);
 
-            Assert.IsNotNull(result);
+            Assert.IsNotNull(result); 
 
         }
 

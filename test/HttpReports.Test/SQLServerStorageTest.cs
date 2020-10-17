@@ -29,7 +29,7 @@ namespace HttpReports.Test
                 o.DeferSecond = 5;
                 o.DeferThreshold = 5;
             });
-            services.AddTransient<SQLServerStorage>(); 
+            services.AddSingleton<SQLServerStorage>(); 
 
             _storage = services.BuildServiceProvider().GetRequiredService<SQLServerStorage>();
             await _storage.InitAsync();
