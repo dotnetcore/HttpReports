@@ -13,8 +13,7 @@ namespace HttpReports.Diagnostic.HttpClient
 
         private IReportsTransport _transport;
 
-        private ISegmentContext _context;
-
+        private ISegmentContext _context;  
 
         public HttpClientDiagnosticListener(ILogger<HttpClientDiagnosticListener> logger, IReportsTransport transport, ISegmentContext context)
         {
@@ -49,7 +48,14 @@ namespace HttpReports.Diagnostic.HttpClient
                     var TraceId = activity.GetBaggageItem(BasicConfig.ActiveTraceId);
 
                     request.Headers.Add(BasicConfig.ActiveTraceId, TraceId);
-                } 
+                }
+
+                if (!request.Headers.TryGetValues(BasicConfig.ActiveSpanService, out _))
+                {
+                    var Service = activity.GetBaggageItem(BasicConfig.ActiveSpanService);
+
+                    request.Headers.Add(BasicConfig.ActiveParentSpanService, Service);
+                }
             }  
         } 
       

@@ -52,8 +52,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 x.Server = services.GetNewServer(x); 
 
-            });
-
+            }); 
 
             services.AddSingleton<IRequestProcesser, DefaultRequestProcesser>();
             services.AddSingleton<IRequestBuilder, DefaultRequestBuilder>();

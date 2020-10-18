@@ -21,7 +21,7 @@ namespace HttpReports.Dashboard.WebAPP
         {
             services.AddHttpReports().UseHttpTransport();
 
-            services.AddHttpReportsDashboard().UseMySqlStorage();
+            //services.AddHttpReportsDashboard().UseMySqlStorage();
 
             services.AddControllers();
 
@@ -43,13 +43,9 @@ namespace HttpReports.Dashboard.WebAPP
 
             app.UseHttpReports();
 
-            app.UseHttpReportsDashboard();   
+            //app.UseHttpReportsDashboard();   
 
-            //app.UseMiddleware<ErrorMiddleware>();
-
-
-            MapRoute(app);
-
+            //app.UseMiddleware<ErrorMiddleware>(); 
 
             if (env.IsDevelopment())
             {
@@ -66,62 +62,7 @@ namespace HttpReports.Dashboard.WebAPP
 
             }); 
 
-        }
-
-        public void MapRoute(IApplicationBuilder app)
-        { 
-            string address = "http://localhost:5010"; 
-
-            app.Map("/LoadTest", builder =>
-            {
-                builder.Run(async context =>
-                {  
-                    await context.Response.WriteAsync("OK");
-
-                });
-
-            });
-
-
-            app.Map("/HttpClient", builder =>
-            {
-                builder.Run(async context =>  
-                {
-                     
-                    HttpClient client = new HttpClient();
-                    var response = client.GetStringAsync("http://www.baidu.com").Result;
-
-                    await context.Response.WriteAsync("OK"); 
-
-                });
-
-            }); 
-
-
-            app.Map("/Trace", builder =>
-            {
-                builder.Run(async context =>
-                {
-                    //System.Threading.Thread.Sleep(new Random().Next(111, 5555));
-
-                    //HttpClient client = new HttpClient();
-                    //var response = await client.GetStringAsync(address +"/Test1");
-                    //await context.Response.WriteAsync(response);
-
-                    System.Net.HttpWebRequest req = (System.Net.HttpWebRequest)System.Net.HttpWebRequest.Create(address + "/Test1");
-
-                    req.Timeout = 5000000;
-
-                    using (System.Net.WebResponse wr = await req.GetResponseAsync()) 
-                    {
-                        await context.Response.WriteAsync("ok");
-                    }  
-
-                });
-
-            }); 
-
-        }
+        } 
 
     }
 }

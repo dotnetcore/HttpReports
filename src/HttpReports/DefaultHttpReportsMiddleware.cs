@@ -36,13 +36,13 @@ namespace HttpReports
 
         public async Task InvokeAsync(HttpContext context)
         {
-            if ((context.Request.Path.HasValue && context.Request.Path.Value == "/") || context.Request.ContentType.IsEmpty())
+            if ((context.Request.Path.HasValue && context.Request.Path.Value == "/"))
             {
                 await Next(context);
                 return;
             }
 
-            if (context.Request.ContentType.Contains("application/grpc"))
+            if (!context.Request.ContentType.IsEmpty() && context.Request.ContentType.Contains("application/grpc"))
             {
                 await InvokeGrpcAsync(context);
             } 
@@ -212,33 +212,49 @@ namespace HttpReports
         }
 
         private void ConfigTrace(HttpContext context)
-        { 
+        {
             var parentId = context.Request.Headers.ContainsKey(BasicConfig.ActiveTraceId) ?
                 context.Request.Headers[BasicConfig.ActiveTraceId].ToString() : string.Empty;
 
             Activity.Current = null;
-            Activity activity = new Activity(BasicConfig.ActiveTraceName);  
+            Activity activity = new Activity(BasicConfig.ActiveTraceName);
 
-            activity.Start();  
-            activity.SetParentId(parentId);   
+            activity.Start();
+            activity.SetParentId(parentId); 
 
-            activity.AddBaggage(BasicConfig.ActiveTraceId, activity.Id);  
-            activity.AddBaggage(BasicConfig.ActiveSpanId,activity.SpanId.ToHexString()); 
+            // Set Activity
+            activity.AddBaggage(BasicConfig.ActiveTraceId, activity.Id);
+            activity.AddBaggage(BasicConfig.ActiveSpanId, activity.SpanId.ToHexString());
             if (!parentId.IsEmpty())
             {
                 activity.AddBaggage(BasicConfig.ActiveParentSpanId, activity.ParentSpanId.ToHexString());
             }
-                
 
+            // Set Context
             context.Items.Add(BasicConfig.ActiveTraceCreateTime, DateTime.Now);
             context.Items.Add(BasicConfig.ActiveTraceId, activity.Id);
-            context.Items.Add(BasicConfig.ActiveSpanId, activity.SpanId.ToHexString()); 
+            context.Items.Add(BasicConfig.ActiveSpanId, activity.SpanId.ToHexString());
             if (!parentId.IsEmpty())
             {
                 context.Items.Add(BasicConfig.ActiveParentSpanId, activity.ParentSpanId.ToHexString());
+            }
+
+
+
+            var parentService = context.Request.Headers.ContainsKey(BasicConfig.ActiveParentSpanService) ?
+               context.Request.Headers[BasicConfig.ActiveParentSpanService].ToString() : string.Empty;   
+
+            activity.AddBaggage(BasicConfig.ActiveSpanService,Options.Service);
+            context.Items.Add(BasicConfig.ActiveSpanService, Options.Service);
+
+            if (!parentService.IsEmpty())
+            {
+                activity.AddBaggage(BasicConfig.ActiveParentSpanService, parentService);
+                context.Items.Add(BasicConfig.ActiveParentSpanService, parentService);
             }  
 
-            context.Response.Headers.Add(BasicConfig.ActiveSpanId, activity.SpanId.ToHexString());
+            // Set Response
+            context.Response.Headers.Add(BasicConfig.ActiveSpanId, activity.SpanId.ToHexString()); 
 
         }
 

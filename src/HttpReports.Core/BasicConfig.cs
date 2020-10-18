@@ -39,6 +39,9 @@ namespace HttpReports.Core
         public const string ActiveParentSpanService = "HttpReports.Trace.ParentSpan.Service";
 
 
+        public const string ActiveSpanService = "HttpReports.Trace.Span.Service";
+
+
         public const string AuthToken = "HttpReports.Auth.Token";
 
 
