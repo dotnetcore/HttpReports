@@ -19,7 +19,7 @@ namespace HttpReports.Dashboard.WebAPP
 
         public void ConfigureServices(IServiceCollection services) 
         {
-            services.AddHttpReports().UseHttpTransport(x=> x.DeferSecond = 66);
+            services.AddHttpReports().UseHttpTransport();
 
             services.AddHttpReportsDashboard().UseMySqlStorage();
 
@@ -43,9 +43,9 @@ namespace HttpReports.Dashboard.WebAPP
 
             app.UseHttpReports();
 
-            //app.UseMiddleware<ErrorMiddleware>();
+            app.UseHttpReportsDashboard();   
 
-            app.UseHttpReportsDashboard();  
+            //app.UseMiddleware<ErrorMiddleware>();
 
 
             MapRoute(app);

@@ -36,17 +36,17 @@ namespace HttpReports
 
         public async Task InvokeAsync(HttpContext context)
         {
-            if (context.Request.Path.HasValue && context.Request.Path.Value == "/")
+            if ((context.Request.Path.HasValue && context.Request.Path.Value == "/") || context.Request.ContentType.IsEmpty())
             {
                 await Next(context);
                 return;
             }
 
-            if (!context.Request.ContentType.IsEmpty() && context.Request.ContentType.Contains("application/grpc"))
+            if (context.Request.ContentType.Contains("application/grpc"))
             {
                 await InvokeGrpcAsync(context);
             } 
-            else if(!context.Request.ContentType.IsEmpty() && context.Request.ContentType.Contains("application/json"))
+            else if(!context.Request.Path.Value.Contains("."))
             {
                 await InvokeHttpAsync(context);
             }
@@ -260,6 +260,12 @@ namespace HttpReports
 
         private bool FilterRequest(HttpContext context)
         {
+            if (context.Request.HasFormContentType && context.Request.Form != null && context.Request.Form.Files != null && context.Request.Form.Files.Any())
+            {
+                return true;
+            }
+
+
             var path = context.Request.Path.Value.ToLowerInvariant();
 
             if (path.StartsWith(BasicConfig.TransportPath.ToLowerInvariant()))
