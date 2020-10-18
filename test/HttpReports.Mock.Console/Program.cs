@@ -1,4 +1,5 @@
-﻿using HttpReports.Core.Models;
+﻿using HttpReports.Core;
+using HttpReports.Core.Models;
 using HttpReports.Storage.PostgreSQL;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -13,8 +14,8 @@ namespace HttpReports.Mock.Console
     class Program
     {
         static async Task Main(string[] args)
-        {
-            var a = 100;
+        {  
+            var a = 129;
             var b = 10000;
             var c = 60000; 
 
@@ -41,11 +42,33 @@ namespace HttpReports.Mock.Console
 
             var _storage = services.BuildServiceProvider().GetRequiredService<PostgreSQLStorage>();
 
+            _ = Task.Run(async () => {
+
+                while (true)
+                {     
+                   var res = await _storage.UpdateLoginUser(new SysUser
+                    {
+                        Id = "323d9db2a91ffe1c",
+                        UserName = "admin",
+                        Password = MD5_32("123456")
+
+                   });
+
+                    System.Console.WriteLine(res);
+
+                    await Task.Delay(3000);
+
+                }  
+            
+            });
+
+
             await InsertTestAsync(_storage,a,b,c);
 
             System.Console.ReadKey();
           
-        }
+        } 
+       
 
 
         public static Task InsertTestAsync(PostgreSQLStorage storage,int a,int b,int c)
@@ -149,7 +172,15 @@ namespace HttpReports.Mock.Console
             MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
             string val = BitConverter.ToString(md5.ComputeHash(UTF8Encoding.Default.GetBytes(source)), 4, 8).Replace("-", "").ToLower();
             return val;
-        } 
+        }
+
+        public static string MD5_32(string source)
+        {
+            MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
+            byte[] bytes = Encoding.UTF8.GetBytes(source);
+            string result = BitConverter.ToString(md5.ComputeHash(bytes));
+            return result.Replace("-", "").ToLower();
+        }
 
 
     }

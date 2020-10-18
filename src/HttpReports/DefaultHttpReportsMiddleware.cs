@@ -53,8 +53,7 @@ namespace HttpReports
             else
             {
                 await Next(context);
-            }
-             
+            } 
         }
 
 
@@ -261,11 +260,6 @@ namespace HttpReports
 
         private bool FilterRequest(HttpContext context)
         {
-            if (Options.RequestFilter == null || Options.RequestFilter.Count() == 0)
-            {
-                return false;
-            } 
-
             var path = context.Request.Path.Value.ToLowerInvariant();
 
             if (path.StartsWith(BasicConfig.TransportPath.ToLowerInvariant()))
@@ -273,6 +267,11 @@ namespace HttpReports
                 return true;
             }
 
+
+            if (Options.RequestFilter == null || Options.RequestFilter.Count() == 0)
+            {
+                return false;
+            }   
 
             return MatchRequestRule();
 

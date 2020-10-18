@@ -21,8 +21,8 @@ namespace HttpReports.Dashboard.WebAPP
         {
             services.AddHttpReports().UseHttpTransport(x=> x.DeferSecond = 66);
 
-            //services.AddHttpReportsDashboard().UseSQLServerStorage(); 
-           
+            services.AddHttpReportsDashboard().UseMySqlStorage();
+
             services.AddControllers();
 
             services.AddCors(c => 
@@ -45,7 +45,7 @@ namespace HttpReports.Dashboard.WebAPP
 
             //app.UseMiddleware<ErrorMiddleware>();
 
-            //app.UseHttpReportsDashboard();  
+            app.UseHttpReportsDashboard();  
 
 
             MapRoute(app);
