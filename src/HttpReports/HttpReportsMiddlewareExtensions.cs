@@ -27,41 +27,9 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             HttpReportsOptions options = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports").Get<HttpReportsOptions>();
 
-            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports"); 
+            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");  
 
-            if (options.Server.IsEmpty())
-            {
-                var urls = services.BuildServiceProvider().GetService<IConfiguration>()[WebHostDefaults.ServerUrlsKey] ?? configuration["server.urls"];
-
-                if (!urls.IsEmpty())
-                {
-                    var first = urls.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-
-                    if (!string.IsNullOrEmpty(first))
-                    {
-                        options.Server = first;
-                    }
-                }
-                else
-                {
-                    options.Server = "http://localhost:5000";
-                }
-            }  
-
-            services.AddOptions();
-            services.Configure<HttpReportsOptions>(_ => { 
-
-                _.Server = options.Server;
-                _.Service = options.Service;
-                _.MaxBytes = options.MaxBytes;
-                _.RequestFilter = options.RequestFilter;
-                _.Switch = options.Switch;
-                _.WithCookie = options.WithCookie;
-                _.WithHeader = options.WithHeader;
-                _.WithRequest = options.WithRequest;
-                _.WithResponse = options.WithResponse; 
-                 
-            });  
+            services.AddOptions().Configure<HttpReportsOptions>(configuration); 
 
             return services.AddHttpReportsService(configuration);
         }   
@@ -70,18 +38,23 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services, Action<HttpReportsOptions> options)
         {
-            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");   
-         
+            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");  
 
-            services.AddOptions(); 
-            services.Configure<HttpReportsOptions>(options);
-
+            services.AddOptions().Configure<HttpReportsOptions>(options);  
+            
             return services.AddHttpReportsService(configuration);
         }  
 
 
         private static IHttpReportsBuilder AddHttpReportsService(this IServiceCollection services, IConfiguration configuration)
-        {   
+        {
+            services.PostConfigure<HttpReportsOptions>(x => {
+
+                x.Server = services.GetNewServer(x); 
+
+            });
+
+
             services.AddSingleton<IRequestProcesser, DefaultRequestProcesser>();
             services.AddSingleton<IRequestBuilder, DefaultRequestBuilder>();
             services.AddSingleton<IBackgroundService, HttpReportsBackgroundService>();
@@ -90,10 +63,10 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IDiagnosticListener, HttpClientDiagnosticListener>();
             services.AddSingleton<IDiagnosticListener, AspNetCoreDiagnosticListener>();
             services.AddSingleton<ISegmentContext, SegmentContext>();
-            services.AddSingleton<TraceDiagnsticListenerObserver>();
+            services.AddSingleton<TraceDiagnsticListenerObserver>(); 
 
             return new HttpReportsBuilder(services, configuration);
-        }
+        }  
 
         public static IApplicationBuilder UseHttpReports(this IApplicationBuilder app)
         { 
@@ -115,6 +88,27 @@ namespace Microsoft.Extensions.DependencyInjection
             DiagnosticListener.AllListeners.Subscribe(observer);
 
             return app;
+        } 
+
+        private static string GetNewServer(this IServiceCollection services,HttpReportsOptions options)
+        {
+            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports"); 
+
+            string Default = "http://localhost:5000";  
+
+            if (!options.Server.IsEmpty()) return options.Server; 
+
+            var urls = services.BuildServiceProvider().GetService<IConfiguration>()[WebHostDefaults.ServerUrlsKey] ?? configuration["server.urls"];
+
+            if (!urls.IsEmpty())
+            {
+                var first = urls.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+
+                if (!first.IsEmpty()) return first; 
+            }  
+
+            return Default;    
         }
+
     }
 }

@@ -21,7 +21,7 @@ namespace HttpReports.Dashboard.WebAPP
         {
             services.AddHttpReports().UseHttpTransport();
 
-            services.AddHttpReportsDashboard().UsePostgreSQLStorage();
+            services.AddHttpReportsDashboard().UseMySqlStorage();
 
             services.AddControllers();
 
@@ -45,7 +45,7 @@ namespace HttpReports.Dashboard.WebAPP
 
             //app.UseMiddleware<ErrorMiddleware>();
 
-            //app.UseHttpReportsDashboard();  
+            app.UseHttpReportsDashboard();  
 
 
             MapRoute(app);
