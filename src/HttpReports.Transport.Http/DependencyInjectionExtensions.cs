@@ -19,7 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         public static IHttpReportsBuilder UseHttpTransport(this IHttpReportsBuilder builder, Action<HttpTransportOptions> options)
-        {
+        { 
             builder.Services.AddOptions().Configure(options);
             return builder.UseHttpTransportService();
         }

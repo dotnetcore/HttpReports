@@ -70,8 +70,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services, Action<HttpReportsOptions> options)
         {
-            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");   
-         
+            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");    
 
             services.AddOptions(); 
             services.Configure<HttpReportsOptions>(options);
