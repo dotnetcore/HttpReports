@@ -121,7 +121,7 @@ function setHttpFilter() {
 
     if (!basic.isEmpty(token)) {
       
-      request.headers.set('HttpReports.Auth.Token',token); 
+      request.headers.set('HttpReports-AuthToken',token); 
 
     }  
 

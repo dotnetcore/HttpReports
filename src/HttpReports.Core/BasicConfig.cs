@@ -42,7 +42,7 @@ namespace HttpReports.Core
         public const string ActiveSpanService = "HttpReports.Trace.Span.Service";
 
 
-        public const string AuthToken = "HttpReports.Auth.Token";
+        public const string AuthToken = "HttpReports-AuthToken";
 
 
         public const string ALLTag = "ALL";

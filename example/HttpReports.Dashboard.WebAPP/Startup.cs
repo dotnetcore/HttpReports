@@ -19,9 +19,9 @@ namespace HttpReports.Dashboard.WebAPP
 
         public void ConfigureServices(IServiceCollection services) 
         {
-            services.AddHttpReports().UseHttpTransport();
+            //services.AddHttpReports().UseHttpTransport();
 
-            //services.AddHttpReportsDashboard().UseMySqlStorage();
+            services.AddHttpReportsDashboard().UseMySqlStorage();
 
             services.AddControllers();
 
@@ -41,9 +41,9 @@ namespace HttpReports.Dashboard.WebAPP
         {
             app.UseCors("Policy"); 
 
-            app.UseHttpReports();
+            //app.UseHttpReports();
 
-            //app.UseHttpReportsDashboard();   
+            app.UseHttpReportsDashboard();   
 
             //app.UseMiddleware<ErrorMiddleware>(); 
 
