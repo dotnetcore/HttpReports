@@ -45,11 +45,14 @@ namespace Microsoft.Extensions.DependencyInjection
 
 
         private static IHttpReportsBuilder UseHttpReportsDashboardService(this IServiceCollection services, IConfiguration configuration)
-        {    
+        { 
+            services.AddHttpClient(BasicConfig.HttpReportsHttpClient);
+
             services.AddSingleton<IAlarmService, AlarmService>(); 
             services.AddSingleton<IAuthService, AuthService>();  
             services.AddSingleton<IScheduleService, ScheduleService>();  
-            services.AddSingleton<ILocalizeService,LocalizeService>(); 
+            services.AddSingleton<ILocalizeService,LocalizeService>();
+            services.AddSingleton<IHealthCheckService, HealthCheckService>();
 
             services.AddHandleService(); 
             services.AddHttpReportsHttpCollector(); 

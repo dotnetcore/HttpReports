@@ -18,8 +18,11 @@ import zhLocale from 'element-ui/lib/locale/lang/zh-CN'
 
  
 import { basic } from '@/common/basic.js' 
-Vue.prototype.basic = basic 
 
+ Vue.config.isProduct = false;
+ Vue.config.devServer = "http://localhost:5010/HttpReportsData";
+
+ Vue.prototype.basic = basic  
  Vue.config.productionTip = false;
  Vue.config.silent = true
 
@@ -105,12 +108,10 @@ var vue = new Vue({
 } 
 
 
-function setHttpFilter() {  
-  
-  //var server = "http://localhost:5010/HttpReportsData";
+function setHttpFilter() {   
+   
+  var server =  Vue.config.isProduct ?  window.location.protocol + "//" + window.location.host + "/HttpReportsData" :  Vue.config.devServer;
  
-  var server = window.location.protocol + "//" + window.location.host + "/HttpReportsData";
-
   Vue.http.options.root = server; 
 
   // VueResource 请求拦截器 

@@ -21,6 +21,7 @@ const store = new Vuex.Store({
     detail_loading:false,
     topology_loading:false,
     alarm_loading:false,
+    health_loading:false,
     index_loading_timestamp:0
   },  
   mutations: { 
@@ -50,6 +51,7 @@ const store = new Vuex.Store({
     set_topology_loading:(state,data) => state.topology_loading = data,
     set_service_loading:(state,data) => state.service_loading = data,
     set_alarm_loading:(state,data) => state.alarm_loading = data,
+    set_health_loading:(state,data) => state.health_loading = data,
     set_index_loading_timestamp:(state,data) => state.index_loading_timestamp = data,
     set_route:(state,data) => state.route = data, 
 

@@ -16,9 +16,10 @@ namespace HttpReports.Dashboard.Services
         public async Task Execute(IJobExecutionContext context)
         {
             _storage = _storage ?? ServiceContainer.provider.GetService(typeof(IHttpReportsStorage)) as IHttpReportsStorage;
-            _options = _options ?? (ServiceContainer.provider.GetService(typeof(IOptions<DashboardOptions>)) as IOptions<DashboardOptions>).Value; 
+            _options = _options ?? (ServiceContainer.provider.GetService(typeof(IOptions<DashboardOptions>)) as IOptions<DashboardOptions>).Value;
 
-            await _storage.ClearData(DateTime.Now.AddDays(-_options.ExpireDay).ToString("yyyy-MM-dd"));
+           
+            await _storage.ClearData(DateTime.Now.AddDays(-_options.ExpireDay).ToString("yyyy-MM-dd")); 
 
         }
 

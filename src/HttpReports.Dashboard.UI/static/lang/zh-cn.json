@@ -21,6 +21,7 @@
   "ServiceRelationship":"服务关系图",
   "Language": "语言",
   "LoginInfo":"登录信息",
+  "Health":"健康检查",
   "QueryString":"查询字符串",
   "QueryHeader":"请求头",
   "ParentId":"父级ID",

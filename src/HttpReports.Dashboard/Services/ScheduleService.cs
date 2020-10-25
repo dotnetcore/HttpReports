@@ -57,8 +57,7 @@ namespace HttpReports.Dashboard.Services
             foreach (var item in list)
             {
                 await ScheduleJobAsync(item);
-            } 
-          
+            }  
         }
 
         public async Task ScheduleJobAsync(MonitorJob model)

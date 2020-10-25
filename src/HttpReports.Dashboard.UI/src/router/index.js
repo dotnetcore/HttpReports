@@ -8,6 +8,7 @@ import Service from '@/view/service'
 import Detail from '@/view/detail'
 import Alarm from '@/view/alarm'
 import Topology from '@/view/topology' 
+import Health from '@/view/health'
 
 Vue.use(Router) 
 
@@ -50,6 +51,10 @@ export default new Router({
         {
           path: '/alarm',
           component: Alarm
+        },
+        {
+          path: '/health',
+          component: Health
         } 
       ] 
     },

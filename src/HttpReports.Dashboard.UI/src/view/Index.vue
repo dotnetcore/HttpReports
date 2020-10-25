@@ -222,6 +222,13 @@
             <i class="fa fa-rocket"></i>
             <span slot="title">{{ this.$store.state.lang.Menu_Monitor }}</span>
           </el-menu-item>
+
+           <el-menu-item index="/health">
+            <i class="fa fa-heartbeat"></i>
+            <span slot="title">{{ this.$store.state.lang.Health }}</span>
+          </el-menu-item> 
+
+
         </el-menu>
       </el-aside>
 
@@ -456,6 +463,7 @@ export default {
     detail_loading: (state) => state.detail_loading,
     service_loading: (state) => state.service_loading,
     alarm_loading: (state) => state.alarm_loading,
+    health_loading:(state) => state.health_loading,
     index_loading_timestamp: (state) => state.index_loading_timestamp,
   }),
   watch: {
@@ -483,6 +491,12 @@ export default {
     topology_loading(newVal, oldVal) {
       var path = this.$router.app._route.path;
       if (path == "/topology") {
+        this.loading = newVal;
+      }
+    },
+     health_loading(newVal, oldVal) {
+      var path = this.$router.app._route.path;
+      if (path == "/health") {
         this.loading = newVal;
       }
     },
