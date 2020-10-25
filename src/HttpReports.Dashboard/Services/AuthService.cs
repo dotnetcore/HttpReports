@@ -4,6 +4,7 @@ using HttpReports.Dashboard.Handles;
 using HttpReports.Dashboard.Routes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using System; 
 using System.Collections.Generic;
@@ -14,13 +15,15 @@ namespace HttpReports.Dashboard.Services
 {
     public class AuthService:IAuthService
     { 
+        private readonly ILogger<AuthService> _logger;
+
         List<AuthInfo> Members = new List<AuthInfo>();
 
         object sync = new object();
 
-        public AuthService()
+        public AuthService(ILogger<AuthService> logger)
         {
-
+            _logger = logger;
         }  
 
         public string BuildToken()
@@ -46,10 +49,10 @@ namespace HttpReports.Dashboard.Services
         public bool ValidToken(string token)
         { 
             lock (sync)
-            {
+            { 
                 var user = Members.Where(x => x.Token == token).FirstOrDefault();
 
-                if (user == null) return false;
+                if (user == null) return false; 
 
                 if (user.ExpireTime <= DateTime.Now)
                 {
@@ -80,12 +83,12 @@ namespace HttpReports.Dashboard.Services
                         return true;
                     }
                 }
-            }  
+            } 
 
-            StringValues token;
+            StringValues token; 
 
             if (!httpContext.Request.Headers.TryGetValue(BasicConfig.AuthToken,out token))
-            {
+            { 
                 return false;
             }
 
