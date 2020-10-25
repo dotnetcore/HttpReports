@@ -52,5 +52,21 @@ namespace HttpReports.Dashboard.WebAPP.Controllers
             return await Task.FromResult(Json(new { code = 1,msg = "ok"  }));
 
         }
+
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login(User user)
+        {
+            return await Task.FromResult(Json(new { code = 1, msg = "ok" }));
+
+        }
     }
+
+    public class User
+    {
+        public string Name { get; set; }
+
+        public int Age { get; set; }
+
+    }
+
 }
