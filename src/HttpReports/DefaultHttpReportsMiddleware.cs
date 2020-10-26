@@ -284,7 +284,7 @@ namespace HttpReports
 
             var path = context.Request.Path.Value.ToLowerInvariant();
 
-            if (path.StartsWith(BasicConfig.TransportPath.ToLowerInvariant()))
+            if (path.StartsWith(BasicConfig.TransportPath.ToLowerInvariant()) || path.StartsWith(BasicConfig.HttpReportsDefaultHealth.ToLowerInvariant()))
             {
                 return true;
             }

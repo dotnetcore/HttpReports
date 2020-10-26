@@ -45,7 +45,26 @@ namespace Microsoft.Extensions.DependencyInjection
 
 
         private static IHttpReportsBuilder UseHttpReportsDashboardService(this IServiceCollection services, IConfiguration configuration)
-        { 
+        {
+            services.PostConfigure<DashboardOptions>(x => {
+
+                if (x.Check == null)
+                {
+                    x.Check = new HealthCheckOptions();
+                }
+
+                if (string.IsNullOrEmpty(x.Check.Endpoint))
+                {
+                    x.Check.Endpoint = BasicConfig.HttpReportsDefaultHealth;
+                }
+
+                if (string.IsNullOrEmpty(x.Check.Range))
+                {
+                    x.Check.Range = "500,2000";
+                }
+
+            }); 
+
             services.AddHttpClient(BasicConfig.HttpReportsHttpClient);
 
             services.AddSingleton<IAlarmService, AlarmService>(); 

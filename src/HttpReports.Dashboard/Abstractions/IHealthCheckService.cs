@@ -10,5 +10,7 @@ namespace HttpReports.Dashboard.Abstractions
     { 
         Task<List<ServiceInstanceHealthInfo>> GetServiceInstance();
 
+        Task<bool> SetServiceInstance(List<ServiceInstanceHealthInfo> list);
+
     }
 }

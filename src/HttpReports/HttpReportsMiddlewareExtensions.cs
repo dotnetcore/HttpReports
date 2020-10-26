@@ -78,9 +78,20 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var options = app.ApplicationServices.GetRequiredService<IOptions<HttpReportsOptions>>(); 
 
-            if (!options.Value.Switch) return null; 
+            if (!options.Value.Switch) return null;
 
-            app.UseMiddleware<DefaultHttpReportsMiddleware>(); 
+            app.Map(BasicConfig.HttpReportsDefaultHealth, builder => {
+
+                builder.Run(async context =>
+
+                    await context.Response.WriteAsync(DateTime.Now.ToShortTimeString())
+
+                );
+
+            });
+
+            app.UseMiddleware<DefaultHttpReportsMiddleware>();
+             
 
             TraceDiagnsticListenerObserver observer = app.ApplicationServices.GetRequiredService<TraceDiagnsticListenerObserver>();  
 

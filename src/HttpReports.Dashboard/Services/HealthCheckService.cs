@@ -14,13 +14,25 @@ namespace HttpReports.Dashboard.Services
     {
         private readonly IHttpReportsStorage _storage;
         private DateTime ExpireDateTime;
-        private readonly List<ServiceInstanceHealthInfo> HealthInfos;
+        public List<ServiceInstanceHealthInfo> HealthInfos;
+
+        public object locker = new object();
 
         public HealthCheckService(IHttpReportsStorage storage)
         {
             _storage = storage;
             ExpireDateTime = DateTime.Now.AddSeconds(-3);
             HealthInfos = new List<ServiceInstanceHealthInfo>();
+        }
+
+        public async Task<bool> SetServiceInstance(List<ServiceInstanceHealthInfo> list)
+        {
+            lock (locker)
+            {
+                this.HealthInfos = list;  
+            }
+
+            return await Task.FromResult(true);
         }
 
         public async Task<List<ServiceInstanceHealthInfo>> GetServiceInstance()
@@ -33,22 +45,23 @@ namespace HttpReports.Dashboard.Services
             {
                 var list = await _storage.GetServiceInstance(DateTime.Now.AddDays(-1));
 
-                List<ServiceInstanceHealthInfo> healthInfos = new List<ServiceInstanceHealthInfo>(); 
+                List<ServiceInstanceHealthInfo> healthInfos = new List<ServiceInstanceHealthInfo>();
 
                 foreach (var service in list.Select(x => x.Service).Distinct())
                 {
-                    healthInfos.Add(new ServiceInstanceHealthInfo { 
-                    
-                        ServiceInfo = new ServiceHealthInfo { Service = service },
-                        Instances = list.Where(x => x.Service == service).Select(x => x.Instance).Distinct().Select(x => new InstanceHealthInfo { Instance = x  }).ToList() 
+                    healthInfos.Add(new ServiceInstanceHealthInfo
+                    {
 
-                    });  
+                        ServiceInfo = new ServiceHealthInfo { Service = service },
+                        Instances = list.Where(x => x.Service == service).Select(x => x.Instance).Distinct().Select(x => new InstanceHealthInfo { Instance = x }).ToList()
+
+                    });
                 }
 
                 ExpireDateTime = DateTime.Now.AddMinutes(5);
 
                 return healthInfos;
-            } 
+            }
 
         } 
 

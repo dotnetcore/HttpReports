@@ -34,6 +34,9 @@ namespace HttpReports.Core
 
         public const string ActiveParentSpanId = "HttpReports.Trace.ParentSpan.Id";
 
+
+        public const string HttpReportsDefaultHealth = "/HttpReportsDefaultHealth";
+
         public const int DeferTaskMinutes = 3;
 
         public const string ActiveParentSpanService = "HttpReports.Trace.ParentSpan.Service";
