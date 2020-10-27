@@ -39,7 +39,10 @@ namespace HttpReports.Dashboard.Services
         {
             if (ExpireDateTime > DateTime.Now)
             {
-                return HealthInfos;
+                lock (locker)
+                {
+                    return HealthInfos;
+                } 
             }
             else
             {
@@ -50,8 +53,7 @@ namespace HttpReports.Dashboard.Services
                 foreach (var service in list.Select(x => x.Service).Distinct())
                 {
                     healthInfos.Add(new ServiceInstanceHealthInfo
-                    {
-
+                    { 
                         ServiceInfo = new ServiceHealthInfo { Service = service },
                         Instances = list.Where(x => x.Service == service).Select(x => x.Instance).Distinct().Select(x => new InstanceHealthInfo { Instance = x }).ToList()
 
