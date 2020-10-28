@@ -108,7 +108,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             if (!options.Server.IsEmpty()) return options.Server; 
 
-            var urls = services.BuildServiceProvider().GetService<IConfiguration>()[WebHostDefaults.ServerUrlsKey] ?? configuration["server.urls"];
+            var urls = services.BuildServiceProvider().GetService<IConfiguration>()[WebHostDefaults.ServerUrlsKey] ?? configuration["server.urls"] ?? configuration["server"];
 
             if (!urls.IsEmpty())
             {

@@ -19,7 +19,7 @@ namespace HttpReports.Dashboard.WebAPP
 
         public void ConfigureServices(IServiceCollection services) 
         {
-            services.AddHttpReports().UseHttpTransport();
+            services.AddHttpReports().UseHttpTransport();   
 
             services.AddHttpReportsDashboard().UseMySqlStorage();
 
