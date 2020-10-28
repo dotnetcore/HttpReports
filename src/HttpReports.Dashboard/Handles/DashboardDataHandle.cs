@@ -29,13 +29,16 @@ namespace HttpReports.Dashboard.Handles
 
         private IAuthService _authService;
 
+        private IHealthCheckService _healthCheckService;
 
-        public DashboardDataHandle(IServiceProvider serviceProvider, IAuthService authService, IHttpReportsStorage storage, IScheduleService scheduleService, ILocalizeService localizeService) : base(serviceProvider)
+
+        public DashboardDataHandle(IServiceProvider serviceProvider, IHealthCheckService healthCheckService, IAuthService authService, IHttpReportsStorage storage, IScheduleService scheduleService, ILocalizeService localizeService) : base(serviceProvider)
         {
             _storage = storage; 
             _scheduleService = scheduleService; 
             _localizeService = localizeService;
             _authService = authService;
+            _healthCheckService = healthCheckService;
         }
 
         public async Task<string> GetServiceInstance()
@@ -146,8 +149,16 @@ namespace HttpReports.Dashboard.Handles
             var result = await _storage.GetSearchRequestInfoAsync(filter);
 
             return Json(true,result); 
+        }
+
+
+        public async Task<string> GetHealthCheck()
+        {
+            var list = await  _healthCheckService.GetServiceInstance();
+
+            return Json(true, list);
+
         } 
-         
 
 
         public async Task<string> GetServiceBasicData(QueryRequest request)

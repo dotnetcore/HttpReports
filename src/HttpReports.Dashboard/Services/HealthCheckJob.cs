@@ -3,6 +3,7 @@ using HttpReports.Core.ViewModels;
 using HttpReports.Dashboard.Abstractions;
 using HttpReports.Dashboard.Implements;
 using HttpReports.Storage.Abstractions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Quartz;
 using System;
@@ -27,6 +28,7 @@ namespace HttpReports.Dashboard.Services
 
         private IHealthCheckService _healthCheckService;
         private IHttpClientFactory _httpClientFactory;
+        private ILogger<HealthCheckJob> _logger;
 
         public async Task Execute(IJobExecutionContext context)
         {
@@ -34,6 +36,8 @@ namespace HttpReports.Dashboard.Services
             _options = _options ?? (ServiceContainer.provider.GetService(typeof(IOptions<DashboardOptions>)) as IOptions<DashboardOptions>).Value;
             _healthCheckService = ServiceContainer.provider.GetService(typeof(IHealthCheckService)) as IHealthCheckService;
             _httpClientFactory = ServiceContainer.provider.GetService(typeof(IHttpClientFactory)) as IHttpClientFactory;
+
+            _logger = _logger ?? ServiceContainer.provider.GetService(typeof(ILogger<HealthCheckJob>)) as ILogger<HealthCheckJob>;
 
             await CheckAsync();
         }
@@ -105,6 +109,8 @@ namespace HttpReports.Dashboard.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Health Check Error:{ex.ToString()}");
+
                 HasError = true; 
             }
            

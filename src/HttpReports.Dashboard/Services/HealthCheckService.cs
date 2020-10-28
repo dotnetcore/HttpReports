@@ -1,6 +1,7 @@
 ﻿using HttpReports.Core.ViewModels;
 using HttpReports.Dashboard.Abstractions;
 using HttpReports.Storage.Abstractions;
+using Newtonsoft.Json;
 using Org.BouncyCastle.Math.EC.Rfc7748;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,16 @@ namespace HttpReports.Dashboard.Services
         {
             lock (locker)
             {
-                this.HealthInfos = list;  
+                foreach (var item in list)
+                {
+                    this.HealthInfos = new List<ServiceInstanceHealthInfo>();
+                    this.HealthInfos.Add(new ServiceInstanceHealthInfo { 
+                    
+                         Instances = item.Instances,
+                         ServiceInfo = item.ServiceInfo
+                    
+                    });
+                } 
             }
 
             return await Task.FromResult(true);
