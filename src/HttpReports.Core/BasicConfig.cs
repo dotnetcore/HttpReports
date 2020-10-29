@@ -60,6 +60,8 @@ namespace HttpReports.Core
 
         public const string ClearDataCornLike = "0 0 0 * * ? ";
 
+        public const string HealthCheckCornLike = "0 0/1 * * * ? ";
+
         public const string HttpReportsGrpcRequest = "HttpReports.GrpcRequest";
 
         public const string HttpReportsGrpcResponse = "HttpReports.GrpcResponse";

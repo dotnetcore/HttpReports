@@ -38,6 +38,8 @@ namespace HttpReports.Dashboard.Services
         {
             await AutoClearDataJobAsync();
 
+            await HealthCheckAsync();
+
             await InitMonitorJobAsync();
 
             await scheduler.Start();
@@ -133,13 +135,13 @@ namespace HttpReports.Dashboard.Services
           
         }
 
-        public async Task CheckHealthAsync()
+        public async Task HealthCheckAsync()
         {
-            if (_options.ExpireDay > 0)
+            if (_options.Check.Switch)
             {
-                var job = JobBuilder.Create<ClearReportsDataJob>().Build();
+                var job = JobBuilder.Create<HealthCheckJob>().Build();
 
-                var trigger = TriggerBuilder.Create().WithCronSchedule(BasicConfig.ClearDataCornLike).Build();
+                var trigger = TriggerBuilder.Create().WithCronSchedule(BasicConfig.HealthCheckCornLike).Build();
 
                 await scheduler.ScheduleJob(job, trigger);
             }

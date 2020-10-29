@@ -7,6 +7,8 @@ namespace HttpReports.Dashboard
 {
     public class HealthCheckOptions : IOptions<HealthCheckOptions>
     {
+        public bool Switch { get; set; }
+
         public string Endpoint { get; set; } 
 
         public string Range { get; set; } 

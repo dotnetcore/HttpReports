@@ -156,7 +156,7 @@ namespace HttpReports.Dashboard.Handles
         {
             var list = await  _healthCheckService.GetServiceInstance();
 
-            return Json(true, list);
+            return Json(true, list.ToList());
 
         } 
 

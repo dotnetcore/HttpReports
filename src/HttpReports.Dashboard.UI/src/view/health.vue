@@ -62,52 +62,7 @@ import { mapState } from "vuex";
 export default {
   data() {
     return {
-      list: [
-        {
-          title: "UserService",
-          passing:2,
-          warning:3,
-          critical:5,
-          instances:[
-            { 
-              instance:"192.168.1.1", 
-              isPassing:false,
-              isWarning:true,
-              isCritical:false
-            },
-            { 
-              instance:"192.168.1.1", 
-              isPassing:false,
-              isWarning:true,
-              isCritical:false
-            } ,
-            { 
-              instance:"192.168.1.1", 
-              isPassing:false,
-              isWarning:true,
-              isCritical:false
-            } ,
-            { 
-              instance:"192.168.1.1", 
-              isPassing:false,
-              isWarning:true,
-              isCritical:false
-            } ,
-            { 
-              instance:"192.168.1.1", 
-              isPassing:false,
-              isWarning:true,
-              isCritical:false
-            } ,
-            { 
-              instance:"192.168.1.1", 
-              isPassing:false,
-              isWarning:true,
-              isCritical:false
-            } 
-          ]
-        }, 
-      ],
+      list:[]
     };
   },
   created: function () {},
@@ -128,19 +83,51 @@ export default {
       console.log(val);
     },
     async load_basic_data() {
-      this.$store.commit("set_topology_loading", true);
+
+      this.$store.commit("set_health_loading", true);
 
       var response = await Vue.http.post(
-        "GetTopologyData",
+        "GetHealthCheck",
         this.$store.state.query
       );
 
-      this.$store.commit("set_topology_loading", false);
+      this.$store.commit("set_health_loading", false);
 
       return response;
     },
 
-    load_list(response) {},
+    load_list(response) {
+
+      console.log("load..list")
+
+       this.list = []; 
+
+        response.body.data.forEach(x => {
+
+          var ins = [];  
+
+          x.instances.forEach(y => {
+
+            ins.push({
+              instance:y.instance,
+              isPassing:y.status == 1,
+              isWarning:y.status == 2,
+              isCritical:y.status == 3
+            });
+            
+          }); 
+
+           this.list.push({ 
+              title: x.serviceInfo.service,
+              passing: x.serviceInfo.passing,
+              warning: x.serviceInfo.warning,
+              critical: x.serviceInfo.critical, 
+              instances: ins
+           });
+          
+        }); 
+
+    },
   },
   async mounted() {
     var response = await this.load_basic_data();

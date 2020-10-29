@@ -53,7 +53,7 @@ namespace HttpReports.Dashboard.Services
                 item.ServiceInfo.Critical = 0;  
 
                 foreach (var k in item.Instances)
-                {
+                { 
                     k.Status = await HttpInvoke(k.Instance + _options.Check.Endpoint,null);
 
                     if (k.Status == HealthStatusEnum.IsPassing)
@@ -77,7 +77,12 @@ namespace HttpReports.Dashboard.Services
         } 
 
         public async Task<HealthStatusEnum> HttpInvoke(string Endpoint, List<int> costs)
-        {  
+        {
+            if (!Endpoint.Contains("http"))
+            {
+                Endpoint = "http://" + Endpoint;
+            } 
+
             var range = _options.Check.Range.Split(',').Select(x => x.ToInt()).ToArray();
 
             if (costs != null && costs.Count() == 3)
@@ -103,7 +108,7 @@ namespace HttpReports.Dashboard.Services
             stopwatch.Start();
 
             var client = _httpClientFactory.CreateClient(BasicConfig.HttpReportsHttpClient);
-            client.Timeout = TimeSpan.FromSeconds(range[1]);
+            client.Timeout = TimeSpan.FromSeconds(range[1]); 
 
             bool HasError = false;
 
