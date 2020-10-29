@@ -44,17 +44,21 @@ namespace HttpReports.Dashboard.Services
 
         public async Task CheckAsync()
         {   
-            var list = await _healthCheckService.GetServiceInstance();   
+            var list = await _healthCheckService.GetServiceInstance();     
 
             foreach (var item in list)
             {
+                item.ServiceInfo.Passing = 0;
+                item.ServiceInfo.Warning = 0;
+                item.ServiceInfo.Critical = 0;  
+
                 foreach (var k in item.Instances)
                 {
-                    k.Status = await HttpInvoke(_options.Check.Endpoint,null);
+                    k.Status = await HttpInvoke(k.Instance + _options.Check.Endpoint,null);
 
                     if (k.Status == HealthStatusEnum.IsPassing)
                     {
-                        item.ServiceInfo.Passing += 1;
+                        item.ServiceInfo.Passing += 1; 
                     }
 
                     if (k.Status == HealthStatusEnum.IsWarning)

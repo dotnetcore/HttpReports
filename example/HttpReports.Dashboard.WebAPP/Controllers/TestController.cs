@@ -24,10 +24,23 @@ namespace HttpReports.Dashboard.WebAPP.Controllers
             foreach (var stream in dictionary.Values)
             {
                 var memoryStream = new MemoryStream();
-                await stream.CopyToAsync(memoryStream);
-            }
+                await stream.CopyToAsync(memoryStream);  
+            }  
+
             return Json(new { msg = "OK" });
         }
+
+
+        [HttpGet("Download")]
+        public async Task<IActionResult> Download()
+        {
+            var filePath = @"E:\SpringLee\HttpReports\example\HttpReports.Dashboard.WebAPP\appsettings.json"; 
+
+            FileStream fileStream = new FileStream(filePath, FileMode.Open); 
+
+            return File(fileStream,"application/octet-stream"); 
+        }
+
 
         [HttpGet("ErrorTest")]
         public async Task<IActionResult> Error()

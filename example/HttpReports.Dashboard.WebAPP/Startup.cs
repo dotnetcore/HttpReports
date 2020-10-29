@@ -41,9 +41,9 @@ namespace HttpReports.Dashboard.WebAPP
         {
             app.UseCors("Policy"); 
 
-            //app.UseHttpReports();
+            app.UseHttpReports();
 
-            app.UseHttpReportsDashboard();   
+            //app.UseHttpReportsDashboard();   
 
             //app.UseMiddleware<ErrorMiddleware>(); 
 

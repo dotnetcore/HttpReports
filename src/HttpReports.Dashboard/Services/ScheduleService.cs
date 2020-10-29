@@ -133,7 +133,19 @@ namespace HttpReports.Dashboard.Services
           
         }
 
-         
+        public async Task CheckHealthAsync()
+        {
+            if (_options.ExpireDay > 0)
+            {
+                var job = JobBuilder.Create<ClearReportsDataJob>().Build();
+
+                var trigger = TriggerBuilder.Create().WithCronSchedule(BasicConfig.ClearDataCornLike).Build();
+
+                await scheduler.ScheduleJob(job, trigger);
+            }
+
+        }
+
 
     }
 }
