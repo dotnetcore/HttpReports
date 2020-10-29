@@ -30,9 +30,10 @@ namespace HttpReports.Dashboard.Services
         {
             lock (locker)
             {
+                this.HealthInfos.Clear();
+
                 foreach (var item in list)
-                {
-                    this.HealthInfos = new List<ServiceInstanceHealthInfo>();
+                { 
                     this.HealthInfos.Add(new ServiceInstanceHealthInfo { 
                     
                          Instances = item.Instances,
