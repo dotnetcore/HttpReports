@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -77,25 +78,28 @@ namespace HttpReports
             var responseMemoryStream = new MemoryStream();
 
             try
-            {
+            {  
                 context.Response.Body = responseMemoryStream;
 
-                await Next(context);
-
+                await Next(context); 
             } 
             finally
-            {
+            { 
                 stopwatch.Stop();
 
                 string responseBody = await GetResponseBodyAsync(context);
 
                 context.Items.Add(BasicConfig.HttpReportsTraceCost, stopwatch.ElapsedMilliseconds); 
                 context.Items.Add(BasicConfig.HttpReportsRequestBody, requestBody);
-                context.Items.Add(BasicConfig.HttpReportsResponseBody, responseBody);
+                context.Items.Add(BasicConfig.HttpReportsResponseBody, responseBody); 
 
-                await responseMemoryStream.CopyToAsync(originalBodyStream);
+                if (responseMemoryStream.CanRead && responseMemoryStream.CanSeek)
+                {
+                    await responseMemoryStream.CopyToAsync(originalBodyStream);
 
-                responseMemoryStream.Dispose();
+                    responseMemoryStream.Dispose();
+
+                }  
 
                 if (!string.IsNullOrEmpty(context.Request.Path))
                 {
@@ -116,7 +120,7 @@ namespace HttpReports
             {
                 await Next(context);
 
-            }
+            } 
             finally
             {
                 stopwatch.Stop();
@@ -134,7 +138,7 @@ namespace HttpReports
                     responseBody = JsonConvert.SerializeObject(context.Items[BasicConfig.HttpReportsGrpcResponse]);
                 }
 
-                context.Items.Add(BasicConfig.HttpReportsTraceCost,stopwatch.ElapsedMilliseconds);
+                context.Items.Add(BasicConfig.HttpReportsTraceCost, stopwatch.ElapsedMilliseconds);
                 context.Items.Add(BasicConfig.HttpReportsRequestBody, requestBody);
                 context.Items.Add(BasicConfig.HttpReportsResponseBody, responseBody);
 
@@ -181,13 +185,20 @@ namespace HttpReports
             {
                 if (context.Response.ContentType.IsEmpty() || !context.Response.ContentType.Contains("application/json") || !Options.WithResponse || context.Response.Body.Length > Options.MaxBytes)
                 {
-                    context.Response.Body.Seek(0, SeekOrigin.Begin);
+                    if (context.Response.Body.CanSeek)
+                    {
+                        context.Response.Body.Seek(0, SeekOrigin.Begin);
+                    }  
                     return string.Empty;
                 }
 
                 if (FilterStaticFiles(context))
                 {
-                    context.Response.Body.Seek(0, SeekOrigin.Begin);
+                    if (context.Response.Body.CanSeek)
+                    {
+                        context.Response.Body.Seek(0, SeekOrigin.Begin);
+                    }  
+                       
                     return string.Empty;
                 }  
 
@@ -195,7 +206,17 @@ namespace HttpReports
 
                 context.Response.Body.Seek(0, SeekOrigin.Begin);
 
-                var responseReader = new StreamReader(context.Response.Body, System.Text.Encoding.UTF8);
+
+                bool compress = false;
+
+                if (context.Response.Headers.ContainsKey("Content-Encoding") && context.Response.Headers["Content-Encoding"].ToString() == "gzip")
+                {
+                    compress = true;
+                }  
+
+                var source = compress ? new GZipStream(context.Request.Body, CompressionMode.Decompress) : context.Response.Body; 
+
+                var responseReader = new StreamReader(source, System.Text.Encoding.UTF8);
 
                 result = await responseReader.ReadToEndAsync();
 

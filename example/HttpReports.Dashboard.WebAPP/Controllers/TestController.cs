@@ -59,11 +59,10 @@ namespace HttpReports.Dashboard.WebAPP.Controllers
 
         }
 
-        [HttpPost("Test2")]
+        [HttpGet("Test2")]
         public async Task<IActionResult> Test2()
         {
-            return await Task.FromResult(Json(new { code = 1,msg = "ok"  }));
-
+            return await Task.FromResult(Json(new { code = 1,msg = "ok" , name = "李先生" })); 
         }
 
         [HttpPost("Login")]

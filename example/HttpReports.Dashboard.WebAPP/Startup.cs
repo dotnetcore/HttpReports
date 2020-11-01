@@ -19,9 +19,11 @@ namespace HttpReports.Dashboard.WebAPP
 
         public void ConfigureServices(IServiceCollection services) 
         {
-            //services.AddHttpReports().UseHttpTransport();   
+            services.AddResponseCompression();
 
-            services.AddHttpReportsDashboard().UseMySqlStorage();
+            services.AddHttpReports().UseHttpTransport();   
+
+            //services.AddHttpReportsDashboard().UseMySqlStorage();
 
             services.AddControllers(); 
 
@@ -29,10 +31,11 @@ namespace HttpReports.Dashboard.WebAPP
       
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         { 
+            app.UseResponseCompression(); 
 
-            //app.UseHttpReports();
+            app.UseHttpReports();
 
-            app.UseHttpReportsDashboard();   
+            //app.UseHttpReportsDashboard();   
 
             //app.UseMiddleware<ErrorMiddleware>(); 
 
