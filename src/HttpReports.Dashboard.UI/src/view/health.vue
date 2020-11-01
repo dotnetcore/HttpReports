@@ -96,9 +96,7 @@ export default {
       return response;
     },
 
-    load_list(response) {
-
-      console.log("load..list")
+    load_list(response) { 
 
        this.list = []; 
 

@@ -23,23 +23,12 @@ namespace HttpReports.Dashboard.WebAPP
 
             services.AddHttpReportsDashboard().UseMySqlStorage();
 
-            services.AddControllers();
-
-            services.AddCors(c => 
-            { 
-                c.AddPolicy("Policy", policy =>
-                {
-                    policy.WithOrigins("http://localhost:8080").AllowAnyHeader().AllowAnyMethod(); 
-
-                });
-
-            }); 
+            services.AddControllers(); 
 
         } 
       
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            app.UseCors("Policy"); 
+        { 
 
             //app.UseHttpReports();
 

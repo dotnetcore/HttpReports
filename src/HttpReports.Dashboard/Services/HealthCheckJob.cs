@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Quartz;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
@@ -43,37 +44,50 @@ namespace HttpReports.Dashboard.Services
         }
 
         public async Task CheckAsync()
-        {   
-            var list = await _healthCheckService.GetServiceInstance();     
+        {    
+            var list = await _healthCheckService.GetServiceInstance(); 
 
             foreach (var item in list)
-            {
-                item.ServiceInfo.Passing = 0;
-                item.ServiceInfo.Warning = 0;
-                item.ServiceInfo.Critical = 0;  
+            {    
+                int Passing = 0;
+                int Warning = 0;
+                int Critical = 0; 
 
                 foreach (var k in item.Instances)
-                { 
-                    k.Status = await HttpInvoke(k.Instance + _options.Check.Endpoint,null);
+                {
+                    k.Status = HealthStatusEnum.None;
+
+                    if (_options.Check.Mode.ToUpperInvariant() == "SELF")
+                    {
+                        k.Status = await SelfInvoke(item.ServiceInfo.Service,k.Instance);
+                    }
+
+                    if (_options.Check.Mode.ToUpperInvariant() == "HTTP")
+                    {
+                        k.Status = await HttpInvoke(k.Instance + _options.Check.Endpoint, null);
+                    }  
 
                     if (k.Status == HealthStatusEnum.IsPassing)
                     {
-                        item.ServiceInfo.Passing += 1; 
+                        Passing += 1; 
                     }
 
                     if (k.Status == HealthStatusEnum.IsWarning)
                     {
-                        item.ServiceInfo.Warning += 1;
+                        Warning += 1;
                     }
 
                     if (k.Status == HealthStatusEnum.IsCritical)
                     {
-                        item.ServiceInfo.Critical += 1;
+                        Critical += 1;
                     } 
-                }   
-            }
+                }
 
-            await _healthCheckService.SetServiceInstance(list);   
+                item.ServiceInfo.Passing = Passing;
+                item.ServiceInfo.Warning = Warning;
+                item.ServiceInfo.Critical = Critical;
+
+            } 
         } 
 
         public async Task<HealthStatusEnum> HttpInvoke(string Endpoint, List<int> costs)
@@ -107,18 +121,18 @@ namespace HttpReports.Dashboard.Services
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            var client = _httpClientFactory.CreateClient(BasicConfig.HttpReportsHttpClient);
-            client.Timeout = TimeSpan.FromSeconds(range[1]); 
+            var client = _httpClientFactory.CreateClient(BasicConfig.HttpReportsHttpClient); 
 
             bool HasError = false;
 
             try
             {
+                client.Timeout = TimeSpan.FromMilliseconds(range[1].ToString().ToInt());
                 var response = await client.GetStringAsync(Endpoint);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Health Check Error:{ex.ToString()}");
+                //_logger.LogError($"Health Check Error:{ex.ToString()}");
 
                 HasError = true; 
             }
@@ -137,6 +151,14 @@ namespace HttpReports.Dashboard.Services
             {
                 return HealthStatusEnum.IsPassing;
             } 
-        }
+        } 
+
+        public async Task<HealthStatusEnum> SelfInvoke(string Service,string Instance)
+        {
+            bool performance =  await _storage.GetPerformanceAsync(DateTime.Now.AddSeconds(-30),DateTime.Now,Service,Instance);
+
+            return performance ? HealthStatusEnum.IsPassing : HealthStatusEnum.IsCritical;
+        
+        }  
     }
 }

@@ -192,7 +192,9 @@ export default {
 
           localStorage.setItem("token", response.body.data);
           localStorage.setItem("username", this.username);
-          that.$store.commit("set_token", response.body.data); 
+          that.$store.commit("set_token", response.body.data);
+
+          console.clear(); 
            
            that.$router.push({ path: "/" });
 

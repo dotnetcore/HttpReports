@@ -32,8 +32,9 @@ namespace HttpReports.Core
 
         public const string ActiveSpanId = "HttpReports.Trace.Span.Id";
 
-        public const string ActiveParentSpanId = "HttpReports.Trace.ParentSpan.Id";
-
+        public const string ActiveParentSpanId = "HttpReports.Trace.ParentSpan.Id"; 
+        
+        public const string Policy = "HttpReports.Dashboard.Policy";  
 
         public const string HttpReportsDefaultHealth = "/HttpReportsDefaultHealth";
 

@@ -58,12 +58,27 @@ namespace Microsoft.Extensions.DependencyInjection
                     x.Check.Endpoint = BasicConfig.HttpReportsDefaultHealth;
                 }
 
+                if (string.IsNullOrEmpty(x.Check.Mode))
+                {
+                    x.Check.Mode = "Self";
+                } 
+
                 if (string.IsNullOrEmpty(x.Check.Range))
                 {
                     x.Check.Range = "500,2000";
-                }
+                } 
 
-            }); 
+            });
+
+            services.AddCors(c =>
+            {
+                c.AddPolicy(BasicConfig.Policy, policy =>
+                {
+                    policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); 
+
+                });
+
+            });
 
             services.AddHttpClient(BasicConfig.HttpReportsHttpClient);
 
@@ -81,6 +96,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IApplicationBuilder UseHttpReportsDashboard(this IApplicationBuilder app)
         { 
+            app.UseCors(BasicConfig.Policy); 
+
             ServiceContainer.provider = app.ApplicationServices.GetRequiredService<IServiceProvider>() ?? throw new ArgumentNullException("ServiceProvider Init Failed");   
 
             var storage = app.ApplicationServices.GetRequiredService<IHttpReportsStorage>() ?? throw new ArgumentNullException("Storage Not Found");

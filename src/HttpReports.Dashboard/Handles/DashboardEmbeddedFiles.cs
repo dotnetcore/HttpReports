@@ -42,9 +42,7 @@ namespace HttpReports.Dashboard.Handles
             {
                 if (context.Response.StatusCode == (int)HttpStatusCode.OK)
                 {
-                    context.Response.Headers.Add("Cache-Control", "max-age=2592000");
-
-                    context.Response.ContentType = ResponseType[Path.GetExtension(path)];
+                   context.Response.ContentType = ResponseType[Path.GetExtension(path)];
                 }
 
                 return Task.CompletedTask;

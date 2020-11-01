@@ -9,6 +9,8 @@ namespace HttpReports.Dashboard
     {
         public bool Switch { get; set; }
 
+        public string Mode { get; set; }
+
         public string Endpoint { get; set; } 
 
         public string Range { get; set; } 

@@ -88,5 +88,8 @@ namespace HttpReports.Storage.Abstractions
 
         Task<bool> AddPerformanceAsync(Performance performance);
 
+        Task<bool> GetPerformanceAsync(DateTime start,DateTime end,string Service,string Instance);  
+
+
     }
 }

@@ -41,6 +41,7 @@
 
   <ItemGroup>
     <PackageReference Include="MailKit" Version="2.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="2.1.1" />

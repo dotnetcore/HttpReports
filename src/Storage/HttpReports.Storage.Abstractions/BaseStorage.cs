@@ -164,6 +164,13 @@ namespace HttpReports.Storage.Abstractions
         }
 
 
+        public async Task<bool> GetPerformanceAsync(DateTime start, DateTime end,string service,string instance)
+        { 
+            return await freeSql.Select<Performance>().Where(x => x.Service == service && x.Instance == instance).CountAsync() > 0;  
+        }
+
+
+
         public async Task<List<MonitorJob>> GetMonitorJobs() => await freeSql.Select<MonitorJob>().OrderByDescending(x => x.CreateTime).ToListAsync();
 
 
