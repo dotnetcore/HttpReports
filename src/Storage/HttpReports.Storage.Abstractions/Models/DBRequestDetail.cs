@@ -39,9 +39,8 @@ namespace HttpReports.Storage.Abstractions.Models
         public string ErrorMessage { get; set; }
 
         [Column(DbType = "text")]
-        public string ErrorStack { get; set; }
-
-        [Column(DbType = "text")]
+        public string ErrorStack { get; set; }  
+       
         public DateTime CreateTime { get; set; } 
 
     }

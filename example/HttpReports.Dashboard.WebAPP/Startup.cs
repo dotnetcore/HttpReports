@@ -21,9 +21,9 @@ namespace HttpReports.Dashboard.WebAPP
         {
             services.AddResponseCompression();
 
-            services.AddHttpReports().UseHttpTransport();   
+            //services.AddHttpReports().UseHttpTransport();   
 
-            //services.AddHttpReportsDashboard().UseMySqlStorage();
+            services.AddHttpReportsDashboard().UsePostgreSQLStorage();
 
             services.AddControllers(); 
 
@@ -33,9 +33,9 @@ namespace HttpReports.Dashboard.WebAPP
         { 
             app.UseResponseCompression(); 
 
-            app.UseHttpReports();
+            //app.UseHttpReports();
 
-            //app.UseHttpReportsDashboard();   
+            app.UseHttpReportsDashboard();   
 
             //app.UseMiddleware<ErrorMiddleware>(); 
 

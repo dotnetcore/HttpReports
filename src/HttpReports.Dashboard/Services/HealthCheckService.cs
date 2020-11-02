@@ -53,24 +53,8 @@ namespace HttpReports.Dashboard.Services
                 return HealthInfos; 
             }
             else
-            {
-                
-                this.HealthInfos.Add(new ServiceInstanceHealthInfo
-                {
-
-                    ServiceInfo = new ServiceHealthInfo { Service = "AA" },
-                    Instances = new List<InstanceHealthInfo> { new InstanceHealthInfo {
-
-                    Instance = "ccc"
-
-                }}
-
-                });
-
-                var list = await _storage.GetServiceInstance(DateTime.Now.AddDays(-1));
-
-                list.Add(new ServiceInstanceInfo { Service = "BB", Instance = "bb" });
-
+            { 
+                var list = await _storage.GetServiceInstance(DateTime.Now.AddDays(-1)); 
 
                 List<ServiceInstanceInfo> Removes = new List<ServiceInstanceInfo>();
 
