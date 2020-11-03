@@ -45,10 +45,7 @@ namespace HttpReports.Dashboard.WebAPP.Controllers
         [HttpGet("ErrorTest")]
         public async Task<IActionResult> Error()
         { 
-            throw new Exception("error");
-
-            return await Task.FromResult(Content("ok"));
-             
+            throw new Exception("error");  
         }
 
 
@@ -68,8 +65,7 @@ namespace HttpReports.Dashboard.WebAPP.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login(User user)
         {
-            return await Task.FromResult(Json(new { code = 1, msg = "ok" }));
-
+            return await Task.FromResult(Json(new { code = 1, msg = "ok" })); 
         }
     }
 
