@@ -89,6 +89,8 @@ namespace BuildScript
 
             var packs = context.GetFiles(OutputDir,"*.*").Where(x => x.FileName.Contains(Version));  
 
+
+
             var push = context.CreateTarget("push") 
                .SetDescription("Publishes nuget package.") 
                .DependsOn(pack)
@@ -99,10 +101,22 @@ namespace BuildScript
 
                }); 
 
+
+            var push2 = context.CreateTarget("push2")
+              .SetDescription("Publishes nuget package.")
+              .DependsOn(pack)
+              .ForEach(packs, (project, tagget) =>
+              {
+                  tagget.AddCoreTask(x => x.NugetPush($"{OutputDir}/{project.FileName.Replace(".nupkg", ".snupkg")}")
+                  .ServerUrl("https://www.nuget.org/api/v3/package").ApiKey(NugetKey));
+
+              });
+
+
             context.CreateTarget("Default")
              .SetDescription("Runs all targets.")
              .SetAsDefault()
-             .DependsOn(clean, restore, build, pack,push); 
+             .DependsOn(clean, restore, build, pack,push, push2); 
 
         }
     }

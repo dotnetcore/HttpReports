@@ -3,13 +3,17 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>HttpReports.MySQL</PackageId>
-    <Version>2.0.0</Version>
+    <Version>2.3.3</Version>
     <Authors>SpringLee</Authors>
     <Company>SpringLee</Company>
     <Description>HttpReports is a lightweight APM system developed for Net Core</Description>
     <PackageProjectUrl>https://github.com/dotnetcore/HttpReports</PackageProjectUrl> 
     <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl>
     <PackageIcon>logo3.png</PackageIcon>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +24,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
   </ItemGroup>
 
   <ItemGroup>

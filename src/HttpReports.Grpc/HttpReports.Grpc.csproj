@@ -6,13 +6,18 @@
     <Version>1.6.0</Version>
     <Authors>SpringLee</Authors>
     <Description>HttpReports is a lightweight APM system developed for Net Core </Description>
-    <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl> 
+    <PackageProjectUrl>https://github.com/dotnetcore/HttpReports</PackageProjectUrl> 
     <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl>
     <PackageIcon>logo3.png</PackageIcon>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Grpc.AspNetCore" Version="2.28.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
   </ItemGroup>
 
   <ItemGroup>

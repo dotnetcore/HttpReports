@@ -4,13 +4,17 @@
     <TargetFramework>netstandard2.0</TargetFramework> 
     <AssemblyName>HttpReports.Dashboard</AssemblyName>
     <RootNamespace>HttpReports.Dashboard</RootNamespace>
-    <Version>2.0.0</Version>
+    <Version>2.3.3</Version>
     <PackageId>HttpReports.Dashboard</PackageId> 
     <PackageLicenseFile></PackageLicenseFile>
     <Description>HttpReports is a lightweight APM system developed for Net Core </Description>
     <PackageProjectUrl>https://github.com/dotnetcore/HttpReports</PackageProjectUrl> 
     <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl>
     <PackageIcon>logo3.png</PackageIcon>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,6 +38,7 @@
    
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
     <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
     <ProjectReference Include="..\HttpReprots.Collector.Http\HttpReprots.Collector.Http.csproj" />
     <ProjectReference Include="..\Storage\HttpReports.Storage.Abstractions\HttpReports.Storage.Abstractions.csproj" />

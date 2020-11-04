@@ -5,14 +5,14 @@
     <Authors>SpringLee</Authors>
     <Description>HttpReports is a lightweight APM system developed for Net Core </Description>
     <PackageLicenseExpression></PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl> 
+    <PackageProjectUrl>https://github.com/dotnetcore/HttpReports</PackageProjectUrl> 
     <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl>
-    <Version>2.0.0</Version>
+    <Version>2.3.3</Version>
     <PackageLicenseFile></PackageLicenseFile>
     <PackageId>HttpReports</PackageId>
     <AssemblyName>HttpReports</AssemblyName>
     <RootNamespace>HttpReports</RootNamespace>
-    <PackageIcon>logo3.png</PackageIcon>
+    <PackageIcon>logo3.png</PackageIcon> 
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
@@ -26,10 +26,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="4.7.0" />
     <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="4.7.0" />
   </ItemGroup>
