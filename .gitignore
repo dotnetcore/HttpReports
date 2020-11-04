@@ -341,3 +341,4 @@ healthchecksdb
 
 **/HttpReports.Dashboard.UI/web/
 /src/HttpReports.Dashboard/HttpReportsStaticFiles/UI
+/output

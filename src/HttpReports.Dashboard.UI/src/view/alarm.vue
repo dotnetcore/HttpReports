@@ -146,7 +146,7 @@
               style="margin-left:16px;margin-right:8px;"
             >{{ this.$store.state.lang.Monitor_Timeout }}</span>
             <el-input-number
-              :max="10000"
+              :max="1000000"
               :step="100"
               size="small"
               v-model="monitor.responseTimeMonitor.timeout"
