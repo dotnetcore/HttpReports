@@ -16,44 +16,30 @@ namespace BuildScript
         [SolutionFileName]
         public string SolutionFileName { get; set; } = "HttpReports.sln";
 
-        [FromArg("c")]
+        [FromArg("c", "Build configuration")]
         [BuildConfiguration]
         public string Configuration { get; set; } = "Release";
 
-        public string Version { get; set; } 
+        [FromArg("version", "Build version")]
+        public string Version { get; set; }
 
-        public string NugetKey = "";
+        [FromArg("key", "nuget key for publishing nuget packages.")]
+        public string NugetKey { get; set; } = string.Empty;
 
         public FullPath OutputDir => RootDirectory.CombineWith("output");
 
         public FullPath SourceDir => RootDirectory.CombineWith("src");
 
         protected override void ConfigureTargets(ITaskContext context)
-        { 
-            if (context.ScriptArgs.ContainsKey("version"))
-            {
-                Version = context.ScriptArgs["version"];
-            }
-
-            if (context.ScriptArgs.ContainsKey("key"))
-            {
-                NugetKey = context.ScriptArgs["key"];
-            }  
-
+        {
             context.LogInfo("============================================"); 
             context.LogInfo($"NugetKey:{NugetKey} Version:{Version}");
             context.LogInfo("============================================"); 
 
             var clean = context.CreateTarget("Clean")
-                .SetDescription("Clean's the solution") 
-                
-                .AddCoreTask(x => { 
-                    
-                        context.GetFiles(OutputDir, "*.*").Where(c => !c.FileName.Contains(Version)).ToList().ForEach(t => System.IO.File.Delete(t)); 
-                    
-                    return x.Clean(); 
-                
-                });
+                .SetDescription("Clean's the solution")
+                .AddCoreTask(x => x.Clean()
+                    .AddDirectoryToClean(OutputDir, true));
 
             var restore = context.CreateTarget("Restore")
                 .SetDescription("Restore's the solution")
@@ -84,40 +70,47 @@ namespace BuildScript
                         .OutputDirectory(OutputDir));
                 });
 
+            var push = context.CreateTarget("push")
+                .SetDescription("Publishes nuget package.")
+                .DependsOn(pack)
+                .Do(NugetPush);
 
-            var branch = context.BuildSystems().Travis().BranchName;
-
-            var packs = context.GetFiles(OutputDir,"*.*").Where(x => x.FileName.Contains(Version));  
-
-
-
-            var push = context.CreateTarget("push") 
-               .SetDescription("Publishes nuget package.") 
-               .DependsOn(pack)
-               .ForEach(packs, (project, tagget) =>
-               { 
-                   tagget.AddCoreTask(x => x.NugetPush($"{OutputDir}/{project.FileName}")
-                   .ServerUrl("https://www.nuget.org/api/v2/package").ApiKey(NugetKey));
-
-               }); 
-
-
-            //var push2 = context.CreateTarget("push2")
-            //  .SetDescription("Publishes nuget package.")
-            //  .DependsOn(pack)
-            //  .ForEach(packs, (project, tagget) =>
-            //  {
-            //      tagget.AddCoreTask(x => x.NugetPush($"{OutputDir}/{project.FileName.Replace(".nupkg", ".snupkg")}")
-            //      .SymbolServerUrl("https://www.nuget.org/api/v2/symbolpackage").ApiKey(NugetKey).SymbolApiKey(NugetKey));
-
-            //  }); 
-
+            var push2 = context.CreateTarget("push2")
+                .SetDescription("Publishes nuget package.")
+                .DependsOn(pack)
+                .Do(NugetPush2);
 
             context.CreateTarget("Default")
              .SetDescription("Runs all targets.")
              .SetAsDefault()
              .DependsOn(clean, restore, build, pack,push); 
 
+        }
+
+        private void NugetPush(ITaskContext context)
+        {
+            var nugetPackages = context.GetFiles(OutputDir, "*.nupkg").Where(x => x.FileName.Contains(Version));
+
+            foreach (var nugetPackage  in nugetPackages)
+            {
+                context.CoreTasks().NugetPush(nugetPackage)
+                    .ServerUrl("https://www.nuget.org/api/v2/package")
+                    .ApiKey(NugetKey)
+                    .Execute(context);
+            }
+        }
+
+        private void NugetPush2(ITaskContext context)
+        {
+            var nugetPackages = context.GetFiles(OutputDir, "*.snupkg").Where(x => x.FileName.Contains(Version));
+
+            foreach (var nugetPackage  in nugetPackages)
+            {
+                context.CoreTasks().NugetPush(nugetPackage)
+                    .ServerUrl("https://www.nuget.org/api/v3/package")
+                    .ApiKey(NugetKey)
+                    .Execute(context);
+            }
         }
     }
 }
