@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>HttpReports.Storage.Abstractions</AssemblyName>
     <PackageId>HttpReports.Storage.Abstractions</PackageId>
-    <Version>2.3.3</Version>
+    <Version>2.3.4</Version>
     <Authors>SpringLee</Authors>
     <Company>SpringLee</Company>
     <Description>HttpReports is a lightweight APM system developed for Net Core , it is also suitable for use in a micro-service architecture.</Description>

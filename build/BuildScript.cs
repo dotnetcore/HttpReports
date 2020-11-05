@@ -102,21 +102,21 @@ namespace BuildScript
                }); 
 
 
-            var push2 = context.CreateTarget("push2")
-              .SetDescription("Publishes nuget package.")
-              .DependsOn(pack)
-              .ForEach(packs, (project, tagget) =>
-              {
-                  tagget.AddCoreTask(x => x.NugetPush($"{OutputDir}/{project.FileName.Replace(".nupkg", ".snupkg")}")
-                  .ServerUrl("https://www.nuget.org/api/v3/package").ApiKey(NugetKey));
+            //var push2 = context.CreateTarget("push2")
+            //  .SetDescription("Publishes nuget package.")
+            //  .DependsOn(pack)
+            //  .ForEach(packs, (project, tagget) =>
+            //  {
+            //      tagget.AddCoreTask(x => x.NugetPush($"{OutputDir}/{project.FileName.Replace(".nupkg", ".snupkg")}")
+            //      .SymbolServerUrl("https://www.nuget.org/api/v2/symbolpackage").ApiKey(NugetKey).SymbolApiKey(NugetKey));
 
-              });
+            //  }); 
 
 
             context.CreateTarget("Default")
              .SetDescription("Runs all targets.")
              .SetAsDefault()
-             .DependsOn(clean, restore, build, pack,push, push2); 
+             .DependsOn(clean, restore, build, pack,push); 
 
         }
     }
