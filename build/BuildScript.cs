@@ -83,7 +83,7 @@ namespace BuildScript
             context.CreateTarget("Default")
              .SetDescription("Runs all targets.")
              .SetAsDefault()
-             .DependsOn(clean, restore, build, pack,push); 
+             .DependsOn(clean, restore, build, pack, push, push2); 
 
         }
 
@@ -101,16 +101,17 @@ namespace BuildScript
         }
 
         private void NugetPush2(ITaskContext context)
-        {
+        { 
             var nugetPackages = context.GetFiles(OutputDir, "*.snupkg").Where(x => x.FileName.Contains(Version));
 
-            foreach (var nugetPackage  in nugetPackages)
+            foreach (var nugetPackage in nugetPackages)
             {
                 context.CoreTasks().NugetPush(nugetPackage)
-                    .ServerUrl("https://www.nuget.org/api/v3/package")
+                   .ServerUrl("https://www.nuget.org/api/v3/package")
                     .ApiKey(NugetKey)
                     .Execute(context);
-            }
+            } 
+            
         }
     }
 }
