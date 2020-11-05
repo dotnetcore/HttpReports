@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>2.3.4</Version>
+    <Version>2.3.7</Version>
     <Description>HttpReports is a lightweight APM system developed for Net Core </Description>
     <PackageProjectUrl>https://github.com/dotnetcore/HttpReports</PackageProjectUrl>
     <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl> 
