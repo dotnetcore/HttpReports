@@ -107,9 +107,11 @@ namespace BuildScript
             foreach (var nugetPackage in nugetPackages)
             {
                 context.CoreTasks().NugetPush(nugetPackage)
-                   .ServerUrl("https://www.nuget.org/api/v3/package")
+                   .ServerUrl("https://www.nuget.org/api/v2/symbolpackage")
                     .ApiKey(NugetKey)
                     .Execute(context);
+
+                
             } 
             
         }
