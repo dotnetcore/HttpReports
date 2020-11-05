@@ -27,8 +27,7 @@ namespace HttpReports.Services
 
         private IConfiguration _config;
 
-        private HttpReportsOptions _options;
-
+        private HttpReportsOptions _options; 
         
         public HttpReportsBackgroundService(IOptions<HttpReportsOptions> options, IConfiguration configuration,ILogger<HttpReportsBackgroundService> logger,IHttpContextAccessor contextAccessor, IReportsTransport reportsTransport, IPerformanceService performanceService)
         { 

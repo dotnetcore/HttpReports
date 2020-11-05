@@ -29,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddHttpClient(BasicConfig.HttpReportsHttpClient,client => {
 
                 client.DefaultRequestHeaders.Clear(); 
-                client.Timeout = TimeSpan.FromSeconds(10);
+                client.Timeout = TimeSpan.FromSeconds(5);
 
             });
 

@@ -36,8 +36,8 @@ namespace HttpReports.Diagnostic.HttpClient
         }
 
         public void OnNext(KeyValuePair<string, object> value)
-        {  
-             var activity = System.Diagnostics.Activity.Current;
+        {   
+             var activity = System.Diagnostics.Activity.Current;  
 
             if (value.Key == "System.Net.Http.HttpRequestOut.Start")
             {

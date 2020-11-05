@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>HttpReports.Storage.Abstractions</AssemblyName>
     <PackageId>HttpReports.Storage.Abstractions</PackageId>
-    <Version>2.3.7</Version>
+    <Version>2.3.8</Version>
     <Authors>SpringLee</Authors>
     <Company>SpringLee</Company>
     <Description>HttpReports is a lightweight APM system developed for Net Core , it is also suitable for use in a micro-service architecture.</Description>
@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="FreeSql" Version="1.8.1" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>

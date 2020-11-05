@@ -23,7 +23,7 @@ namespace HttpReports.Dashboard.WebAPP
 
             services.AddHttpReports().UseHttpTransport();   
 
-            services.AddHttpReportsDashboard().UseMySqlStorage();
+            //services.AddHttpReportsDashboard().UseMySqlStorage();
 
             services.AddControllers(); 
 
@@ -35,7 +35,7 @@ namespace HttpReports.Dashboard.WebAPP
 
             app.UseHttpReports();
 
-            app.UseHttpReportsDashboard();   
+            //app.UseHttpReportsDashboard();   
 
             //app.UseMiddleware<ErrorMiddleware>(); 
 

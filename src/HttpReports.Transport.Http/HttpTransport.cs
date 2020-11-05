@@ -48,51 +48,51 @@ namespace HttpReports.Transport.Http
                 {
                     HttpContent content = new StringContent(HttpUtility.HtmlEncode(JsonConvert.SerializeObject(performance)), System.Text.Encoding.UTF8, "application/json");
 
-                    content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");  
-                    content.Headers.Add(BasicConfig.TransportType, typeof(Performance).Name); 
+                    content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+                    content.Headers.Add(BasicConfig.TransportType, typeof(Performance).Name);
 
                     var response = await _httpClientFactory.CreateClient(BasicConfig.HttpReportsHttpClient).PostAsync(_options.CollectorAddress + BasicConfig.TransportPath.Substring(1), content);
 
-                    return true;
-
-                }
-                catch (Exception ex)
+                    return response.StatusCode == HttpStatusCode.OK;
+                } 
+                catch(Exception ex)
                 {
-                    _logger.LogError(ex, "HttpReportsTransport IPerformance Error:" + ex.ToString());
+                    //_logger.LogError(ex, "performance push failed:" + ex.ToString());
                     return false;
-                }
-
+                }   
             });
         }
         
 
         private async Task Push(List<RequestBag> list, CancellationToken token)
         { 
-           await Retry(async () => { 
-               
-                try
-                {
-                    HttpContent content = new StringContent(HttpUtility.HtmlEncode(JsonConvert.SerializeObject(list)),System.Text.Encoding.UTF8);
+           await Retry(async () => {
+
+               try
+               {
+                   HttpContent content = new StringContent(HttpUtility.HtmlEncode(JsonConvert.SerializeObject(list)), System.Text.Encoding.UTF8);
 
                    content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
-                   content.Headers.Add(BasicConfig.TransportType, typeof(RequestBag).Name); 
+                   content.Headers.Add(BasicConfig.TransportType, typeof(RequestBag).Name);
                    var response = await _httpClientFactory.CreateClient(BasicConfig.HttpReportsHttpClient).PostAsync(_options.CollectorAddress + BasicConfig.TransportPath.Substring(1), content);
 
                    var result = await response.Content.ReadAsStringAsync();
 
-                   _logger.LogInformation($"HttpReportsTransport RequestBag: {result} "); 
-
                    return response.StatusCode == HttpStatusCode.OK;
-                
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "HttpReportsTransport RequestBag Error :" + ex.ToString());
-                    return false;  
-                }  
 
-            });  
-           
+               } 
+               catch (Exception ex) when (ex is HttpRequestException) 
+               {
+                   _logger.LogWarning("HttpReports push failed:Network Error...");
+                   return false;
+               }
+               catch (Exception ex)
+               {
+                   _logger.LogWarning(ex, "HttpReports push failed:" + ex.ToString());
+                   return false;
+               } 
+
+            });   
         }
 
         private async Task<bool> Retry(Func<Task<bool>> func, int retry = 3)
