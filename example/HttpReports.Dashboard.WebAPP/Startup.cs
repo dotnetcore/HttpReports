@@ -23,15 +23,14 @@ namespace HttpReports.Dashboard.WebAPP
 
             services.AddHttpReports().UseHttpTransport();   
 
-            //services.AddHttpReportsDashboard().UseMySqlStorage();
+            services.AddHttpReportsDashboard().UseMySqlStorage();
 
             services.AddControllers(); 
 
         } 
       
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-
+        { 
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -41,9 +40,9 @@ namespace HttpReports.Dashboard.WebAPP
 
             app.UseHttpReports();
 
-            //app.UseHttpReportsDashboard();    
+            app.UseHttpReportsDashboard();    
 
-            app.UseMiddleware<ErrorMiddleware>();  
+            //app.UseMiddleware<ErrorMiddleware>();  
 
             app.UseRouting();
 

@@ -81,13 +81,13 @@ namespace HttpReports.Transport.Http
                    return response.StatusCode == HttpStatusCode.OK;
 
                } 
-               catch (Exception ex) when (ex is HttpRequestException) 
+               catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException) 
                {
                    _logger.LogWarning("HttpReports push failed:Network Error...");
                    return false;
                }
                catch (Exception ex)
-               {
+               { 
                    _logger.LogWarning(ex, "HttpReports push failed:" + ex.ToString());
                    return false;
                } 
