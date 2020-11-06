@@ -26,12 +26,20 @@ namespace BuildScript
         [FromArg("key", "nuget key for publishing nuget packages.")]
         public string NugetKey { get; set; } = string.Empty;
 
+        [FromArg("env", "dev or pro")]
+        public string Environment { get; set; } = "pro";  
+      
         public FullPath OutputDir => RootDirectory.CombineWith("output");
 
-        public FullPath SourceDir => RootDirectory.CombineWith("src");
+        public FullPath SourceDir => RootDirectory.CombineWith("src");   
 
         protected override void ConfigureTargets(ITaskContext context)
         {
+            if (Environment == "dev")
+            {
+                Version = $"{Version}-preview-" + DateTime.Now.ToString("MMddHHmm");
+            } 
+
             context.LogInfo("============================================"); 
             context.LogInfo($"NugetKey:{NugetKey} Version:{Version}");
             context.LogInfo("============================================"); 
@@ -50,7 +58,7 @@ namespace BuildScript
             var build = context.CreateTarget("Build")
                 .SetDescription("Build's the solution")
                 .DependsOn(restore)
-                .AddCoreTask(x => x.Build());
+                .AddCoreTask(x => x.Build().Version(Version).FileVersion(Version).InformationalVersion(Version) );
 
             var projectsToPack = context.GetFiles(SourceDir, "*/*.csproj");
 
@@ -83,7 +91,7 @@ namespace BuildScript
             context.CreateTarget("Default")
              .SetDescription("Runs all targets.")
              .SetAsDefault()
-             .DependsOn(clean, restore, build, pack, push, push2); 
+             .DependsOn(clean, restore, build, pack,push,push2); 
 
         }
 

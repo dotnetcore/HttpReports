@@ -33,8 +33,12 @@ namespace HttpReports
 
             var detail = GetRequestDetail(context,info.Id);
 
-            return (info,detail);
+            if (!detail.ErrorMessage.IsEmpty())
+            {
+                info.StatusCode = 500;
+            } 
 
+            return (info,detail); 
         } 
 
 

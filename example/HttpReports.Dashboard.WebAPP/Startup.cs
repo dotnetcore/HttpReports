@@ -30,19 +30,20 @@ namespace HttpReports.Dashboard.WebAPP
         } 
       
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        { 
-            app.UseResponseCompression(); 
-
-            app.UseHttpReports();
-
-            //app.UseHttpReportsDashboard();   
-
-            //app.UseMiddleware<ErrorMiddleware>(); 
+        {
 
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseResponseCompression(); 
+
+            app.UseHttpReports();
+
+            //app.UseHttpReportsDashboard();    
+
+            app.UseMiddleware<ErrorMiddleware>();  
 
             app.UseRouting();
 

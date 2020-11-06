@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using HttpReports.Core;
@@ -78,20 +79,29 @@ namespace HttpReports
             var responseMemoryStream = new MemoryStream();
 
             try
-            {  
+            {
                 context.Response.Body = responseMemoryStream;
 
-                await Next(context); 
+                await Next(context);
+            }
+            catch (Exception ex)
+            {
+                if (!context.Items.ContainsKey(BasicConfig.HttpReportsGlobalException))
+                {
+                    context.Items.Add(BasicConfig.HttpReportsGlobalException, ex);  
+                } 
+
+                throw ex;
             } 
             finally
-            { 
+            {
                 stopwatch.Stop();
 
                 string responseBody = await GetResponseBodyAsync(context);
 
-                context.Items.Add(BasicConfig.HttpReportsTraceCost, stopwatch.ElapsedMilliseconds); 
+                context.Items.Add(BasicConfig.HttpReportsTraceCost, stopwatch.ElapsedMilliseconds);
                 context.Items.Add(BasicConfig.HttpReportsRequestBody, requestBody);
-                context.Items.Add(BasicConfig.HttpReportsResponseBody, responseBody); 
+                context.Items.Add(BasicConfig.HttpReportsResponseBody, responseBody);
 
                 if (responseMemoryStream.CanRead && responseMemoryStream.CanSeek)
                 {
@@ -99,12 +109,12 @@ namespace HttpReports
 
                     responseMemoryStream.Dispose();
 
-                }  
+                }
 
                 if (!string.IsNullOrEmpty(context.Request.Path))
                 {
                     InvokeProcesser.Process(context);
-                } 
+                }
             }
 
         }

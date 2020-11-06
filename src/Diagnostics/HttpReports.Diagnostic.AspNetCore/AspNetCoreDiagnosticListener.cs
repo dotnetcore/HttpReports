@@ -51,8 +51,11 @@ namespace HttpReports.Diagnostic.AspNetCore
                 {
                     if (context != null && exception != null)
                     {
-                        context.Items.Add(BasicConfig.HttpReportsGlobalException, exception);
-                        //context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                        if (!context.Items.ContainsKey(BasicConfig.HttpReportsGlobalException))
+                        {
+                            context.Items.Add(BasicConfig.HttpReportsGlobalException, exception); 
+                            
+                        }  
                     }
                 }
             } 

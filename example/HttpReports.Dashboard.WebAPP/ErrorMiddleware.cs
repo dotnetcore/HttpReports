@@ -20,7 +20,7 @@ namespace HttpReports.Dashboard.WebAPP
         {
             await _next(context);
 
-            throw new Exception("MiddlewareError");
+            throw new Exception("MiddlewareError34234");
         }
 
 
