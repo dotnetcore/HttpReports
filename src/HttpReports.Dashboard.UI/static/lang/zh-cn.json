@@ -85,7 +85,7 @@
   "Menu_TrendData": "趋势数据",
   "Menu_RequestList": "请求列表",
   "Menu_Monitor": "预警监控",
-  "Topology":"服务关系",
+  "Topology":"关系图",
   "Trend_MinuteAvgTime": "每分钟平均处理时间 (ms)",
   "Trend_HourAvgTime": "每小时平均处理时间 (ms)",
   "Trend_MinuteTotalCount": "每分钟请求次数",

@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using HttpReports.Core; 
-using HttpReports.Core.Models; 
+using HttpReports.Core;
+using HttpReports.Core.Models;
 using HttpReports.Core.StorageFilters;
-using HttpReports.Dashboard.Abstractions; 
-using HttpReports.Dashboard.Implements;
+using HttpReports.Dashboard.Abstractions;
 using HttpReports.Dashboard.Models;
 using HttpReports.Dashboard.Models.ViewModels;
-using HttpReports.Dashboard.Services; 
+using HttpReports.Dashboard.Services;
 using HttpReports.Dashboard.ViewModels;
 using HttpReports.Models;
 using HttpReports.Storage.Abstractions;
-using Microsoft.AspNetCore.Authorization; 
+using Microsoft.AspNetCore.Authorization;
 
 namespace HttpReports.Dashboard.Handles
 {
@@ -282,9 +280,11 @@ namespace HttpReports.Dashboard.Handles
 
         public async Task<string> DeleteJob(ByIdRequest req)
         {
-            await _storage.DeleteMonitorJob(req.Id);
+            var deleteJob = await _storage.GetMonitorJob(req.Id);
 
-            await _scheduleService.UpdateMonitorJobAsync();
+            await _storage.DeleteMonitorJob(req.Id); 
+
+            await _scheduleService.UpdateMonitorJobAsync(deleteJob);
 
             return Json(true);
         }

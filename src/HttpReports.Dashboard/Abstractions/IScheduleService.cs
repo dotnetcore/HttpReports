@@ -19,7 +19,7 @@ namespace HttpReports.Dashboard.Abstractions
         Task DeleteJobAsync(IJobDetail job);
 
 
-        Task UpdateMonitorJobAsync();
+        Task UpdateMonitorJobAsync(MonitorJob deleteJob = null);
 
         Task AutoClearDataJobAsync();
          

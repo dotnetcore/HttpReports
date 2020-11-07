@@ -205,7 +205,7 @@
 
           <el-menu-item index="/service">
             <i class="fa fa-bar-chart-o"></i>
-            <span slot="title">{{ this.$store.state.lang.ServiceTag }}</span>
+            <span slot="title">{{ this.$store.state.lang.Index_ServiceNode }}</span>
           </el-menu-item>
 
           <el-menu-item index="/topology">

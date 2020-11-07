@@ -84,8 +84,19 @@ namespace HttpReports.Dashboard.Services
             }
         }
 
-        public async Task UpdateMonitorJobAsync()
-        { 
+        public async Task UpdateMonitorJobAsync(MonitorJob deleteJob = null)
+        {
+            if (deleteJob != null)
+            {
+                var delete = await scheduler.GetJobDetail(new JobKey(SchedulerTag + deleteJob.Id, SchedulerGroup));
+
+                if (delete != null)
+                {
+                    await DeleteJobAsync(delete);
+                } 
+            } 
+
+
             List<MonitorJob> list = await _storage.GetMonitorJobs();
 
             if (list == null || list.Count == 0)
