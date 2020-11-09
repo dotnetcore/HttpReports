@@ -6,6 +6,6 @@ namespace HttpReports.Dashboard.Models
 {
     public class ByIdRequest
     {
-        public string Id { get; set; }
+        public long Id { get; set; }
     }
 }

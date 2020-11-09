@@ -2,6 +2,7 @@
 using HttpReports.Core.Models;
 using HttpReports.Storage.PostgreSQL;
 using Microsoft.Extensions.DependencyInjection;
+using Snowflake.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,7 +49,7 @@ namespace HttpReports.Mock.Console
                 {     
                    var res = await _storage.UpdateLoginUser(new SysUser
                     {
-                        Id = "323d9db2a91ffe1c",
+                        Id = 0L,
                         UserName = "admin",
                         Password = MD5_32("123456")
 
@@ -72,7 +73,9 @@ namespace HttpReports.Mock.Console
 
 
         public static Task InsertTestAsync(PostgreSQLStorage storage,int a,int b,int c)
-        {
+        { 
+            IdWorker idWorker = new IdWorker(new Random().Next(1, 100000), new Random().Next(0, 100000)); 
+
             var startTime = DateTime.Now.AddSeconds(-1);
             var count = 100000;
             var random = new Random();
@@ -113,8 +116,8 @@ namespace HttpReports.Mock.Console
 
                         var info = new RequestInfo
                         {
-                            Id = MD5_16(Guid.NewGuid().ToString()),
-                            ParentId = "",
+                            Id = idWorker.NextId(),
+                            ParentId = 0,
                             Service = _Service,
                             ParentService = _ParentService,
                             Route = _url,

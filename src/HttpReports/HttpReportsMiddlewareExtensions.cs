@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration; 
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Snowflake.Core;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -54,6 +55,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             }); 
 
+            services.AddSingleton<IdWorker>(new IdWorker(new Random().Next(1,100000),new Random().Next(1,100000))); 
             services.AddSingleton<IRequestProcesser, DefaultRequestProcesser>();
             services.AddSingleton<IRequestBuilder, DefaultRequestBuilder>();
             services.AddSingleton<IBackgroundService, HttpReportsBackgroundService>();

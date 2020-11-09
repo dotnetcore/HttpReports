@@ -10,8 +10,8 @@ namespace HttpReports.Storage.Abstractions.Models
     [Index("idx_performance_id", "Id", true)]
     public class DBPerformance
     {
-        [Column(IsPrimary = true, StringLength = 50)]
-        public string Id { get; set; }
+        [Column(IsPrimary = true)]
+        public long Id { get; set; }
 
         [Column(StringLength = 50)]
         public string Service { get; set; } 

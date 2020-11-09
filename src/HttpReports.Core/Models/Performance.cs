@@ -7,7 +7,7 @@ namespace HttpReports.Core.Models
 {
     public class Performance 
     {
-        public string Id { get; set; }
+        public long Id { get; set; }
         public string Service { get; set; }
 
         public string Instance { get; set; }

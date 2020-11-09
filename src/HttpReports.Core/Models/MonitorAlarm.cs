@@ -6,9 +6,9 @@ namespace HttpReports.Core.Models
 {
     public class MonitorAlarm
     { 
-        public string Id { get; set; }
+        public long Id { get; set; }
 
-        public string JobId { get; set; } 
+        public long JobId { get; set; } 
 
         public string Body { get; set; }
 

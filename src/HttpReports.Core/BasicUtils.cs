@@ -35,15 +35,15 @@ namespace HttpReports.Core
             } 
         }
 
-        public static string GetTraceParentId(this HttpContext context)
+        public static long GetTraceParentId(this HttpContext context)
         {
             if (context.Items.ContainsKey(BasicConfig.ActiveParentSpanId))
-            {
-                return context.Items[BasicConfig.ActiveParentSpanId].ToString();
+            { 
+                return context.Items[BasicConfig.ActiveParentSpanId].ToString().ToLong();
             }
             else
             {
-                return string.Empty;
+                return 0;
             }
         }
 

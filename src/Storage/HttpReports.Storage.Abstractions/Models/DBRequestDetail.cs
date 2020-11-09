@@ -10,11 +10,11 @@ namespace HttpReports.Storage.Abstractions.Models
     [Index("idx_detail_id", "Id", true)] 
     public class DBRequestDetail
     {
-        [Column(IsPrimary = true, StringLength = 50)]
-        public string Id { get; set; }
+        [Column(IsPrimary = true)]
+        public long Id { get; set; }
 
-        [Column(StringLength = 50)]
-        public string RequestId { get; set; }
+        
+        public long RequestId { get; set; }
 
 
         [Column(StringLength = 10)]

@@ -6,9 +6,9 @@ namespace HttpReports.Core.Models
 {
     public class RequestInfo
     {
-        public string Id { get; set; }
+        public long Id { get; set; }
 
-        public string ParentId { get; set; }
+        public long ParentId { get; set; }
 
         public string Service { get; set; }
 

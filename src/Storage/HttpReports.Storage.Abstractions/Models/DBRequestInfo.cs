@@ -25,15 +25,13 @@ namespace HttpReports.Storage.Abstractions.Models
 
     public class DBRequestInfo
     { 
-        [Column(IsPrimary = true,StringLength = 50)]
-        public string Id { get; set; } 
+        [Column(IsPrimary = true)]
+        public long Id { get; set; }  
+        
+        public long ParentId { get; set; }
 
         [Column(StringLength = 50)]
-        public string ParentId { get; set; }
-
-        [Column(StringLength = 50)]
-        public string Service { get; set; }
-
+        public string Service { get; set; } 
 
         [Column(StringLength = 50)]
         public string ParentService { get; set; }

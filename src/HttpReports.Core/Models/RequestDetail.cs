@@ -6,8 +6,8 @@ namespace HttpReports.Core.Models
 {
     public class RequestDetail
     {
-        public string Id { get; set; }
-        public string RequestId { get; set; }
+        public long Id { get; set; }
+        public long RequestId { get; set; }
         public string Scheme { get; set; }
         public string QueryString { get; set; }
         public string Header { get; set; }

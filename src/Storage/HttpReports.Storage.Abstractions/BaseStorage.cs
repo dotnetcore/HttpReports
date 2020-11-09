@@ -12,6 +12,7 @@ using FreeSql;
 using System.Linq.Expressions;
 using HttpReports.Core.ViewModels;
 using HttpReports.Core.StorageFilters;
+using Snowflake.Core;
 
 namespace HttpReports.Storage.Abstractions
 {
@@ -21,6 +22,8 @@ namespace HttpReports.Storage.Abstractions
 
         public BaseStorageOptions _options { get; set; }
 
+        private readonly IdWorker _idWorker;
+
         public AsyncCallbackDeferFlushCollection<RequestBag> _deferFlushCollection { get; set; }
 
 
@@ -28,9 +31,11 @@ namespace HttpReports.Storage.Abstractions
         {
             _options = options;
 
+            _idWorker = new IdWorker(new Random().Next(1, 100000), new Random().Next(0, 100000));
+
             _deferFlushCollection = new AsyncCallbackDeferFlushCollection<RequestBag>(AddRequestInfoAsync, _options.DeferThreshold, _options.DeferSecond);
 
-            freeSql = new FreeSql.FreeSqlBuilder().UseConnectionString(_options.DataType, _options.ConnectionString).UseNoneCommandParameter(true).Build();
+            freeSql = new FreeSql.FreeSqlBuilder().UseConnectionString(_options.DataType, _options.ConnectionString).UseNoneCommandParameter(true).Build(); 
 
         }
 
@@ -61,7 +66,7 @@ namespace HttpReports.Storage.Abstractions
                     {
                         await freeSql.Insert(new SysUser
                         {
-                            Id = MD5_16(Guid.NewGuid().ToString()),
+                            Id = _idWorker.NextId(),
                             UserName = BasicConfig.DefaultUserName,
                             Password = BasicConfig.DefaultPassword
 
@@ -73,7 +78,7 @@ namespace HttpReports.Storage.Abstractions
                         await freeSql.Insert(new SysConfig
                         {
 
-                            Id = MD5_16(Guid.NewGuid().ToString()),
+                            Id = _idWorker.NextId(),
                             Key = BasicConfig.Language,
                             Value = BasicConfig.DefaultLanguage
 
@@ -107,7 +112,7 @@ namespace HttpReports.Storage.Abstractions
 
         public async Task<RequestInfoSearchResult> GetSearchRequestInfoAsync(QueryDetailFilter filter)
         {
-            List<string> detailId = default;
+            List<long> detailId = default;
 
             if (!filter.RequestBody.IsEmpty() || !filter.ResponseBody.IsEmpty())
             {
@@ -123,7 +128,7 @@ namespace HttpReports.Storage.Abstractions
                 .Where(x => x.CreateTime >= filter.StartTime && x.CreateTime <= filter.EndTime)
                 .WhereIf(!filter.Service.IsEmpty(), x => x.Service == filter.Service)
                 .WhereIf(!filter.Instance.IsEmpty(), x => x.Instance == filter.Instance)
-                .WhereIf(!filter.RequestId.IsEmpty(), x => x.Id == filter.RequestId)
+                .WhereIf(filter.RequestId > 0, x => x.Id == filter.RequestId)
                 .WhereIf(filter.StatusCode > 0, x => x.StatusCode == filter.StatusCode)
                 .WhereIf(!filter.Route.IsEmpty(), x => x.Route.Contains(filter.Route))
                 .WhereIf(detailId != null && detailId.Any(), x => detailId.Contains(x.Id))
@@ -146,7 +151,7 @@ namespace HttpReports.Storage.Abstractions
 
         public async Task<bool> AddMonitorAlarm(MonitorAlarm alarm)
         {
-            alarm.Id = MD5_16(Guid.NewGuid().ToString());
+            alarm.Id = _idWorker.NextId();
             return await freeSql.Insert<MonitorAlarm>(alarm).ExecuteAffrowsAsync() > 0;
         }
 
@@ -157,7 +162,7 @@ namespace HttpReports.Storage.Abstractions
 
         public async Task<bool> AddPerformanceAsync(Performance performance)
         {
-            performance.Id = MD5_16(Guid.NewGuid().ToString());
+            performance.Id = _idWorker.NextId();
 
             return await freeSql.Insert<Performance>(performance).ExecuteAffrowsAsync() > 0;
 
@@ -177,7 +182,7 @@ namespace HttpReports.Storage.Abstractions
         public async Task<bool> AddMonitorJob(MonitorJob job)
         {
             job.CreateTime = DateTime.Now;
-            job.Id = MD5_16(Guid.NewGuid().ToString());
+            job.Id = _idWorker.NextId();
 
             return await freeSql.Insert<MonitorJob>(job).ExecuteAffrowsAsync() > 0;
 
@@ -200,7 +205,7 @@ namespace HttpReports.Storage.Abstractions
             await freeSql.Delete<MonitorAlarm>().Where(x => x.CreateTime <= StartTime.ToDateTime()).ExecuteAffrowsAsync();
         }
 
-        public async Task<bool> DeleteMonitorJob(string Id) =>
+        public async Task<bool> DeleteMonitorJob(long Id) =>
 
             await freeSql.Delete<MonitorJob>().Where(x => x.Id == Id).ExecuteAffrowsAsync() > 0;
 
@@ -346,16 +351,16 @@ namespace HttpReports.Storage.Abstractions
 
         }
 
-        public async Task<MonitorJob> GetMonitorJob(string Id)
+        public async Task<MonitorJob> GetMonitorJob(long Id)
             => await freeSql.Select<MonitorJob>().Where(x => x.Id == Id).ToOneAsync();
 
-        public async Task<RequestInfo> GetRequestInfo(string Id)
+        public async Task<RequestInfo> GetRequestInfo(long Id)
             => await freeSql.Select<RequestInfo>().Where(x => x.Id == Id).ToOneAsync();
 
-        public async Task<List<RequestInfo>> GetRequestInfoByParentId(string ParentId)
+        public async Task<List<RequestInfo>> GetRequestInfoByParentId(long ParentId)
           => await freeSql.Select<RequestInfo>().Where(x => x.ParentId == ParentId).ToListAsync();
 
-        public async Task<(RequestInfo, RequestDetail)> GetRequestInfoDetail(string Id)
+        public async Task<(RequestInfo, RequestDetail)> GetRequestInfoDetail(long Id)
         {
             var info = await freeSql.Select<RequestInfo>().Where(x => x.Id == Id).ToOneAsync();
             var detail = await freeSql.Select<RequestDetail>().Where(x => x.RequestId == Id).ToOneAsync();

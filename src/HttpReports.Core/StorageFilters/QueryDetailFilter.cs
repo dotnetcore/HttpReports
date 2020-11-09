@@ -7,7 +7,7 @@ namespace HttpReports.Core.StorageFilters
 {
     public class QueryDetailFilter:BasicFilter
     {
-        public string RequestId { get; set; } 
+        public long RequestId { get; set; } 
 
         public string Route { get; set; }
 

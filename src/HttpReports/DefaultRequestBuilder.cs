@@ -10,6 +10,7 @@ using HttpReports.Core.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Snowflake.Core;
 
 namespace HttpReports
 {
@@ -17,9 +18,12 @@ namespace HttpReports
     {
         protected HttpReportsOptions Options;
 
-        public DefaultRequestBuilder(IOptions<HttpReportsOptions> options)
+        private readonly IdWorker _idWorker;
+
+        public DefaultRequestBuilder(IOptions<HttpReportsOptions> options, IdWorker idWorker)
         {
             Options = options.Value;
+            _idWorker = idWorker;
         }
 
 
@@ -50,7 +54,7 @@ namespace HttpReports
 
             var remoteIP = context.Request.Headers["X-Forwarded-For"].FirstOrDefault();
 
-            request.Id = context.GetTraceId();
+            request.Id = _idWorker.NextId();
             request.RemoteIP = remoteIP.IsEmpty() ? context.Connection.RemoteIpAddress?.MapToIPv4()?.ToString() : remoteIP;
             request.Instance = uri.Host + ":" + uri.Port;
             request.LoginUser = context.User?.Identity?.Name;
@@ -80,13 +84,13 @@ namespace HttpReports
 
         }  
 
-        protected RequestDetail GetRequestDetail(HttpContext context, string RequestId)
+        protected RequestDetail GetRequestDetail(HttpContext context, long RequestId)
         {
             RequestDetail model = new RequestDetail();
 
             if (context.Request != null)
             {
-                model.Id = context.GetUniqueId();
+                model.Id = _idWorker.NextId();
                 model.RequestId = RequestId;
 
                 Dictionary<string, string> cookies = context.Request.Cookies.ToList().ToDictionary(x => x.Key, x => x.Value);

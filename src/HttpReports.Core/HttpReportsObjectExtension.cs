@@ -10,6 +10,12 @@ namespace HttpReports
             return num;
         }
 
+        public static long ToLong(this string str)
+        {
+            long.TryParse(str, out var num);
+            return num;
+        }
+
 
         public static int ToInt(this decimal str)
         { 

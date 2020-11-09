@@ -54,9 +54,9 @@ namespace HttpReports.Storage.Abstractions
 
         Task<bool> UpdateMonitorJob(MonitorJob job);
 
-        Task<bool> DeleteMonitorJob(string Id);
+        Task<bool> DeleteMonitorJob(long Id);
 
-        Task<MonitorJob> GetMonitorJob(string Id);
+        Task<MonitorJob> GetMonitorJob(long Id);
 
         Task<List<MonitorJob>> GetMonitorJobs();
 
@@ -74,11 +74,11 @@ namespace HttpReports.Storage.Abstractions
 
         Task<bool> UpdateLoginUser(SysUser model);
 
-        Task<(RequestInfo, RequestDetail)> GetRequestInfoDetail(string Id);
+        Task<(RequestInfo, RequestDetail)> GetRequestInfoDetail(long Id);
 
-        Task<RequestInfo> GetRequestInfo(string Id);
+        Task<RequestInfo> GetRequestInfo(long Id);
 
-        Task<List<RequestInfo>> GetRequestInfoByParentId(string ParentId);
+        Task<List<RequestInfo>> GetRequestInfoByParentId(long ParentId);
 
         Task ClearData(string StartTime);
 

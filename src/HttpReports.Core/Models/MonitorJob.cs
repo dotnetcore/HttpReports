@@ -6,7 +6,7 @@ namespace HttpReports.Models
 {
     public class MonitorJob 
     {
-        public string Id { get; set; } 
+        public long Id { get; set; } 
          
         public string Title { get; set; }
 

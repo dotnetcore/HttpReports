@@ -15,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Quartz.Spi;
+using Snowflake.Core;
 using ServiceContainer = HttpReports.Dashboard.Implements.ServiceContainer;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -80,8 +81,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             });
 
-            services.AddHttpClient(BasicConfig.HttpReportsHttpClient);
-
+            services.AddSingleton<IdWorker>(new IdWorker(new Random().Next(1, 100000), new Random().Next(1,100000)));
+            services.AddHttpClient(BasicConfig.HttpReportsHttpClient);  
             services.AddSingleton<IAlarmService, AlarmService>(); 
             services.AddSingleton<IAuthService, AuthService>();  
             services.AddSingleton<IScheduleService, ScheduleService>();  

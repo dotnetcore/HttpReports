@@ -9,8 +9,8 @@ namespace HttpReports.Storage.Abstractions.Models
     [Index("idx_config_id", "Id", true)]
     public class DBSysConfig
     {
-        [Column(IsPrimary = true, StringLength = 50)]
-        public string Id { get; set; }
+        [Column(IsPrimary = true)]
+        public long Id { get; set; }
 
 
         [Column(IsPrimary = true, StringLength = 50)]

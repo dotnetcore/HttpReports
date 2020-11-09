@@ -10,8 +10,8 @@ namespace HttpReports.Storage.Abstractions.Models
     [Index("idx_job_id", "Id", true)]
     public class DBMonitorJob
     {
-        [Column(IsPrimary = true, StringLength = 50)]
-        public string Id { get; set; }
+        [Column(IsPrimary = true)]
+        public long Id { get; set; }
 
 
         [Column(StringLength = 255)]

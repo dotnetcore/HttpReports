@@ -11,8 +11,8 @@ namespace HttpReports.Storage.Abstractions.Models
     public class DBSysUser
     {
 
-        [Column(IsPrimary = true, StringLength = 50)]
-        public string Id { get; set; }
+        [Column(IsPrimary = true)]
+        public long Id { get; set; }
 
         [Column(StringLength = 50)] 
         public string UserName { get; set; }

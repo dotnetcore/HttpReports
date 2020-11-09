@@ -12,6 +12,7 @@ using HttpReports.Storage.Abstractions;
 using Microsoft.VisualBasic.CompilerServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Org.BouncyCastle.Asn1.IsisMtt;
+using Snowflake.Core;
 
 namespace HttpReports.Test
 {
@@ -39,7 +40,9 @@ namespace HttpReports.Test
 
         [TestMethod] 
         public Task InsertTestAsync()
-        {
+        { 
+            IdWorker idWorker = new IdWorker(new Random().Next(1,100000),new Random().Next(0,100000));  
+
             var startTime = DateTime.Now.AddSeconds(-1);
             var count = 100000;
             var random = new Random();
@@ -80,8 +83,8 @@ namespace HttpReports.Test
 
                         var info = new RequestInfo
                         {
-                            Id = Utils.MD5_16(Guid.NewGuid().ToString()),
-                            ParentId = "",
+                            Id = idWorker.NextId(),
+                            ParentId = 0,
                             Service = _Service,
                             ParentService = _ParentService,
                             Route = _url,
@@ -182,7 +185,7 @@ namespace HttpReports.Test
                     if (i == 0)
                     {
                         bags[0].RequestInfo.ParentService = "";
-                        bags[0].RequestInfo.ParentId = "";
+                        bags[0].RequestInfo.ParentId = 0;
                     }
                     else
                     {
@@ -213,7 +216,8 @@ namespace HttpReports.Test
         }
 
         private RequestInfo GetRandomRequestInfo()
-        {
+        { 
+            IdWorker idWorker = new IdWorker(new Random().Next(1, 100000), new Random().Next(0, 100000)); 
 
             string[] Services = { "User", "Order", "Weixin", "Payment", "Log", "DataCenter", "Student", "Master" };
             string[] LoginUsers = { "Jack", "Blues", "Mark", "Tom", "Cat" };
@@ -233,8 +237,8 @@ namespace HttpReports.Test
 
             RequestInfo info = new RequestInfo
             {
-                Id = Utils.MD5_16(Guid.NewGuid().ToString()),
-                ParentId = Utils.MD5_16(Guid.NewGuid().ToString()),
+                Id = idWorker.NextId(),
+                ParentId = idWorker.NextId(),
                 Service = _Service,
                 ParentService = _ParentService,
                 Route = route,
@@ -355,7 +359,7 @@ namespace HttpReports.Test
                 Instance = filter.Instance,
                 StartTime = filter.StartTime,
                 EndTime = filter.EndTime,
-                RequestId = "",
+                RequestId = 0,
                 Route = "/User/Payment",
                 StatusCode = 0,
                 RequestBody = "",
@@ -375,7 +379,7 @@ namespace HttpReports.Test
         [TestMethod]
         public async  Task GetRequestInfoDetail()
         {
-            var ids =  new []{ "0000329875d9c209", "000301f44e4e9524", "0005735c2c6240d5" };
+            var ids =  new []{ 4564564565L, 4564564565L, 4564564565L };
 
             var id = ids[new Random().Next(0, ids.Length - 1)]; 
 

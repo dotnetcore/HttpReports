@@ -9,15 +9,14 @@ namespace HttpReports.Storage.Abstractions.Models
     [Index("idx_alarm_id", "Id", true)]
     public class DBMonitorAlarm
     {
-        [Column(IsPrimary = true, StringLength = 50)]
-        public string Id { get; set; }
+        [Column(IsPrimary = true)]
+        public long Id { get; set; }
 
         [Column(StringLength = 50)]
         public string JobId { get; set; } 
           
-        [Column(StringLength = 1000)]
-        public string Body { get; set; } 
-
+        [Column(StringLength = 1000)] 
+        public string Body { get; set; }  
 
         public DateTime CreateTime { get; set; }   
  

@@ -263,7 +263,7 @@ namespace HttpReports.Dashboard.Handles
         { 
             bool result = false;
 
-            if (job.Id.IsEmpty())
+            if (job.Id == 0)
             { 
                 result = await _storage.AddMonitorJob(job);
             }
@@ -385,7 +385,7 @@ namespace HttpReports.Dashboard.Handles
         {
             var requestInfo = await _storage.GetRequestInfo(req.Id);
 
-            if (requestInfo.ParentId.IsEmpty())
+            if (requestInfo.ParentId == 0)
             {
                 return requestInfo;
             }
