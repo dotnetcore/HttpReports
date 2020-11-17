@@ -27,6 +27,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Snowflake.Core" Version="2.0.0" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="4.7.0" />
     <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="4.7.0" />
@@ -36,7 +37,6 @@
     <ProjectReference Include="..\Diagnostics\HttpReports.Diagnostic.AspNetCore\HttpReports.Diagnostic.AspNetCore.csproj" />
     <ProjectReference Include="..\Diagnostics\HttpReports.Diagnostic.HttpClient\HttpReports.Diagnostic.HttpClient.csproj" />
     <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
-    <ProjectReference Include="..\HttpReports.Transport.Http\HttpReports.Transport.Http.csproj" />
   </ItemGroup>
 
   <ItemGroup>

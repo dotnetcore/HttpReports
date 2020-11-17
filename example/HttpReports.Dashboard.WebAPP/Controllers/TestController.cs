@@ -62,9 +62,9 @@ namespace HttpReports.Dashboard.WebAPP.Controllers
             //构建数据
             List<Person> list1 = new List<Person>()
                {
-                                     new Person { Name = "123", Sex = "男" },
-                     new Person { Name = "234", Sex = "男" },
-                     new Person { Name = "345", Sex = "女" }
+                    new Person { Name = "123", Sex = "男" },
+                    new Person { Name = "234", Sex = "男" },
+                    new Person { Name = "345", Sex = "女" }
                };
             if (file.Exists)
             {

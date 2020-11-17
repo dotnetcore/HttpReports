@@ -81,7 +81,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             });
 
-            services.AddSingleton<IdWorker>(new IdWorker(new Random().Next(1, 100000), new Random().Next(1,100000)));
+            services.AddSingleton<IdWorker>(new IdWorker(new Random().Next(1,30), new Random().Next(1,30)));
             services.AddHttpClient(BasicConfig.HttpReportsHttpClient);  
             services.AddSingleton<IAlarmService, AlarmService>(); 
             services.AddSingleton<IAuthService, AuthService>();  

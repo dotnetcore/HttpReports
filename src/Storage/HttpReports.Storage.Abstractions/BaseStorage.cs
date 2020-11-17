@@ -31,7 +31,7 @@ namespace HttpReports.Storage.Abstractions
         {
             _options = options; 
 
-            _idWorker = new IdWorker(new Random().Next(1, 100000), new Random().Next(0, 100000));
+            _idWorker = new IdWorker(new Random().Next(1,30), new Random().Next(0,30));
 
             _deferFlushCollection = new AsyncCallbackDeferFlushCollection<RequestBag>(AddRequestInfoAsync, _options.DeferThreshold, _options.DeferSecond);
 

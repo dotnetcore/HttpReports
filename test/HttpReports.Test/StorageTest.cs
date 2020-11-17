@@ -41,7 +41,7 @@ namespace HttpReports.Test
         [TestMethod] 
         public Task InsertTestAsync()
         { 
-            IdWorker idWorker = new IdWorker(new Random().Next(1,100000),new Random().Next(0,100000));  
+            IdWorker idWorker = new IdWorker(new Random().Next(1,30),new Random().Next(0,30));  
 
             var startTime = DateTime.Now.AddSeconds(-1);
             var count = 100000;

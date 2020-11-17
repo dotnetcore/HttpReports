@@ -34,9 +34,7 @@ namespace HttpReports.Test
 
             _storage = services.BuildServiceProvider().GetRequiredService<MySqlStorage>();
             await _storage.InitAsync();
-        }
-
-
+        } 
 
         [TestMethod]
         public new async Task GetRequestInfoDetail()
@@ -47,8 +45,7 @@ namespace HttpReports.Test
 
             var result = await Storage.GetRequestInfo(id);
 
-            Assert.IsNotNull(result); 
-
+            Assert.IsNotNull(result);  
         }
 
 

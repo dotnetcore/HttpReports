@@ -8,6 +8,9 @@ namespace HttpReports.Storage.Abstractions.Models
 
     [Table(Name = "Performance")]
     [Index("idx_performance_id", "Id", true)]
+    [Index("idx_per_service", "Service")]
+    [Index("idx_per_instance", "Instance")]
+    [Index("idx_per_service_instance", "Service,Instance")]
     public class DBPerformance
     {
         [Column(IsPrimary = true)]
