@@ -517,12 +517,16 @@ export default {
 
     manualReload(){  
 
-      var second = parseInt((new Date().getTime() - this.range[1].getTime()) / 1000); 
+       var second = parseInt((new Date().getTime() - this.range[1].getTime()) / 1000); 
+        
+       if (second <= 10) {
 
-      this.range = [
-        basic.addSecond(this.range[0], second),
-        basic.addSecond(this.range[1], second),
-      ]; 
+          this.range = [
+              basic.addSecond(this.range[0], second),
+              basic.addSecond(this.range[1], second),
+           ]; 
+         
+       } 
 
       this.reload();
 
