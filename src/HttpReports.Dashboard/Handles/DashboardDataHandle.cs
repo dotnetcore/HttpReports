@@ -13,6 +13,7 @@ using HttpReports.Dashboard.ViewModels;
 using HttpReports.Models;
 using HttpReports.Storage.Abstractions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 
 namespace HttpReports.Dashboard.Handles
 {
@@ -29,10 +30,13 @@ namespace HttpReports.Dashboard.Handles
 
         private IHealthCheckService _healthCheckService;
 
+        private readonly DashboardOptions _options;
 
-        public DashboardDataHandle(IServiceProvider serviceProvider, IHealthCheckService healthCheckService, IAuthService authService, IHttpReportsStorage storage, IScheduleService scheduleService, ILocalizeService localizeService) : base(serviceProvider)
+
+        public DashboardDataHandle(IServiceProvider serviceProvider, IOptions<DashboardOptions> options, IHealthCheckService healthCheckService, IAuthService authService, IHttpReportsStorage storage, IScheduleService scheduleService, ILocalizeService localizeService) : base(serviceProvider)
         {
-            _storage = storage; 
+            _storage = storage;
+            _options = options.Value;
             _scheduleService = scheduleService; 
             _localizeService = localizeService;
             _authService = authService;
@@ -91,7 +95,7 @@ namespace HttpReports.Dashboard.Handles
                 Instance = request.Instance,
                 StartTime = start,
                 EndTime = end,
-                Count = 6 
+                Count = _options.QueryCount
             };   
             
             var basic = _storage.GetIndexBasicDataAsync(filter); 
@@ -169,7 +173,7 @@ namespace HttpReports.Dashboard.Handles
                 Instance = request.Instance,
                 StartTime = start,
                 EndTime = end,
-                Count = 6  
+                Count = _options.QueryCount
             }; 
 
             var endpoint = _storage.GetGroupData(filter, GroupType.Route);

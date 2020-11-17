@@ -10,7 +10,9 @@ namespace HttpReports.Dashboard
     {  
         public MailOptions Mail { get; set; } = new MailOptions();
 
-        public int ExpireDay { get; set; } = BasicConfig.ExpireDay;
+        public int ExpireDay { get; set; } = BasicConfig.ExpireDay; 
+
+        public int QueryCount { get; set; } = 6;
 
         public HealthCheckOptions Check { get; set; } = new HealthCheckOptions();
 

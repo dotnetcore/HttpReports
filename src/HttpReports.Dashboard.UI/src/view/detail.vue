@@ -280,8 +280,7 @@ import ComboViewLayer from "@antv/g2plot/lib/combo/base";
 
 export default {
   data() {
-    return {
-      test:"ccc",
+    return { 
       trace_tree_data: [],
       trace_tree_top:{ }, 
       top_width:420,
@@ -390,7 +389,7 @@ export default {
         instance: this.$store.state.query.instance,
         start: this.$store.state.query.start,
         end: this.$store.state.query.end,
-        requestId: this.requestQuery.requestId,
+        requestId: Number(this.requestQuery.requestId),
         route: this.requestQuery.route,
         requestBody: this.requestQuery.request,
         responseBody: this.requestQuery.response,
@@ -404,7 +403,7 @@ export default {
       return response;
     },
     async load_detail(id) {
-      var response = await Vue.http.post("GetRequestInfoDetail", { id });
+      var response = await Vue.http.post("GetRequestInfoDetail", { id:Number(id) });
       this.detailDrawer = true;
       this.info = response.body.data.info;
       if (this.info != null) {
@@ -422,7 +421,7 @@ export default {
    }, 
     async load_trace(id) {
 
-      var response = await Vue.http.post("GetTraceList", { id }); 
+      var response = await Vue.http.post("GetTraceList", { id:Number(id) }); 
 
       var tree = response.body.data; 
 

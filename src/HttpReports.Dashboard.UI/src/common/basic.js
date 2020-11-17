@@ -11,6 +11,23 @@ const basic = {
     }
 
   },
+
+  ToInt:(str) => {
+
+    if (str == null || str == undefined || str.length == 0) {
+      return 0;
+    }
+
+     try {
+       
+      return parseInt(str);
+       
+     } catch (error) {
+       return 0
+     } 
+
+  },
+
   isMobile: (str) => {
     if (!(/^1(3|4|5|6|7|8|9)\d{9}$/.test(str))) {
       return false;

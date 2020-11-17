@@ -80,14 +80,14 @@ namespace HttpReports.Mock.Console
             var count = 100000;
             var random = new Random();
 
-            string[] Services = { "User", "User", "User", "User", "User", "Order", "Order", "Order", "Order", "Weixin", "Weixin", "Payment", "Log", "Log", "Log", "DataCenter", "Student", "Student", "Master" };
+            string[] Services = { "User", "User", "User", "User", "User", "Order", "Order", "Order", "Order", "Weixin", "Weixin", "Payment", "Log", "Log", "Log", "DataCenter", "Student", "Student", "Master", "Maaster1", "Master2", "Master3", "Master4" };
             string[] LoginUsers = { "Jack", "Blues", "Mark", "Tom", "Cat" };
             string[] ParentServices = { "User", "Order", "Weixin", "Payment", "Log", "DataCenter" };
-            string[] LocalIPs = { "192.168.1.1", "192.168.1.1", "192.168.1.1", "192.168.1.2", "192.168.1.2", "192.168.1.2", "192.168.1.3", "192.168.1.3", "192.168.1.4", "192.168.1.5", "192.168.1.6" };
+            string[] LocalIPs = { "192.168.1.1", "192.168.1.1", "192.168.1.1", "192.168.1.2", "192.168.1.2", "192.168.1.2", "192.168.1.3", "192.168.1.3", "192.168.1.4", "192.168.1.5", "192.168.1.6", "192.168.1.7", "192.168.1.8", "192.168.1.9", "192.168.1.10" };
 
-            string[] Route = { "/User/Login", "/User/Payment", "/User/Payment", "/User/Payment", "/User/Payment", "/User/Payment", "/User/Search", "/User/Search", "/User/Search", "/Data/QueryData", "/Data/GetCofnig", "/Data/GetCofnig", "/User/LoadData" };
+            string[] Route = { "/User/Login", "/User/Payment", "/User/Payment", "/User/Payment", "/User/Payment", "/User/Payment", "/User/Search", "/User/Search", "/User/Search", "/Data/QueryData", "/Data/GetCofnig", "/Data/GetCofnig", "/User/LoadData", "/User/LoadData1", "/User/LoadData2", "/User/LoadData3", "/User/LoadData4" };
 
-            int[] LocalPort = { 8801, 8801, 8801, 8801, 8802, 8802, 8802, 8803, 8803, 8804, 8805, 8806 };
+            int[] LocalPort = { 8801, 8801, 8801, 8801, 8802, 8802, 8802, 8803, 8803, 8804, 8805, 8806, 8007, 8008, 8009 }; 
 
             //Task.Run(() => Insert());
             //Task.Run(() => Insert());

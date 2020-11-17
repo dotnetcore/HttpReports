@@ -288,7 +288,7 @@ export default {
         ],
       },
       monitor: {
-        id: "",
+        id: 0,
         title: "",
         description: "",
         service: "",
@@ -330,11 +330,10 @@ export default {
   },
   methods: {
 
-    async editJob(id){   
+    async editJob(id){    
       
-       this.showdialog();
-
-        var response = await Vue.http.post("GetMonitorJob", {id});  
+        this.showdialog();  
+        var response = await Vue.http.post("GetMonitorJob", {id:Number(id)});  
         var job = response.body.data;   
 
         var model = {};
@@ -383,7 +382,7 @@ export default {
           type: 'warning'
         }).then(async () => {  
 
-           await Vue.http.post("DeleteJob", {id});  
+           await Vue.http.post("DeleteJob", {id:Number(id)});  
 
            await this.loadMonitorJob();
 
@@ -554,7 +553,7 @@ export default {
     },
     resetForm() {
       this.monitor = {
-        id: "",
+        id: 0,
         title: "",
         description: "",
         service: "",
