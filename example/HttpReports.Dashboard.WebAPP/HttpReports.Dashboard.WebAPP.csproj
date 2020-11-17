@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="EPPlus.Core" Version="1.5.4" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Diagnostics\HttpReports.Diagnostic.SqlClient\HttpReports.Diagnostic.SqlClient.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Core\HttpReports.Core.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Dashboard\HttpReports.Dashboard.csproj" />

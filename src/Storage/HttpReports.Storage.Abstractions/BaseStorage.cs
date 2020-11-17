@@ -29,14 +29,13 @@ namespace HttpReports.Storage.Abstractions
 
         public BaseStorage(BaseStorageOptions options)
         {
-            _options = options;
+            _options = options; 
 
             _idWorker = new IdWorker(new Random().Next(1, 100000), new Random().Next(0, 100000));
 
             _deferFlushCollection = new AsyncCallbackDeferFlushCollection<RequestBag>(AddRequestInfoAsync, _options.DeferThreshold, _options.DeferSecond);
 
-            freeSql = new FreeSql.FreeSqlBuilder().UseConnectionString(_options.DataType, _options.ConnectionString).UseNoneCommandParameter(true).Build(); 
-
+            freeSql = new FreeSql.FreeSqlBuilder().UseConnectionString(_options.DataType, _options.ConnectionString).UseNoneCommandParameter(true).Build();  
         }
 
 

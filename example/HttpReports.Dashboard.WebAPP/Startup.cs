@@ -18,12 +18,10 @@ namespace HttpReports.Dashboard.WebAPP
     { 
 
         public void ConfigureServices(IServiceCollection services) 
-        {
-            services.AddResponseCompression();
-
+        { 
             services.AddHttpReports().UseHttpTransport();   
 
-            services.AddHttpReportsDashboard().UseMySqlStorage();
+            //services.AddHttpReportsDashboard().UseMySqlStorage();
 
             services.AddControllers(); 
 
@@ -34,13 +32,11 @@ namespace HttpReports.Dashboard.WebAPP
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-            }
-
-            app.UseResponseCompression(); 
+            } 
 
             app.UseHttpReports();
 
-            app.UseHttpReportsDashboard();    
+            //app.UseHttpReportsDashboard();    
 
             //app.UseMiddleware<ErrorMiddleware>();  
 
