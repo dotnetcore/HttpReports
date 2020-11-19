@@ -254,6 +254,20 @@ namespace HttpReports.Dashboard.Handles
             return Json(true,model);
         }
 
+        public async Task<string> GetEndpoints(QueryRequest request)
+        {
+            BasicFilter filter = new BasicFilter
+            {
+                Service = request.Service,
+                Instance = request.Instance  
+
+            };
+
+            var list = await _storage.GetEndpoints(filter);
+
+            return Json(true, list); 
+        }
+
 
         public async Task<string> GetMonitorJobs()
         { 

@@ -159,6 +159,18 @@ namespace HttpReports.Storage.Abstractions
             return await freeSql.Select<MonitorAlarm>().OrderByDescending(x => x.CreateTime).Page(filter.PageNumber, filter.PageSize).ToListAsync();
         }
 
+        public async Task<List<string>> GetEndpoints(BasicFilter filter)
+        {
+            var Start = DateTime.Now.AddDays(-1);
+
+            return await freeSql.Select<RequestInfo>().Where(x => x.CreateTime >= Start)  
+             .WhereIf(!filter.Service.IsEmpty(), x => x.Service == filter.Service)
+             .WhereIf(!filter.Instance.IsEmpty(), x => x.Instance == filter.Instance)
+              .OrderBy(x => x.Route)
+              .GroupBy(x => x.Route)
+              .ToListAsync(x => x.Key);
+        } 
+
         public async Task<bool> AddPerformanceAsync(Performance performance)
         {
             performance.Id = _idWorker.NextId();

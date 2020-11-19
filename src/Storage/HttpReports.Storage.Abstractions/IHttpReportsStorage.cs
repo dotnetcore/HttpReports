@@ -58,8 +58,9 @@ namespace HttpReports.Storage.Abstractions
 
         Task<MonitorJob> GetMonitorJob(long Id);
 
-        Task<List<MonitorJob>> GetMonitorJobs();
+        Task<List<string>> GetEndpoints(BasicFilter filter);
 
+        Task<List<MonitorJob>> GetMonitorJobs(); 
 
         Task<(int timeout, int total)> GetTimeoutResponeCountAsync(ResponseTimeTaskFilter filter);
 
