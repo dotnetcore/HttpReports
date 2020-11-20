@@ -1,16 +1,10 @@
 ﻿using HttpReports.Core.ViewModels;
 using HttpReports.Dashboard.Abstractions;
-using HttpReports.Storage.Abstractions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Newtonsoft.Json;
-using Org.BouncyCastle.Math.EC.Rfc7748;
+using HttpReports.Storage.Abstractions; 
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
+using System.Linq; 
 using System.Threading.Tasks;
 
 namespace HttpReports.Dashboard.Services

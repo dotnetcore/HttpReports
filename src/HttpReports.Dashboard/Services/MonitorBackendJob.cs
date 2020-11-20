@@ -7,12 +7,12 @@ using HttpReports.Dashboard.Models;
 using HttpReports.Models;
 using HttpReports.Storage.Abstractions;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Logging; 
 using Quartz;
 using System;
 using System.Collections.Generic;
-using System.Linq; 
+using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using ServiceContainer = HttpReports.Dashboard.Implements.ServiceContainer;
 
@@ -28,6 +28,7 @@ namespace HttpReports.Dashboard.Services
         
         private Localize _lang;
 
+        private JsonSerializerOptions _jsonSetting; 
 
         public MonitorBackendJob()
         {
@@ -40,11 +41,12 @@ namespace HttpReports.Dashboard.Services
             _storage = _storage ?? ServiceContainer.provider.GetService(typeof(IHttpReportsStorage)) as IHttpReportsStorage;
             _alarmService = _alarmService ?? ServiceContainer.provider.GetService(typeof(IAlarmService)) as IAlarmService; 
             _logger = _logger ?? ServiceContainer.provider.GetService(typeof(ILogger<MonitorBackendJob>)) as ILogger<MonitorBackendJob>;
-            _lang = _lang ?? (ServiceContainer.provider.GetService(typeof(ILocalizeService)) as ILocalizeService).Current; 
+            _lang = _lang ?? (ServiceContainer.provider.GetService(typeof(ILocalizeService)) as ILocalizeService).Current;
+            _jsonSetting = _jsonSetting ?? (ServiceContainer.provider.GetService(typeof(JsonSerializerOptions)) as JsonSerializerOptions);
 
             MonitorJob job = context.JobDetail.JobDataMap.Get("job") as MonitorJob;
 
-            MonitorJobPayload payload = JsonConvert.DeserializeObject<MonitorJobPayload>(job.Payload);  
+            MonitorJobPayload payload = System.Text.Json.JsonSerializer.Deserialize<MonitorJobPayload>(job.Payload,_jsonSetting);  
             
             var response = GetCheckResponse(new List<Func<MonitorJob, MonitorJobPayload, Task<AlarmOption>>> {
 

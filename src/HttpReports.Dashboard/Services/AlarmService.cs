@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 using HttpReports.Core;
 using HttpReports.Dashboard.Abstractions;
@@ -7,11 +8,9 @@ using HttpReports.Dashboard.Models;
 using HttpReports.Storage.Abstractions;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-
+using Microsoft.Extensions.Options; 
 using MimeKit;
-using MimeKit.Text;
-using Newtonsoft.Json;
+using MimeKit.Text; 
 
 namespace HttpReports.Dashboard.Services
 {
@@ -26,14 +25,17 @@ namespace HttpReports.Dashboard.Services
 
         private IHttpReportsStorage _storage;
 
+        private readonly JsonSerializerOptions _jsonSetting;
+
         private Localize lang => _localizeService.Current;
 
-        public AlarmService(IOptions<DashboardOptions> options, ILogger<AlarmService> logger, ILocalizeService localizeService, IHttpReportsStorage storage)
+        public AlarmService(IOptions<DashboardOptions> options, JsonSerializerOptions jsonSetting, ILogger<AlarmService> logger, ILocalizeService localizeService, IHttpReportsStorage storage)
         {
             Options = options.Value;
             Logger = logger;
             _localizeService = localizeService;
             _storage = storage;
+            _jsonSetting = jsonSetting;
         }
 
         private async Task SendMessageAsync(MimeMessage message)
@@ -87,7 +89,7 @@ namespace HttpReports.Dashboard.Services
                 {
                     string Title = $"HttpReports - {lang.Warning_Title}";
 
-                    HttpContent content = new StringContent(JsonConvert.SerializeObject(new { Title, option.Content }));
+                    HttpContent content = new StringContent(System.Text.Json.JsonSerializer.Serialize(new { Title, option.Content },_jsonSetting));
                     content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
 
                     var httpResponseMessage = await httpClient.PostAsync(option.WebHook, content);

@@ -5,13 +5,13 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web;
 using HttpReports.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Options; 
 
 namespace HttpReports
 {
@@ -25,14 +25,17 @@ namespace HttpReports
 
         private HttpReportsOptions Options { get; }
 
+        private readonly JsonSerializerOptions JsonSetting;
+
         public ILogger<DefaultHttpReportsMiddleware> Logger { get; }
 
-        public DefaultHttpReportsMiddleware(RequestDelegate next, IOptions<HttpReportsOptions> options, IRequestBuilder requestBuilder, IRequestProcesser invokeProcesser, ILogger<DefaultHttpReportsMiddleware> logger)
+        public DefaultHttpReportsMiddleware(RequestDelegate next, JsonSerializerOptions jsonSetting,IOptions<HttpReportsOptions> options, IRequestBuilder requestBuilder, IRequestProcesser invokeProcesser, ILogger<DefaultHttpReportsMiddleware> logger)
         {
             Next = next;
             Logger = logger;
             RequestBuilder = requestBuilder;
             InvokeProcesser = invokeProcesser;
+            JsonSetting = jsonSetting;
             Options = options.Value;
         }
 
@@ -140,12 +143,12 @@ namespace HttpReports
 
                 if (context.Items.ContainsKey(BasicConfig.HttpReportsGrpcRequest))
                 {
-                    requestBody = JsonConvert.SerializeObject(context.Items[BasicConfig.HttpReportsGrpcRequest]);
+                    requestBody = System.Text.Json.JsonSerializer.Serialize(context.Items[BasicConfig.HttpReportsGrpcRequest], JsonSetting);
                 }
 
                 if (context.Items.ContainsKey(BasicConfig.HttpReportsGrpcResponse))
                 {
-                    responseBody = JsonConvert.SerializeObject(context.Items[BasicConfig.HttpReportsGrpcResponse]);
+                    responseBody = System.Text.Json.JsonSerializer.Serialize(context.Items[BasicConfig.HttpReportsGrpcResponse], JsonSetting); 
                 }
 
                 context.Items.Add(BasicConfig.HttpReportsTraceCost, stopwatch.ElapsedMilliseconds);

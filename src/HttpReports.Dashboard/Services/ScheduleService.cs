@@ -2,12 +2,12 @@
 using HttpReports.Dashboard.Abstractions;
 using HttpReports.Models;
 using HttpReports.Storage.Abstractions;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Options; 
 using Quartz;
 using Quartz.Impl; 
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace HttpReports.Dashboard.Services
@@ -22,14 +22,17 @@ namespace HttpReports.Dashboard.Services
 
         private IHttpReportsStorage _storage;
 
-        private DashboardOptions _options; 
-      
+        private DashboardOptions _options;
 
-        public ScheduleService(IHttpReportsStorage storage, IOptions<DashboardOptions> options)
+        private JsonSerializerOptions _jsonSetting;
+
+        public ScheduleService(IHttpReportsStorage storage, JsonSerializerOptions jsonSetting, IOptions<DashboardOptions> options)
         {
             _storage = storage;
 
             _options = options.Value;
+
+            _jsonSetting = jsonSetting;
 
             scheduler = scheduler ?? new StdSchedulerFactory().GetScheduler().Result; 
         }
@@ -123,7 +126,7 @@ namespace HttpReports.Dashboard.Services
                         MonitorJob monitorJob = job.JobDataMap.Get("job") as MonitorJob; 
 
                         // 判断是否有修改，如果修改后，重置Job
-                        if (JsonConvert.SerializeObject(k) != JsonConvert.SerializeObject(monitorJob))
+                        if (System.Text.Json.JsonSerializer.Serialize(k,_jsonSetting) != System.Text.Json.JsonSerializer.Serialize(monitorJob,_jsonSetting))
                         {
                             await DeleteJobAsync(job);
                             await ScheduleJobAsync(k); 

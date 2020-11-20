@@ -1,9 +1,12 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting; 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Unicode;
 
 namespace HttpReports.Test
 {
@@ -28,7 +31,26 @@ namespace HttpReports.Test
             string url = "http://dx.dabansuan.com.cn/click.htm?zid=3228&od=0";
             int str = url.IndexOf("od");
             url = url.Insert(str, "_au");
-        } 
+        }
+
+        [TestMethod]
+        public void JsonTest()
+        {
+            var user = new { 
+             
+                FirstName = "张三",
+                CreateTime = DateTime.Now
+
+            };
+
+            var str1 = System.Text.Json.JsonSerializer.Serialize(user,new System.Text.Json.JsonSerializerOptions { 
+            
+                 PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
+                 Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+
+            }); 
+           
+        }
 
         public delegate string GetResultDelegate();   
 

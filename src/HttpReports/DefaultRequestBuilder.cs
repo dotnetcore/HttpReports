@@ -4,12 +4,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Web;
 using HttpReports.Core;
 using HttpReports.Core.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Options; 
 using Snowflake.Core;
 
 namespace HttpReports
@@ -20,10 +20,13 @@ namespace HttpReports
 
         private readonly IdWorker _idWorker;
 
-        public DefaultRequestBuilder(IOptions<HttpReportsOptions> options, IdWorker idWorker)
+        private readonly JsonSerializerOptions JsonSetting;
+
+        public DefaultRequestBuilder(IOptions<HttpReportsOptions> options, JsonSerializerOptions jsonSetting, IdWorker idWorker)
         {
             Options = options.Value;
             _idWorker = idWorker;
+            JsonSetting = jsonSetting;
         }
 
 
@@ -96,15 +99,15 @@ namespace HttpReports
                 Dictionary<string, string> cookies = context.Request.Cookies.ToList().ToDictionary(x => x.Key, x => x.Value);
 
                 if (Options.WithCookie && cookies != null && cookies.Count > 0)
-                { 
-                    model.Cookie = JsonConvert.SerializeObject(cookies);
+                {
+                    model.Cookie = System.Text.Json.JsonSerializer.Serialize(cookies,JsonSetting);  
                 }
 
                 Dictionary<string, string> headers = context.Request.Headers.ToList().ToDictionary(x => x.Key, x => x.Value.ToString());
 
                 if (Options.WithHeader && headers != null && headers.Count > 0)
                 {
-                    model.Header = HttpUtility.HtmlDecode(JsonConvert.SerializeObject(headers));
+                    model.Header = HttpUtility.HtmlDecode(System.Text.Json.JsonSerializer.Serialize(headers,JsonSetting));
                 }
 
                 if (context.Items.ContainsKey(BasicConfig.HttpReportsGlobalException))

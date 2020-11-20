@@ -27,10 +27,10 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Snowflake.Core" Version="2.0.0" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="4.7.0" />
     <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="4.7.0" />
+    <PackageReference Include="System.Text.Json" Version="4.7.2" />
   </ItemGroup>
 
   <ItemGroup>

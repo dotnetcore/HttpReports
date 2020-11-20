@@ -1,17 +1,14 @@
-﻿ 
+﻿
 using HttpReports.Dashboard.Models;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace HttpReports.Dashboard.Handles
 {
     public abstract class DashboardHandleBase : IDashboardHandle
-    {
+    { 
         protected DashboardHandleBase(IServiceProvider serviceProvider)
         {
             ServiceProvider = serviceProvider;
@@ -34,13 +31,11 @@ namespace HttpReports.Dashboard.Handles
                 Data = null
             };
 
-            Context.HttpContext.Response.ContentType = "application/json;charset=utf-8"; 
+            Context.HttpContext.Response.ContentType = "application/json;charset=utf-8";
 
-            return JsonConvert.SerializeObject(baseResult, new JsonSerializerSettings { 
-                
-                ContractResolver = new CamelCasePropertyNamesContractResolver() 
+            var setting = ServiceProvider.GetRequiredService<JsonSerializerOptions>();
+            return System.Text.Json.JsonSerializer.Serialize(baseResult,setting);  
             
-            });
         }
 
         public virtual string Json(bool state,object data)
@@ -54,11 +49,8 @@ namespace HttpReports.Dashboard.Handles
 
             Context.HttpContext.Response.ContentType = "application/json;charset=utf-8";
 
-            JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings();
-            jsonSerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-            jsonSerializerSettings.Converters.Add(new SnowFlakeConverter());
-
-            return JsonConvert.SerializeObject(baseResult,jsonSerializerSettings);  
+            var setting = ServiceProvider.GetRequiredService<JsonSerializerOptions>(); 
+            return System.Text.Json.JsonSerializer.Serialize(baseResult, setting);  
         } 
 
         public virtual string Json(bool state, string msg,object data)
@@ -70,22 +62,24 @@ namespace HttpReports.Dashboard.Handles
                 Data = data
             };
 
-            Context.HttpContext.Response.ContentType = "application/json;charset=utf-8"; 
-            JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings();
-            jsonSerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-            jsonSerializerSettings.Converters.Add(new SnowFlakeConverter()); 
-
-            return JsonConvert.SerializeObject(baseResult, jsonSerializerSettings); 
+            var setting = ServiceProvider.GetRequiredService<JsonSerializerOptions>(); 
+            return System.Text.Json.JsonSerializer.Serialize(baseResult, setting); 
         }  
-    }
+    } 
+    
 
-    public class SnowFlakeConverter : JsonConverter
+    public class SnowFlakeIdConverter : System.Text.Json.Serialization.JsonConverter<long>
     {
-        public override bool CanConvert(Type objectType) => objectType == typeof(long); 
+        public override long Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            var val = 0L;
+            return reader.TryGetInt64(out val) ? val : 0L;
+        }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) => reader.Value; 
-
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) => writer.WriteValue(((long)value).ToString()); 
+        public override void Write(Utf8JsonWriter writer, long value, JsonSerializerOptions options)
+        {
+            writer.WriteStringValue(value.ToString());
+        }
     }
 
 }
