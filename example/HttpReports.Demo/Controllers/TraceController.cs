@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 
-namespace HttpReports.Dashboard.WebAPP.Controllers
+namespace HttpReports.Demo.Controllers
 {
     [Route("[controller]/[action]")]
     public class TraceController : Controller
@@ -26,14 +26,14 @@ namespace HttpReports.Dashboard.WebAPP.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Get3()
-        { 
+        {
             await Task.Delay(2300);
 
             HttpClient client = new HttpClient();
 
-            var result = await client.GetStringAsync(" http://localhost:5501/WeatherForecast/Get1"); 
+            var result = await client.GetStringAsync(" http://localhost:5501/WeatherForecast/Get1");
 
-            return await Task.FromResult(Content("OK")); 
+            return await Task.FromResult(Content("OK"));
         }
 
     }

@@ -1,14 +1,14 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using OfficeOpenXml;
 
-namespace HttpReports.Dashboard.WebAPP.Controllers
+namespace HttpReports.Demo.Controllers
 {
     public class TestController : Controller
     {
@@ -126,5 +126,4 @@ namespace HttpReports.Dashboard.WebAPP.Controllers
         public string Sex { get; set; }
 
     }
-
 }
