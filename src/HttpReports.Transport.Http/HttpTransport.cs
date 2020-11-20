@@ -1,15 +1,12 @@
 ﻿using HttpReports.Core; 
 using HttpReports.Core.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Options; 
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Runtime.InteropServices;
-using System.Text; 
+using System.Net.Http; 
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -23,13 +20,15 @@ namespace HttpReports.Transport.Http
         private readonly AsyncCallbackDeferFlushCollection<RequestBag> _RequestBagCollection; 
 
         private readonly ILogger<HttpTransport> _logger;
-        private readonly IHttpClientFactory _httpClientFactory; 
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly JsonSerializerOptions _jsonSetting;
 
-        public HttpTransport(IOptions<HttpTransportOptions> options, ILogger<HttpTransport> logger, IHttpClientFactory httpClientFactory)
+        public HttpTransport(IOptions<HttpTransportOptions> options, JsonSerializerOptions jsonSetting, ILogger<HttpTransport> logger, IHttpClientFactory httpClientFactory)
         {
             _options = options.Value ?? throw new ArgumentNullException();
             _logger = logger;
             _httpClientFactory = httpClientFactory;
+            _jsonSetting = jsonSetting;
             _RequestBagCollection = new AsyncCallbackDeferFlushCollection<RequestBag>(Push, _options.DeferThreshold,_options.DeferSecond); 
         }   
 
@@ -46,7 +45,7 @@ namespace HttpReports.Transport.Http
 
                 try
                 {
-                    HttpContent content = new StringContent(HttpUtility.HtmlEncode(JsonConvert.SerializeObject(performance)), System.Text.Encoding.UTF8, "application/json");
+                    HttpContent content = new StringContent(HttpUtility.HtmlEncode(System.Text.Json.JsonSerializer.Serialize(performance,_jsonSetting)), System.Text.Encoding.UTF8, "application/json");
 
                     content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
                     content.Headers.Add(BasicConfig.TransportType, typeof(Performance).Name);
@@ -70,7 +69,7 @@ namespace HttpReports.Transport.Http
 
                try
                {
-                   HttpContent content = new StringContent(HttpUtility.HtmlEncode(JsonConvert.SerializeObject(list)), System.Text.Encoding.UTF8);
+                   HttpContent content = new StringContent(HttpUtility.HtmlEncode( System.Text.Json.JsonSerializer.Serialize(list,_jsonSetting)), System.Text.Encoding.UTF8);
 
                    content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
                    content.Headers.Add(BasicConfig.TransportType, typeof(RequestBag).Name);

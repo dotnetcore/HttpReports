@@ -1,4 +1,5 @@
-﻿ 
+﻿
+ 
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Text;
 namespace HttpReports.Core.Models
 {
     public class Performance 
-    {
+    {    
         public long Id { get; set; }
         public string Service { get; set; }
 

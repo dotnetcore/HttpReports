@@ -2,6 +2,9 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Unicode;
 using System.Threading;
 using System.Threading.Tasks; 
 using HttpReports;
@@ -16,8 +19,7 @@ using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http; 
 using Microsoft.Extensions.Configuration; 
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Options; 
 using Snowflake.Core;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -53,7 +55,14 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 x.Server = services.GetNewServer(x); 
 
-            }); 
+            });
+
+            services.AddSingleton(new JsonSerializerOptions {
+
+                PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
+                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+
+            });
 
             services.AddSingleton<IdWorker>(new IdWorker(new Random().Next(1,30),new Random().Next(1,30))); 
             services.AddSingleton<IRequestProcesser, DefaultRequestProcesser>();

@@ -6,8 +6,7 @@ using System.Text;
 using FlubuCore.Context;
 using FlubuCore.Context.Attributes.BuildProperties;
 using FlubuCore.IO;
-using FlubuCore.Scripting;
-using Newtonsoft.Json;
+using FlubuCore.Scripting; 
 
 namespace BuildScript
 {

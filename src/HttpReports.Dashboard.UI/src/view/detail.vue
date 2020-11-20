@@ -62,6 +62,12 @@ background-color: #dadada;
 
 }
 
+.endpoint_item{
+
+  font-size:12px;
+
+}
+
 </style> 
 
 
@@ -70,19 +76,34 @@ background-color: #dadada;
     <el-row>
       <el-col :span="24">
         <el-card class="box-card">
-          <el-form :inline="true" :model="requestQuery" class="demo-form-inline">
+
+          <el-form :inline="true" :model="requestQuery" class="demo-form-inline">  
+
+          <el-form-item :label="this.$store.state.lang.Request_Request_Route">
+           <el-select
+              size="small"
+              style="width:300px" 
+              v-model="requestQuery.route"
+              filterable
+              @change="load">
+              <el-option
+               class="endpoint_item"
+                v-for="item in routes"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+            </el-form-item>   
+         
+
             <el-form-item :label="this.$store.state.lang.RequestId">
-              <el-input size="mini" v-model="requestQuery.requestId"></el-input>
-            </el-form-item>
-
-
-            <el-form-item :label="this.$store.state.lang.Request_Request_Route">
-              <el-input size="mini" v-model="requestQuery.route"></el-input>
+              <el-input size="small" v-model="requestQuery.requestId"></el-input>
             </el-form-item> 
            
 
             <el-form-item :label="this.$store.state.lang.StatusCode">
-              <el-input size="mini" v-model="requestQuery.statusCode"></el-input>
+              <el-input size="small" v-model="requestQuery.statusCode"></el-input>
             </el-form-item>
 
             <el-form-item v-show="false" :label="this.$store.state.lang.RequestBody">
@@ -201,7 +222,8 @@ background-color: #dadada;
 
             <h4>{{ this.$store.state.lang.Request_DetailInfo }}</h4>
 
-            <el-form :inline="true" ref="form" :model="detail" label-width="100px" size="mini">
+            <el-form :inline="true" ref="form" :model="detail" label-width="100px" size="mini">  
+
               <el-form-item :label="this.$store.state.lang.QueryString">
                 <el-input type="textarea" style="width:380px" v-model="detail.queryString"></el-input>
               </el-form-item>
@@ -281,6 +303,7 @@ import ComboViewLayer from "@antv/g2plot/lib/combo/base";
 export default {
   data() {
     return { 
+      routes:[],
       trace_tree_data: [],
       trace_tree_top:{ }, 
       top_width:420,
@@ -314,7 +337,7 @@ export default {
     },
     format(percentage) {  
        return `${percentage}%`;
-    },
+    }, 
     pageSizeChange(val) {
       this.requestPage.pageSize = val;
       this.load();
@@ -377,10 +400,31 @@ export default {
 
       return list;
 
-    },
-    async load() {
+    }, 
+    async load_endpoints(){
+
+      var response = await Vue.http.post("GetEndpoints", {
+        service: this.$store.state.query.service,
+        instance: this.$store.state.query.instance 
+      });     
+
+      this.routes = [];
+
+      response.body.data.forEach((x) => {
+        
+        this.routes.push({
+          value:x,
+          label:x
+        }); 
+
+      }); 
+
+    }, 
+    async load() { 
+
       var response = await this.load_basic_data();
-      this.load_table(response);
+      this.load_table(response);  
+
     },
     async load_basic_data() {
       this.$store.commit("set_detail_loading", true);
@@ -389,7 +433,7 @@ export default {
         instance: this.$store.state.query.instance,
         start: this.$store.state.query.start,
         end: this.$store.state.query.end,
-        requestId: Number(this.requestQuery.requestId),
+        requestId: this.requestQuery.requestId,
         route: this.requestQuery.route,
         requestBody: this.requestQuery.request,
         responseBody: this.requestQuery.response,
@@ -397,20 +441,35 @@ export default {
           this.requestQuery.statusCode == "" ? 0 : this.requestQuery.statusCode,
         pageNumber: this.requestPage.pageNumber,
         pageSize: this.requestPage.pageSize,
-      }); 
+      });  
+    
 
       this.$store.commit("set_detail_loading", false);
       return response;
     },
     async load_detail(id) {
-      var response = await Vue.http.post("GetRequestInfoDetail", { id:Number(id) });
+      var response = await Vue.http.post("GetRequestInfoDetail", { id });
       this.detailDrawer = true;
       this.info = response.body.data.info;
       if (this.info != null) {
         this.info.createTime = this.cutTime(this.info.createTime);
+      }   
+
+      this.detail = response.body.data.detail;  
+
+      if(this.detail.header.length > 0){  
+         this.detail.header =  JSON.stringify(JSON.parse(this.detail.header),null,4);
+      }
+      if(this.detail.cookie.length > 0){  
+         this.detail.cookie =  JSON.stringify(JSON.parse(this.detail.cookie),null,4);
+      } 
+      if(this.detail.requestBody.length > 0){  
+         this.detail.requestBody =  JSON.stringify(JSON.parse(this.detail.requestBody),null,4);
+      }
+      if(this.detail.responseBody.length > 0){  
+         this.detail.responseBody =  JSON.stringify(JSON.parse(this.detail.responseBody),null,4);
       }
 
-      this.detail = response.body.data.detail;
       if (this.detail != null) {
         this.detail.createTime = this.cutTime(this.detail.createTime);
       }
@@ -421,7 +480,7 @@ export default {
    }, 
     async load_trace(id) {
 
-      var response = await Vue.http.post("GetTraceList", { id:Number(id) }); 
+      var response = await Vue.http.post("GetTraceList", { id }); 
 
       var tree = response.body.data; 
 
@@ -455,8 +514,12 @@ export default {
       });
     },
   },
-  async mounted() {
-    this.load();
+  async mounted() { 
+
+    this.load_endpoints();
+
+    this.load();  
+
   },
   computed: mapState({
     query: (state) => state.query,

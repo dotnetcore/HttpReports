@@ -112,7 +112,7 @@
   "Request_CreateTime": "创建时间",
   "Request_DetailInfo": "请求详细信息",
   "Request_Trace": "追踪",
-  "Request_Request_Route":"路由",
+  "Request_Request_Route":"端点",
   "Min":"最小值",
   "Max":"最大值",
   "Monitor_Time1Min": "1分钟",

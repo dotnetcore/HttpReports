@@ -40,6 +40,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Snowflake.Core" Version="2.0.0" />
+    <PackageReference Include="System.Text.Json" Version="4.7.2" />
     <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
     <ProjectReference Include="..\HttpReprots.Collector.Http\HttpReprots.Collector.Http.csproj" />
     <ProjectReference Include="..\Storage\HttpReports.Storage.Abstractions\HttpReports.Storage.Abstractions.csproj" />

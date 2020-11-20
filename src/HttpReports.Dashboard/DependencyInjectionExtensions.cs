@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Unicode;
 using HttpReports;
 using HttpReports.Core;
 using HttpReports.Dashboard;
@@ -79,6 +82,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 });
 
+            }); 
+
+            services.AddSingleton(new JsonSerializerOptions
+            { 
+                PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
+                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)  
             });
 
             services.AddSingleton<IdWorker>(new IdWorker(new Random().Next(1,30), new Random().Next(1,30)));
@@ -113,7 +122,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             app.UseHttpReportsHttpCollector();
 
-            app.UseMiddleware<DashboardMiddleware>(); 
+            app.UseMiddleware<DashboardMiddleware>();  
+
 
             return app;
         } 

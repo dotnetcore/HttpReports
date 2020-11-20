@@ -1,13 +1,13 @@
 ﻿using HttpReports.Core;
 using HttpReports.Dashboard.Abstractions;
 using HttpReports.Storage.Abstractions;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Logging; 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace HttpReports.Dashboard.Services
@@ -17,15 +17,17 @@ namespace HttpReports.Dashboard.Services
         private readonly Dictionary<string, Localize> _localize = new Dictionary<string, Localize>();
         private readonly IHttpReportsStorage _storage;
         private readonly ILogger<LocalizeService> _logger;
+        private readonly JsonSerializerOptions _jsonSetting;
 
         public Localize Current { get; set; }
 
         public IEnumerable<string> Langs => _localize.Keys;
 
-        public LocalizeService(IHttpReportsStorage storage, ILogger<LocalizeService> logger)
+        public LocalizeService(IHttpReportsStorage storage, ILogger<LocalizeService> logger, JsonSerializerOptions jsonSetting)
         { 
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _logger = logger;
+            _jsonSetting = jsonSetting;
         }
 
         public async Task InitAsync()
@@ -81,7 +83,7 @@ namespace HttpReports.Dashboard.Services
         public void LoadLocalize(string name, string json)
         {
             name = name.ToLowerInvariant();
-            var resource = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+            var resource =  System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(json,_jsonSetting);
 
             if (_localize.ContainsKey(name))
             {

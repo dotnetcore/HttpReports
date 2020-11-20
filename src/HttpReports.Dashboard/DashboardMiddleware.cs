@@ -7,18 +7,12 @@ using System.Threading.Tasks;
 using HttpReports.Dashboard.Handles;
 using HttpReports.Dashboard.Routes;
 using System.Reflection;
-using System.Linq;
-using Newtonsoft.Json;
-using System.IO;
-using Org.BouncyCastle.Asn1.X509.Qualified;
-using HttpReports.Dashboard.Implements;
-using Quartz.Logging;
-using Microsoft.Extensions.Logging;
-using HttpReports.Dashboard.Services;
-using System.Net;
-using Org.BouncyCastle.Utilities.IO;
+using System.Linq; 
+using System.IO; 
+using System.Net; 
 using HttpReports.Dashboard.Abstractions;
 using HttpReports.Core;
+using System.Text.Json;
 
 namespace HttpReports.Dashboard
 {
@@ -27,12 +21,14 @@ namespace HttpReports.Dashboard
         private readonly RequestDelegate _next;
 
         private IAuthService _authService;
-       
 
-        public DashboardMiddleware(RequestDelegate next, IAuthService authService)
+        private JsonSerializerOptions _jsonSetting;
+
+        public DashboardMiddleware(RequestDelegate next, JsonSerializerOptions jsonSetting, IAuthService authService)
         {
             _next = next;
             _authService = authService;
+            _jsonSetting = jsonSetting;
         }
 
 
@@ -141,14 +137,14 @@ namespace HttpReports.Dashboard
                                 {
                                     var dict = new Dictionary<string, string>();
                                     httpContext.Request.Query.ToList().ForEach(x => dict.Add(x.Key, x.Value));
-                                    args = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(dict));
+                                    args = System.Text.Json.JsonSerializer.Serialize<object>(System.Text.Json.JsonSerializer.Serialize(dict, _jsonSetting), _jsonSetting);
                                 }
                             }
                             else if (httpContext.Request.Query.Count > 1)
                             {
                                 var dict = new Dictionary<string, string>();
                                 httpContext.Request.Query.ToList().ForEach(x => dict.Add(x.Key, x.Value));
-                                args = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(dict), method.GetParameters().First().ParameterType);
+                                args = System.Text.Json.JsonSerializer.Serialize(System.Text.Json.JsonSerializer.Serialize(dict, _jsonSetting),method.GetParameters().First().ParameterType,_jsonSetting);  
                             }
                             else
                             {
@@ -156,7 +152,7 @@ namespace HttpReports.Dashboard
 
                                 var paraType = method.GetParameters().First().ParameterType;
 
-                                args = JsonConvert.DeserializeObject(requestJson, paraType);
+                                args = System.Text.Json.JsonSerializer.Deserialize(requestJson, paraType);
 
                             }
 
