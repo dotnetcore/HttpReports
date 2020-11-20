@@ -6,7 +6,7 @@ namespace HttpReports.Dashboard.Models
 {
     public class QueryDetailRequest:QueryRequest
     {
-        public long RequestId { get; set; }
+        public string RequestId { get; set; }
 
         public string Route { get; set; }
 

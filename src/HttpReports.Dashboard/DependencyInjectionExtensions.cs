@@ -113,7 +113,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             app.UseHttpReportsHttpCollector();
 
-            app.UseMiddleware<DashboardMiddleware>(); 
+            app.UseMiddleware<DashboardMiddleware>();  
+
 
             return app;
         } 

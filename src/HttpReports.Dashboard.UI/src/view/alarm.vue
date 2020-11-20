@@ -288,7 +288,7 @@ export default {
         ],
       },
       monitor: {
-        id: 0,
+        id: "",
         title: "",
         description: "",
         service: "",
@@ -382,7 +382,7 @@ export default {
           type: 'warning'
         }).then(async () => {  
 
-           await Vue.http.post("DeleteJob", {id:Number(id)});  
+           await Vue.http.post("DeleteJob", {id});  
 
            await this.loadMonitorJob();
 

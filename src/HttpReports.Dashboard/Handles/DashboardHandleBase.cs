@@ -34,8 +34,13 @@ namespace HttpReports.Dashboard.Handles
                 Data = null
             };
 
-            Context.HttpContext.Response.ContentType = "application/json;charset=utf-8";
-            return JsonConvert.SerializeObject(baseResult, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+            Context.HttpContext.Response.ContentType = "application/json;charset=utf-8"; 
+
+            return JsonConvert.SerializeObject(baseResult, new JsonSerializerSettings { 
+                
+                ContractResolver = new CamelCasePropertyNamesContractResolver() 
+            
+            });
         }
 
         public virtual string Json(bool state,object data)
@@ -48,7 +53,12 @@ namespace HttpReports.Dashboard.Handles
             };
 
             Context.HttpContext.Response.ContentType = "application/json;charset=utf-8";
-            return JsonConvert.SerializeObject(baseResult, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });  
+
+            JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings();
+            jsonSerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            jsonSerializerSettings.Converters.Add(new SnowFlakeConverter());
+
+            return JsonConvert.SerializeObject(baseResult,jsonSerializerSettings);  
         } 
 
         public virtual string Json(bool state, string msg,object data)
@@ -60,10 +70,22 @@ namespace HttpReports.Dashboard.Handles
                 Data = data
             };
 
-            Context.HttpContext.Response.ContentType = "application/json;charset=utf-8";
-            return JsonConvert.SerializeObject(baseResult, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+            Context.HttpContext.Response.ContentType = "application/json;charset=utf-8"; 
+            JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings();
+            jsonSerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            jsonSerializerSettings.Converters.Add(new SnowFlakeConverter()); 
 
-        }
-
+            return JsonConvert.SerializeObject(baseResult, jsonSerializerSettings); 
+        }  
     }
+
+    public class SnowFlakeConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType) => objectType == typeof(long); 
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) => reader.Value; 
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) => writer.WriteValue(((long)value).ToString()); 
+    }
+
 }

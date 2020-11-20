@@ -138,7 +138,7 @@ namespace HttpReports.Dashboard.Handles
                 Instance = request.Instance,
                 StartTime = start,
                 EndTime = end,
-                RequestId = request.RequestId,
+                RequestId = request.RequestId.ToLong(),
                 Route = request.Route,
                 StatusCode = request.StatusCode,
                 RequestBody = request.RequestBody,
@@ -249,7 +249,7 @@ namespace HttpReports.Dashboard.Handles
 
         public async Task<string> GetMonitorJob(ByIdRequest req)
         {
-            var model = await _storage.GetMonitorJob(req.Id);
+            var model = await _storage.GetMonitorJob(req.Id.ToLong());
 
             return Json(true,model);
         }
@@ -298,9 +298,9 @@ namespace HttpReports.Dashboard.Handles
 
         public async Task<string> DeleteJob(ByIdRequest req)
         {
-            var deleteJob = await _storage.GetMonitorJob(req.Id);
+            var deleteJob = await _storage.GetMonitorJob(req.Id.ToLong());
 
-            await _storage.DeleteMonitorJob(req.Id); 
+            await _storage.DeleteMonitorJob(req.Id.ToLong()); 
 
             await _scheduleService.UpdateMonitorJobAsync(deleteJob);
 
@@ -309,7 +309,7 @@ namespace HttpReports.Dashboard.Handles
 
         public async Task<string> ChangeJobState(ByIdRequest req)
         {
-            var model = await _storage.GetMonitorJob(req.Id);
+            var model = await _storage.GetMonitorJob(req.Id.ToLong());
 
             model.Status = model.Status == 1 ? 0 : 1;
 
@@ -368,18 +368,18 @@ namespace HttpReports.Dashboard.Handles
         {
             var parent = await GetGrandParentRequestInfo(new ByIdRequest { Id  = req.Id });
 
-            var tree = await GetRequestInfoTrace(new ByIdRequest { Id = parent.Id });
+            var tree = await GetRequestInfoTrace(new ByIdRequest { Id = parent.Id.ToString() });
 
             return Json(true,tree);
         }
 
         public async Task<string> GetMonitorAlarms(QueryRequest request)
         {
-            var list = await _storage.GetMonitorAlarms(new BasicFilter { 
-            
+            var list = await _storage.GetMonitorAlarms(new BasicFilter {  
+
                 PageSize = 20,
-                PageNumber = 1
-            
+                PageNumber = 1 
+
             });
 
             return Json(true,list); 
@@ -388,7 +388,7 @@ namespace HttpReports.Dashboard.Handles
 
         public async Task<string> GetRequestInfoDetail(ByIdRequest req)
         {
-            var (requestInfo, requestDetail) = await _storage.GetRequestInfoDetail(req.Id);
+            var (requestInfo, requestDetail) = await _storage.GetRequestInfoDetail(req.Id.ToLong());
 
             return Json(true, new
             { 
@@ -401,7 +401,7 @@ namespace HttpReports.Dashboard.Handles
 
         private async Task<RequestInfo> GetGrandParentRequestInfo(ByIdRequest req)
         {
-            var requestInfo = await _storage.GetRequestInfo(req.Id);
+            var requestInfo = await _storage.GetRequestInfo(req.Id.ToLong());
 
             if (requestInfo.ParentId == 0)
             {
@@ -410,7 +410,7 @@ namespace HttpReports.Dashboard.Handles
             else
             {
                 return await GetGrandParentRequestInfo( new ByIdRequest {  
-                    Id = requestInfo.ParentId
+                    Id = requestInfo.ParentId.ToString()
                 });
             }
         }
@@ -419,7 +419,7 @@ namespace HttpReports.Dashboard.Handles
 
         private async Task<RequestTraceTree> GetRequestInfoTrace(ByIdRequest req)
         {
-            var requestInfo = await _storage.GetRequestInfo(req.Id);
+            var requestInfo = await _storage.GetRequestInfo(req.Id.ToLong());
 
             var requestInfoTrace = new RequestTraceTree
             { 
@@ -438,7 +438,7 @@ namespace HttpReports.Dashboard.Handles
             {
                 var trace = await GetRequestInfoTrace(new ByIdRequest { 
                 
-                    Id = item.Id
+                    Id = item.Id.ToString() 
 
                 });
 

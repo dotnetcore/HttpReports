@@ -433,7 +433,7 @@ export default {
         instance: this.$store.state.query.instance,
         start: this.$store.state.query.start,
         end: this.$store.state.query.end,
-        requestId: Number(this.requestQuery.requestId),
+        requestId: this.requestQuery.requestId,
         route: this.requestQuery.route,
         requestBody: this.requestQuery.request,
         responseBody: this.requestQuery.response,
@@ -441,20 +441,35 @@ export default {
           this.requestQuery.statusCode == "" ? 0 : this.requestQuery.statusCode,
         pageNumber: this.requestPage.pageNumber,
         pageSize: this.requestPage.pageSize,
-      }); 
+      });  
+    
 
       this.$store.commit("set_detail_loading", false);
       return response;
     },
     async load_detail(id) {
-      var response = await Vue.http.post("GetRequestInfoDetail", { id:Number(id) });
+      var response = await Vue.http.post("GetRequestInfoDetail", { id });
       this.detailDrawer = true;
       this.info = response.body.data.info;
       if (this.info != null) {
         this.info.createTime = this.cutTime(this.info.createTime);
+      }   
+
+      this.detail = response.body.data.detail;  
+
+      if(this.detail.header.length > 0){  
+         this.detail.header =  JSON.stringify(JSON.parse(this.detail.header),null,4);
+      }
+      if(this.detail.cookie.length > 0){  
+         this.detail.cookie =  JSON.stringify(JSON.parse(this.detail.cookie),null,4);
+      } 
+      if(this.detail.requestBody.length > 0){  
+         this.detail.requestBody =  JSON.stringify(JSON.parse(this.detail.requestBody),null,4);
+      }
+      if(this.detail.responseBody.length > 0){  
+         this.detail.responseBody =  JSON.stringify(JSON.parse(this.detail.responseBody),null,4);
       }
 
-      this.detail = response.body.data.detail;
       if (this.detail != null) {
         this.detail.createTime = this.cutTime(this.detail.createTime);
       }
@@ -465,7 +480,7 @@ export default {
    }, 
     async load_trace(id) {
 
-      var response = await Vue.http.post("GetTraceList", { id:Number(id) }); 
+      var response = await Vue.http.post("GetTraceList", { id }); 
 
       var tree = response.body.data; 
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿ 
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,8 +7,10 @@ namespace HttpReports.Core.Models
 {
     public class RequestInfo
     {
-        public long Id { get; set; }
+       
+        public long Id { get; set; } 
 
+       
         public long ParentId { get; set; }
 
         public string Service { get; set; }

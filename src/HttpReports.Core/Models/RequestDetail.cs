@@ -1,4 +1,5 @@
-﻿using System;
+﻿ 
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,7 +7,10 @@ namespace HttpReports.Core.Models
 {
     public class RequestDetail
     {
+        
         public long Id { get; set; }
+
+        
         public long RequestId { get; set; }
         public string Scheme { get; set; }
         public string QueryString { get; set; }

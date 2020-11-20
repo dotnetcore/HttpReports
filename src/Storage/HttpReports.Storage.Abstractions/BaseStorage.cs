@@ -121,7 +121,20 @@ namespace HttpReports.Storage.Abstractions
                .WhereIf(!filter.ResponseBody.IsEmpty(), x => x.ResponseBody.Contains(filter.RequestBody))
                .Limit(100)
                .ToListAsync(x => x.Id);
-            } 
+            }
+
+            var sql = freeSql.Select<RequestInfo>()
+                .Where(x => x.CreateTime >= filter.StartTime && x.CreateTime <= filter.EndTime)
+                .WhereIf(!filter.Service.IsEmpty(), x => x.Service == filter.Service)
+                .WhereIf(!filter.Instance.IsEmpty(), x => x.Instance == filter.Instance)
+                .WhereIf(filter.RequestId > 0, x => x.Id == filter.RequestId)
+                .WhereIf(filter.StatusCode > 0, x => x.StatusCode == filter.StatusCode)
+                .WhereIf(!filter.Route.IsEmpty(), x => x.Route.Contains(filter.Route))
+                .WhereIf(detailId != null && detailId.Any(), x => detailId.Contains(x.Id))
+                .Count(out _)
+                .Page(filter.PageNumber, filter.PageSize)
+                .OrderByDescending(x => x.CreateTime)
+                .ToSql();
 
             var list = await freeSql.Select<RequestInfo>()
                 .Where(x => x.CreateTime >= filter.StartTime && x.CreateTime <= filter.EndTime)
