@@ -47,7 +47,7 @@ namespace HttpReports.Test
             var count = 100000;
             var random = new Random();
 
-            string[] Services = { "User", "User", "User", "User", "User", "Order", "Order", "Order", "Order", "Weixin", "Weixin","Payment", "Log", "Log","Log", "DataCenter", "Student", "Student", "Master","Maaster1","Master2","Master3","Master4" };
+            string[] Services = { "User", "User", "User", "User", "User", "Order", "Order", "Order", "Order", "Weixin", "Weixin","Payment", "Log", "Log","Log", "DataCenter", "Student", "Student", "Master","Maaster1","Master2","Master3","Master4","Master5","Master6", "Master7", "Master8", "Master9", "Master10" };
             string[] LoginUsers = { "Jack", "Blues", "Mark", "Tom", "Cat" };
             string[] ParentServices = { "User", "Order", "Weixin", "Payment", "Log", "DataCenter" };
             string[] LocalIPs = { "192.168.1.1", "192.168.1.1", "192.168.1.1", "192.168.1.2", "192.168.1.2", "192.168.1.2", "192.168.1.3", "192.168.1.3", "192.168.1.4", "192.168.1.5", "192.168.1.6", "192.168.1.7", "192.168.1.8", "192.168.1.9", "192.168.1.10" };

@@ -85,7 +85,8 @@ namespace Microsoft.Extensions.DependencyInjection
             }); 
 
             services.AddSingleton(new JsonSerializerOptions
-            { 
+            {
+                PropertyNameCaseInsensitive = true,
                 PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
                 Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)  
             });

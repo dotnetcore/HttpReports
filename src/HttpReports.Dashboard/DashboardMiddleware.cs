@@ -152,7 +152,7 @@ namespace HttpReports.Dashboard
 
                                 var paraType = method.GetParameters().First().ParameterType;
 
-                                args = System.Text.Json.JsonSerializer.Deserialize(requestJson, paraType);
+                                args = System.Text.Json.JsonSerializer.Deserialize(requestJson, paraType,_jsonSetting);
 
                             }
 
