@@ -519,7 +519,7 @@ export default {
 
        var second = parseInt((new Date().getTime() - this.range[1].getTime()) / 1000); 
         
-       if (second <= 10) {
+       if (second <= 5) {
 
           this.range = [
               basic.addSecond(this.range[0], second),
