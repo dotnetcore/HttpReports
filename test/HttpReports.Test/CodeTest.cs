@@ -1,4 +1,6 @@
-﻿using HttpReports.Core.Models;
+﻿using HttpReports.Collector.Grpc;
+using HttpReports.Core;
+using HttpReports.Core.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting; 
 using System;
 using System.Collections.Generic;
@@ -44,7 +46,7 @@ namespace HttpReports.Test
 
             }; 
 
-            var model1 = new Performance() {
+            var model1 = new Core.Models.Performance() {
 
                 Id = 1222222222243243232L,
                 Instance = "",
@@ -58,9 +60,50 @@ namespace HttpReports.Test
 
             var model2 = JsonSerializer.Deserialize<Collector.Grpc.Performance>(str2);  
 
+        }
+
+
+        [TestMethod]
+        public void JsonTest3()
+        {
+            List<RequestBag> bags = new List<RequestBag>();
+
+            bags.Add(new RequestBag(new Core.Models.RequestInfo
+            {
+
+                Service = "11",
+                Instance = "1111",
+                CreateTime = DateTime.Now
+
+
+            }, new Core.Models.RequestDetail
+            {
+
+                QueryString = "11111111",
+                CreateTime = DateTime.Now
+
+            }));
+
+            bags.Add(new RequestBag(new Core.Models.RequestInfo
+            {
+
+                Service = "22",
+                Instance = "2222",
+                CreateTime = DateTime.Now
+
+
+            }, new Core.Models.RequestDetail
+            {
+
+                QueryString = "2222222",
+                CreateTime = DateTime.Now
+
+            })); 
+
+
+            var pack = JsonSerializer.Deserialize<RequestInfoPack>(JsonSerializer.Serialize(bags)); 
+
         } 
-
-
 
 
         public delegate string GetResultDelegate();   
