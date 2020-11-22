@@ -1,6 +1,7 @@
 ﻿using HttpReports;
 using HttpReports.Core; 
 using HttpReports.Core.Models;
+using HttpReports.Storage.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives; 
@@ -20,18 +21,18 @@ namespace HttpReprots.Collector.Http
     {
         private readonly RequestDelegate _next;
 
-        public ILogger<HttpCollectorMiddleware> _logger;
+        public ILogger<HttpCollectorMiddleware> _logger; 
 
-        private IHttpReportsCollector _collector;
+        public readonly IHttpReportsStorage _storage;
 
         private JsonSerializerOptions _jsonSetting;
 
-        public HttpCollectorMiddleware(RequestDelegate next, JsonSerializerOptions jsonSetting, ILogger<HttpCollectorMiddleware> logger, IHttpReportsCollector collector)
+        public HttpCollectorMiddleware(RequestDelegate next, IHttpReportsStorage storage, JsonSerializerOptions jsonSetting, ILogger<HttpCollectorMiddleware> logger)
         {
             _next = next;
-            _logger = logger;
-            _collector = collector;
+            _logger = logger; 
             _jsonSetting = jsonSetting;
+            _storage = storage;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -65,31 +66,35 @@ namespace HttpReprots.Collector.Http
             {
                 try
                 {
-                    var package = System.Text.Json.JsonSerializer.Deserialize<List<RequestBagJson>>(Body, _jsonSetting);
+                    var package = System.Text.Json.JsonSerializer.Deserialize<List<RequestBag>>(Body, _jsonSetting);
 
                     if (package != null && package.Any())
                     {
-                        List<RequestBag> bags = new List<RequestBag>();
-
                         foreach (var item in package)
-                        { 
-                            await _collector.WriteDataAsync(new RequestBag(item.RequestInfo as RequestInfo, item.RequestDetail as RequestDetail));
-                        }  
+                        {
+                            await _storage.AddRequestInfoAsync(item);
+                        } 
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex,"Collector Failed");
-
-                    throw;
+                    _logger.LogWarning("Collector Failed:" + ex.Message); 
                 } 
             }
 
             if (TransportType == typeof(Performance).Name)
             {
-                var package = System.Text.Json.JsonSerializer.Deserialize<Performance>(Body,_jsonSetting); 
+                try
+                {
+                    var package = System.Text.Json.JsonSerializer.Deserialize<Performance>(Body, _jsonSetting);
 
-                await _collector.WriteDataAsync(package);
+                    await _storage.AddPerformanceAsync(package);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning("Collector Failed:" + ex.Message);
+                } 
+                
             }  
         }  
     }

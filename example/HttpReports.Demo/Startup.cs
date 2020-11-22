@@ -26,7 +26,7 @@ namespace HttpReports.Demo
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpReports().UseHttpTransport(); 
-            services.AddHttpReportsDashboard().UseSQLServerStorage(); 
+            services.AddHttpReportsDashboard().UseMySqlStorage(); 
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

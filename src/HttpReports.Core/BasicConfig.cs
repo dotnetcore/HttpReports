@@ -79,15 +79,11 @@ namespace HttpReports.Core
 
         public const string HttpReportsServerRegister = "/HttpReportsServerRegister";
 
-        public const int PerformanceInerval = 10000; 
-
-        public const string TransportRequestBag = "/HttpReportsTransport/RequestBag";
-
+        public const int PerformanceInerval = 10000;  
+      
         public const string TransportType = "TransportType";
 
-        public const string TransportPath = "/DataTransportPath";
-
-        public const string TransportPerformance = "/HttpReportsTransport/Performance";
+        public const string TransportPath = "/DataTransportPath"; 
 
     }
 }

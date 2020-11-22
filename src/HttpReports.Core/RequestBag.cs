@@ -16,13 +16,6 @@ namespace HttpReports.Core
             this.RequestInfo = info;
             this.RequestDetail = detail;
         } 
-    }
-    public class RequestBagJson
-    {
-        public RequestInfo RequestInfo { get; set; }
-
-        public RequestDetail RequestDetail { get; set; }
-
     } 
 
 }

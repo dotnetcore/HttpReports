@@ -12,15 +12,6 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class DependencyInjectionExtensions
     {
-        public static IServiceCollection AddHttpReportsHttpCollector(this IServiceCollection services)
-        { 
-            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");
-
-            services.AddSingleton<IHttpReportsCollector,HttpCollectorService>();
-
-            return services;
-
-        } 
         public static IApplicationBuilder UseHttpReportsHttpCollector(this IApplicationBuilder app)
 
             => app.Map(BasicConfig.TransportPath, builder 

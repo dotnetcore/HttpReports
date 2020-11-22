@@ -97,10 +97,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IAuthService, AuthService>();  
             services.AddSingleton<IScheduleService, ScheduleService>();  
             services.AddSingleton<ILocalizeService,LocalizeService>();
-            services.AddSingleton<IHealthCheckService, HealthCheckService>();
-
-            services.AddHandleService(); 
-            services.AddHttpReportsHttpCollector(); 
+            services.AddSingleton<IHealthCheckService, HealthCheckService>(); 
+            services.AddHandleService();  
 
             return new HttpReportsBuilder(services, configuration);
         }   
