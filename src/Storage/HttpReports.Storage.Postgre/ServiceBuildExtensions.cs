@@ -10,28 +10,48 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceBuildExtensions
     {
+        public static IHttpReportsBuilder AddPostgreSQLStorage(this IHttpReportsBuilder builder)
+        {
+            builder.Services.AddOptions();
+            builder.Services.Configure<PostgreStorageOptions>(builder.Configuration.GetSection("Storage"));
+
+            return builder.AddPostgreSQLStorageService();
+        }
+
+        public static IHttpReportsBuilder AddPostgreSQLStorage(this IHttpReportsBuilder builder,Action<PostgreStorageOptions> options)
+        {
+            builder.Services.AddOptions();
+            builder.Services.Configure<PostgreStorageOptions>(options); 
+
+            return builder.AddPostgreSQLStorageService();
+        }
+
+        internal static IHttpReportsBuilder AddPostgreSQLStorageService(this IHttpReportsBuilder builder)
+        { 
+            builder.Services.AddSingleton<IHttpReportsStorage, PostgreSQLStorage>();
+
+            return builder;
+        } 
+
+
+        [Obsolete("Use AddPostgreSQLStorage instead")]
         public static IHttpReportsBuilder UsePostgreSQLStorage(this IHttpReportsBuilder builder)
         {
             builder.Services.AddOptions();
             builder.Services.Configure<PostgreStorageOptions>(builder.Configuration.GetSection("Storage"));
 
-            return builder.UsePostgreSQLStorageService();
+            return builder.AddPostgreSQLStorageService();
         }
 
-        public static IHttpReportsBuilder UsePostgreSQLStorage(this IHttpReportsBuilder builder,Action<PostgreStorageOptions> options)
+
+        [Obsolete("Use AddPostgreSQLStorage instead")]
+        public static IHttpReportsBuilder UsePostgreSQLStorage(this IHttpReportsBuilder builder, Action<PostgreStorageOptions> options)
         {
             builder.Services.AddOptions();
-            builder.Services.Configure<PostgreStorageOptions>(options); 
+            builder.Services.Configure<PostgreStorageOptions>(options);
 
-            return builder.UsePostgreSQLStorageService();
-        }
-
-        internal static IHttpReportsBuilder UsePostgreSQLStorageService(this IHttpReportsBuilder builder)
-        { 
-            builder.Services.AddSingleton<IHttpReportsStorage, PostgreSQLStorage>();
-
-            return builder;
-        }
+            return builder.AddPostgreSQLStorageService();
+        } 
 
     }
 }

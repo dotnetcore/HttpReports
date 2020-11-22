@@ -8,28 +8,50 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceBuildExtensions
     {
-        public static IHttpReportsBuilder UseSQLServerStorage(this IHttpReportsBuilder builder)
+        public static IHttpReportsBuilder AddSQLServerStorage(this IHttpReportsBuilder builder)
         {
             builder.Services.AddOptions();
             builder.Services.Configure<SQLServerStorageOptions>(builder.Configuration.GetSection("Storage"));
 
-            return builder.UseSQLServerStorageService();
+            return builder.AddSQLServerStorageService();
         }
 
-        public static IHttpReportsBuilder UseSQLServerStorage(this IHttpReportsBuilder builder,Action<SQLServerStorageOptions> options)
+        public static IHttpReportsBuilder AddSQLServerStorage(this IHttpReportsBuilder builder,Action<SQLServerStorageOptions> options)
         {
             builder.Services.AddOptions();
             builder.Services.Configure<SQLServerStorageOptions>(options);
 
-            return builder.UseSQLServerStorageService();
+            return builder.AddSQLServerStorageService();
         }
 
-        private static IHttpReportsBuilder UseSQLServerStorageService(this IHttpReportsBuilder builder)
+        private static IHttpReportsBuilder AddSQLServerStorageService(this IHttpReportsBuilder builder)
         { 
             builder.Services.AddSingleton<IHttpReportsStorage, SQLServerStorage>();
 
             return builder;
         }
+
+
+        [Obsolete("Use AddSQLServerStorage instead")]
+        public static IHttpReportsBuilder UseSQLServerStorage(this IHttpReportsBuilder builder)
+        {
+            builder.Services.AddOptions();
+            builder.Services.Configure<SQLServerStorageOptions>(builder.Configuration.GetSection("Storage"));
+
+            return builder.AddSQLServerStorageService();
+        }
+
+
+        [Obsolete("Use AddSQLServerStorage instead")]
+        public static IHttpReportsBuilder UseSQLServerStorage(this IHttpReportsBuilder builder, Action<SQLServerStorageOptions> options)
+        {
+            builder.Services.AddOptions();
+            builder.Services.Configure<SQLServerStorageOptions>(options);
+
+            return builder.AddSQLServerStorageService();
+        }
+
+
 
     }
 }

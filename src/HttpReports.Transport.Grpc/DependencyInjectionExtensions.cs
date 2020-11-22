@@ -5,24 +5,24 @@ using System;
 namespace HttpReports.Transport.Grpc
 {
     public static class DependencyInjectionExtensions
-    {
-        public static IHttpReportsBuilder UseHttpTransport(this IHttpReportsBuilder builder)
+    { 
+        public static IHttpReportsBuilder AddGrpcTransport(this IHttpReportsBuilder builder)
         {
             builder.Services.AddOptions().Configure<GrpcTransportOptions>(builder.Configuration.GetSection("Transport"));
-            return builder.UseHttpTransportService();
+            return builder.AddGrpcTransportService();
         }
 
-        public static IHttpReportsBuilder UseHttpTransport(this IHttpReportsBuilder builder, Action<GrpcTransportOptions> options)
+        public static IHttpReportsBuilder AddGrpcTransport(this IHttpReportsBuilder builder, Action<GrpcTransportOptions> options)
         {
             builder.Services.AddOptions().Configure(options);
-            return builder.UseHttpTransportService();
+            return builder.AddGrpcTransportService();
         }
 
-        private static IHttpReportsBuilder UseHttpTransportService(this IHttpReportsBuilder builder)
+        private static IHttpReportsBuilder AddGrpcTransportService(this IHttpReportsBuilder builder)
         { 
             builder.Services.RemoveAll<IReportsTransport>();
             builder.Services.AddSingleton<IReportsTransport,GrpcTransport>();
             return builder;
-        }
+        }  
     }
 }
