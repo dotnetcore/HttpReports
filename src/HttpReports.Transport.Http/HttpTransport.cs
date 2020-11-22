@@ -82,12 +82,12 @@ namespace HttpReports.Transport.Http
                } 
                catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException) 
                {
-                   _logger.LogWarning("HttpReports push failed:Network Error...");
+                   _logger.LogWarning("HttpReports transport failed:Network Error...");
                    return false;
                }
                catch (Exception ex)
                { 
-                   _logger.LogWarning(ex, "HttpReports push failed:" + ex.ToString());
+                   _logger.LogWarning("HttpReports transport failed:" + ex.ToString());
                    return false;
                } 
 

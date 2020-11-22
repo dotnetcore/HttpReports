@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting; 
+﻿using HttpReports.Core.Models;
+using Microsoft.VisualStudio.TestTools.UnitTesting; 
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,16 +42,26 @@ namespace HttpReports.Test
                 FirstName = "张三",
                 CreateTime = DateTime.Now
 
+            }; 
+
+            var model1 = new Performance() {
+
+                Id = 1222222222243243232L,
+                Instance = "",
+                Service = "测试",
+                CreateTime =DateTime.Now 
             };
 
-            var str1 = System.Text.Json.JsonSerializer.Serialize(user,new System.Text.Json.JsonSerializerOptions { 
-            
-                 PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
-                 Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+            var model3 = new Collector.Grpc.Performance(); 
 
-            }); 
-           
-        }
+            var str2 = JsonSerializer.Serialize(model1);
+
+            var model2 = JsonSerializer.Deserialize<Collector.Grpc.Performance>(str2);  
+
+        } 
+
+
+
 
         public delegate string GetResultDelegate();   
 

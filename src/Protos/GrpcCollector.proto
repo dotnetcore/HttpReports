@@ -1,0 +1,79 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "HttpReports.Collector.Grpc";
+
+service GrpcCollector {
+  rpc WriteRequest (RequestInfoPack) returns (WriteReply);
+  rpc WritePerformance (Performance) returns (WriteReply);
+}
+
+message RequestInfoPack {
+  repeated RequestInfoWithDetail Data = 1;
+}
+
+message RequestInfoWithDetail {
+ RequestInfo RequestInfo = 1;
+ RequestDetail RequestDetail = 2;
+} 
+
+message Performance {
+ int64 Id = 1;
+ string Service = 2;
+ string Instance = 3;
+ int32 GCGen0 = 4;
+ int32 GCGen1 = 5;
+ int32 GCGen2 = 6;
+ double HeapMemory = 7;
+ double ProcessCPU = 8;
+ double ProcessMemory = 9;
+ int32 ThreadCount = 10;
+ int32 PendingThreadCount = 11;
+ int64 CreateTimeStamp = 12;
+} 
+
+
+
+message RequestInfo {
+ int64 Id = 1;
+ int64 ParentId = 2;
+ string Service = 3;
+ string  ParentService = 4;
+ string Instance = 5;
+ string Route = 6;
+ string Url = 7;
+ string RequestType = 8;
+ string Method = 9;
+ int32 Milliseconds = 10;
+ int32 StatusCode = 11;
+ string RemoteIP = 12;
+ string LoginUser = 13;
+ int64 CreateTimeStamp = 14;
+}   
+
+message RequestDetail {
+  int64 Id = 1;
+  int64 RequestId = 2;
+  string Scheme = 3;
+  string QueryString = 4;
+  string Header = 5;
+  string Cookie = 6;
+  string RequestBody = 7;
+  string ResponseBody = 8;
+  string ErrorMessage = 9;
+  string ErrorStack = 10;
+  int64 CreateTimeStamp = 11;
+} 
+
+ 
+message WriteReply {
+ int32 code = 1;
+} 
+
+
+
+
+
+
+
+
+
