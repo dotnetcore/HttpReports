@@ -98,10 +98,12 @@ namespace HttpReports.Test
                 QueryString = "2222222",
                 CreateTime = DateTime.Now
 
-            })); 
+            }));
+             
 
+            var str3 = JsonSerializer.Serialize(bags); 
 
-            var pack = JsonSerializer.Deserialize<RequestInfoPack>(JsonSerializer.Serialize(bags)); 
+            var pack = JsonSerializer.Deserialize<RequestInfoPack>(str3); 
 
         } 
 
