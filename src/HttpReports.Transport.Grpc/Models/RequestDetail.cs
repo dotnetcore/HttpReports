@@ -4,11 +4,11 @@ using System.Text;
 
 namespace HttpReports.Collector.Grpc
 {
-    public partial class RequestDetail
+    public partial class RequestDetail 
     {
         private DateTime? _createTime = null;
 
-        public DateTime CreateTime
+        public new DateTime CreateTime
         {
             get
             {

@@ -58,14 +58,53 @@ namespace HttpReports.Transport.Grpc
         private async Task Push(List<RequestBag> list, CancellationToken token)
         {
             try
-            {  
-                var pack = JsonSerializer.Deserialize<RequestInfoPack>(JsonSerializer.Serialize(list));
+            {
+                var pack = new RequestInfoPack();
 
-                if (pack != null)
+                foreach (var x in list)
                 {
-                    var reply = await _client.WriteRequestAsync(pack);
-                } 
-                
+                    var value = new RequestInfoWithDetail();
+
+                    value.RequestInfo = new Collector.Grpc.RequestInfo {
+                    
+                        Id = x.RequestInfo.Id,
+                        ParentId = x.RequestInfo.ParentId,
+                        Service = x.RequestInfo.Service,
+                        ParentService = x.RequestInfo.ParentService,
+                        Instance = x.RequestInfo.Instance,
+                        Route = x.RequestInfo.Route,
+                        Url = x.RequestInfo.Url,
+                        RequestType = x.RequestInfo.RequestType,
+                        Method = x.RequestInfo.Method,
+                        Milliseconds = x.RequestInfo.Milliseconds,
+                        StatusCode = x.RequestInfo.StatusCode,
+                        RemoteIP = x.RequestInfo.RemoteIP,
+                        LoginUser = x.RequestInfo.LoginUser,
+                        CreateTime = x.RequestInfo.CreateTime,
+                        CreateTimeStamp = x.RequestInfo.CreateTime.Ticks
+                    };
+
+                    value.RequestDetail = new Collector.Grpc.RequestDetail { 
+                    
+                        Id = x.RequestDetail.Id,
+                        RequestId = x.RequestDetail.RequestId,
+                        Scheme = x.RequestDetail.Scheme,
+                        QueryString = x.RequestDetail.QueryString,
+                        Header = x.RequestDetail.Header,
+                        Cookie = x.RequestDetail.Cookie,
+                        RequestBody = x.RequestDetail.RequestBody,
+                        ResponseBody = x.RequestDetail.ResponseBody,
+                        ErrorMessage = x.RequestDetail.ErrorMessage,
+                        ErrorStack = x.RequestDetail.ErrorStack,
+                        CreateTime = x.RequestDetail.CreateTime,
+                        CreateTimeStamp = x.RequestDetail.CreateTime.Ticks 
+                    };
+
+                    pack.Data.Add(value);
+                }   
+
+                var reply = await _client.WriteRequestAsync(pack);
+
             }
             catch (Exception ex)
             { 

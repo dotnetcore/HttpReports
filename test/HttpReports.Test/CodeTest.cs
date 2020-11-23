@@ -93,18 +93,17 @@ namespace HttpReports.Test
 
 
             }, new Core.Models.RequestDetail
-            {
-
+            { 
                 QueryString = "2222222",
                 CreateTime = DateTime.Now
 
-            }));
-             
+            })); 
 
+            RequestInfoPack ccc = new RequestInfoPack(); 
+          
             var str3 = JsonSerializer.Serialize(bags); 
 
             var pack = JsonSerializer.Deserialize<RequestInfoPack>(str3); 
-
         } 
 
 
