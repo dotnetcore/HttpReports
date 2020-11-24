@@ -4,4 +4,21 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore" Version="2.33.1" />
+    <PackageReference Include="Grpc.Tools" Version="2.33.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
+    <ProjectReference Include="..\Storage\HttpReports.Storage.Abstractions\HttpReports.Storage.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="..\Protos\GrpcCollector.proto" Link="Protos\GrpcCollector.proto" GrpcServices="Server" />
+  </ItemGroup>
+
 </Project>
