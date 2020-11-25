@@ -26,7 +26,10 @@ namespace HttpReports.Transport.Grpc
         {
             _options = options.Value;
             _logger = logger;  
-            _client = new GrpcCollector.GrpcCollectorClient(GrpcChannel.ForAddress(_options.CollectorAddress)); 
+            _client = new GrpcCollector.GrpcCollectorClient(GrpcChannel.ForAddress(_options.CollectorAddress,new GrpcChannelOptions { 
+            
+                 
+            })); 
             _RequestBagCollection = new AsyncCallbackDeferFlushCollection<RequestBag>(Push, _options.DeferThreshold, _options.DeferSecond);
         }
 

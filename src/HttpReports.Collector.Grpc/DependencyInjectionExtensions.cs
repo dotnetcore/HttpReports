@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using HttpReports;
+using HttpReports.Collector.Grpc;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace HttpReports.Collector.Grpc
+namespace Microsoft.Extensions.DependencyInjection 
 {
     public static class DependencyInjectionExtensions
     {

@@ -25,8 +25,8 @@ namespace HttpReports.Demo
       
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpReports().AddHttpTransport(); 
-            services.AddHttpReportsDashboard().UsePostgreSQLStorage(); 
+            services.AddHttpReports().AddGrpcTransport();
+            services.AddHttpReportsDashboard().AddGrpcCollector().AddMySqlStorage(); 
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -56,7 +56,9 @@ namespace HttpReports.Demo
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapGrpcCollector();
                 endpoints.MapControllers();
+
             });
         }
     }
