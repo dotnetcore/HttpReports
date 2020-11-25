@@ -24,7 +24,7 @@ namespace HttpReports.Demo
 
       
         public void ConfigureServices(IServiceCollection services)
-        {
+        { 
             services.AddHttpReports().AddGrpcTransport();
             services.AddHttpReportsDashboard().AddGrpcCollector().AddMySqlStorage(); 
 
@@ -37,10 +37,11 @@ namespace HttpReports.Demo
 
        
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        { 
-            app.UseHttpReports(); 
-            app.UseHttpReportsDashboard();
+        {
 
+           
+            app.UseHttpReports(); 
+            app.UseHttpReportsDashboard();  
             //app.UseMiddleware<ErrorMiddleware>();   
 
             if (env.IsDevelopment())

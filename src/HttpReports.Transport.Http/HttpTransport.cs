@@ -54,7 +54,12 @@ namespace HttpReports.Transport.Http
 
                     return response.StatusCode == HttpStatusCode.OK;
                 } 
-                catch(Exception ex)
+                catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
+                {
+                    _logger.LogWarning("HttpReports transport failed...");
+                    return false;
+                }
+                catch (Exception ex)
                 {
                     //_logger.LogError(ex, "performance push failed:" + ex.ToString());
                     return false;
@@ -82,7 +87,7 @@ namespace HttpReports.Transport.Http
                } 
                catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException) 
                {
-                   _logger.LogWarning("HttpReports transport failed:Network Error...");
+                   _logger.LogWarning("HttpReports transport failed...");
                    return false;
                }
                catch (Exception ex)

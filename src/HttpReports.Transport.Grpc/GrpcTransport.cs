@@ -1,4 +1,5 @@
-﻿using Grpc.Net.Client;
+﻿using Grpc.Core;
+using Grpc.Net.Client;
 using HttpReports.Collector.Grpc;
 using HttpReports.Core;
 using HttpReports.Core.Models;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -26,10 +28,7 @@ namespace HttpReports.Transport.Grpc
         {
             _options = options.Value;
             _logger = logger;  
-            _client = new GrpcCollector.GrpcCollectorClient(GrpcChannel.ForAddress(_options.CollectorAddress,new GrpcChannelOptions { 
-            
-                 
-            })); 
+            _client = new GrpcCollector.GrpcCollectorClient(GrpcChannel.ForAddress(_options.CollectorAddress)); 
             _RequestBagCollection = new AsyncCallbackDeferFlushCollection<RequestBag>(Push, _options.DeferThreshold, _options.DeferSecond);
         }
 
@@ -50,11 +49,15 @@ namespace HttpReports.Transport.Grpc
                 if (model != null)
                 {
                     var reply = await _client.WritePerformanceAsync(model);
-                }  
+                }
+            }
+            catch (Exception ex) when (ex is RpcException) 
+            {
+                _logger.LogWarning($"HttpReports transport failed"); 
             }
             catch (Exception ex)
-            {
-                _logger.LogWarning($"HttpReports transport failed:{ex.Message}"); 
+            { 
+                _logger.LogWarning($"HttpReports transport failed:{ex.Message}");
             }
         }
 
@@ -106,13 +109,15 @@ namespace HttpReports.Transport.Grpc
                     pack.Data.Add(value);
                 }   
 
-                var reply = await _client.WriteRequestAsync(pack);
-
+                var reply = await _client.WriteRequestAsync(pack); 
+            }
+            catch (Exception ex) when (ex is RpcException)
+            {
+                _logger.LogWarning($"HttpReports transport failed");
             }
             catch (Exception ex)
-            { 
+            {
                 _logger.LogWarning($"HttpReports transport failed:{ex.Message}");
-
             }
         } 
 

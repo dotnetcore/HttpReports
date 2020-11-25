@@ -16,8 +16,7 @@ namespace GrpcUserServer
          
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddGrpc();
-            services.AddHttpReports().UseMySqlStorage().UseGrpc();
+            services.AddHttpReports().AddHttpTransport();
             services.AddControllers();
         }
 
