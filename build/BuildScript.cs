@@ -90,8 +90,7 @@ namespace BuildScript
             context.CreateTarget("Default")
              .SetDescription("Runs all targets.")
              .SetAsDefault()
-             .DependsOn(clean, restore, build, pack,push,push2); 
-
+             .DependsOn(clean, restore, build, pack,push, push2);  
         }
 
         private void NugetPush(ITaskContext context)
