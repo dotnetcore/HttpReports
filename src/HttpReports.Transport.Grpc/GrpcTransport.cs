@@ -28,6 +28,11 @@ namespace HttpReports.Transport.Grpc
         {
             _options = options.Value;
             _logger = logger;  
+
+            var httpClientHandler = new HttpClientHandler(); 
+            httpClientHandler.ServerCertificateCustomValidationCallback =  HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+            var httpClient = new HttpClient(httpClientHandler);
+
             _client = new GrpcCollector.GrpcCollectorClient(GrpcChannel.ForAddress(_options.CollectorAddress)); 
             _RequestBagCollection = new AsyncCallbackDeferFlushCollection<RequestBag>(Push, _options.DeferThreshold, _options.DeferSecond);
         }

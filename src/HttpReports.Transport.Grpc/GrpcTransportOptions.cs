@@ -11,7 +11,7 @@ namespace HttpReports.Transport.Grpc
 
         public int DeferSecond { get; set; }
 
-        public int DeferThreshold { get; set; }
+        public int DeferThreshold { get; set; }    
 
         public GrpcTransportOptions Value => this;
 
