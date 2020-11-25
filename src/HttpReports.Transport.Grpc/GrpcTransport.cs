@@ -27,13 +27,16 @@ namespace HttpReports.Transport.Grpc
         public GrpcTransport(IOptions<GrpcTransportOptions> options, ILogger<GrpcTransport> logger)
         {
             _options = options.Value;
-            _logger = logger;  
+            _logger = logger;
 
-            var httpClientHandler = new HttpClientHandler(); 
-            httpClientHandler.ServerCertificateCustomValidationCallback =  HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+            var httpClientHandler = new HttpClientHandler();
+            httpClientHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
             var httpClient = new HttpClient(httpClientHandler);
 
-            _client = new GrpcCollector.GrpcCollectorClient(GrpcChannel.ForAddress(_options.CollectorAddress)); 
+            GrpcChannelOptions grpcChannelOptions = new GrpcChannelOptions() {  HttpClient = httpClient };
+
+            _client = new GrpcCollector.GrpcCollectorClient(GrpcChannel.ForAddress(_options.CollectorAddress, grpcChannelOptions));  
+
             _RequestBagCollection = new AsyncCallbackDeferFlushCollection<RequestBag>(Push, _options.DeferThreshold, _options.DeferSecond);
         }
 

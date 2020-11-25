@@ -61,9 +61,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Storage.Abstrac
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Demo", "example\HttpReports.Demo\HttpReports.Demo.csproj", "{8A0E25E0-C88F-4685-A580-FCAEAB232052}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpReports.Transport.Grpc", "src\HttpReports.Transport.Grpc\HttpReports.Transport.Grpc.csproj", "{30FFBED8-3280-401F-AD34-EBE9CADE2165}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Transport.Grpc", "src\HttpReports.Transport.Grpc\HttpReports.Transport.Grpc.csproj", "{30FFBED8-3280-401F-AD34-EBE9CADE2165}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpReports.Collector.Grpc", "src\HttpReports.Collector.Grpc\HttpReports.Collector.Grpc.csproj", "{F8BC75E3-675C-442A-A653-8331B7357A20}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Collector.Grpc", "src\HttpReports.Collector.Grpc\HttpReports.Collector.Grpc.csproj", "{F8BC75E3-675C-442A-A653-8331B7357A20}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

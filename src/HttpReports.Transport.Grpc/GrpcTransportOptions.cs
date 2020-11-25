@@ -7,7 +7,7 @@ namespace HttpReports.Transport.Grpc
 {
     public class GrpcTransportOptions : IOptions<GrpcTransportOptions>
     {
-        public Uri CollectorAddress { get; set; }
+        public Uri CollectorAddress { get; set; }   
 
         public int DeferSecond { get; set; }
 
