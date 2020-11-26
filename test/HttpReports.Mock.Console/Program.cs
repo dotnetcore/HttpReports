@@ -16,7 +16,7 @@ namespace HttpReports.Mock.Console
     {
         static async Task Main(string[] args)
         {  
-            var a = 129;
+            var a = 599;
             var b = 10000;
             var c = 60000; 
 
@@ -47,9 +47,9 @@ namespace HttpReports.Mock.Console
 
                 while (true)
                 {     
-                   var res = await _storage.UpdateLoginUser(new SysUser
+                    var res = await _storage.UpdateLoginUser(new SysUser
                     {
-                        Id = 0L,
+                        Id = 1331781192854650880,
                         UserName = "admin",
                         Password = MD5_32("123456")
 
@@ -74,7 +74,7 @@ namespace HttpReports.Mock.Console
 
         public static Task InsertTestAsync(PostgreSQLStorage storage,int a,int b,int c)
         { 
-            IdWorker idWorker = new IdWorker(new Random().Next(1, 100000), new Random().Next(0, 100000)); 
+            IdWorker idWorker = new IdWorker(new Random().Next(1,30), new Random().Next(0,30)); 
 
             var startTime = DateTime.Now.AddSeconds(-1);
             var count = 100000;
