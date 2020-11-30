@@ -49,7 +49,7 @@
 
       <p>
         <span>Dashboard</span>
-        <span><Version>2.3.9</Version></span>
+        <span><Version>2.5.3</Version></span>
       </p>
 
       <p>

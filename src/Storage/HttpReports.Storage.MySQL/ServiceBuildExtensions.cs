@@ -12,12 +12,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceBuildExtensions
     {
-        public static IHttpReportsBuilder AddMySqlStorage(this IHttpReportsBuilder builder)
-        {
-            builder.Services.AddOptions();
-            builder.Services.Configure<MySqlStorageOptions>(builder.Configuration.GetSection("Storage"));
-            return builder.AddMySqlStorageService();
-        }
+       
 
         public static IHttpReportsBuilder AddMySqlStorage(this IHttpReportsBuilder builder,Action<MySqlStorageOptions> options)
         {
@@ -33,6 +28,14 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return builder;
 
+        }
+
+
+        public static IHttpReportsBuilder AddMySqlStorage(this IHttpReportsBuilder builder)
+        {
+            builder.Services.AddOptions();
+            builder.Services.Configure<MySqlStorageOptions>(builder.Configuration.GetSection("Storage"));
+            return builder.AddMySqlStorageService();
         }
 
         [Obsolete("Use AddMySqlStorage instead")]

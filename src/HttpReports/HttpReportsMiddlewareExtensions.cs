@@ -57,13 +57,14 @@ namespace Microsoft.Extensions.DependencyInjection
 
             });
 
-            services.AddSingleton(new JsonSerializerOptions {
-
+            JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions
+            { 
                 PropertyNameCaseInsensitive = true,
                 PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
-                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
-
-            });
+                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) 
+            }; 
+             
+            services.AddSingleton(jsonSerializerOptions);
 
             services.AddSingleton<IdWorker>(new IdWorker(new Random().Next(1,30),new Random().Next(1,30))); 
             services.AddSingleton<IRequestProcesser, DefaultRequestProcesser>();
@@ -131,6 +132,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return Default;    
         }
+         
 
     }
 }

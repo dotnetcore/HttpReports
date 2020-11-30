@@ -19,9 +19,9 @@ namespace HttpReports.Demo
 
       
         public void ConfigureServices(IServiceCollection services)
-        { 
-            //services.AddHttpReports().AddHttpTransport();
-            services.AddHttpReportsDashboard().AddPostgreSQLStorage(); 
+        {
+            services.AddHttpReports().AddHttpTransport();
+            services.AddHttpReportsDashboard().AddGrpcCollector().AddMySqlStorage(); 
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -32,21 +32,12 @@ namespace HttpReports.Demo
 
        
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        { 
-            //app.UseHttpReports(); 
-            app.UseHttpReportsDashboard();  
-            //app.UseMiddleware<ErrorMiddleware>();   
+        {
+            app.UseHttpReports();
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "HttpReports.Demo v1"));
-            }
+            app.UseHttpReportsDashboard();  
 
             app.UseRouting();
-
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

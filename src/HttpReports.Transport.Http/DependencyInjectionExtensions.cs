@@ -16,7 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IHttpReportsBuilder UseHttpTransport(this IHttpReportsBuilder builder)
         {
             builder.Services.AddOptions().Configure<HttpTransportOptions>(builder.Configuration.GetSection("Transport"));
-            return builder.AddHttpTransport();
+            return builder.AddHttpTransportService();
         }
 
 
@@ -24,20 +24,20 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IHttpReportsBuilder UseHttpTransport(this IHttpReportsBuilder builder, Action<HttpTransportOptions> options)
         {
             builder.Services.AddOptions().Configure(options);
-            return builder.AddHttpTransport();
+            return builder.AddHttpTransportService();
         } 
 
 
         public static IHttpReportsBuilder AddHttpTransport(this IHttpReportsBuilder builder)
         { 
             builder.Services.AddOptions().Configure<HttpTransportOptions>(builder.Configuration.GetSection("Transport"));
-            return builder.AddHttpTransport();
+            return builder.AddHttpTransportService();
         }
 
         public static IHttpReportsBuilder AddHttpTransport(this IHttpReportsBuilder builder, Action<HttpTransportOptions> options)
         { 
             builder.Services.AddOptions().Configure(options);
-            return builder.AddHttpTransport();
+            return builder.AddHttpTransportService();
         }
 
         private static IHttpReportsBuilder AddHttpTransportService(this IHttpReportsBuilder builder)

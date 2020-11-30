@@ -16,7 +16,7 @@ namespace HttpReports.Mock.Console
     {
         static async Task Main(string[] args)
         {  
-            var a = 599;
+            var a = 299;
             var b = 10000;
             var c = 60000; 
 

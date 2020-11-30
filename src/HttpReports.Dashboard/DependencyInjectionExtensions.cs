@@ -82,14 +82,17 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 });
 
-            }); 
+            });
 
-            services.AddSingleton(new JsonSerializerOptions
+            JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true,
                 PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
-                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)  
-            });
+                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) 
+            };
+
+            jsonSerializerOptions.Converters.Add(new SnowFlakeIdConverter()); 
+            services.AddSingleton(jsonSerializerOptions);
 
             services.AddSingleton<IdWorker>(new IdWorker(new Random().Next(1,30), new Random().Next(1,30)));
             services.AddHttpClient(BasicConfig.HttpReportsHttpClient);  
@@ -121,8 +124,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             app.UseHttpReportsHttpCollector();
 
-            app.UseMiddleware<DashboardMiddleware>();  
-
+            app.UseMiddleware<DashboardMiddleware>();   
 
             return app;
         } 
@@ -139,6 +141,27 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services;
 
-        }  
+        }
+
+        public class SnowFlakeIdConverter : System.Text.Json.Serialization.JsonConverter<long>
+        {
+            public override long Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                try
+                {  
+                    return reader.GetString().ToLong();  
+                }
+                catch (Exception ex)
+                {
+                    return 0L;
+                }  
+            }
+
+            public override void Write(Utf8JsonWriter writer, long value, JsonSerializerOptions options)
+            {
+                writer.WriteStringValue(value.ToString());
+            }
+        }
+
     }
 }

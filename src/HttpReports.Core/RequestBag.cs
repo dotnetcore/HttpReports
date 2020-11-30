@@ -9,7 +9,13 @@ namespace HttpReports.Core
     {
         public RequestInfo RequestInfo { get; set; }
 
-        public RequestDetail RequestDetail { get; set; }
+        public RequestDetail RequestDetail { get; set; } 
+
+
+        public RequestBag()
+        {
+           
+        }
 
         public RequestBag(RequestInfo info,RequestDetail detail)
         {
