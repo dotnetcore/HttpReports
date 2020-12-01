@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -17,7 +17,6 @@
     <ProjectReference Include="..\..\src\HttpReports.Transport.Grpc\HttpReports.Transport.Grpc.csproj" />
     <ProjectReference Include="..\..\src\HttpReports.Transport.Http\HttpReports.Transport.Http.csproj" />
     <ProjectReference Include="..\..\src\HttpReports\HttpReports.csproj" />
-    <ProjectReference Include="..\..\src\HttpReprots.Collector.Http\HttpReprots.Collector.Http.csproj" />
     <ProjectReference Include="..\..\src\Storage\HttpReports.Storage.MySQL\HttpReports.Storage.MySql.csproj" />
     <ProjectReference Include="..\..\src\Storage\HttpReports.Storage.Postgre\HttpReports.Storage.PostgreSQL.csproj" />
     <ProjectReference Include="..\..\src\Storage\HttpReports.Storage.SQLServer\HttpReports.Storage.SQLServer.csproj" />

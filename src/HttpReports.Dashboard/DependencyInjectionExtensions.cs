@@ -145,22 +145,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public class SnowFlakeIdConverter : System.Text.Json.Serialization.JsonConverter<long>
         {
-            public override long Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            {
-                try
-                {  
-                    return reader.GetString().ToLong();  
-                }
-                catch (Exception ex)
-                {
-                    return 0L;
-                }  
-            }
+            public override long Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.GetInt64(); 
 
-            public override void Write(Utf8JsonWriter writer, long value, JsonSerializerOptions options)
-            {
-                writer.WriteStringValue(value.ToString());
-            }
+            public override void Write(Utf8JsonWriter writer, long value, JsonSerializerOptions options) => writer.WriteStringValue(value.ToString()); 
+
         }
 
     }

@@ -21,7 +21,7 @@ namespace HttpReports.Demo
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpReports().AddHttpTransport();
-            services.AddHttpReportsDashboard().AddGrpcCollector().AddMySqlStorage(); 
+            //services.AddHttpReportsDashboard().AddMySqlStorage(); 
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -35,7 +35,7 @@ namespace HttpReports.Demo
         {
             app.UseHttpReports();
 
-            app.UseHttpReportsDashboard();  
+            //app.UseHttpReportsDashboard();  
 
             app.UseRouting();
 
