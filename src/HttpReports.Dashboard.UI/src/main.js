@@ -17,9 +17,10 @@ import zhLocale from 'element-ui/lib/locale/lang/zh-CN'
 
 
  
-import { basic } from '@/common/basic.js' 
+import { basic } from '@/common/basic.js'   
 
- Vue.config.isProduct = true;
+ Vue.config.isProduct = process.env.NODE_ENV === 'production';
+
  Vue.config.devServer = "http://localhost:5010/HttpReportsData";
 
  Vue.prototype.basic = basic  

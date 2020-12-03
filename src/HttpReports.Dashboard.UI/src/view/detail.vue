@@ -103,8 +103,28 @@ background-color: #dadada;
            
 
             <el-form-item :label="this.$store.state.lang.StatusCode">
-              <el-input size="small" v-model="requestQuery.statusCode"></el-input>
+              <el-input style="width:100px;margin-right:6px"  size="small" v-model="requestQuery.statusCode"></el-input>
             </el-form-item>
+
+
+             <el-form-item :label="this.$store.state.lang.Request_Type">
+           <el-select
+              size="small"
+              style="width:100px" 
+              v-model="requestQuery.method"
+              filterable
+              @change="load">
+              <el-option
+               class="endpoint_item"
+                v-for="item in ['ALL','GET','POST','PUT','DELETE']"
+                :key="item"
+                :label="item"
+                :value="item == 'ALL' ? '' : item"
+              ></el-option>
+            </el-select>
+            </el-form-item>    
+           
+            
 
             <el-form-item v-show="false" :label="this.$store.state.lang.RequestBody">
               <el-input size="mini" v-model="requestQuery.request"></el-input>
@@ -303,7 +323,7 @@ import ComboViewLayer from "@antv/g2plot/lib/combo/base";
 export default {
   data() {
     return { 
-      routes:[],
+      routes:[], 
       trace_tree_data: [],
       trace_tree_top:{ }, 
       top_width:420,
@@ -318,6 +338,7 @@ export default {
         requestId: "",
         route: "",
         statusCode: "",
+        method:"",
         request: "",
         response: "",
       },
@@ -408,7 +429,12 @@ export default {
         instance: this.$store.state.query.instance 
       });     
 
-      this.routes = [];
+      this.routes = []; 
+
+      this.routes.push({
+          value:"",
+          label:"ALL"
+      });  
 
       response.body.data.forEach((x) => {
         
@@ -437,6 +463,7 @@ export default {
         route: this.requestQuery.route,
         requestBody: this.requestQuery.request,
         responseBody: this.requestQuery.response,
+        method:this.requestQuery.method,
         statusCode:
           this.requestQuery.statusCode == "" ? 0 : this.requestQuery.statusCode,
         pageNumber: this.requestPage.pageNumber,

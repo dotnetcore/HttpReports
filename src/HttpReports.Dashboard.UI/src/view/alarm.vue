@@ -333,7 +333,7 @@ export default {
     async editJob(id){    
       
         this.showdialog();  
-        var response = await Vue.http.post("GetMonitorJob", {id:Number(id)});  
+        var response = await Vue.http.post("GetMonitorJob", {id});  
         var job = response.body.data;   
 
         var model = {};
