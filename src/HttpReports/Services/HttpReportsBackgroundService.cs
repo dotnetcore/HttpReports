@@ -18,19 +18,19 @@ using System.Threading.Tasks;
 
 namespace HttpReports.Services
 {
-    public class HttpReportsBackgroundService : IBackgroundService
-    { 
-        private ILogger<HttpReportsBackgroundService> _logger { get; } 
+    public class HttpReportsBackgroundService : IHostedService
+    {
+        private ILogger<HttpReportsBackgroundService> _logger { get; }
         private IReportsTransport _transport { get; }
 
         private IPerformanceService _performanceService;
 
         private IConfiguration _config;
 
-        private HttpReportsOptions _options; 
-        
-        public HttpReportsBackgroundService(IOptions<HttpReportsOptions> options, IConfiguration configuration,ILogger<HttpReportsBackgroundService> logger,IHttpContextAccessor contextAccessor, IReportsTransport reportsTransport, IPerformanceService performanceService)
-        { 
+        private HttpReportsOptions _options;
+
+        public HttpReportsBackgroundService(IOptions<HttpReportsOptions> options, IConfiguration configuration, ILogger<HttpReportsBackgroundService> logger, IHttpContextAccessor contextAccessor, IReportsTransport reportsTransport, IPerformanceService performanceService)
+        {
             _logger = logger;
             _performanceService = performanceService;
             _transport = reportsTransport;
@@ -38,36 +38,42 @@ namespace HttpReports.Services
             _options = options?.Value;
         }
 
-        public async Task StartAsync(IApplicationBuilder builder, CancellationToken Token = default)
-        {  
+        public Task StartAsync(CancellationToken token = default)
+        {
             try
-            {  
-                _logger.LogInformation($"HttpReports BackgroundService Start...");
+            {
+                _ = Task.Run(async () => {
 
-                await ExecuteAsync();
+                    while (!token.IsCancellationRequested)
+                    {
+                        Uri uri = new Uri(_options.Server);
+
+                        Performance performance = await _performanceService.GetPerformance(uri.Host + ":" + uri.Port);
+
+                        if (performance != null)
+                        {
+                            await _transport.SendDataAsync(performance);
+                        }
+
+                        await Task.Delay(TimeSpan.FromSeconds(10), token);
+                    } 
+
+                }); 
+                
             }
             catch (Exception ex)
-            { 
+            {
                 _logger.LogError($"HttpReports BackgroundService Error,ex:{ex.ToString()}");
-            } 
+            }
+
+            return Task.CompletedTask;
         }
 
-        public async Task ExecuteAsync(CancellationToken Token = default)
-        {  
-            while (!Token.IsCancellationRequested)
-            {
-                Uri uri = new Uri(_options.Server); 
 
-                Performance performance = await _performanceService.GetPerformance(uri.Host + ":" + uri.Port); 
-
-                if (performance != null)
-                {
-                    await _transport.SendDataAsync(performance);
-                }
-
-                await Task.Delay(TimeSpan.FromSeconds(10), Token); 
-            }  
-        } 
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
 
     }
 }

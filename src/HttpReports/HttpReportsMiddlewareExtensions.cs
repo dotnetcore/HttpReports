@@ -18,7 +18,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http; 
-using Microsoft.Extensions.Configuration; 
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options; 
 using Snowflake.Core;
 
@@ -69,7 +70,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IdWorker>(new IdWorker(new Random().Next(1,30),new Random().Next(1,30))); 
             services.AddSingleton<IRequestProcesser, DefaultRequestProcesser>();
             services.AddSingleton<IRequestBuilder, DefaultRequestBuilder>();
-            services.AddSingleton<IBackgroundService, HttpReportsBackgroundService>();
+            services.AddSingleton<HttpReportsBackgroundService>();
             services.AddSingleton<IPerformanceService,PerformanceService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IDiagnosticListener, HttpClientDiagnosticListener>();
@@ -86,8 +87,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             Activity.DefaultIdFormat = ActivityIdFormat.W3C; 
 
-            var backgroundService = app.ApplicationServices.GetRequiredService<IBackgroundService>();  
-            backgroundService.StartAsync(app); 
+            var backgroundService = app.ApplicationServices.GetRequiredService<HttpReportsBackgroundService>();  
+            backgroundService.StartAsync(); 
 
             var options = app.ApplicationServices.GetRequiredService<IOptions<HttpReportsOptions>>(); 
 
