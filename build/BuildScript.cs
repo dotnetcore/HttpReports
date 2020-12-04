@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using FlubuCore.Context;
 using FlubuCore.Context.Attributes.BuildProperties;
-using FlubuCore.IO;
+using FlubuCore.IO; 
 using FlubuCore.Scripting; 
 
 namespace BuildScript
@@ -43,6 +43,7 @@ namespace BuildScript
             context.LogInfo($"NugetKey:{NugetKey} Version:{Version}");
             context.LogInfo("============================================"); 
 
+
             var clean = context.CreateTarget("Clean")
                 .SetDescription("Clean's the solution")
                 .AddCoreTask(x => x.Clean()
@@ -51,8 +52,8 @@ namespace BuildScript
             var restore = context.CreateTarget("Restore")
                 .SetDescription("Restore's the solution")
                 .DependsOn(clean)
-                .AddCoreTask(x => x.Restore());
-
+                .AddCoreTask(x => x.Restore()); 
+          
 
             var build = context.CreateTarget("Build")
                 .SetDescription("Build's the solution")

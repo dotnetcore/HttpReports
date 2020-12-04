@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="FlubuCore" Version="5.1.8" />
+    <PackageReference Include="System.Linq" Version="4.3.0" />
   </ItemGroup>
 
 </Project>

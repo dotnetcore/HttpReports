@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>HttpReports.SQLServer</PackageId>
-    <Version>2.5.0</Version>
+    <Version>2.5.5</Version>
     <Authors>SpringLee</Authors>
     <Company>SpringLee</Company>
     <Description>HttpReports is a lightweight APM system developed for Net Core </Description>
