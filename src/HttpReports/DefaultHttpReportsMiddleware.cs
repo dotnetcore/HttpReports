@@ -8,6 +8,7 @@ using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web;
+using BrotliSharpLib;
 using HttpReports.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -219,15 +220,29 @@ namespace HttpReports
 
                 context.Response.Body.Seek(0, SeekOrigin.Begin);
 
-
-                bool compress = false;
-
-                if (context.Response.Headers.ContainsKey("Content-Encoding") && context.Response.Headers["Content-Encoding"].ToString() == "gzip")
+                Stream source = null;
+                
+                if (context.Response.Headers.ContainsKey("Content-Encoding"))
                 {
-                    compress = true;
-                }  
-
-                var source = compress ? new GZipStream(context.Request.Body, CompressionMode.Decompress) : context.Response.Body; 
+                    var contentEncoding = context.Response.Headers["Content-Encoding"].ToString();
+                    switch (contentEncoding)
+                    {
+                        case "gzip":
+                            source = new GZipStream(context.Response.Body, CompressionMode.Decompress);
+                            break;
+                        case "deflate":
+                            source = new DeflateStream(context.Response.Body, CompressionMode.Decompress);
+                            break;
+                        case "br":
+                            source = new BrotliStream(context.Response.Body, CompressionMode.Decompress);
+                            break;
+                    }
+                }
+                
+                if (source == null)
+                {
+                    source = context.Response.Body;
+                }
 
                 var responseReader = new StreamReader(source, System.Text.Encoding.UTF8);
 
