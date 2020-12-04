@@ -45,7 +45,7 @@ namespace HttpReports.Diagnostic.HttpClient
 
                 if (!request.Headers.TryGetValues(BasicConfig.ActiveTraceId, out _))
                 {
-                    var TraceId = activity.GetBaggageItem(BasicConfig.ActiveTraceId);
+                    var TraceId = activity.GetBaggageItem(BasicConfig.ActiveTraceId); 
 
                     request.Headers.Add(BasicConfig.ActiveTraceId, TraceId);
                 }

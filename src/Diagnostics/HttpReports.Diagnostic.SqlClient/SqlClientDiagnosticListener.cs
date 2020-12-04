@@ -42,8 +42,7 @@ namespace HttpReports.Diagnostic.SqlClient
         {
             var activity = System.Diagnostics.Activity.Current;
 
-            if (activity == null) return;
-
+            if (activity == null) return; 
 
             if (value.Key == "System.Data.SqlClient.WriteCommandBefore")
             {  

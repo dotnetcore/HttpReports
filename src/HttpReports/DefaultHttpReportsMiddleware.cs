@@ -12,7 +12,8 @@ using BrotliSharpLib;
 using HttpReports.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options; 
+using Microsoft.Extensions.Options;
+using Snowflake.Core;
 
 namespace HttpReports
 {
@@ -26,13 +27,16 @@ namespace HttpReports
 
         private HttpReportsOptions Options { get; }
 
-        private readonly JsonSerializerOptions JsonSetting;
+        private IdWorker _idWorker;
+
+        private readonly JsonSerializerOptions JsonSetting; 
 
         public ILogger<DefaultHttpReportsMiddleware> Logger { get; }
 
-        public DefaultHttpReportsMiddleware(RequestDelegate next, JsonSerializerOptions jsonSetting,IOptions<HttpReportsOptions> options, IRequestBuilder requestBuilder, IRequestProcesser invokeProcesser, ILogger<DefaultHttpReportsMiddleware> logger)
+        public DefaultHttpReportsMiddleware(RequestDelegate next, IdWorker idWorker, JsonSerializerOptions jsonSetting,IOptions<HttpReportsOptions> options, IRequestBuilder requestBuilder, IRequestProcesser invokeProcesser, ILogger<DefaultHttpReportsMiddleware> logger)
         {
             Next = next;
+            _idWorker = idWorker;
             Logger = logger;
             RequestBuilder = requestBuilder;
             InvokeProcesser = invokeProcesser;
@@ -262,33 +266,35 @@ namespace HttpReports
 
         private void ConfigTrace(HttpContext context)
         {
-            var parentId = context.Request.Headers.ContainsKey(BasicConfig.ActiveTraceId) ?
-                context.Request.Headers[BasicConfig.ActiveTraceId].ToString() : string.Empty;
+            var parentId = context.Request.Headers.ContainsKey(BasicConfig.ActiveTraceId) ?  context.Request.Headers[BasicConfig.ActiveTraceId].ToString() : string.Empty;
 
             Activity.Current = null;
             Activity activity = new Activity(BasicConfig.ActiveTraceName);
 
             activity.Start();
-            activity.SetParentId(parentId); 
+            activity.SetParentId(parentId);
+
+            // Create New Snowflake TraceId  
+            var traceId = parentId.IsEmpty() ? _idWorker.NextId().ToString() + _idWorker.NextId().ToString() : parentId.Split('-')[1];
+            var snowSpanId = _idWorker.NextId().ToString();
+            var snowTraceId = "00-" + traceId + "-" + snowSpanId + "-00";
 
             // Set Activity
-            activity.AddBaggage(BasicConfig.ActiveTraceId, activity.Id);
-            activity.AddBaggage(BasicConfig.ActiveSpanId, activity.SpanId.ToHexString());
+            activity.AddBaggage(BasicConfig.ActiveTraceId,snowTraceId);
+            activity.AddBaggage(BasicConfig.ActiveSpanId, snowSpanId);
             if (!parentId.IsEmpty())
             {
-                activity.AddBaggage(BasicConfig.ActiveParentSpanId, activity.ParentSpanId.ToHexString());
+                activity.AddBaggage(BasicConfig.ActiveParentSpanId, parentId.Split('-')[2]);
             }
 
             // Set Context
             context.Items.Add(BasicConfig.ActiveTraceCreateTime, DateTime.Now);
-            context.Items.Add(BasicConfig.ActiveTraceId, activity.Id);
-            context.Items.Add(BasicConfig.ActiveSpanId, activity.SpanId.ToHexString());
+            context.Items.Add(BasicConfig.ActiveTraceId, snowTraceId);
+            context.Items.Add(BasicConfig.ActiveSpanId, snowSpanId);
             if (!parentId.IsEmpty())
-            {
-                context.Items.Add(BasicConfig.ActiveParentSpanId, activity.ParentSpanId.ToHexString());
-            }
-
-
+            { 
+                context.Items.Add(BasicConfig.ActiveParentSpanId,parentId.Split('-')[2]);
+            }   
 
             var parentService = context.Request.Headers.ContainsKey(BasicConfig.ActiveParentSpanService) ?
                context.Request.Headers[BasicConfig.ActiveParentSpanService].ToString() : string.Empty;   
@@ -300,10 +306,10 @@ namespace HttpReports
             {
                 activity.AddBaggage(BasicConfig.ActiveParentSpanService, parentService);
                 context.Items.Add(BasicConfig.ActiveParentSpanService, parentService);
-            }  
+            }   
 
             // Set Response
-            context.Response.Headers.Add(BasicConfig.ActiveSpanId, activity.SpanId.ToHexString()); 
+            context.Response.Headers.Add(BasicConfig.ActiveSpanId, snowSpanId);   
 
         }
 

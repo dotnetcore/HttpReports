@@ -21,7 +21,7 @@ namespace HttpReports.Core
             MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
             string val = BitConverter.ToString(md5.ComputeHash(UTF8Encoding.Default.GetBytes(Guid.NewGuid().ToString())), 4, 8).Replace("-", "").ToLower();
             return val;
-        }
+        } 
 
         public static string GetTraceId(this HttpContext context)
         {  
@@ -34,6 +34,21 @@ namespace HttpReports.Core
                 return string.Empty;
             } 
         }
+
+
+
+        public static long GetSpanId(this HttpContext context)
+        {
+            if (context.Items.ContainsKey(BasicConfig.ActiveTraceId))
+            {
+                return context.Items[BasicConfig.ActiveTraceId].ToString().Split('-')[2].ToLong();
+            }
+            else
+            {
+                return 0;
+            } 
+        }
+
 
         public static long GetTraceParentId(this HttpContext context)
         {
