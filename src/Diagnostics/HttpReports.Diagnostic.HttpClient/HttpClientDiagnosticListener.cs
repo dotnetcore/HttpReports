@@ -55,7 +55,8 @@ namespace HttpReports.Diagnostic.HttpClient
                     var Service = activity.GetBaggageItem(BasicConfig.ActiveSpanService);
 
                     request.Headers.Add(BasicConfig.ActiveParentSpanService, Service);
-                }
+                } 
+                
             }  
         } 
       

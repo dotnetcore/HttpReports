@@ -31,6 +31,13 @@ namespace HttpReports.Demo.Controllers
 
             HttpClient client = new HttpClient();
 
+            _ = Task.Run(async ()=> {
+
+                var result = await client.GetStringAsync("http://localhost:5010/Trace/Get4"); 
+
+            }); 
+            
+
             var result = await client.GetStringAsync("http://localhost:5010/Trace/Get2");
 
             return Content(result);
@@ -59,6 +66,16 @@ namespace HttpReports.Demo.Controllers
 
             return Ok(new { code = 1,msg = "ok" });
 
-        }  
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Get4()
+        {
+            await Task.Delay(new Random().Next(5000, 8000));
+
+            return Ok(new { code = 1, msg = "ok" });
+
+        }
     }
 }
