@@ -104,8 +104,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             });
 
-            app.UseMiddleware<DefaultHttpReportsMiddleware>();
-             
+            app.UseMiddleware<DefaultHttpReportsMiddleware>(); 
 
             TraceDiagnsticListenerObserver observer = app.ApplicationServices.GetRequiredService<TraceDiagnsticListenerObserver>();  
 

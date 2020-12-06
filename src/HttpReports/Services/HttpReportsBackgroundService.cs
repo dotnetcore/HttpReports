@@ -44,6 +44,8 @@ namespace HttpReports.Services
             {
                 _ = Task.Run(async () => {
 
+                    await Task.Delay(5000);
+
                     while (!token.IsCancellationRequested)
                     {
                         Uri uri = new Uri(_options.Server);

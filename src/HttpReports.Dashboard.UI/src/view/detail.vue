@@ -18,7 +18,7 @@
 }
 
 .traceDrawer .el-drawer {
-  padding: 20px 80px;
+  padding: 20px 30px;
 }
 
 .custom-tree-node { 
@@ -49,17 +49,28 @@ background-color: #dadada;
 .trace-bar{    
   border-bottom: 2px solid #409eff; 
   font-size: 12px;
-  text-indent: -60px;
+  text-indent: -50px;
   height: 14px;
   line-height: 28px; 
   text-align: left;
   display: inline-block;
 }
 
-.trace-bar-span{ 
-  width: 420px;
-  float: right; 
 
+@media screen and (max-width: 1375px){
+  .trace-bar-span{ 
+    width: 560px; 
+  }
+}
+
+@media screen and (min-width: 1375px){
+  .trace-bar-span{ 
+    width: 860px; 
+  }
+}
+
+.trace-bar-span{  
+  float: right;
 }
 
 .endpoint_item{
@@ -292,6 +303,7 @@ background-color: #dadada;
               @node-click="handleNodeClick"
             >
               <span class="custom-tree-node" slot-scope="{ data }">
+
                 <el-tag type="primary" effect="dark" size="mini">{{ data.info.service }}</el-tag> 
                 <span style="font-size:12px;margin-left:12px">{{ data.info.url }}</span>
                 <span style="font-size:12px;margin-left:12px">{{ data.info.method }}</span>
@@ -300,7 +312,7 @@ background-color: #dadada;
 
                 <span class="trace-bar-span"> 
 
-                  <span class="trace-bar" :style="'width:' + data.width +'px;' " >{{ data.info.milliseconds + "ms" }}</span>
+                  <span class="trace-bar" :style="'width:' + data.width +'px;margin-left:' + data.marginLeft +'px;'">{{ data.info.milliseconds + "ms" }}</span>
 
                 </span>    
 
@@ -326,7 +338,7 @@ export default {
       routes:[], 
       trace_tree_data: [],
       trace_tree_top:{ }, 
-      top_width:420,
+      top_width: document.body.clientWidth > 1375 ? 860 : 560,
       defaultProps: {
         children: "children",
         label: "label",
