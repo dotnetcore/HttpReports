@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class DependencyInjectionExtensions
     {
-        public static IApplicationBuilder UseHttpReportsHttpCollector(this IApplicationBuilder app)
+        public static IApplicationBuilder UseHttpCollector(this IApplicationBuilder app)  
 
             => app.Map(BasicConfig.TransportPath, builder 
                 

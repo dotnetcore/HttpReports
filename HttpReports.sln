@@ -65,6 +65,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Transport.Grpc"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Collector.Grpc", "src\HttpReports.Collector.Grpc\HttpReports.Collector.Grpc.csproj", "{F8BC75E3-675C-442A-A653-8331B7357A20}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpReports.Collector.Demo", "example\HttpReports.Collector.Demo\HttpReports.Collector.Demo.csproj", "{7E1A2668-F5FA-44A4-851E-29CB18D3F279}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -167,6 +169,10 @@ Global
 		{F8BC75E3-675C-442A-A653-8331B7357A20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8BC75E3-675C-442A-A653-8331B7357A20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8BC75E3-675C-442A-A653-8331B7357A20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E1A2668-F5FA-44A4-851E-29CB18D3F279}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E1A2668-F5FA-44A4-851E-29CB18D3F279}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E1A2668-F5FA-44A4-851E-29CB18D3F279}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E1A2668-F5FA-44A4-851E-29CB18D3F279}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -199,6 +205,7 @@ Global
 		{8A0E25E0-C88F-4685-A580-FCAEAB232052} = {CDCA953E-391F-422A-85A0-2057B8F2ED96}
 		{30FFBED8-3280-401F-AD34-EBE9CADE2165} = {BAF971BD-0546-4610-A9F6-6F6DC68E6FE7}
 		{F8BC75E3-675C-442A-A653-8331B7357A20} = {BAF971BD-0546-4610-A9F6-6F6DC68E6FE7}
+		{7E1A2668-F5FA-44A4-851E-29CB18D3F279} = {CDCA953E-391F-422A-85A0-2057B8F2ED96}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CF5EB1E6-E330-45DC-80A3-9A2CE692DDE5}

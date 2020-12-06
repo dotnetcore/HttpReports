@@ -122,7 +122,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             localizeService.InitAsync().Wait();
 
-            app.UseHttpReportsHttpCollector();
+            app.UseHttpCollector();
 
             app.UseMiddleware<DashboardMiddleware>();   
 
