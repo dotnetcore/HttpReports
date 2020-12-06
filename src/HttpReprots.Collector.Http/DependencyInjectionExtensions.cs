@@ -11,12 +11,12 @@ using System.Text;
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class DependencyInjectionExtensions
-    {
+    {   
         public static IApplicationBuilder UseHttpCollector(this IApplicationBuilder app)  
 
             => app.Map(BasicConfig.TransportPath, builder 
-                
-                => builder.UseMiddleware<HttpCollectorMiddleware>());  
+                 
+                => builder.UseMiddleware<HttpCollectorMiddleware>());   
 
     }
 }

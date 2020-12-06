@@ -22,6 +22,8 @@ namespace HttpReports.Transport.Http
         private readonly ILogger<HttpTransport> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly JsonSerializerOptions _jsonSetting;
+        private readonly JsonSerializerOptions jsonSerializer;
+
 
         public HttpTransport(IOptions<HttpTransportOptions> options, JsonSerializerOptions jsonSetting, ILogger<HttpTransport> logger, IHttpClientFactory httpClientFactory)
         {
@@ -37,7 +39,7 @@ namespace HttpReports.Transport.Http
             _RequestBagCollection.Flush(bag);
 
             return Task.CompletedTask;
-        }
+        } 
 
         public async Task SendDataAsync(Performance performance)
         {
@@ -64,9 +66,10 @@ namespace HttpReports.Transport.Http
                     //_logger.LogError(ex, "performance push failed:" + ex.ToString());
                     return false;
                 }   
+
             });
-        }
-        
+
+        } 
 
         private async Task Push(List<RequestBag> list, CancellationToken token)
         { 
@@ -97,12 +100,14 @@ namespace HttpReports.Transport.Http
                } 
 
             });   
-        }
+        }   
 
         private async Task<bool> Retry(Func<Task<bool>> func, int retry = 3)
         {    
             for (int i = 0; i < 3; i++)
             {
+                await Task.Delay(200);
+
                 if (await func.Invoke())
                 {
                     return true;
@@ -110,7 +115,7 @@ namespace HttpReports.Transport.Http
             }
 
             return false;
-        }  
+        }   
 
     }
 }
