@@ -74,15 +74,16 @@ namespace Microsoft.Extensions.DependencyInjection
 
             });
 
-            services.AddCors(c =>
+            if (configuration.GetValue(nameof(DashboardOptions.EnableCors), true))
             {
-                c.AddPolicy(BasicConfig.Policy, policy =>
+                services.AddCors(c =>
                 {
-                    policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); 
-
+                    c.AddPolicy(BasicConfig.Policy, policy =>
+                    {
+                        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                    });
                 });
-
-            });
+            }
 
             JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions
             {
@@ -107,8 +108,13 @@ namespace Microsoft.Extensions.DependencyInjection
         }   
 
         public static IApplicationBuilder UseHttpReportsDashboard(this IApplicationBuilder app)
-        { 
-            app.UseCors(BasicConfig.Policy); 
+        {
+            var options = app.ApplicationServices.GetRequiredService<IOptions<DashboardOptions>>() ?? throw new ArgumentNullException("DashboardOptions Init Failed");
+
+            if (options.Value.EnableCors)
+            {
+                app.UseCors(BasicConfig.Policy);
+            }
 
             ServiceContainer.provider = app.ApplicationServices.GetRequiredService<IServiceProvider>() ?? throw new ArgumentNullException("ServiceProvider Init Failed");   
 

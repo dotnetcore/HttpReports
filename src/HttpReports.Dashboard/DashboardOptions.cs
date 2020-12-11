@@ -16,6 +16,8 @@ namespace HttpReports.Dashboard
 
         public HealthCheckOptions Check { get; set; } = new HealthCheckOptions();
 
+        public bool EnableCors { get; set; } = true;
+
         public DashboardOptions Value => this; 
 
     }  
