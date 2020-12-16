@@ -16,7 +16,7 @@ namespace HttpReports.Mock.Console
     {
         static async Task Main(string[] args)
         {  
-            var a = 299;
+            var a = 199;
             var b = 10000;
             var c = 60000; 
 
@@ -49,7 +49,7 @@ namespace HttpReports.Mock.Console
                 {     
                     var res = await _storage.UpdateLoginUser(new SysUser
                     {
-                        Id = 1331781192854650880,
+                        Id = 1336647892979257344,
                         UserName = "admin",
                         Password = MD5_32("123456")
 
@@ -80,10 +80,10 @@ namespace HttpReports.Mock.Console
             var count = 100000;
             var random = new Random();
 
-            string[] Services = { "User", "User", "User", "User", "User", "Order", "Order", "Order", "Order", "Weixin", "Weixin", "Payment", "Log", "Log", "Log", "DataCenter", "Student", "Student", "Master", "Maaster1", "Master2", "Master3", "Master4" };
+            string[] Services = { "User", "User", "User", "User", "User", "Order", "Order", "Order", "Order", "Weixin", "Weixin", "Payment", "Log", "Log", "Log", "DataCenter", "Student", "Student", "Master", "Product", "Sale", "Sass" };
             string[] LoginUsers = { "Jack", "Blues", "Mark", "Tom", "Cat" };
             string[] ParentServices = { "User", "Order", "Weixin", "Payment", "Log", "DataCenter" };
-            string[] LocalIPs = { "192.168.1.1", "192.168.1.1", "192.168.1.1", "192.168.1.2", "192.168.1.2", "192.168.1.2", "192.168.1.3", "192.168.1.3", "192.168.1.4", "192.168.1.5", "192.168.1.6", "192.168.1.7", "192.168.1.8", "192.168.1.9", "192.168.1.10" };
+            string[] LocalIPs = { "192.168.1.1", "192.168.1.1", "192.168.1.1", "192.168.1.1", "192.168.1.1", "192.168.1.1", "192.168.1.2", "192.168.1.2", "192.168.1.2", "192.168.1.3", "192.168.1.3", "192.168.1.4", "192.168.1.5", "192.168.1.6", "192.168.1.7", "192.168.1.8", "192.168.1.9", "192.168.1.10" };
 
             string[] Route = { "/User/Login", "/User/Payment", "/User/Payment", "/User/Payment", "/User/Payment", "/User/Payment", "/User/Search", "/User/Search", "/User/Search", "/Data/QueryData", "/Data/GetCofnig", "/Data/GetCofnig", "/User/LoadData", "/User/LoadData1", "/User/LoadData2", "/User/LoadData3", "/User/LoadData4" };
 
@@ -124,11 +124,9 @@ namespace HttpReports.Mock.Console
                             Url = _url,
                             RequestType = "http",
                             Method = "POST",
-                            LoginUser = LoginUsers[new Random().Next(0, LoginUsers.Length - 1)],
-
+                            LoginUser = LoginUsers[new Random().Next(0, LoginUsers.Length - 1)], 
                             Milliseconds = _Service switch
-                            {
-
+                            { 
                                 "User" => new Random().Next(1400, 1600),
                                 "Order" => new Random().Next(1200, 1600),
                                 "Weixin" => new Random().Next(600, 1600),

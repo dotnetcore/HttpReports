@@ -9,7 +9,10 @@ namespace HttpReports.Demo.Controllers
 {
     [Route("[controller]/[action]")]
     public class TraceController : Controller
-    {  
+    {
+        //private readonly string url = "http://122.51.188.23:8080";
+        private readonly string url = "http://localhost:5010";
+
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -17,7 +20,7 @@ namespace HttpReports.Demo.Controllers
 
             HttpClient client = new HttpClient(); 
 
-            var result = await client.GetStringAsync("http://localhost:5010/Trace/Get1");
+            var result = await client.GetStringAsync($"{url}/Trace/Get1");
 
             return Content(result);
 
@@ -33,12 +36,12 @@ namespace HttpReports.Demo.Controllers
 
             _ = Task.Run(async ()=> {
 
-                var result = await client.GetStringAsync("http://localhost:5010/Trace/Get4"); 
+                var result = await client.GetStringAsync($"{url}/Trace/Get4"); 
 
             }); 
             
 
-            var result = await client.GetStringAsync("http://localhost:5010/Trace/Get2");
+            var result = await client.GetStringAsync($"{url}/Trace/Get2");
 
             return Content(result);
 
@@ -52,7 +55,7 @@ namespace HttpReports.Demo.Controllers
 
             HttpClient client = new HttpClient();
 
-            var result = await client.GetStringAsync("http://localhost:5010/Trace/Get3");
+            var result = await client.GetStringAsync($"{url}/Trace/Get3");
 
             return Content(result);
 

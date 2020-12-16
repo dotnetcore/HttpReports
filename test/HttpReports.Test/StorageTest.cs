@@ -91,11 +91,9 @@ namespace HttpReports.Test
                             Url = _url,
                             RequestType = "http",
                             Method = "POST",
-                            LoginUser = LoginUsers[new Random().Next(0, LoginUsers.Length - 1)],
-
+                            LoginUser = LoginUsers[new Random().Next(0, LoginUsers.Length - 1)], 
                             Milliseconds = _Service switch
-                            {
-
+                            { 
                                 "User" => new Random().Next(1400, 1600),
                                 "Order" => new Random().Next(1200, 1600),
                                 "Weixin" => new Random().Next(600, 1600),
@@ -111,8 +109,7 @@ namespace HttpReports.Test
                                 "Weixin" => new Random().Next(1, 10) > 7 ? 200 : 500,
                                 "Log" => new Random().Next(1, 10) > 6 ? 200 : 500,
                                 "Payment" => new Random().Next(1, 10) > 4 ? 200 : 500,
-                                _ => new Random().Next(1, 10) > 5 ? 200 : 500
-
+                                _ => new Random().Next(1, 10) > 5 ? 200 : 500 
                             },
                             RemoteIP = "192.168.1.1",
                             Instance = LocalIPs[new Random().Next(0, LocalIPs.Length - 1)] + ":" + LocalPort[new Random().Next(0, LocalPort.Length - 1)],
