@@ -13,6 +13,8 @@ namespace HttpReports.Core.StorageFilters
 
         public int StatusCode { get; set; }
 
+        public string LoginInfo { get; set; }
+
         public string Method { get; set; }
 
         public string RequestBody { get; set; }

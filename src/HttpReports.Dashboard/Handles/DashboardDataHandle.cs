@@ -140,6 +140,7 @@ namespace HttpReports.Dashboard.Handles
                 EndTime = end,
                 RequestId = request.RequestId.ToLong(),
                 Route = request.Route, 
+                LoginInfo = request.LoginInfo,
                 StatusCode = request.StatusCode,
                 Method = request.Method,
                 RequestBody = request.RequestBody,

@@ -117,6 +117,10 @@ background-color: #dadada;
               <el-input style="width:100px;margin-right:6px"  size="small" v-model="requestQuery.statusCode"></el-input>
             </el-form-item>
 
+             <el-form-item :label="this.$store.state.lang.LoginInfo">
+              <el-input style="width:100px;margin-right:6px"  size="small" v-model="requestQuery.loginInfo"></el-input>
+            </el-form-item>
+
 
              <el-form-item :label="this.$store.state.lang.Request_Type">
            <el-select
@@ -349,6 +353,7 @@ export default {
       requestQuery: {
         requestId: "",
         route: "",
+        loginInfo:"",
         statusCode: "",
         method:"",
         request: "",
@@ -473,6 +478,7 @@ export default {
         end: this.$store.state.query.end,
         requestId: this.requestQuery.requestId,
         route: this.requestQuery.route,
+        loginInfo:this.requestQuery.loginInfo,
         requestBody: this.requestQuery.request,
         responseBody: this.requestQuery.response,
         method:this.requestQuery.method,
