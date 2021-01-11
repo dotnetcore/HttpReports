@@ -331,6 +331,13 @@ namespace HttpReports
 
         private bool FilterRequest(HttpContext context)
         {
+
+            if (context.Request.ContentType.ToLowerInvariant().Contains("form-data"))
+            {
+                return true;
+            }
+
+
             if (context.Request.HasFormContentType && context.Request.Form != null && context.Request.Form.Files != null && context.Request.Form.Files.Any())
             {
                 return true;

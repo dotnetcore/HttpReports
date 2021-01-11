@@ -5,6 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\HttpReports.Transport.Http\HttpReports.Transport.Http.csproj" />
+    <ProjectReference Include="..\..\src\HttpReports\HttpReports.csproj" />
     <ProjectReference Include="..\..\src\HttpReprots.Collector.Http\HttpReprots.Collector.Http.csproj" />
   </ItemGroup>
 

@@ -15,11 +15,13 @@ namespace HttpReports.Collector.Demo
         
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddHttpReports().AddHttpTransport();
         }
          
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseHttpReports();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

@@ -42,12 +42,12 @@ namespace HttpReports.Services
         {
             try
             {
-                _ = Task.Run(async () => {
-
-                    await Task.Delay(5000);
-
+                _ = Task.Run(async () => { 
+                     
                     while (!token.IsCancellationRequested)
                     {
+                        await Task.Delay(TimeSpan.FromSeconds(10), token);
+
                         Uri uri = new Uri(_options.Server);
 
                         Performance performance = await _performanceService.GetPerformance(uri.Host + ":" + uri.Port);
@@ -55,9 +55,8 @@ namespace HttpReports.Services
                         if (performance != null)
                         {
                             await _transport.SendDataAsync(performance);
-                        }
-
-                        await Task.Delay(TimeSpan.FromSeconds(10), token);
+                        } 
+                       
                     } 
 
                 }); 

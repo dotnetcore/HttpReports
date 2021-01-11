@@ -88,7 +88,7 @@ namespace Microsoft.Extensions.DependencyInjection
             Activity.DefaultIdFormat = ActivityIdFormat.W3C; 
 
             var backgroundService = app.ApplicationServices.GetRequiredService<HttpReportsBackgroundService>();  
-            backgroundService.StartAsync(); 
+            backgroundService.StartAsync().Wait(); 
 
             var options = app.ApplicationServices.GetRequiredService<IOptions<HttpReportsOptions>>(); 
 
