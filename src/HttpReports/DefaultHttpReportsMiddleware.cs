@@ -330,9 +330,8 @@ namespace HttpReports
         }
 
         private bool FilterRequest(HttpContext context)
-        {
-
-            if (context.Request.ContentType.ToLowerInvariant().Contains("form-data"))
+        { 
+            if (context.Request.ContentType != null && context.Request.ContentType.ToLowerInvariant().Contains("form-data"))
             {
                 return true;
             }
