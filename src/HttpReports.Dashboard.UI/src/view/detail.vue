@@ -476,8 +476,7 @@ export default {
         requestBody: this.requestQuery.request,
         responseBody: this.requestQuery.response,
         method:this.requestQuery.method,
-        statusCode:
-          this.requestQuery.statusCode == "" ? 0 : this.requestQuery.statusCode,
+        statusCode:this.requestQuery.statusCode == "" ? 0 : Number(this.requestQuery.statusCode),
         pageNumber: this.requestPage.pageNumber,
         pageSize: this.requestPage.pageSize,
       });  
