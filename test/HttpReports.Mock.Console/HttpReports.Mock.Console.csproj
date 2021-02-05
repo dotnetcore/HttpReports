@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +16,12 @@
     <ProjectReference Include="..\..\src\Storage\HttpReports.Storage.Postgre\HttpReports.Storage.PostgreSQL.csproj" />
     <ProjectReference Include="..\..\src\Storage\HttpReports.Storage.Abstractions\HttpReports.Storage.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Storage\HttpReports.Storage.SQLServer\HttpReports.Storage.SQLServer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Dockerfile">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

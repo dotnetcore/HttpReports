@@ -28,9 +28,9 @@ namespace HttpReports.Core
 
         public const string ActiveTraceName = "HttpReports.Trace.Context";
 
-        public const string ActiveTraceId = "HttpReports.Trace.Id";
+        public const string ActiveTraceId = "HttpReports-Trace-Id";
 
-        public const string ActiveSpanId = "HttpReports.Trace.Span.Id";
+        public const string ActiveSpanId = "HttpReports-Trace-SpanId";
 
         public const string HttpReportsSpanId = "HttpReports-Trace-Id";
 
