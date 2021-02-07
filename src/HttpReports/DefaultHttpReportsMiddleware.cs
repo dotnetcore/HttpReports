@@ -314,27 +314,13 @@ namespace HttpReports
         }
 
         private void ConfigTrace(HttpContext context)
-        {
+        { 
             var parentId = context.Request.Headers.ContainsKey(BasicConfig.ActiveTraceId) ?  context.Request.Headers[BasicConfig.ActiveTraceId].ToString() : string.Empty;
-
-            Activity.Current = null;
-            Activity activity = new Activity(BasicConfig.ActiveTraceName);
-
-            activity.Start();
-            activity.SetParentId(parentId);
-
+   
             // Create New Snowflake TraceId  
             var traceId = parentId.IsEmpty() ? _idWorker.NextId().ToString() + _idWorker.NextId().ToString() : parentId.Split('-')[1];
             var snowSpanId = _idWorker.NextId().ToString();
-            var snowTraceId = "00-" + traceId + "-" + snowSpanId + "-00";
-
-            // Set Activity
-            activity.AddBaggage(BasicConfig.ActiveTraceId,snowTraceId);
-            activity.AddBaggage(BasicConfig.ActiveSpanId, snowSpanId);
-            if (!parentId.IsEmpty())
-            {
-                activity.AddBaggage(BasicConfig.ActiveParentSpanId, parentId.Split('-')[2]);
-            }
+            var snowTraceId = "00-" + traceId + "-" + snowSpanId + "-00";  
 
             // Set Context
             context.Items.Add(BasicConfig.ActiveTraceCreateTime, DateTime.Now);
@@ -347,13 +333,11 @@ namespace HttpReports
 
             var parentService = context.Request.Headers.ContainsKey(BasicConfig.ActiveParentSpanService) ?
                context.Request.Headers[BasicConfig.ActiveParentSpanService].ToString() : string.Empty;   
-
-            activity.AddBaggage(BasicConfig.ActiveSpanService,Options.Service);
+             
             context.Items.Add(BasicConfig.ActiveSpanService, Options.Service);
 
             if (!parentService.IsEmpty())
-            {
-                activity.AddBaggage(BasicConfig.ActiveParentSpanService, parentService);
+            { 
                 context.Items.Add(BasicConfig.ActiveParentSpanService, parentService);
             }   
 

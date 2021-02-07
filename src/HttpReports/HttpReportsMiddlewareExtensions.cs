@@ -65,8 +65,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) 
             }; 
              
-            services.AddSingleton(jsonSerializerOptions);
-
+            services.AddSingleton(jsonSerializerOptions); 
+            
             services.AddSingleton<IdWorker>(new IdWorker(new Random().Next(1,30),new Random().Next(1,30))); 
             services.AddSingleton<IRequestProcesser, DefaultRequestProcesser>();
             services.AddSingleton<IRequestBuilder, DefaultRequestBuilder>();
@@ -83,7 +83,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IApplicationBuilder UseHttpReports(this IApplicationBuilder app)
         { 
-            ServiceContainer.Provider = app.ApplicationServices.GetRequiredService<IServiceProvider>() ?? throw new ArgumentNullException("ServiceProvider Init Failed"); 
+            ServiceContainer.Provider = app.ApplicationServices.GetRequiredService<IServiceProvider>(); 
 
             Activity.DefaultIdFormat = ActivityIdFormat.W3C; 
 
