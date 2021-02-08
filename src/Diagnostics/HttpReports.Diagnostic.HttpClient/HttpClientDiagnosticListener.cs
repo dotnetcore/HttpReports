@@ -45,29 +45,41 @@ namespace HttpReports.Diagnostic.HttpClient
         {   
             if (value.Key == "System.Net.Http.HttpRequestOut.Start")
             {
+                HandleHttpRequest(value.Value);
+            }  
+        } 
+
+        private void HandleHttpRequest(object value)
+        {
+            try
+            {
                 HttpContext context = _httpContextAccessor.HttpContext;
 
-                var request = value.Value.GetType().GetProperty("Request").GetValue(value.Value) as System.Net.Http.HttpRequestMessage; 
+                var request = value.GetType().GetProperty("Request").GetValue(value) as System.Net.Http.HttpRequestMessage;
 
                 if (context != null && request != null && !request.RequestUri.ToString().Contains(BasicConfig.TransportPath))
-                { 
-                    if (!request.Headers.TryGetValues(BasicConfig.ActiveTraceId, out _))
+                {
+                    if (!request.Headers.Contains(BasicConfig.ActiveTraceId) && context.Items.ContainsKey(BasicConfig.ActiveTraceId) )
                     {
-                        var traceId = context.Items[BasicConfig.ActiveTraceId].ToString(); 
+                        var traceId = context.Items[BasicConfig.ActiveTraceId].ToString();
 
                         request.Headers.Add(BasicConfig.ActiveTraceId, traceId);
                     }
 
-                    if (!request.Headers.TryGetValues(BasicConfig.ActiveSpanService, out _))
+                    if (!request.Headers.Contains(BasicConfig.ActiveSpanService) && context.Items.ContainsKey(BasicConfig.ActiveSpanService))
                     {
                         var service = context.Items[BasicConfig.ActiveSpanService].ToString();
 
                         request.Headers.Add(BasicConfig.ActiveParentSpanService, service);
-                    }  
-                }  
-                
-            }  
-        } 
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("HandleHttpRequest:" + ex.ToString()); 
+            } 
+        }
       
     }
 }

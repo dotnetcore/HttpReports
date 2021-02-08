@@ -45,12 +45,7 @@
       :visible.sync="aboutDialogVisible"
       width="36%"
     >
-      <h3>HttpReports</h3>
-
-      <p>
-        <span>Dashboard</span>
-        <span><Version>2.5.4</Version></span>
-      </p>
+      <h3>HttpReports</h3> 
 
       <p>
         <span>{{ $t('Docs') }}</span>
