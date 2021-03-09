@@ -1,0 +1,90 @@
+<Playlist Version="2.0">
+  <Rule Name="Includes" Match="Any">
+    <Rule Match="All">
+      <Property Name="Solution" />
+      <Rule Match="Any">
+        <Rule Match="All">
+          <Property Name="Project" Value="HttpReports.Test" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="HttpReports.Test" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="PostgreSQLStorageTest" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="HttpReports.Test.PostgreSQLStorageTest.GetAppStatus" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GetAppStatus" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="HttpReports.Test.PostgreSQLStorageTest.GetDetailData" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GetDetailData" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="HttpReports.Test.PostgreSQLStorageTest.GetGroupDataByInstance" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GetGroupDataByInstance" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="HttpReports.Test.PostgreSQLStorageTest.GetGroupDataByRoute" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GetGroupDataByRoute" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="HttpReports.Test.PostgreSQLStorageTest.GetGroupDataByService" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GetGroupDataByService" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="HttpReports.Test.PostgreSQLStorageTest.GetIndexBasicDataAsync" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GetIndexBasicDataAsync" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="HttpReports.Test.PostgreSQLStorageTest.GetRequestInfoDetail" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GetRequestInfoDetail" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="HttpReports.Test.PostgreSQLStorageTest.GetServiceHeatMap" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GetServiceHeatMap" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="HttpReports.Test.PostgreSQLStorageTest.GetServiceInstance" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GetServiceInstance" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="HttpReports.Test.PostgreSQLStorageTest.GetServiceTrend" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GetServiceTrend" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="HttpReports.Test.PostgreSQLStorageTest.GetTopologyData" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="GetTopologyData" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+      </Rule>
+    </Rule>
+  </Rule>
+</Playlist>

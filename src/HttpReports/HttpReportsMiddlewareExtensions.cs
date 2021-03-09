@@ -1,62 +1,138 @@
-﻿using System;
+﻿using System; 
 using System.Diagnostics;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Unicode;
+using System.Threading;
+using System.Threading.Tasks; 
 using HttpReports;
-using HttpReports.RequestInfoBuilder;
+using HttpReports.Core;
+using HttpReports.Core.Diagnostics;
+using HttpReports.Diagnostic.AspNetCore;
+using HttpReports.Diagnostic.HttpClient;  
+using HttpReports.Services; 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Http; 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options; 
+using Snowflake.Core;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class HttpReportsMiddlewareExtensions
-    {  
+    {
         public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services)
         {
-            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");
-            services.AddOptions();
-            services.Configure<HttpReportsOptions>(configuration);
+            HttpReportsOptions options = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports").Get<HttpReportsOptions>();
 
-            return services.UseHttpReportsService(configuration);
-        }
+            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");  
+
+            services.AddOptions().Configure<HttpReportsOptions>(configuration); 
+
+            return services.AddHttpReportsService(configuration);
+        }   
+
+
 
         public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services, Action<HttpReportsOptions> options)
         {
-            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");
-            services.AddOptions();
-            services.Configure<HttpReportsOptions>(options); 
+            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");  
 
-            return services.UseHttpReportsService(configuration); 
-        }   
-
-        private static IHttpReportsBuilder UseHttpReportsService(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddSingleton<IModelCreator, DefaultModelCreator>();
-            services.AddSingleton<IHttpInvokeProcesser, DefaultHttpInvokeProcesser>();
-            services.AddSingleton<IRequestInfoBuilder, DefaultRequestInfoBuilder>();
-
-            services.AddMvcCore(x => {
-                x.Filters.Add<HttpReportsExceptionFilter>();
-            }); 
+            services.AddOptions().Configure<HttpReportsOptions>(options);  
             
+            return services.AddHttpReportsService(configuration);
+        }  
 
-            return new HttpReportsBuilder(services,configuration); 
 
-        } 
+        private static IHttpReportsBuilder AddHttpReportsService(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.PostConfigure<HttpReportsOptions>(x => {
 
+                x.Server = services.GetNewServer(x); 
+
+            });
+
+            JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions
+            { 
+                PropertyNameCaseInsensitive = true,
+                PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
+                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) 
+            }; 
+             
+            services.AddSingleton(jsonSerializerOptions); 
+            
+            services.AddSingleton<IdWorker>(new IdWorker(new Random().Next(1,30),new Random().Next(1,30))); 
+            services.AddSingleton<IRequestProcesser, DefaultRequestProcesser>();
+            services.AddSingleton<IRequestBuilder, DefaultRequestBuilder>();
+            services.AddSingleton<HttpReportsBackgroundService>();
+            services.AddSingleton<IPerformanceService,PerformanceService>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IDiagnosticListener, HttpClientDiagnosticListener>();
+            services.AddSingleton<IDiagnosticListener, AspNetCoreDiagnosticListener>();
+            services.AddSingleton<ISegmentContext, SegmentContext>();
+            services.AddSingleton<TraceDiagnsticListenerObserver>(); 
+
+            return new HttpReportsBuilder(services, configuration);
+        }  
 
         public static IApplicationBuilder UseHttpReports(this IApplicationBuilder app)
+        { 
+            ServiceContainer.Provider = app.ApplicationServices.GetRequiredService<IServiceProvider>(); 
+
+            Activity.DefaultIdFormat = ActivityIdFormat.W3C; 
+
+            var backgroundService = app.ApplicationServices.GetRequiredService<HttpReportsBackgroundService>();  
+            backgroundService.StartAsync().Wait(); 
+
+            var options = app.ApplicationServices.GetRequiredService<IOptions<HttpReportsOptions>>(); 
+
+            if (!options.Value.Switch) return null;
+
+            app.Map(BasicConfig.HttpReportsDefaultHealth, builder => {
+
+                builder.Run(async context =>
+
+                    await context.Response.WriteAsync(DateTime.Now.ToShortTimeString())
+
+                );
+
+            });
+
+            app.UseMiddleware<DefaultHttpReportsMiddleware>(); 
+
+            TraceDiagnsticListenerObserver observer = app.ApplicationServices.GetRequiredService<TraceDiagnsticListenerObserver>();  
+
+            DiagnosticListener.AllListeners.Subscribe(observer);
+
+            return app;
+        } 
+
+        private static string GetNewServer(this IServiceCollection services,HttpReportsOptions options)
         {
-            Activity.DefaultIdFormat = ActivityIdFormat.W3C;
+            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports"); 
 
-            var options = app.ApplicationServices.GetRequiredService<IOptions<HttpReportsOptions>>();
+            string Default = "http://localhost:5000";  
 
-            if (!options.Value.Switch) 
-                return app; 
+            if (!options.Server.IsEmpty()) return options.Server; 
 
-            var storage = app.ApplicationServices.GetRequiredService<IHttpReportsStorage>() ?? throw new ArgumentNullException("Storage Service Not Found");
-            storage.InitAsync().Wait(); 
+            var urls = services.BuildServiceProvider().GetService<IConfiguration>()[WebHostDefaults.ServerUrlsKey] ?? configuration["server.urls"] ?? configuration["server"];
 
-            return app.UseMiddleware<DefaultHttpReportsMiddleware>();
-        }  
+            if (!urls.IsEmpty())
+            {
+                var first = urls.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+
+                if (!first.IsEmpty()) return first; 
+            }  
+
+            return Default;    
+        }
+         
+
     }
 }

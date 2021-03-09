@@ -15,11 +15,7 @@ namespace HttpReports.Dashboard.Implements
             return defValue;
         }
 
-        /// <summary>
-        /// yyyy-MM-dd HH:mm:ss
-        /// </summary>
-        /// <param name="time"></param>
-        /// <returns></returns>
+        
         public static string ToStandardTime(this DateTime time) => time.ToString("yyyy-MM-dd HH:mm:ss");
     }
 }

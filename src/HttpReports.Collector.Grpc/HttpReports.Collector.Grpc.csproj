@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Version>2.5.5</Version>
+    <Description>HttpReports is a lightweight APM system developed for Net Core </Description>
+    <PackageProjectUrl>https://github.com/dotnetcore/HttpReports</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl>
+    <PackageIcon>logo3.png</PackageIcon>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\HttpReports.Dashboard.UI\static\logo3.png" Link="logo3.png">
+      <PackagePath></PackagePath>
+      <Pack>True</Pack>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore" Version="2.33.1" />
+    <PackageReference Include="Grpc.Tools" Version="2.33.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
+    <ProjectReference Include="..\Storage\HttpReports.Storage.Abstractions\HttpReports.Storage.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="..\Protos\GrpcCollector.proto" Link="Protos\GrpcCollector.proto" GrpcServices="Server" />
+  </ItemGroup>
+
+</Project>

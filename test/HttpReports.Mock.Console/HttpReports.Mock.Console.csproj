@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.8" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.8" />
+    <PackageReference Include="Snowflake.Core" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Storage\HttpReports.Storage.MySQL\HttpReports.Storage.MySql.csproj" />
+    <ProjectReference Include="..\..\src\Storage\HttpReports.Storage.Postgre\HttpReports.Storage.PostgreSQL.csproj" />
+    <ProjectReference Include="..\..\src\Storage\HttpReports.Storage.Abstractions\HttpReports.Storage.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\Storage\HttpReports.Storage.SQLServer\HttpReports.Storage.SQLServer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Dockerfile">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

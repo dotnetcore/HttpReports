@@ -16,6 +16,15 @@ namespace GrpcUserServer.Controllers
         public UserController(ILogger<UserController> logger)
         {
             _logger = logger;
+        } 
+        
+       
+         [HttpGet("/CC/DD/FF/{id}/{id2}")] 
+        public async Task<IActionResult> Index(int Id)
+        {
+            var context = HttpContext;
+
+            return await Task.FromResult(Content("Success" + Id));
         }
 
         public async Task<IActionResult> GetUserInfo()

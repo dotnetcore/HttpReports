@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
-
+﻿using System;
+using System.Threading.Tasks;
+using HttpReports.Core;
+using HttpReports.Storage.Abstractions;
 using HttpReports.Storage.SQLServer;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -23,13 +25,30 @@ namespace HttpReports.Test
 
             services.Configure<SQLServerStorageOptions>(o =>
             {
-                o.ConnectionString = "Max Pool Size = 512;server=.;uid=sa;pwd=123456;database=HttpReports;";
+                o.ConnectionString = "Max Pool Size = 512;server=localhost;uid=sa;pwd=123456;database=HttpReports;Connection Timeout=900;";
+                o.DeferSecond = 5;
+                o.DeferThreshold = 5;
             });
-            services.AddTransient<SQLServerStorage>();
-            services.AddSingleton<SQLServerConnectionFactory>();
+            services.AddSingleton<SQLServerStorage>(); 
 
             _storage = services.BuildServiceProvider().GetRequiredService<SQLServerStorage>();
             await _storage.InitAsync();
         }
+
+
+
+        [TestMethod]
+        public new async Task GetRequestInfoDetail()
+        {
+            var ids = new[] { 0L, 0L, 0L };
+
+            var id = ids[new Random().Next(0, ids.Length - 1)];
+
+            var result = await Storage.GetRequestInfo(id);
+
+            Assert.IsNotNull(result);
+
+        } 
+
     }
 }

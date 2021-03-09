@@ -3,33 +3,49 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>SpringLee</Authors>
-    <Description>HttpReports is an lightweight APM system for microservice in .Net Core 
-
-github: https://github.com/SpringLeee/HttpReports   
-
-</Description>
+    <Description>HttpReports is a lightweight APM system developed for Net Core </Description>
     <PackageLicenseExpression></PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
-    <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
-    <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>
-    <Version>1.2.4</Version>
+    <PackageProjectUrl>https://github.com/dotnetcore/HttpReports</PackageProjectUrl> 
+    <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl>
+    <Version>2.5.5</Version>
     <PackageLicenseFile></PackageLicenseFile>
     <PackageId>HttpReports</PackageId>
+    <AssemblyName>HttpReports</AssemblyName>
+    <RootNamespace>HttpReports</RootNamespace>
+    <PackageIcon>logo3.png</PackageIcon> 
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BrotliSharpLib" Version="0.3.3" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Snowflake.Core" Version="2.0.0" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="4.7.0" />
+    <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="4.7.0" />
+    <PackageReference Include="System.Text.Json" Version="4.7.2" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Diagnostics\HttpReports.Diagnostic.AspNetCore\HttpReports.Diagnostic.AspNetCore.csproj" />
+    <ProjectReference Include="..\Diagnostics\HttpReports.Diagnostic.HttpClient\HttpReports.Diagnostic.HttpClient.csproj" />
     <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\HttpReports.Dashboard.UI\static\logo3.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup> 
+  
 
 </Project>

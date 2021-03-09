@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>2.5.5</Version>
+    <Authors>SpringLee</Authors>
+    <PackageId>HttpReports.Diagnostic.HttpClient</PackageId>
+    <Description>HttpReports is a lightweight APM system developed for Net Core </Description>
+    <PackageProjectUrl>https://github.com/dotnetcore/HttpReports</PackageProjectUrl> 
+    <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl>
+    <PackageIcon>logo3.png</PackageIcon>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\HttpReports.Core\HttpReports.Core.csproj" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\HttpReports.Dashboard.UI\static\logo3.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

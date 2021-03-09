@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>2.5.5</Version>
+    <Authors>SpringLee</Authors>
+    <PackageId>HttpReports.Diagnostic.MySqlConnector</PackageId>
+    <Description>HttpReports is a lightweight APM system developed for Net Core </Description>
+    <PackageProjectUrl>https://github.com/dotnetcore/HttpReports</PackageProjectUrl>
+    <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
+    <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MySqlConnector" Version="0.69.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\HttpReports.Core\HttpReports.Core.csproj" />
+    <ProjectReference Include="..\..\Storage\HttpReports.Storage.Abstractions\HttpReports.Storage.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

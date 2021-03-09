@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
-
+using HttpReports.Core;
+using HttpReports.Storage.Abstractions;
 using HttpReports.Storage.MySql;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -18,23 +19,35 @@ namespace HttpReports.Test
 
         [TestInitialize]
         public override async Task Init()
-        {
+        { 
             var services = new ServiceCollection();
             services.AddOptions();
             services.AddLogging();
 
             services.Configure<MySqlStorageOptions>(o =>
             {
-                o.ConnectionString = "Data Source=127.0.0.1;Initial Catalog=HttpReports;User ID=test;Password=test;charset=utf8;SslMode=none;";
+                o.ConnectionString = "DataBase=HttpReports;Data Source=localhost;User Id=root;Password=123456;"; 
                 o.DeferSecond = 3;
-                o.DeferThreshold = 5;
-                o.EnableDefer = true;
+                o.DeferThreshold = 5; 
             });
-            services.AddTransient<MySqlStorage>();
-            services.AddSingleton<MySqlConnectionFactory>();
+            services.AddTransient<MySqlStorage>(); 
 
             _storage = services.BuildServiceProvider().GetRequiredService<MySqlStorage>();
             await _storage.InitAsync();
+        } 
+
+        [TestMethod]
+        public new async Task GetRequestInfoDetail()
+        {
+            var ids = new[] { 0L, 0L, 0L };
+
+            var id = ids[new Random().Next(0, ids.Length - 1)];
+
+            var result = await Storage.GetRequestInfo(id);
+
+            Assert.IsTrue(true); 
         }
+
+
     }
 }

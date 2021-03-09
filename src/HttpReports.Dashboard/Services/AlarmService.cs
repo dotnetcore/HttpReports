@@ -1,52 +1,63 @@
 ﻿using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
-
+using HttpReports.Core;
+using HttpReports.Dashboard.Abstractions;
 using HttpReports.Dashboard.Models;
-
+using HttpReports.Storage.Abstractions;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-
+using Microsoft.Extensions.Options; 
 using MimeKit;
-using MimeKit.Text;
-using Newtonsoft.Json;
+using MimeKit.Text; 
 
 namespace HttpReports.Dashboard.Services
 {
-    /// <summary>
-    /// 告警服务
-    /// </summary>
+  
     public class AlarmService : IAlarmService
     {
         public DashboardOptions Options { get; }
 
         private ILogger<AlarmService> Logger;
 
-        public AlarmService(IOptions<DashboardOptions> options, ILogger<AlarmService> logger)
+        private ILocalizeService _localizeService;
+
+        private IHttpReportsStorage _storage;
+
+        private readonly JsonSerializerOptions _jsonSetting;
+
+        private Localize lang => _localizeService.Current;
+
+        public AlarmService(IOptions<DashboardOptions> options, JsonSerializerOptions jsonSetting, ILogger<AlarmService> logger, ILocalizeService localizeService, IHttpReportsStorage storage)
         {
             Options = options.Value;
             Logger = logger;
+            _localizeService = localizeService;
+            _storage = storage;
+            _jsonSetting = jsonSetting;
         }
 
         private async Task SendMessageAsync(MimeMessage message)
         { 
             try
             {
+                if (!Options.Mail.Switch) return; 
+
                 using (var client = new SmtpClient())
                 {
                     client.AuthenticationMechanisms.Remove("XOAUTH2");
                     client.Connect(Options.Mail.Server,Options.Mail.Port, Options.Mail.EnableSsl);
                     client.Authenticate(Options.Mail.Account, Options.Mail.Password);
 
-                    await client.SendAsync(message).ConfigureAwait(false);
+                    await client.SendAsync(message);
 
-                    await client.DisconnectAsync(true).ConfigureAwait(false);
+                    await client.DisconnectAsync(true);
                 }  
             }
             catch (System.Exception ex)
             { 
-                Logger.LogInformation("预警邮件发送失败：" + ex.Message, ex);
+                Logger.LogError("Failed to send alert mail：" + ex.Message, ex);
             } 
         }
 
@@ -59,7 +70,9 @@ namespace HttpReports.Dashboard.Services
 
            await NotifyEmailAsync(option);
 
-           await NotifyWebHookAsync(option); 
+           await NotifyWebHookAsync(option);
+
+           await NotifyAlarmAsync(option);
 
         }
 
@@ -74,23 +87,23 @@ namespace HttpReports.Dashboard.Services
                 
                 using (var httpClient = new HttpClient())
                 {
-                    string Title = "HttpReports - 预警触发通知";
+                    string Title = $"HttpReports - {lang.Warning_Title}";
 
-                    HttpContent content = new StringContent(JsonConvert.SerializeObject(new { Title, option.Content }));
+                    HttpContent content = new StringContent(System.Text.Json.JsonSerializer.Serialize(new { Title, option.Content },_jsonSetting));
                     content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
 
                     var httpResponseMessage = await httpClient.PostAsync(option.WebHook, content);
 
                     if (httpResponseMessage.StatusCode == System.Net.HttpStatusCode.OK)
                     {
-                        Logger.LogInformation("WebHook推送成功");
+                        Logger.LogInformation("WebHook Push Success");
                     }
                 }  
 
             }
             catch (System.Exception ex)
             { 
-                Logger.LogInformation("WebHook推送失败：" + ex.Message, ex);
+                Logger.LogInformation("WebHook Push Error：" + ex.Message, ex);
             } 
         }
 
@@ -104,7 +117,7 @@ namespace HttpReports.Dashboard.Services
 
             if (Options.Mail == null || Options.Mail.Account.IsEmpty() || Options.Mail.Password.IsEmpty())
             {
-                Logger.LogInformation("预警邮件配置不能为空");
+                Logger.LogInformation("Mailbox cannot be empty");
                 return;
             }
 
@@ -118,13 +131,20 @@ namespace HttpReports.Dashboard.Services
                     message.To.Add(new MailboxAddress(to));
                 }
 
-                message.Subject = "HttpReports - 预警触发通知";
+                message.Subject = $"HttpReports - {lang.Warning_Title}";
 
                 message.Body = new TextPart(option.IsHtml ? TextFormat.Html : TextFormat.Plain) { Text = option.Content };
-                await SendMessageAsync(message).ConfigureAwait(false); 
+                await SendMessageAsync(message); 
 
             } 
-        } 
+        }
 
+        private async Task NotifyAlarmAsync(AlarmOption option)
+        {
+            if (option.Alarm == null) return;
+
+            await  _storage.AddMonitorAlarm(option.Alarm);
+
+        }
     }
 }

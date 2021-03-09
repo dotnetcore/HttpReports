@@ -1,60 +1,65 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk"> 
+ 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework> 
     <AssemblyName>HttpReports.Dashboard</AssemblyName>
     <RootNamespace>HttpReports.Dashboard</RootNamespace>
-    <Version>1.2.4</Version>
-    <PackageId>HttpReports.Dashboard</PackageId>
-    <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
+    <Version>2.5.5</Version>
+    <PackageId>HttpReports.Dashboard</PackageId> 
     <PackageLicenseFile></PackageLicenseFile>
-    <Description>HttpReports is an lightweight APM system for microservice in .Net Core 
+    <Description>HttpReports is a lightweight APM system developed for Net Core </Description>
+    <PackageProjectUrl>https://github.com/dotnetcore/HttpReports</PackageProjectUrl> 
+    <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl>
+    <PackageIcon>logo3.png</PackageIcon>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
 
-github: https://github.com/SpringLeee/HttpReports   
+  <ItemGroup>
+    <EmbeddedResource Include="HttpReportsStaticFiles\**" /> 
+  </ItemGroup>
 
-</Description>
-    <PackageProjectUrl>https://github.com/SpringLeee/HttpReports</PackageProjectUrl>
-    <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
-    <RepositoryUrl>https://github.com/SpringLeee/HttpReports</RepositoryUrl>
-  </PropertyGroup> 
+  <ItemGroup>
+    <Compile Remove="UI\**" />
+    <EmbeddedResource Remove="UI\**" />
+    <None Remove="UI\**" />
+    <None Include="..\HttpReports.Dashboard.UI\static\logo3.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="HttpReportsStaticFiles\Resource\Lang\en-us.json" />
+    <None Remove="HttpReportsStaticFiles\Resource\Lang\zh-cn.json" />
+  </ItemGroup> 
    
-  
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Snowflake.Core" Version="2.0.0" />
+    <PackageReference Include="System.Text.Json" Version="4.7.2" />
+    <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
+    <ProjectReference Include="..\HttpReprots.Collector.Http\HttpReprots.Collector.Http.csproj" />
+    <ProjectReference Include="..\Storage\HttpReports.Storage.Abstractions\HttpReports.Storage.Abstractions.csproj" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="MailKit" Version="2.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
     <PackageReference Include="Quartz" Version="3.0.7" />
   </ItemGroup>
 
-
-
   <ItemGroup>
-    <ProjectReference Include="..\HttpReports.Core\HttpReports.Core.csproj" />
-  </ItemGroup>
+    <Folder Include="HttpReportsStaticFiles\UI\" />
+  </ItemGroup> 
+  
 
-  <!--<ItemGroup>
-    <Content Include="Views\**">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>false</PackageCopyToOutput>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="wwwroot\">
-      <Pack>true</Pack>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-    </Content>
-  </ItemGroup>-->
-
-
-  <ItemGroup>
-    <Folder Include="Views\" />
-    <Folder Include="wwwroot\" />
-  </ItemGroup>
-
-
-</Project> 
-
-
+</Project>

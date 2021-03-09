@@ -11,30 +11,30 @@ namespace HttpReports
     /// 异步回调的延时冲洗集合
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class AsyncCallbackDeferFlushCollection<T,K> : DeferFlushCollection<T,K>
+    public class AsyncCallbackDeferFlushCollection<T> : DeferFlushCollection<T>
     {
-        public Func<Dictionary<T,K>, CancellationToken, Task> Callback { get; }
+        public Func<List<T>, CancellationToken, Task> Callback { get; }
 
-        public AsyncCallbackDeferFlushCollection(Func<Dictionary<T,K>, CancellationToken, Task> callback, int flushThreshold, int flushSecond) : base(flushThreshold, flushSecond)
+        public AsyncCallbackDeferFlushCollection(Func<List<T>, CancellationToken, Task> callback, int flushThreshold, int flushSecond) : base(flushThreshold, flushSecond)
         {
             Callback = callback ?? throw new ArgumentNullException(nameof(callback));
         }
 
-        protected override async Task FlushAsync(Dictionary<T,K> list, CancellationToken token) => await Callback(list, token).ConfigureAwait(false);
+        protected override async Task FlushAsync(List<T> list, CancellationToken token) => await Callback(list, token);
     }
 
     /// <summary>
     /// 延时冲洗集合
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class DeferFlushCollection<T,K> : IDisposable
+    public abstract class DeferFlushCollection<T> : IDisposable
     {
         /// <summary>
         /// 自动冲洗TokenSource
         /// </summary>
         private readonly CancellationTokenSource _autoFlushCTS = null;
 
-        private Dictionary<T, K> _list = new Dictionary<T, K>();
+        private List<T> _list = new List<T>();
 
         /// <summary>
         /// 同步锁对象
@@ -87,56 +87,49 @@ namespace HttpReports
             FlushSecond = flushSecond;
 
             _autoFlushCTS = new CancellationTokenSource();
-            Task.Run(AutoFlushAsync, _autoFlushCTS.Token).ConfigureAwait(false);
+
+            Task.Run(AutoFlushAsync, _autoFlushCTS.Token);
         }
 
-        public void Push(T t,K k)
+        public void Flush(T item)
         {
             lock (_syncRoot)
             {
-                _list.Add(t,k);
+                _list.Add(item);
                 if (++_count >= FlushThreshold)
-                {
-                    Debug.WriteLine("Out of FlushThreshold");
-
+                { 
                     InternalFlush(SwitchBag());
                 }
             }
         }
 
-        private Dictionary<T,K> SwitchBag()
-        {
-            Debug.WriteLine("SwitchBag");
-
+        private List<T> SwitchBag()
+        { 
             lock (_syncRoot)
             {
                 _lastFlushTime = DateTime.Now;
                 _count = 0;
-                return Interlocked.Exchange(ref _list, new Dictionary<T, K>());
+                return Interlocked.Exchange(ref _list, new List<T>());
             }
         }
 
         public void Flush()
-        {
-            Debug.WriteLine("Manual Flush");
-
+        { 
             InternalFlush(SwitchBag());
         }
 
-        private void InternalFlush(Dictionary<T,K> list)
+        private void InternalFlush(List<T> list)
         {
             if (list.Count > 0)
             {
                 Task.Run(async () =>
-                {
-                    Debug.WriteLine($"Flush: {list.Count}");
-
-                    await FlushAsync(list, _autoFlushCTS.Token).ConfigureAwait(false);
-                }, _autoFlushCTS.Token).ConfigureAwait(false);
+                { 
+                    await FlushAsync(list, _autoFlushCTS.Token);
+                }, _autoFlushCTS.Token);
             }
         }
 
-        protected abstract Task FlushAsync(Dictionary<T,K> list, CancellationToken token);
+        protected abstract Task FlushAsync(List<T> list, CancellationToken token);
 
         private async Task AutoFlushAsync()
         {
@@ -148,21 +141,17 @@ namespace HttpReports
                 var interval = (DateTime.Now - _lastFlushTime).Seconds;
                 if (interval < FlushSecond)
                 {
-                    await Task.Delay((FlushSecond - interval) * 1000, token).ConfigureAwait(false);
+                    await Task.Delay((FlushSecond - interval) * 1000, token);
                     continue;
                 }
 
                 try
-                {
-                    Debug.WriteLine("Auto Flush");
-
+                { 
                     var list = SwitchBag();
 
                     if (list.Count > 0)
-                    {
-                        Debug.WriteLine($"Auto Flush: {list.Count}");
-
-                        await FlushAsync(list, _autoFlushCTS.Token).ConfigureAwait(false);
+                    { 
+                        await FlushAsync(list, _autoFlushCTS.Token);
                     }
                 }
                 catch (OperationCanceledException)
@@ -173,7 +162,7 @@ namespace HttpReports
                     }
                 }
 
-                await Task.Delay(FlushSecond * 1000, token).ConfigureAwait(false);
+                await Task.Delay(FlushSecond * 1000, token);
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using HttpReports.Core.Models;
+using System.Collections.Generic;
 
 namespace HttpReports.Dashboard.Models
 {
@@ -18,5 +19,8 @@ namespace HttpReports.Dashboard.Models
 
          
         public bool IsHtml { get; set; }
+
+        public MonitorAlarm Alarm { get; set; }
+
     }
 }
