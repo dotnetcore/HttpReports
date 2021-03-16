@@ -1,27 +1,22 @@
-﻿using System; 
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text.Encodings.Web;
-using System.Text.Json;
-using System.Text.Unicode;
-using System.Threading;
-using System.Threading.Tasks; 
-using HttpReports;
+﻿using HttpReports;
 using HttpReports.Core;
 using HttpReports.Core.Diagnostics;
 using HttpReports.Diagnostic.AspNetCore;
-using HttpReports.Diagnostic.HttpClient;  
-using HttpReports.Services; 
+using HttpReports.Diagnostic.HttpClient;
+using HttpReports.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.Hosting.Server.Features;
-using Microsoft.AspNetCore.Http; 
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options; 
+using Microsoft.Extensions.Options;
 using Snowflake.Core;
+using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Unicode;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -31,108 +26,97 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             HttpReportsOptions options = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports").Get<HttpReportsOptions>();
 
-            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");  
+            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");
 
-            services.AddOptions().Configure<HttpReportsOptions>(configuration); 
+            services.AddOptions().Configure<HttpReportsOptions>(configuration);
 
             return services.AddHttpReportsService(configuration);
-        }   
-
-
+        }
 
         public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services, Action<HttpReportsOptions> options)
         {
-            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");  
-
-            services.AddOptions().Configure<HttpReportsOptions>(options);  
-            
+            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");
+            services.AddOptions().Configure<HttpReportsOptions>(options);
             return services.AddHttpReportsService(configuration);
-        }  
+        }
 
+        public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services, IConfiguration configuration)
+        {
+            return services.AddHttpReportsService(configuration);
+        }
 
         private static IHttpReportsBuilder AddHttpReportsService(this IServiceCollection services, IConfiguration configuration)
         {
-            services.PostConfigure<HttpReportsOptions>(x => {
-
-                x.Server = services.GetNewServer(x); 
-
+            services.PostConfigure<HttpReportsOptions>(x =>
+            {
+                x.Server = services.GetNewServer(x, configuration);
             });
 
             JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions
-            { 
+            {
                 PropertyNameCaseInsensitive = true,
                 PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
-                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) 
-            }; 
-             
-            services.AddSingleton(jsonSerializerOptions); 
-            
-            services.AddSingleton<IdWorker>(new IdWorker(new Random().Next(1,30),new Random().Next(1,30))); 
+                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+            };
+
+            services.AddSingleton(jsonSerializerOptions);
+
+            services.AddSingleton<IdWorker>(new IdWorker(new Random().Next(1, 30), new Random().Next(1, 30)));
             services.AddSingleton<IRequestProcesser, DefaultRequestProcesser>();
             services.AddSingleton<IRequestBuilder, DefaultRequestBuilder>();
             services.AddSingleton<HttpReportsBackgroundService>();
-            services.AddSingleton<IPerformanceService,PerformanceService>();
+            services.AddSingleton<IPerformanceService, PerformanceService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IDiagnosticListener, HttpClientDiagnosticListener>();
             services.AddSingleton<IDiagnosticListener, AspNetCoreDiagnosticListener>();
             services.AddSingleton<ISegmentContext, SegmentContext>();
-            services.AddSingleton<TraceDiagnsticListenerObserver>(); 
+            services.AddSingleton<TraceDiagnsticListenerObserver>();
 
             return new HttpReportsBuilder(services, configuration);
-        }  
+        }
 
         public static IApplicationBuilder UseHttpReports(this IApplicationBuilder app)
-        { 
-            ServiceContainer.Provider = app.ApplicationServices.GetRequiredService<IServiceProvider>(); 
+        {
+            ServiceContainer.Provider = app.ApplicationServices.GetRequiredService<IServiceProvider>();
 
-            Activity.DefaultIdFormat = ActivityIdFormat.W3C; 
+            Activity.DefaultIdFormat = ActivityIdFormat.W3C;
 
-            var backgroundService = app.ApplicationServices.GetRequiredService<HttpReportsBackgroundService>();  
-            backgroundService.StartAsync().Wait(); 
+            var backgroundService = app.ApplicationServices.GetRequiredService<HttpReportsBackgroundService>();
+            backgroundService.StartAsync().Wait();
 
-            var options = app.ApplicationServices.GetRequiredService<IOptions<HttpReportsOptions>>(); 
+            var options = app.ApplicationServices.GetRequiredService<IOptions<HttpReportsOptions>>();
 
             if (!options.Value.Switch) return null;
 
-            app.Map(BasicConfig.HttpReportsDefaultHealth, builder => {
-
-                builder.Run(async context =>
-
-                    await context.Response.WriteAsync(DateTime.Now.ToShortTimeString())
-
-                );
-
+            app.Map(BasicConfig.HttpReportsDefaultHealth, builder =>
+            {
+                builder.Run(async context => await context.Response.WriteAsync(DateTime.Now.ToShortTimeString()));
             });
 
-            app.UseMiddleware<DefaultHttpReportsMiddleware>(); 
+            app.UseMiddleware<DefaultHttpReportsMiddleware>();
 
-            TraceDiagnsticListenerObserver observer = app.ApplicationServices.GetRequiredService<TraceDiagnsticListenerObserver>();  
+            TraceDiagnsticListenerObserver observer = app.ApplicationServices.GetRequiredService<TraceDiagnsticListenerObserver>();
 
             DiagnosticListener.AllListeners.Subscribe(observer);
 
             return app;
-        } 
+        }
 
-        private static string GetNewServer(this IServiceCollection services,HttpReportsOptions options)
+        private static string GetNewServer(this IServiceCollection services, HttpReportsOptions options, IConfiguration configuration)
         {
-            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports"); 
+            string Default = "http://localhost:5000";
 
-            string Default = "http://localhost:5000";  
-
-            if (!options.Server.IsEmpty()) return options.Server; 
+            if (!options.Server.IsEmpty()) return options.Server;
 
             var urls = services.BuildServiceProvider().GetService<IConfiguration>()[WebHostDefaults.ServerUrlsKey] ?? configuration["server.urls"] ?? configuration["server"];
 
             if (!urls.IsEmpty())
             {
                 var first = urls.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+                if (!first.IsEmpty()) return first;
+            }
 
-                if (!first.IsEmpty()) return first; 
-            }  
-
-            return Default;    
+            return Default;
         }
-         
-
     }
 }
