@@ -26,7 +26,7 @@ namespace HttpReports.Core
 
         public const int ExpireDay = 7;
 
-        public const string ActiveTraceName = "HttpReports.Trace.Context";
+        public const string ActiveTraceName = "HttpReports-Trace-Context";
 
         public const string ActiveTraceId = "HttpReports-Trace-Id";
 
@@ -34,7 +34,7 @@ namespace HttpReports.Core
 
         public const string HttpReportsSpanId = "HttpReports-Trace-Id";
 
-        public const string ActiveParentSpanId = "HttpReports.Trace.ParentSpan.Id"; 
+        public const string ActiveParentSpanId = "HttpReports-Trace-ParentSpan-Id"; 
         
         public const string Policy = "HttpReports.Dashboard.Policy";  
 
@@ -42,10 +42,10 @@ namespace HttpReports.Core
 
         public const int DeferTaskMinutes = 3;
 
-        public const string ActiveParentSpanService = "HttpReports.Trace.ParentSpan.Service";
+        public const string ActiveParentSpanService = "HttpReports-Trace-ParentSpan-Service";
 
 
-        public const string ActiveSpanService = "HttpReports.Trace.Span.Service";
+        public const string ActiveSpanService = "HttpReports-Trace-Span-Service";
 
 
         public const string AuthToken = "HttpReports-AuthToken";

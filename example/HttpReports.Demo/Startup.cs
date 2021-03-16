@@ -20,7 +20,8 @@ namespace HttpReports.Demo
       
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpReports().AddHttpTransport();
+            services.AddHttpReports().AddHttpTransport();  
+
             services.AddHttpReportsDashboard().AddMySqlStorage(); 
 
             services.AddControllers();
