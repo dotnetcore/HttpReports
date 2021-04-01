@@ -29,7 +29,7 @@ namespace HttpReports.Services
 
         private HttpReportsOptions _options;
 
-        public HttpReportsBackgroundService(IOptions<HttpReportsOptions> options, IConfiguration configuration, ILogger<HttpReportsBackgroundService> logger, IHttpContextAccessor contextAccessor, IReportsTransport reportsTransport, IPerformanceService performanceService)
+        public HttpReportsBackgroundService(IOptions<HttpReportsOptions> options, IConfiguration configuration, ILogger<HttpReportsBackgroundService> logger,IReportsTransport reportsTransport, IPerformanceService performanceService)
         {
             _logger = logger;
             _performanceService = performanceService;

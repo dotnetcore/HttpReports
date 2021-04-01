@@ -29,7 +29,9 @@ namespace HttpReports.Demo.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Get1()
-        { 
+        {
+            var c = HttpContext;
+
             await Task.Delay(new Random().Next(100, 1000));
 
             HttpClient client = new HttpClient();
