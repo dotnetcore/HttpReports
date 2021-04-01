@@ -42,10 +42,10 @@ namespace HttpReports.Core
 
         public const int DeferTaskMinutes = 3;
 
-        public const string ActiveParentSpanService = "HttpReports.Trace.ParentSpan.Service";
+        public const string ActiveParentSpanService = "HttpReportsTraceParentSpanService";
 
 
-        public const string ActiveSpanService = "HttpReports.Trace.Span.Service";
+        public const string ActiveSpanService = "HttpReportsTraceSpanService";
 
 
         public const string AuthToken = "HttpReports-AuthToken";
