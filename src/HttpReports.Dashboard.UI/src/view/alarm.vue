@@ -281,7 +281,7 @@ export default {
         webhook: [
           {
             min: 5,
-            max: 100,
+            max: 200,
             message: this.$i18n.t("Monitor_WebHook_Rule"),
             trigger: "blur",
           },

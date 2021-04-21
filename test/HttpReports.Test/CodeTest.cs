@@ -34,7 +34,8 @@ namespace HttpReports.Test
             string url = "http://dx.dabansuan.com.cn/click.htm?zid=3228&od=0";
             int str = url.IndexOf("od");
             url = url.Insert(str, "_au");
-        }
+        } 
+        
 
         [TestMethod]
         public void JsonTest()

@@ -20,7 +20,7 @@ namespace HttpReports.Demo
       
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpReports().AddHttpTransport();  
+            services.AddHttpReports().AddHttpTransport();   
 
             services.AddHttpReportsDashboard().AddMySqlStorage(); 
 
@@ -34,9 +34,14 @@ namespace HttpReports.Demo
 
        
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
+        {    
             app.UseHttpReports(); 
-            app.UseHttpReportsDashboard();  
+            //app.UseMiddleware<ErrorMiddleware>();
+
+            //app.UseHttpReportsDashboard(); 
+
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             app.UseRouting();
 
