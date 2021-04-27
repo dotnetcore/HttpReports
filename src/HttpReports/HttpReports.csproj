@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>SpringLee</Authors>
-    <Description>HttpReports is a lightweight APM system developed for Net Core </Description>
+    <Description>HttpReports is a lightweight APM system developed for .NET Core </Description>
     <PackageLicenseExpression></PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/dotnetcore/HttpReports</PackageProjectUrl> 
     <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl>

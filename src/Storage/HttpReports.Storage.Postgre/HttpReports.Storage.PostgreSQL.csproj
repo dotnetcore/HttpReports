@@ -6,7 +6,7 @@
     <Version>2.5.5</Version>
     <Authors>SpringLee</Authors>
     <Company>SpringLee</Company>
-    <Description>HttpReports is a lightweight APM system developed for Net Core </Description>
+    <Description>HttpReports is a lightweight APM system developed for .NET Core </Description>
     <PackageProjectUrl>https://github.com/dotnetcore/HttpReports</PackageProjectUrl>
     <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl> 
     <AssemblyName>HttpReports.Storage.PostgreSQL</AssemblyName>

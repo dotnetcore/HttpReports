@@ -7,7 +7,7 @@
     <Version>2.5.5</Version>
     <Authors>SpringLee</Authors>
     <Company>SpringLee</Company>
-    <Description>HttpReports is a lightweight APM system developed for Net Core , it is also suitable for use in a micro-service architecture.</Description>
+    <Description>HttpReports is a lightweight APM system developed for .NET Core , it is also suitable for use in a micro-service architecture.</Description>
     <PackageProjectUrl>https://github.com/dotnetcore/HttpReports</PackageProjectUrl> 
     <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl>
     <PackageIcon>logo3.png</PackageIcon>

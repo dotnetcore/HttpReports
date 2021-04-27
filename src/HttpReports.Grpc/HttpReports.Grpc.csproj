@@ -5,7 +5,7 @@
     <PackageId>HttpReports.Grpc</PackageId>
     <Version>1.6.0</Version>
     <Authors>SpringLee</Authors>
-    <Description>HttpReports is a lightweight APM system developed for Net Core </Description>
+    <Description>HttpReports is a lightweight APM system developed for .NET Core </Description>
     <PackageProjectUrl>https://github.com/dotnetcore/HttpReports</PackageProjectUrl> 
     <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl>
     <PackageIcon>logo3.png</PackageIcon>

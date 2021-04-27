@@ -5,7 +5,7 @@
     <Version>2.5.5</Version>
     <Authors>SpringLee</Authors>
     <PackageId>HttpReports.Diagnostic.SqlClient</PackageId>
-    <Description>HttpReports is a lightweight APM system developed for Net Core </Description>
+    <Description>HttpReports is a lightweight APM system developed for .NET Core </Description>
     <PackageProjectUrl>https://github.com/dotnetcore/HttpReports</PackageProjectUrl>
     <PackageIconUrl>https://files-cdn.cnblogs.com/files/myshowtime/img.ico</PackageIconUrl>
     <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl>
