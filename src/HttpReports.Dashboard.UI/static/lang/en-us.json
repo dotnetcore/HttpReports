@@ -62,6 +62,7 @@
   "Index_APICount": "Total number of interfaces",
   "Index_SelectCount": "Select quantity",
   "StatusCode": "StatusCode",
+  "MinMs": "Min Ms",
   "ProcessingTime": "processing time(ms)",
   "ProcessingTime2": "processing time",
   "Mostrequests": "Most requests",
