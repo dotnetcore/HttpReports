@@ -132,6 +132,7 @@ namespace HttpReports.Storage.Abstractions
                 .WhereIf(!filter.Route.IsEmpty(), x => x.Route.Contains(filter.Route))
                 .WhereIf(detailId != null && detailId.Any(), x => detailId.Contains(x.Id))
                 .WhereIf(!filter.Method.IsEmpty(),x => x.Method == filter.Method)
+                .WhereIf(filter.MinMs > 0, x => x.Milliseconds > filter.MinMs)
                 .Count(out var total)
                 .Page(filter.PageNumber, filter.PageSize)
                 .OrderByDescending(x => x.CreateTime)

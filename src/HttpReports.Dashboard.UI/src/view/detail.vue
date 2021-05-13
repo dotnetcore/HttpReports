@@ -135,7 +135,9 @@ background-color: #dadada;
             </el-select>
             </el-form-item>    
            
-            
+            <el-form-item :label="this.$store.state.lang.MinMs">
+              <el-input style="width:100px;margin-right:6px"  size="small" v-model="requestQuery.minMs"></el-input>
+            </el-form-item>
 
             <el-form-item v-show="false" :label="this.$store.state.lang.RequestBody">
               <el-input size="mini" v-model="requestQuery.request"></el-input>
@@ -353,6 +355,7 @@ export default {
         method:"",
         request: "",
         response: "",
+        minMs: 0
       },
       requestPage: {
         total: 0,
@@ -479,6 +482,7 @@ export default {
         statusCode:this.requestQuery.statusCode == "" ? 0 : Number(this.requestQuery.statusCode),
         pageNumber: this.requestPage.pageNumber,
         pageSize: this.requestPage.pageSize,
+        minMs: this.requestQuery.minMs == "" ? 0 : Number(this.requestQuery.minMs)
       });  
     
 

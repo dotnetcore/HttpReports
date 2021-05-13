@@ -18,6 +18,6 @@ namespace HttpReports.Dashboard.Models
 
         public string ResponseBody { get; set; }
 
-
+        public int MinMs { get; set; }
     }
 }

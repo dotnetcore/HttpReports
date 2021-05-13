@@ -145,8 +145,8 @@ namespace HttpReports.Dashboard.Handles
                 RequestBody = request.RequestBody,
                 ResponseBody = request.ResponseBody,
                 PageNumber = request.PageNumber == 0 ? 1 : request.PageNumber,
-                PageSize = request.PageSize == 0 ? 20 : request.PageSize 
-
+                PageSize = request.PageSize == 0 ? 20 : request.PageSize,
+                MinMs = request.MinMs
             }; 
 
             var result = await _storage.GetSearchRequestInfoAsync(filter);

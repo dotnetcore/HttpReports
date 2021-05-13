@@ -19,5 +19,7 @@ namespace HttpReports.Core.StorageFilters
 
         public string ResponseBody { get; set; }
 
+        // 相应时间最小值。0时表示不判断，否则表示取超过这个时间的响应
+        public int MinMs { get; set; }
     }
 }
