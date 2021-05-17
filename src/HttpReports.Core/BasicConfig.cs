@@ -53,7 +53,7 @@ namespace HttpReports.Core
 
         public const string ALLTag = "ALL";
 
-        public const string ActiveTraceCreateTime = "HttpReports.Trace.CreateTime";
+        public const string ActiveTraceCreateTime = "HttpReports.Trace.CreateDateTime";
 
 
         public const string HttpReportsTraceCost = "HttpReports.Trace.Cost"; 
