@@ -39,7 +39,7 @@
       </span>
     </el-dialog>
 
-    <!-- <el-dialog
+    <el-dialog
       class="aboutDialog"
       :title="$t('About')"
       :visible.sync="aboutDialogVisible"
@@ -99,7 +99,7 @@
           @click="aboutDialogVisible = false"
         >{{ $t('Button_OK') }}</el-button>
       </span>
-    </el-dialog> -->
+    </el-dialog>
 
     <el-header>
       <div class="navbar-left">
@@ -223,10 +223,7 @@
             <span slot="title">{{ this.$store.state.lang.Health }}</span>
           </el-menu-item> 
 
-           <el-menu-item index="/limitapi">
-            <i class="fa fa-heartbeat"></i>
-            <span slot="title">接口限流</span>
-          </el-menu-item> 
+
         </el-menu>
       </el-aside>
 
