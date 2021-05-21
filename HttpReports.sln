@@ -65,7 +65,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Transport.Grpc"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Collector.Grpc", "src\HttpReports.Collector.Grpc\HttpReports.Collector.Grpc.csproj", "{F8BC75E3-675C-442A-A653-8331B7357A20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpReports.Collector.Demo", "example\HttpReports.Collector.Demo\HttpReports.Collector.Demo.csproj", "{7E1A2668-F5FA-44A4-851E-29CB18D3F279}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpReports.Collector.Demo", "example\HttpReports.Collector.Demo\HttpReports.Collector.Demo.csproj", "{7E1A2668-F5FA-44A4-851E-29CB18D3F279}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5BE570B2-40F6-45FF-B9CF-DFD5695B2EA2}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

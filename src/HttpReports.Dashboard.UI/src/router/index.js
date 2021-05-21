@@ -9,6 +9,7 @@ import Detail from '@/view/detail'
 import Alarm from '@/view/alarm'
 import Topology from '@/view/topology' 
 import Health from '@/view/health'
+import LimitApi from '@/view/limitapi'
 
 Vue.use(Router) 
 
@@ -55,14 +56,18 @@ export default new Router({
         {
           path: '/health',
           component: Health
-        } 
+        },
+        {
+          path: '/limitapi',
+          component: LimitApi
+        }
       ] 
     },
     {
       path: '/login',
       name: 'login',
       component: Login
-    }, 
+    }
   ]
 })
 
