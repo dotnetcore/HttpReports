@@ -21,7 +21,8 @@ import { basic } from '@/common/basic.js'
 
  Vue.config.isProduct = process.env.NODE_ENV === 'production';
 
- Vue.config.devServer = "http://localhost:5010/HttpReportsData";
+//  Vue.config.devServer = "http://localhost:5010/HttpReportsData";
+ Vue.config.devServer = "http://127.0.0.1:5785/HttpReportsData";
 
  Vue.prototype.basic = basic  
  Vue.config.productionTip = false;
