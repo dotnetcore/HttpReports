@@ -136,7 +136,7 @@ background-color: #dadada;
             </el-form-item>    
            
             <el-form-item :label="this.$store.state.lang.MinMs">
-              <el-input style="width:100px;margin-right:6px"  size="small" v-model="requestQuery.minMs"></el-input>
+              <el-input-number :precision="0" :min="0" :step="500" size="small" v-model="requestQuery.minMs"></el-input-number>
             </el-form-item>
 
             <el-form-item v-show="false" :label="this.$store.state.lang.RequestBody">
