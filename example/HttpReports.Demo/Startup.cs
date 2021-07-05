@@ -38,7 +38,7 @@ namespace HttpReports.Demo
             app.UseHttpReports(); 
             //app.UseMiddleware<ErrorMiddleware>();
 
-            //app.UseHttpReportsDashboard(); 
+            app.UseHttpReportsDashboard(); 
 
             app.UseSwagger();
             app.UseSwaggerUI();

@@ -25,7 +25,8 @@
     "vue-resource": "^1.5.1",
     "vue-router": "^3.0.1",
     "vuex": "^3.5.1",
-    "webpack-cli": "^3.3.12"
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^2.9.1"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
@@ -61,7 +62,6 @@
     "vue-template-compiler": "^2.5.2",
     "webpack": "^3.6.0",
     "webpack-bundle-analyzer": "^2.9.0",
-    "webpack-dev-server": "^3.1.11",
     "webpack-merge": "^4.1.0"
   },
   "engines": {
