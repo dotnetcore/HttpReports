@@ -258,31 +258,31 @@ background-color: #dadada;
             <el-form :inline="true" ref="form" :model="detail" label-width="100px" size="mini">  
 
               <el-form-item :label="this.$store.state.lang.QueryString">
-                <el-input type="textarea" style="width:380px" v-model="detail.queryString"></el-input>
+                <el-input type="textarea" style="width:380px;" v-model="detail.queryString"></el-input>
               </el-form-item>
 
               <el-form-item :label="this.$store.state.lang.QueryHeader">
-                <el-input type="textarea" style="width:380px" v-model="detail.header"></el-input>
+                <el-input type="textarea" style="width:380px;" v-model="detail.header"></el-input>
               </el-form-item>
 
               <el-form-item label="Cookie">
-                <el-input type="textarea" style="width:380px" v-model="detail.cookie"></el-input>
+                <el-input type="textarea" style="width:380px;" v-model="detail.cookie"></el-input>
               </el-form-item>
 
               <el-form-item :label="this.$store.state.lang.RequestBody">
-                <el-input type="textarea" style="width:380px" v-model="detail.requestBody"></el-input>
+                <el-input type="textarea" autosize=true style="width:380px;" v-model="detail.requestBody"></el-input>
               </el-form-item>
 
               <el-form-item :label="this.$store.state.lang.ResponseBody">
-                <el-input type="textarea" style="width:380px" v-model="detail.responseBody"></el-input>
+                <el-input type="textarea" autosize=true style="width:380px;" v-model="detail.responseBody"></el-input>
               </el-form-item>
 
               <el-form-item :label="this.$store.state.lang.ErrorMessage">
-                <el-input type="textarea" style="width:380px" v-model="detail.errorMessage"></el-input>
+                <el-input type="textarea" style="width:380px;" v-model="detail.errorMessage"></el-input>
               </el-form-item>
 
               <el-form-item :label="this.$store.state.lang.ErrorStack">
-                <el-input type="textarea" style="width:380px" v-model="detail.errorStack"></el-input>
+                <el-input type="textarea" style="width:380px;" v-model="detail.errorStack"></el-input>
               </el-form-item>
             </el-form>
           </el-drawer>
