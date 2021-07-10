@@ -2,8 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>HttpReports.PostgreSQL</PackageId>
-    <Version>2.5.13</Version>
+    <PackageId>HttpReports.PostgreSQL</PackageId> 
     <Authors>SpringLee</Authors>
     <Company>SpringLee</Company>
     <Description>HttpReports is a lightweight APM system developed for .NET Core </Description>

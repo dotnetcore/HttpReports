@@ -6,8 +6,7 @@
     <Description>HttpReports is a lightweight APM system developed for .NET Core </Description>
     <PackageLicenseExpression></PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/dotnetcore/HttpReports</PackageProjectUrl> 
-    <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl>
-    <Version>2.5.13</Version>
+    <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl> 
     <PackageLicenseFile></PackageLicenseFile>
     <PackageId>HttpReports</PackageId>
     <AssemblyName>HttpReports</AssemblyName>

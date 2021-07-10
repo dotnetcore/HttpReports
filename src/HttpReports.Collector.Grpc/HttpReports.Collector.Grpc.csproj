@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>2.5.13</Version>
+    <TargetFramework>netcoreapp3.1</TargetFramework> 
     <Description>HttpReports is a lightweight APM system developed for .NET Core </Description>
     <PackageProjectUrl>https://github.com/dotnetcore/HttpReports</PackageProjectUrl>
     <RepositoryUrl>https://github.com/dotnetcore/HttpReports</RepositoryUrl>
