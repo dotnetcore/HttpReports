@@ -55,7 +55,7 @@ namespace HttpReports.Transport.Http
                     content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
                     content.Headers.Add(BasicConfig.TransportType, typeof(Performance).Name);
 
-                    var response = await _httpClientFactory.CreateClient(BasicConfig.HttpReportsHttpClient).PostAsync(_options.CollectorAddress + BasicConfig.TransportPath.Substring(1), content);
+                    var response = await _httpClientFactory.CreateClient(BasicConfig.HttpReportsHttpClient).PostAsync(_options.CollectorAddress + BasicConfig.HttpCollectorEndpoint.Substring(1), content);
 
                     return response.StatusCode == HttpStatusCode.OK;
                 }
@@ -86,7 +86,7 @@ namespace HttpReports.Transport.Http
 
                     content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
                     content.Headers.Add(BasicConfig.TransportType, typeof(RequestBag).Name);
-                    var response = await _httpClientFactory.CreateClient(BasicConfig.HttpReportsHttpClient).PostAsync(_options.CollectorAddress + BasicConfig.TransportPath.Substring(1), content);
+                    var response = await _httpClientFactory.CreateClient(BasicConfig.HttpReportsHttpClient).PostAsync(_options.CollectorAddress + BasicConfig.HttpCollectorEndpoint.Substring(1), content);
 
                     var result = await response.Content.ReadAsStringAsync();
 

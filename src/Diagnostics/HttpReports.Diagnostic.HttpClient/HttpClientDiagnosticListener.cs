@@ -57,7 +57,7 @@ namespace HttpReports.Diagnostic.HttpClient
 
                 var request = value.GetType().GetProperty("Request").GetValue(value) as System.Net.Http.HttpRequestMessage;
 
-                if (context != null && request != null && !request.RequestUri.ToString().Contains(BasicConfig.TransportPath))
+                if (context != null && request != null && !request.RequestUri.ToString().Contains(BasicConfig.HttpCollectorEndpoint))
                 {
                     if (!request.Headers.Contains(BasicConfig.ActiveTraceId) && context.Items.ContainsKey(BasicConfig.ActiveTraceId) )
                     {

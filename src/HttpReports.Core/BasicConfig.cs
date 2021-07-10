@@ -83,7 +83,7 @@ namespace HttpReports.Core
       
         public const string TransportType = "TransportType";
 
-        public const string TransportPath = "/DataTransportPath"; 
+        public const string HttpCollectorEndpoint = "/HttpReportsHttpCollector"; 
 
     }
 }
