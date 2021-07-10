@@ -1,7 +1,5 @@
 ﻿using HttpReports.Core; 
-using HttpReports.Core.Models; 
-using HttpReports.Models; 
-using HttpReports.Storage.Abstractions.Models; 
+using HttpReports.Core.Models;   
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
@@ -36,30 +34,23 @@ namespace HttpReports.Storage.Abstractions
             _deferFlushCollection = new AsyncCallbackDeferFlushCollection<RequestBag>(AddRequestInfoAsync, _options.DeferThreshold, _options.DeferSecond);
 
             freeSql = new FreeSql.FreeSqlBuilder().UseConnectionString(_options.DataType, _options.ConnectionString).UseNoneCommandParameter(true).Build();  
-        }
-
-
-        public async Task SetLanguage(string Language)
-            =>  await freeSql.Update<SysConfig>().Set(x => x.Value == Language).Where(x => x.Key == BasicConfig.Language).ExecuteAffrowsAsync();
-
-
-        public async Task<string> GetSysConfig(string Key)
-            => await freeSql.Select<SysConfig>().Where(x => x.Key == Key).ToOneAsync(x => x.Value);
-
+        } 
 
         public async Task InitAsync()
         {
             try
-            {
+            { 
                 await Task.Run(async () =>
-                { 
-                    freeSql.CodeFirst.SyncStructure<DBRequestInfo>();
-                    freeSql.CodeFirst.SyncStructure<DBRequestDetail>();
-                    freeSql.CodeFirst.SyncStructure<DBPerformance>();
-                    freeSql.CodeFirst.SyncStructure<DBMonitorJob>();
-                    freeSql.CodeFirst.SyncStructure<DBMonitorAlarm>();
-                    freeSql.CodeFirst.SyncStructure<DBSysUser>();
-                    freeSql.CodeFirst.SyncStructure<DBSysConfig>();
+                {
+                    DbInitializer.Initialize(freeSql,_options.DataType);
+
+                    freeSql.CodeFirst.SyncStructure<RequestInfo>();
+                    freeSql.CodeFirst.SyncStructure<RequestDetail>();
+                    freeSql.CodeFirst.SyncStructure<Performance>();
+                    freeSql.CodeFirst.SyncStructure<MonitorJob>();
+                    freeSql.CodeFirst.SyncStructure<MonitorAlarm>();
+                    freeSql.CodeFirst.SyncStructure<SysUser>();
+                    freeSql.CodeFirst.SyncStructure<SysConfig>();
 
                     if (!await freeSql.Select<SysUser>().AnyAsync())
                     {
@@ -93,6 +84,16 @@ namespace HttpReports.Storage.Abstractions
                 throw new Exception("Database init failed：" + ex.Message, ex);
             }
         }
+
+
+        public async Task SetLanguage(string Language)
+            => await freeSql.Update<SysConfig>().Set(x => x.Value == Language).Where(x => x.Key == BasicConfig.Language).ExecuteAffrowsAsync();
+
+
+        public async Task<string> GetSysConfig(string Key)
+            => await freeSql.Select<SysConfig>().Where(x => x.Key == Key).ToOneAsync(x => x.Value);
+
+
 
 
         public async Task AddRequestInfoAsync(RequestBag bag) => await Task.Run(() => _deferFlushCollection.Flush(bag));

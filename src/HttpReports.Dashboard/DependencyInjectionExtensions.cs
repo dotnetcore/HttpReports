@@ -111,10 +111,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var options = app.ApplicationServices.GetRequiredService<IOptions<DashboardOptions>>() ?? throw new ArgumentNullException("DashboardOptions Init Failed");
 
-            if (options.Value.EnableCors)
-            {
-                app.UseCors(BasicConfig.Policy);
-            }
+            if (options.Value.EnableCors) app.UseCors(BasicConfig.Policy); 
 
             ServiceContainer.provider = app.ApplicationServices.GetRequiredService<IServiceProvider>() ?? throw new ArgumentNullException("ServiceProvider Init Failed");   
 
@@ -126,7 +123,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var localizeService = app.ApplicationServices.GetRequiredService<ILocalizeService>() ?? throw new ArgumentNullException("localizeService Not Found");
 
-            localizeService.InitAsync().Wait();
+            if (options.Value.Migrate) localizeService.InitAsync().Wait(); 
 
             app.UseHttpCollector();
 

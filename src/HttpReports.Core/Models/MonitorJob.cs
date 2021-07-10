@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic; 
 using System.Text;
 
-namespace HttpReports.Models
+namespace HttpReports.Core.Models
 {
     public class MonitorJob 
     { 

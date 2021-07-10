@@ -1,6 +1,6 @@
 ﻿using HttpReports.Core;
-using HttpReports.Dashboard.Abstractions;
-using HttpReports.Models;
+using HttpReports.Core.Models;
+using HttpReports.Dashboard.Abstractions; 
 using HttpReports.Storage.Abstractions;
 using Microsoft.Extensions.Options; 
 using Quartz;

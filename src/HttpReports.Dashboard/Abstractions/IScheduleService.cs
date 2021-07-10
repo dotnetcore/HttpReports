@@ -1,4 +1,4 @@
-﻿using HttpReports.Models;
+﻿using HttpReports.Core.Models;
 using Quartz;
 using System;
 using System.Collections.Generic;
