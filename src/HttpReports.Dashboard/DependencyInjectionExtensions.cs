@@ -117,21 +117,34 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var storage = app.ApplicationServices.GetRequiredService<IHttpReportsStorage>() ?? throw new ArgumentNullException("Storage Not Found");
 
-            storage.InitAsync().Wait();
+            if (options.Value.Migration) storage.InitAsync().Wait();
 
             app.ApplicationServices.GetService<IScheduleService>().InitAsync().Wait(); 
 
             var localizeService = app.ApplicationServices.GetRequiredService<ILocalizeService>() ?? throw new ArgumentNullException("localizeService Not Found");
 
-            if (options.Value.Migrate) localizeService.InitAsync().Wait(); 
+            localizeService.InitAsync().Wait(); 
 
             app.UseHttpCollector();
 
             app.UseMiddleware<DashboardMiddleware>();   
 
             return app;
+        }
+
+
+        public static IApplicationBuilder UseHttpReportsMigration(this IApplicationBuilder app)
+        {
+            ServiceContainer.provider = app.ApplicationServices.GetRequiredService<IServiceProvider>() ?? throw new ArgumentNullException("ServiceProvider Init Failed");
+
+            var storage = app.ApplicationServices.GetRequiredService<IHttpReportsStorage>() ?? throw new ArgumentNullException("Storage Not Found");
+
+            storage.PrintSQLAsync().Wait();
+
+            return app;
+        
         } 
- 
+
 
         private static IServiceCollection AddHandleService(this IServiceCollection services)
         {

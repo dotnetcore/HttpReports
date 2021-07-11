@@ -14,6 +14,8 @@ namespace HttpReports.Storage.Abstractions
     {
         Task InitAsync();
 
+        Task PrintSQLAsync();
+
         Task AddRequestInfoAsync(RequestBag bag);
 
 

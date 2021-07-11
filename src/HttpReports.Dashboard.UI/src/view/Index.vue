@@ -630,6 +630,7 @@ export default {
         .catch((_) => {});
     },
     changeLanguage(type) {
+
       this.$i18n.locale = type;
 
       localStorage.setItem("locale", type);
@@ -642,8 +643,7 @@ export default {
           //this.$message({ message: "Switch: " + type, type: "success" });
 
           this.$http.get(`/static/lang/${type}.json`).then((res) => {
-            this.$store.commit("set_lang", res.body); 
-
+            this.$store.commit("set_lang", res.body);  
             window.location.reload();
           });
         });

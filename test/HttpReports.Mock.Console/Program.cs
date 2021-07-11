@@ -6,6 +6,7 @@ using Snowflake.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +16,11 @@ namespace HttpReports.Mock.Console
     class Program
     {
         static async Task Main(string[] args)
-        {  
+        {
+            await APITest(); 
+            System.Console.ReadKey();
+
+
             var a = 199;
             var b = 10000;
             var c = 60000; 
@@ -68,7 +73,41 @@ namespace HttpReports.Mock.Console
 
             System.Console.ReadKey();
           
-        } 
+        }
+
+        static async Task APITest()
+        {
+            for (int i = 0; i < 50; i++)
+            {
+                _ = Task.Run(async () => {
+
+                    HttpClient client = new HttpClient();
+
+                    while (true)
+                    {
+                        await Task.Delay(new Random().Next(10,100));
+
+                        HttpContent content = new StringContent(System.Text.Json.JsonSerializer.Serialize(new { TemperatureC = 99, Summary = "Summary" }), System.Text.Encoding.UTF8, "application/json");
+
+                        content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+                        content.Headers.Add(BasicConfig.TransportType, typeof(Performance).Name);
+
+                        try
+                        {
+                            await client.PostAsync("http://localhost:5010/WeatherForecast", content);
+                        }
+                        catch (Exception ex)
+                        {
+
+                             
+                        }  
+                    } 
+                
+                }); 
+
+            }   
+
+        }
        
 
 

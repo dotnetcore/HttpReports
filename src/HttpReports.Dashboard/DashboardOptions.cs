@@ -14,7 +14,7 @@ namespace HttpReports.Dashboard
 
         public int QueryCount { get; set; } = 6;
 
-        public bool Migrate { get; set; } = true;
+        public bool Migration { get; set; } = true;
 
         public HealthCheckOptions Check { get; set; } = new HealthCheckOptions();
 

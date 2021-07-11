@@ -33,7 +33,7 @@ Vue.use(VueResource)
 Vue.use(VueParticles)  
  
 const i18n = new VueI18n({
-  locale: basic.isEmpty(localStorage.getItem("locale")) ? 'en-us': localStorage.getItem("locale"),  
+  locale: basic.isEmpty(localStorage.getItem("locale")) ? 'zh-cn': localStorage.getItem("locale"),  
   messages: {
     'en-us': Object.assign(require("../static/lang/en-us.json"), enLocale),
     'zh-cn': Object.assign(require("../static/lang/zh-cn.json"), zhLocale), 

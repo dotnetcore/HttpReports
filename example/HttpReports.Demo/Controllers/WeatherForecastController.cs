@@ -20,11 +20,11 @@ namespace HttpReports.Demo.Controllers
 
         public WeatherForecastController(ILogger<WeatherForecastController> logger)
         {
-            _logger = logger;
+            _logger = logger; 
         }
 
-        [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        [HttpPost]
+        public IEnumerable<WeatherForecast> Get(WeatherForecast weather)
         {
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
