@@ -109,6 +109,13 @@ namespace HttpReports.Demo.Controllers
         {
             return await Task.FromResult(Json(new { code = 1, msg = "ok" }));
         }
+
+
+        [HttpGet("Query")]
+        public async Task<IActionResult> Query()
+        {
+            return await Task.FromResult(Json(new { code = 1, msg = "ok" }));
+        }
     }
 
     public class User
