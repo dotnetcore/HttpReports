@@ -22,28 +22,37 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class HttpReportsMiddlewareExtensions
     {
-        public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services)
+        public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services, IConfiguration configuration = null)
         {
-            HttpReportsOptions options = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports").Get<HttpReportsOptions>();
+            if (configuration != null)
+            {
+                return services.AddHttpReportsService(configuration.GetSection("HttpReports"));
+            }
+            else
+            {
+                var config = services.BuildServiceProvider().GetService<IConfiguration>();
 
-            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");
+                if (config == null)
+                {
+                    throw new ArgumentNullException(nameof(configuration));
+                }
 
-            services.AddOptions().Configure<HttpReportsOptions>(configuration);
+                services.AddOptions().Configure<HttpReportsOptions>(config.GetSection("HttpReports"));
 
-            return services.AddHttpReportsService(configuration);
+                return services.AddHttpReportsService(config.GetSection("HttpReports"));
+
+            }  
         }
 
-        public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services, Action<HttpReportsOptions> options)
-        {
-            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReports");
-            services.AddOptions().Configure<HttpReportsOptions>(options);
-            return services.AddHttpReportsService(configuration);
-        }
+        public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services, Action<HttpReportsOptions> options, IConfiguration configuration = null)
+        { 
+            IConfiguration config = configuration ?? services.BuildServiceProvider().GetService<IConfiguration>() ?? 
+                throw new ArgumentNullException(nameof(configuration));
 
-        public static IHttpReportsBuilder AddHttpReports(this IServiceCollection services, IConfiguration configuration)
-        {
-            return services.AddHttpReportsService(configuration);
-        }
+            services.AddOptions().Configure(options); 
+          
+            return services.AddHttpReportsService(config.GetSection("HttpReports"));
+        } 
 
         private static IHttpReportsBuilder AddHttpReportsService(this IServiceCollection services, IConfiguration configuration)
         {

@@ -25,26 +25,26 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class DependencyInjectionExtensions
     { 
-        public static IHttpReportsBuilder AddHttpReportsDashboard(this IServiceCollection services)
+        public static IHttpReportsBuilder AddHttpReportsDashboard(this IServiceCollection services,IConfiguration configuration = null)
         {  
-            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReportsDashboard"); 
+            IConfiguration config = configuration ?? services.BuildServiceProvider().GetService<IConfiguration>() ??
+                throw new ArgumentNullException(nameof(configuration)); 
+             
+            services.AddOptions().Configure<DashboardOptions>(config.GetSection("HttpReportsDashboard"));
 
-            services.AddOptions();
-            services.Configure<DashboardOptions>(configuration);
+            return services.UseHttpReportsDashboardService(config.GetSection("HttpReportsDashboard"));
 
-            return services.UseHttpReportsDashboardService(configuration);
-        } 
+        }
 
 
-
-        public static IHttpReportsBuilder AddHttpReportsDashboard(this IServiceCollection services,Action<DashboardOptions> options)
+        public static IHttpReportsBuilder AddHttpReportsDashboard(this IServiceCollection services,Action<DashboardOptions> options,IConfiguration configuration = null)
         {  
-            IConfiguration configuration = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("HttpReportsDashboard");
+            IConfiguration config = configuration ?? services.BuildServiceProvider().GetService<IConfiguration>() ?? 
+               throw new ArgumentNullException(nameof(configuration)); 
+           
+            services.AddOptions().Configure<DashboardOptions>(options);
 
-            services.AddOptions();
-            services.Configure<DashboardOptions>(options);
-
-            return services.UseHttpReportsDashboardService(configuration);
+            return services.UseHttpReportsDashboardService(config.GetSection("HttpReportsDashboard"));
         }
 
 

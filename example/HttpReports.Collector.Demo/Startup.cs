@@ -28,7 +28,7 @@ namespace HttpReports.Collector.Demo
             //services.AddHttpReports().AddHttpTransport();
             services.Configure<HttpReportsOptions>(Configuration.GetSection("HttpReports"));
             services.Configure<HttpTransportOptions>(Configuration.GetSection("HttpReports").GetSection("Transport"));
-            services.AddHttpReports(Configuration).AddHttpTransport(Configuration);
+            services.AddHttpReports().AddHttpTransport();
         }
          
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

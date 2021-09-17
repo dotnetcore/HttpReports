@@ -19,10 +19,10 @@ namespace HttpReports.Demo
 
       
         public void ConfigureServices(IServiceCollection services)
-        {
+        {  
             services.AddHttpReports().AddHttpTransport();   
 
-            services.AddHttpReportsDashboard().AddPostgreSQLStorage(); 
+            services.AddHttpReportsDashboard().AddMySqlStorage(); 
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

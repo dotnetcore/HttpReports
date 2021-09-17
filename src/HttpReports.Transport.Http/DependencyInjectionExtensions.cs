@@ -27,12 +27,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.Services.AddOptions().Configure<HttpTransportOptions>(builder.Configuration.GetSection("Transport"));
             return builder.AddHttpTransportService();
-        }
-
-        public static IHttpReportsBuilder AddHttpTransport(this IHttpReportsBuilder builder, IConfiguration configuration)
-        {
-            return builder.AddHttpTransportService();
-        }
+        } 
 
         public static IHttpReportsBuilder AddHttpTransport(this IHttpReportsBuilder builder, Action<HttpTransportOptions> options)
         {
