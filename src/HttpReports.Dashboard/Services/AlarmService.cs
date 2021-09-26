@@ -27,15 +27,18 @@ namespace HttpReports.Dashboard.Services
 
         private readonly JsonSerializerOptions _jsonSetting;
 
+        private readonly IHttpClientFactory _factory;
+
         private Localize lang => _localizeService.Current;
 
-        public AlarmService(IOptions<DashboardOptions> options, JsonSerializerOptions jsonSetting, ILogger<AlarmService> logger, ILocalizeService localizeService, IHttpReportsStorage storage)
+        public AlarmService(IOptions<DashboardOptions> options, JsonSerializerOptions jsonSetting, ILogger<AlarmService> logger, ILocalizeService localizeService, IHttpReportsStorage storage, IHttpClientFactory factory)
         {
             Options = options.Value;
             Logger = logger;
             _localizeService = localizeService;
             _storage = storage;
             _jsonSetting = jsonSetting;
+            _factory = factory;
         }
 
         private async Task SendMessageAsync(MimeMessage message)
@@ -85,7 +88,7 @@ namespace HttpReports.Dashboard.Services
                     return;
                 } 
                 
-                using (var httpClient = new HttpClient())
+                using (var httpClient = _factory.CreateClient())
                 {
                     string Title = $"HttpReports - {lang.Warning_Title}";
 
