@@ -5,8 +5,8 @@ using System.Linq;
 using System.Text;
 using FlubuCore.Context;
 using FlubuCore.Context.Attributes.BuildProperties;
-using FlubuCore.IO; 
-using FlubuCore.Scripting; 
+using FlubuCore.IO;
+using FlubuCore.Scripting;
 
 namespace BuildScript
 {
@@ -26,22 +26,23 @@ namespace BuildScript
         public string NugetKey { get; set; } = string.Empty;
 
         [FromArg("env", "dev or pro")]
-        public string Environment { get; set; } = "pro";  
-      
+        public string Environment { get; set; } = "pro";
+
         public FullPath OutputDir => RootDirectory.CombineWith("output");
 
-        public FullPath SourceDir => RootDirectory.CombineWith("src");   
+        public FullPath SourceDir => RootDirectory.CombineWith("src");
 
         protected override void ConfigureTargets(ITaskContext context)
         {
             if (Environment == "dev")
             {
                 Version = $"{Version}-preview-" + DateTime.Now.ToString("MMddHHmm");
-            } 
+            }
 
-            context.LogInfo("============================================"); 
+            context.LogInfo("============================================");
             context.LogInfo($"NugetKey:{NugetKey} Version:{Version}");
-            context.LogInfo("============================================"); 
+            context.LogInfo($"OutputDir:{OutputDir} SourceDir:{SourceDir}");
+            context.LogInfo("============================================");
 
 
             var clean = context.CreateTarget("Clean")
@@ -52,13 +53,13 @@ namespace BuildScript
             var restore = context.CreateTarget("Restore")
                 .SetDescription("Restore's the solution")
                 .DependsOn(clean)
-                .AddCoreTask(x => x.Restore()); 
-          
+                .AddCoreTask(x => x.Restore());
+
 
             var build = context.CreateTarget("Build")
                 .SetDescription("Build's the solution")
                 .DependsOn(restore)
-                .AddCoreTask(x => x.Build().Version(Version).FileVersion(Version).InformationalVersion(Version) );
+                .AddCoreTask(x => x.Build().Version(Version).FileVersion(Version).InformationalVersion(Version));
 
             var projectsToPack = context.GetFiles(SourceDir, "*/*.csproj");
 
@@ -91,35 +92,35 @@ namespace BuildScript
             context.CreateTarget("Default")
              .SetDescription("Runs all targets.")
              .SetAsDefault()
-             .DependsOn(clean, restore, build, pack,push, push2);  
+             .DependsOn(clean, restore, build, pack, push, push2);
         }
 
         private void NugetPush(ITaskContext context)
         {
             var nugetPackages = context.GetFiles(OutputDir, "*.nupkg").Where(x => x.FileName.Contains(Version));
 
-            foreach (var nugetPackage  in nugetPackages)
+            foreach (var nugetPackage in nugetPackages)
             {
                 context.CoreTasks().NugetPush(nugetPackage)
-                    .ServerUrl("https://www.nuget.org/api/v2/package")
+                    .ServerUrl("http://192.168.1.30:8003/api/v2/package")
                     .ApiKey(NugetKey)
                     .Execute(context);
             }
         }
 
         private void NugetPush2(ITaskContext context)
-        { 
+        {
             var nugetPackages = context.GetFiles(OutputDir, "*.snupkg").Where(x => x.FileName.Contains(Version));
 
             foreach (var nugetPackage in nugetPackages)
             {
                 context.CoreTasks().NugetPush(nugetPackage)
-                   .ServerUrl("https://api.nuget.org/v3/index.json")
+                   .ServerUrl("http://192.168.1.30:8003")
                     .ApiKey(NugetKey)
-                    .Execute(context); 
-                
-            } 
-            
+                    .Execute(context);
+
+            }
+
         }
     }
 }

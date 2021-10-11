@@ -1,54 +1,95 @@
 <template>
   <div>
-    <el-card class="box-card">
-      <el-row>
-        <el-button
-          size="mini"
-          @click="addJob"
-          icon="el-icon-circle-plus-outline"
-          type="primary"
-          >添加</el-button
-        >
-      </el-row>
-      <el-table :data="tableData" style="width: 100%">
-        <el-table-column fixed prop="key" label="接口" width="150">
-        </el-table-column>
-        <el-table-column prop="endpoint" label="端点" width="250">
-        </el-table-column>
-        <el-table-column prop="limit" label="限额"> </el-table-column>
-        <el-table-column prop="periodVal" label="周期值"> </el-table-column>
-        <el-table-column
-          prop="periodUnit"
-          label="周期单位"
-          :formatter="periodUnitformatter"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="isEnable"
-          label="启用"
-          width="150"
-          :formatter="isEnableformatter"
-        >
-        </el-table-column>
-        <el-table-column fixed="right" label="操作" width="100">
-          <template slot-scope="scope">
+    <el-tabs style="margin-top: 10px" tab-position="top" @tab-click="handleClick">
+      <el-tab-pane label="接口限流">
+        <el-card class="box-card">
+          <el-row>
+            <!-- <el-button
+              size="mini"
+              @click="GetGeneralRules"
+              icon="el-icon-refresh"
+              >刷新</el-button
+            > -->
             <el-button
-              type="text"
-              size="small"
-              @click="editJob(scope.row.key)"
-              >{{ scope._self.$i18n.t("Monitor_Edit") }}</el-button
+              size="mini"
+              @click="addJob"
+              icon="el-icon-circle-plus-outline"
+              type="primary"
+              >添加</el-button
             >
+          </el-row>
+          <el-table :data="tableData" style="width: 100%">
+            <el-table-column fixed prop="key" label="接口" width="150">
+            </el-table-column>
+            <el-table-column prop="endpoint" label="端点" width="250">
+            </el-table-column>
+            <el-table-column prop="limit" label="限额"> </el-table-column>
+            <el-table-column prop="periodVal" label="周期值"> </el-table-column>
+            <el-table-column
+              prop="periodUnit"
+              label="周期单位"
+              :formatter="periodUnitformatter"
+            >
+            </el-table-column>
+            <el-table-column prop="isEnable" label="状态" width="150">
+              <template slot-scope="scope">
+                <el-tag
+                  size="mini"
+                  effect="plain"
+                  :type="scope.row.isEnable == true ? 'primary' : 'danger'"
+                  >{{
+                    scope.row.isEnable == true
+                      ? scope._self.$i18n.t("Monitor_Runing")
+                      : scope._self.$i18n.t("Monitor_Stoping")
+                  }}</el-tag
+                >
+              </template>
+            </el-table-column>
+            <el-table-column fixed="right" label="操作" width="100">
+              <template slot-scope="scope">
+                <el-button
+                  type="text"
+                  size="small"
+                  @click="editJob(scope.row.key)"
+                  >{{ scope._self.$i18n.t("Monitor_Edit") }}</el-button
+                >
 
-            <el-button
-              type="text"
-              size="small"
-              @click="deleteJob(scope.row.key)"
-              >{{ scope._self.$i18n.t("Monitor_Delete") }}</el-button
+                <el-button
+                  type="text"
+                  size="small"
+                  @click="deleteJob(scope.row.key)"
+                  >{{ scope._self.$i18n.t("Monitor_Delete") }}</el-button
+                >
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+      </el-tab-pane>
+
+      <el-tab-pane label="Ip白名单">
+        <el-card class="box-card">
+          <div class="block">
+            <el-row>
+              <el-button
+                size="mini"
+                @click="save"
+                icon="el-icon-circle-plus-outline"
+                type="primary"
+                >保存</el-button
+              >
+            </el-row>
+            <br />
+            <el-input
+              type="textarea"
+              :rows="2"
+              placeholder="请输入内容"
+              v-model="ipWhite"
             >
-          </template>
-        </el-table-column>
-      </el-table>
-    </el-card>
+            </el-input>
+          </div>
+        </el-card>
+      </el-tab-pane>
+    </el-tabs>
 
     <el-dialog top="5%" :visible.sync="dialogFormVisible">
       <el-form
@@ -144,6 +185,7 @@ export default {
         isEnable: true,
       },
       DOMAIN: "http://127.0.0.1:5005/api/IpRateLimit",
+      ipWhite: "127.0.0.1",
     };
   },
   async mounted() {
@@ -177,6 +219,15 @@ export default {
       this.dialogFormVisible = true;
       this.disabledInput = false;
       this.isUpdate = false;
+    },
+    async save() {
+      var self = this;
+      self.$http
+        .post(`${self.DOMAIN}/SyncSaveIpWhite?ipWhite=${self.ipWhite}`)
+        .then((data) => {
+          self.$message({ message: "保存成功", type: "success" });
+          self.GetIpWhiteList();
+        });
     },
     async deleteJob(key) {
       var self = this;
@@ -247,16 +298,23 @@ export default {
         for (const key in obj) {
           if (Object.hasOwnProperty.call(obj, key)) {
             res.push(obj[key]);
+            ``;
           }
         }
         self.tableData = res;
       });
     },
-    isEnableformatter(row, column, value) {
-      if (value) {
-        return "是";
-      } else {
-        return "否";
+    GetIpWhiteList() {
+      var self = this;
+      self.$http.get(`${self.DOMAIN}/GetIpWhiteList`).then((data) => {
+        self.ipWhite = data.body;
+      });
+    },
+    handleClick(comp,event){
+      if(comp.index == 1){
+        this.GetIpWhiteList();
+      }else{
+        this.GetGeneralRules();
       }
     },
     periodUnitformatter(row, column, value) {
