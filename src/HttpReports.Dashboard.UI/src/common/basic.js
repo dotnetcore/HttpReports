@@ -1,6 +1,7 @@
 
 
 const basic = {
+  DOMAIN:"http://127.0.0.1:5005/api",
   isEmpty: (str) => {
 
     if (str == null || str == undefined || str.length == 0) {

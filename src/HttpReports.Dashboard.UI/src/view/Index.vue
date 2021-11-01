@@ -227,6 +227,11 @@
             <i class="fa fa-heartbeat"></i>
             <span slot="title">接口限流</span>
           </el-menu-item> 
+
+          <el-menu-item index="/roleBasedAccess">
+            <i class="fa fa-heartbeat"></i>
+            <span slot="title">权限模块</span>
+          </el-menu-item> 
         </el-menu>
       </el-aside>
 

@@ -113,7 +113,7 @@ var vue = new Vue({
 function setHttpFilter() {   
    
   var server =  Vue.config.isProduct ?  window.location.protocol + "//" + window.location.host + "/HttpReportsData" :  Vue.config.devServer;
- 
+
   Vue.http.options.root = server; 
 
   // VueResource 请求拦截器 
@@ -126,6 +126,9 @@ function setHttpFilter() {
       
       request.headers.set('HttpReports-AuthToken',token); 
 
+      var jwt = localStorage.getItem("Authorization");
+      
+      request.headers.set("Authorization",`Bearer ${jwt}`)
     }  
 
     next(function (response) { 

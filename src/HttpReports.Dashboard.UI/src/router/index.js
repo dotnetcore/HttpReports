@@ -10,6 +10,7 @@ import Alarm from '@/view/alarm'
 import Topology from '@/view/topology' 
 import Health from '@/view/health'
 import LimitApi from '@/view/limitapi'
+import roleBasedAccess from '@/view/roleBasedAccess'
 
 Vue.use(Router) 
 
@@ -60,6 +61,10 @@ export default new Router({
         {
           path: '/limitapi',
           component: LimitApi
+        },
+        {
+          path: '/rolebasedaccess',
+          component: roleBasedAccess
         }
       ] 
     },

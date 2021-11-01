@@ -169,6 +169,8 @@
 </style>
 
 <script>
+import { basic } from '@/common/basic.js' 
+
 export default {
   data() {
     return {
@@ -184,7 +186,6 @@ export default {
         limit: 0,
         isEnable: true,
       },
-      DOMAIN: "http://127.0.0.1:5005/api/IpRateLimit",
       ipWhite: "127.0.0.1",
     };
   },
@@ -207,7 +208,7 @@ export default {
       this.dialogFormVisible = true;
       this.isUpdate = true;
       this.$http
-        .get(`${this.DOMAIN}/GetGeneralRulesByKey?key=${key}`)
+        .get(`${basic.DOMAIN}/IpRateLimit/GetGeneralRulesByKey?key=${key}`)
         .then((data) => {
           if (data.body) {
             this.limitRule = data.body;
@@ -223,7 +224,7 @@ export default {
     async save() {
       var self = this;
       self.$http
-        .post(`${self.DOMAIN}/SyncSaveIpWhite?ipWhite=${self.ipWhite}`)
+        .post(`${basic.DOMAIN}/IpRateLimit/SyncSaveIpWhite?ipWhite=${self.ipWhite}`)
         .then((data) => {
           self.$message({ message: "保存成功", type: "success" });
           self.GetIpWhiteList();
@@ -239,7 +240,7 @@ export default {
         })
         .then(async () => {
           self.$http
-            .post(`${self.DOMAIN}/RemoveLimitRules?key=${key}`)
+            .post(`${basic.DOMAIN}/IpRateLimit/RemoveLimitRules?key=${key}`)
             .then((data) => {
               if (data.body) {
                 self.$message({
@@ -250,7 +251,7 @@ export default {
               } else {
                 self.$message({
                   type: "error",
-                  message: self.$i18n.t("Monitor_DeleteSuccess"),
+                  message: "删除失败",
                 });
               }
             });
@@ -260,7 +261,7 @@ export default {
       var self = this;
       if (self.isUpdate) {
         self.$http
-          .post(`${self.DOMAIN}/UpdateLimitRules`, self.limitRule)
+          .post(`${basic.DOMAIN}/IpRateLimit/UpdateLimitRules`, self.limitRule)
           .then((data) => {
             self.$message({ message: "保存成功", type: "success" });
             self.GetGeneralRules();
@@ -269,7 +270,7 @@ export default {
           });
       } else {
         self.$http
-          .post(`${self.DOMAIN}/AddLimitRules`, self.limitRule)
+          .post(`${basic.DOMAIN}/IpRateLimit/AddLimitRules`, self.limitRule)
           .then((data) => {
             self.$message({ message: "保存成功", type: "success" });
             self.GetGeneralRules();
@@ -291,10 +292,10 @@ export default {
     },
     GetGeneralRules() {
       var self = this;
-      self.$http.get(`${self.DOMAIN}/GetGeneralRules`).then((data) => {
+      self.$http.get(`${basic.DOMAIN}/IpRateLimit/GetGeneralRules`).then((data) => {
         var obj = data.body;
         var res = [];
-        self.tableData = data.body;
+        // self.tableData = data.body;
         for (const key in obj) {
           if (Object.hasOwnProperty.call(obj, key)) {
             res.push(obj[key]);
@@ -306,7 +307,7 @@ export default {
     },
     GetIpWhiteList() {
       var self = this;
-      self.$http.get(`${self.DOMAIN}/GetIpWhiteList`).then((data) => {
+      self.$http.get(`${basic.DOMAIN}/IpRateLimit/GetIpWhiteList`).then((data) => {
         self.ipWhite = data.body;
       });
     },
