@@ -422,7 +422,7 @@
 </template>
 
 <script>
-import { basic } from '@/common/basic.js' 
+import { basic } from "@/common/basic.js";
 export default {
   data() {
     return {
@@ -472,6 +472,8 @@ export default {
   methods: {
     GetUserList() {
       var self = this;
+      self.tableData.Role = [];
+      self.tableData.Menu = [];
       self.$http
         .get(`${basic.DOMAIN}/SysUser/GetListByPage`, {
           params: {
@@ -482,16 +484,17 @@ export default {
           },
         })
         .then((data) => {
-          self.tableData.User = data.body.resultData;
-          self.Datatotal = data.body.totalData;
+          self.tableData.User = data.body.list;
+          self.Datatotal = data.body.totalCount;
         });
     },
     GetRolesList() {
       var self = this;
+      self.tableData.Menu = [];
       self.$http
         .get(`${basic.DOMAIN}/Roles/GetList?name=${self.Search.RoleName}`)
         .then((data) => {
-          self.tableData.Role = data.body.resultData;
+          self.tableData.Role = data.body;
         });
     },
     GetMenuList() {
@@ -505,8 +508,8 @@ export default {
           },
         })
         .then((data) => {
-          self.tableData.Menu = data.body.resultData;
-          self.Datatotal = data.body.totalData;
+          self.tableData.Menu = data.body.list;
+          self.Datatotal = data.body.totalCount;
         });
     },
     showDialogRole(obj) {
@@ -535,7 +538,7 @@ export default {
     saveMenu() {
       var self = this;
       self.$http.post(`${basic.DOMAIN}/Menu/Save`, self.Menu).then((data) => {
-        if (data.body.status) {
+        if (data.body) {
           self.$message({ message: "保存成功", type: "success" });
           self.dialogMenu = false;
           self.GetMenuList();
@@ -545,7 +548,7 @@ export default {
     saveRole() {
       var self = this;
       self.$http.post(`${basic.DOMAIN}/Roles/Save`, self.Roles).then((data) => {
-        if (data.body.status) {
+        if (data.body) {
           self.$message({ message: "保存成功", type: "success" });
           self.dialogRoles = false;
           self.GetRolesList();
@@ -568,7 +571,7 @@ export default {
           self.$http
             .delete(`${basic.DOMAIN}/Menu/DeleteById/${id}`)
             .then((data) => {
-              if (data.body.status) {
+              if (data.body) {
                 self.$message({
                   type: "success",
                   message: self.$i18n.t("Monitor_DeleteSuccess"),
@@ -599,7 +602,7 @@ export default {
           self.$http
             .delete(`${basic.DOMAIN}/Roles/DeleteById/${id}`)
             .then((data) => {
-              if (data.body.status) {
+              if (data.body) {
                 self.$message({
                   type: "success",
                   message: self.$i18n.t("Monitor_DeleteSuccess"),
@@ -659,7 +662,7 @@ export default {
             RoleId: self.checkRoles,
           })
           .then((data) => {
-            if (data.body.status) {
+            if (data.body) {
               self.$message({ message: "保存成功", type: "success" });
               self.dialogAssignRoles = false;
             } else {
@@ -698,7 +701,7 @@ export default {
           MenuId: self.checkMenu,
         })
         .then((data) => {
-          if (data.body.status) {
+          if (data.body) {
             self.$message({ message: "保存成功", type: "success" });
             self.dialogAssignMenu = false;
           } else {
@@ -716,7 +719,7 @@ export default {
           MenuId: self.checkMenu,
         })
         .then((data) => {
-          if (data.body.status) {
+          if (data.body) {
             self.$message({ message: "保存成功", type: "success" });
             self.dialogAssignMenu = false;
           } else {
@@ -733,7 +736,7 @@ export default {
           .get(`${basic.DOMAIN}/Roles/GetList?name=${query}`)
           .then((data) => {
             self.loading = false;
-            self.optionsRoles = data.body.resultData;
+            self.optionsRoles = data.body;
           });
       } else {
         this.optionsRoles = [];
@@ -750,7 +753,7 @@ export default {
           )
           .then((data) => {
             self.loading = false;
-            self.optionsMenu = data.body.resultData;
+            self.optionsMenu = data.body.list;
           });
       } else {
         this.optionsMenu = [];
@@ -760,26 +763,30 @@ export default {
       this.selectUser = selection;
     },
     handCurrentChangeUser(currentRow, oldCurrentRow) {
-      var self = this;
-      self.$http
-        .get(`${basic.DOMAIN}/Roles/GetListByUserCode/${currentRow.code}`)
-        .then((data) => {
-          self.tableData.Role = data.body.resultData;
-        });
+      if (currentRow) {
+        var self = this;
+        self.$http
+          .get(`${basic.DOMAIN}/Roles/GetListByUserCode/${currentRow.code}`)
+          .then((data) => {
+            self.tableData.Role = data.body;
+          });
 
-      self.$http
-        .get(`${basic.DOMAIN}/Menu/GetListByUserCode/${currentRow.code}`)
-        .then((data) => {
-          self.tableData.Menu = data.body.resultData;
-        });
+        self.$http
+          .get(`${basic.DOMAIN}/Menu/GetListByUserCode/${currentRow.code}`)
+          .then((data) => {
+            self.tableData.Menu = data.body;
+          });
+      }
     },
     handCurrentChangeRoles(currentRow, oldCurrentRow) {
-      var self = this;
-      self.$http
-        .get(`${basic.DOMAIN}/Menu/GetListByRolesId/${currentRow.id}`)
-        .then((data) => {
-          self.tableData.Menu = data.body.resultData;
-        });
+      if (currentRow) {
+        var self = this;
+        self.$http
+          .get(`${basic.DOMAIN}/Menu/GetListByRolesId/${currentRow.id}`)
+          .then((data) => {
+            self.tableData.Menu = data.body;
+          });
+      }
     },
     handSelectChangeRoles(selection) {
       this.selectRole = selection;
