@@ -21,7 +21,8 @@ import { basic } from '@/common/basic.js'
 
  Vue.config.isProduct = process.env.NODE_ENV === 'production';
 
- Vue.config.devServer = "http://localhost:5010/HttpReportsData";
+//  Vue.config.devServer = "http://localhost:5010/HttpReportsData";
+ Vue.config.devServer = "http://127.0.0.1:5785/HttpReportsData";
 
  Vue.prototype.basic = basic  
  Vue.config.productionTip = false;
@@ -112,7 +113,7 @@ var vue = new Vue({
 function setHttpFilter() {   
    
   var server =  Vue.config.isProduct ?  window.location.protocol + "//" + window.location.host + "/HttpReportsData" :  Vue.config.devServer;
- 
+
   Vue.http.options.root = server; 
 
   // VueResource 请求拦截器 
@@ -125,6 +126,9 @@ function setHttpFilter() {
       
       request.headers.set('HttpReports-AuthToken',token); 
 
+      var jwt = localStorage.getItem("Authorization");
+      
+      request.headers.set("Authorization",`Bearer ${jwt}`)
     }  
 
     next(function (response) { 

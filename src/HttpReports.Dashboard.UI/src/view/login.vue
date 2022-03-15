@@ -21,12 +21,12 @@
   display: block;
   background-color: #fff;
   border-radius: 0.25rem;
-  padding: 30px; 
+  padding: 30px;
   z-index: 10;
-position: relative;
+  position: relative;
   text-align: center;
-  background-color: #3d4148; 
-  box-shadow: 28px 28px 28px #161e2f; 
+  background-color: #3d4148;
+  box-shadow: 28px 28px 28px #161e2f;
 }
 
 .card-body p {
@@ -79,28 +79,17 @@ position: relative;
   height: 80px;
 }
 
-
-.back-ground-login{
-
-width: 100%;
-text-align: center; 
-z-index: 10;
-position: relative;
-
+.back-ground-login {
+  width: 100%;
+  text-align: center;
+  z-index: 10;
+  position: relative;
 }
-
-
-
-
-
 </style>
 
 
 <template>
   <el-container class="login-body background">
-
-
-
     <div class="back-ground-login">
       <vue-particles
         color="#c7c8ca"
@@ -121,16 +110,15 @@ position: relative;
       ></vue-particles>
 
       <div class="card-body">
-        
         <img class="logo-img" src="/static/logo3.png" />
 
-        <h3 class="logo-title">HttpReports  APM</h3>
+        <h3 class="logo-title">HttpReports APM</h3>
 
-        <p>{{ $t('Login_UserName') }}</p>
+        <p>{{ $t("Login_UserName") }}</p>
 
         <el-input size="medium" v-model="username"></el-input>
 
-        <p>{{ $t('Login_Password') }}</p>
+        <p>{{ $t("Login_Password") }}</p>
 
         <el-input size="medium" type="password" v-model="password"></el-input>
 
@@ -139,7 +127,9 @@ position: relative;
           @click="submit"
           v-on:keyup.enter="submit"
           class="btn login-form__btn submit w-100"
-        >{{ $t('Login_Button') }}</button>
+        >
+          {{ $t("Login_Button") }}
+        </button>
       </div>
     </div>
   </el-container>
@@ -148,6 +138,7 @@ position: relative;
 
 
 <script>
+import { basic } from "@/common/basic.js";
 export default {
   data() {
     return {
@@ -156,25 +147,25 @@ export default {
     };
   },
   created: function () {
-
-    document.onkeydown = e => {
-    let _key=window.event.keyCode;
-    if(_key===13){
-      this.submit()
-    }
-  } 
-
+    document.onkeydown = (e) => {
+      let _key = window.event.keyCode;
+      if (_key === 13) {
+        this.submit();
+      }
+    };
   },
   methods: {
     submit(item) {
-
       var that = this;
 
       if (
         this.basic.isEmpty(this.username) ||
         this.basic.isEmpty(this.password)
       ) {
-        this.$message({ message: this.$i18n.t("Login_CheckRule") , type: "warning" });
+        this.$message({
+          message: this.$i18n.t("Login_CheckRule"),
+          type: "warning",
+        });
         return;
       }
 
@@ -190,14 +181,19 @@ export default {
             return;
           }
 
+          this.$http
+            .get(`${basic.DOMAIN}/identity/getjwt/${this.username}/${this.password}`)
+            .then((response) => {
+              localStorage.setItem("Authorization",response.body)
+            });
+
           localStorage.setItem("token", response.body.data);
           localStorage.setItem("username", this.username);
           that.$store.commit("set_token", response.body.data);
 
-          console.clear(); 
-           
-           that.$router.push({ path: "/" });
+          console.clear();
 
+          that.$router.push({ path: "/" });
         });
     },
   },
